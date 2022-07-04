@@ -53,17 +53,17 @@ export default myAdapter;
 
 ### Server
 
-In this example we only allow the user `anders` with the password `evenrud`.
+In this example we only allow the user `aaron` with the password `meese`.
 
-> Please note that the OS.js client expects to receive an JSON object with at least `{id, username}`.
+> Please note that the MeeseOS client expects to receive an JSON object with at least `{username}`.
 
 ```javascript
 const myAdapter = (core, config) => ({
   async login(req, res) {
     const {username, password} = req.body;
 
-    if (username === 'anders' && password === 'evenrud') {
-      return {id: 666, username, groups: ['admin']};
+    if (username === 'aaron' && password === 'meese') {
+      return {username, groups: ['admin']};
     }
 
     return false;
