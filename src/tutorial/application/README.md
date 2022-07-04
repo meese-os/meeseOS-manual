@@ -107,11 +107,11 @@ contains this section for the package discovery to work:
 Typically `index.js`:
 
 ```javascript
-import meeseOS from 'meeseOS'; // Webpack external. Same as 'window.OSjs'
-import {name as applicationName} from './metadata.json';
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
-  const proc = core.make('meeseOS/application', {args, options, metadata});
+  const proc = core.make("meeseOS/application", {args, options, metadata});
 
   // Create your windows etc here
 
@@ -142,13 +142,13 @@ module.exports = (core, proc) => ({
 To create a new [Window](../window/README.md) instance:
 
 ```javascript
-const win = proc.createWindow({title: 'My Window'})
+const win = proc.createWindow({title: "My Window"})
 ```
 
 If you want to close your application when the window is destructed:
 
 ```javascript
-win.on('destroy', () => proc.destroy());
+win.on("destroy", () => proc.destroy());
 ```
 
 ## Events
@@ -156,7 +156,7 @@ win.on('destroy', () => proc.destroy());
 You can listen on events with:
 
 ```javascript
-proc.on('event-name', (...args) => console.log(...args));
+proc.on("event-name", (...args) => console.log(...args));
 ```
 
 * `destroy => ()` - When destroyed
@@ -167,8 +167,8 @@ proc.on('event-name', (...args) => console.log(...args));
 To broadcast events to all running applications you can use:
 
 ```javascript
-core.broadcast('ApplicationName', 'event-name', 1, 2, 3)
-proc.on('event-name', (...args) => console.log(...args)); // => 1, 2, 3
+core.broadcast("ApplicationName", "event-name", 1, 2, 3)
+proc.on("event-name", (...args) => console.log(...args)); // => 1, 2, 3
 ```
 
 Singleton applications will receive the `attention` event when another instance is dropped from launching.
@@ -183,7 +183,7 @@ the resource method:
 > [info] Application resources are resolved as `/apps/{name}/{resource}`
 
 ```javascript
-const url = proc.resource('/image.png');
+const url = proc.resource("/image.png");
 ```
 
 Or via webpack with:
@@ -192,7 +192,7 @@ Or via webpack with:
 > in your webpack configuration.
 
 ```javascript
-import resource from './resource.ext';
+import resource from "./resource.ext";
 ```
 
 ## HTTP Requests
@@ -206,7 +206,7 @@ You can set up your own HTTP routes using the internal APIs:
 Create the endpoint URL, then use the `request()` method (a wrapper around `fetch()`):
 
 ```javascript
-const response = await proc.request('/hello-world', {method: 'post'});
+const response = await proc.request("/hello-world", {method: "post"});
 console.log(response);
 ```
 
@@ -217,11 +217,11 @@ In your server script, create a matching endpoint with Express:
 > [info] You can access POST body data via `req.body` and GET parameters via `req.query`.
 
 ```javascript
-const {routeAuthenticated} = core.make('meeseOS/express');
-const endpoint = proc.resource('/hello-world');
+const {routeAuthenticated} = core.make("meeseOS/express");
+const endpoint = proc.resource("/hello-world");
 
-routeAuthenticated('POST', endpoint, (req, res) => {
-  res.json({result: 'Hello World'});
+routeAuthenticated("POST", endpoint, (req, res) => {
+  res.json({result: "Hello World"});
 });
 ```
 
@@ -242,8 +242,8 @@ basic interactions.
 In your application script:
 
 ```javascript
-proc.on('ws:message', params => console.log(params)); // => ['Pong']
-proc.send('Ping');
+proc.on("ws:message", params => console.log(params)); // => ["Pong"]
+proc.send("Ping");
 ```
 
 #### Server
@@ -253,8 +253,8 @@ In your server script, use the `onmessage` method:
 ```javascript
 module.exports = (core, proc) => ({
   onmessage: (ws, respond, params) => {
-    if (params[0] === 'Ping') {
-      respond('Pong');
+    if (params[0] === "Ping") {
+      respond("Pong");
     }
   }
 });
@@ -274,12 +274,12 @@ regular WebSocket instance with `on/off/emit` for handing events:
 > Note that sockets automatically closes when application is destroyed.
 
 ```javascript
-const ws = proc.socket(); // Defaults to '/socket' (first argument)
+const ws = proc.socket(); // Defaults to "/socket" (first argument)
 
-ws.on('message', ev => console.log('got data', ev.data));
-ws.on('close', () => console.log('closed'));
-ws.on('error', ev => console.log('error', err));
-ws.send('data'); // Sends data
+ws.on("message", ev => console.log("got data", ev.data));
+ws.on("close", () => console.log("closed"));
+ws.on("error", ev => console.log("error", err));
+ws.send("data"); // Sends data
 ws.close(); // Closes socket
 ```
 
@@ -292,11 +292,11 @@ In your server script, create a matching endpoint with Express:
 > list of clients from `wss.clients`.
 
 ```javascript
-const endpoint = proc.resource('/socket');
+const endpoint = proc.resource("/socket");
 core.app.ws(endpoint, (ws, req) => {
-  ws.on('message', msg => console.log(msg)); // Message
-  ws.on('close', () => console.log('closed')); // Closed
-  ws.send('data'); // Sends data
+  ws.on("message", msg => console.log(msg)); // Message
+  ws.on("close", () => console.log("closed")); // Closed
+  ws.send("data"); // Sends data
   ws.close(); // Closes socket
 });
 ```
@@ -307,19 +307,19 @@ Applications also supports [settings](/tutorial/settings/README.md) storage:
 
 ```javascript
 // Set default settings
-import meeseOS from 'meeseOS'; // Webpack external. Same as 'window.OSjs'
-import {name as applicationName} from './metadata.json';
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
   options.settings = {
-    foo: 'Default setting'
+    foo: "Default setting"
   };
 
   // Gets a setting
   console.log(proc.settings.foo)
 
   // Sets a setting.
-  proc.settings.foo = 'Custom setting';
+  proc.settings.foo = "Custom setting";
   proc.saveSettings() // Save settings -> Promise
 });
 ```
@@ -333,21 +333,21 @@ When an application is launched, it might contain arguments:
 
 ```javascript
 // Launch application with arguments
-core.run('MyApplication', {
-  foo: 'My custom argument'
+core.run("MyApplication", {
+  foo: "My custom argument"
 });
 ```
 
 Retrieve arguments in application:
 
 ```javascript
-import meeseOS from 'meeseOS'; // Webpack external. Same as 'window.OSjs'
-import {name as applicationName} from './metadata.json';
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
-  const proc = core.make('meeseOS/application', {args, options, metadata});
+  const proc = core.make("meeseOS/application", {args, options, metadata});
 
-  console.log(proc.args); // 'foo' will be set
+  console.log(proc.args); // "foo" will be set
 
   return proc;
 });
@@ -359,17 +359,17 @@ The `args` property (see above) is stored in the session, so you can use this to
 save your application state whenever the user logs out:
 
 ```javascript
-import meeseOS from 'meeseOS'; // Webpack external. Same as 'window.OSjs'
-import {name as applicationName} from './metadata.json';
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
-  const proc = core.make('meeseOS/application', {args, options, metadata});
+  const proc = core.make("meeseOS/application", {args, options, metadata});
 
   // Arguments launched with your application, including session:
   console.log(proc.args.session); // Only set if the application was saved and restored
 
   // Sets an argument that will be loaded on restore.
-  proc.args.session = 'hello session!';
+  proc.args.session = "hello session!";
 
   return proc;
 });
@@ -380,5 +380,5 @@ meeseOS.register(applicationName, (core, args, options, metadata) => {
 Sessions are normally only saved when a user logs out, but you can force this action:
 
 ```javascript
-core.make('meeseOS/session').save(); // Promise
+core.make("meeseOS/session").save(); // Promise
 ```

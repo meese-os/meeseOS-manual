@@ -16,13 +16,13 @@ Windows are floating containers that you can use to render any content.
 To create a new `Window` instance:
 
 ```javascript
-const options = {title: 'My Window'};
+const options = {title: "My Window"};
 
 // Attach to the application
 const win = proc.createWindow(options)
 
 // Outside your application
-const win = core.make('meeseOS/window', options)
+const win = core.make("meeseOS/window", options)
 ```
 
 ## Render
@@ -34,7 +34,7 @@ Use the provided render method to put content into your Window via a DOM element
 
 ```javascript
 win.render($content => $content.appendChild(
-  document.createTextNode('Hello World!')
+  document.createTextNode("Hello World!")
 ));
 ```
 
@@ -55,7 +55,7 @@ Example:
 
 ```javascript
 proc.createWindow({
-  title: 'My Window'
+  title: "My Window"
 })
 ```
 
@@ -116,7 +116,7 @@ proc.createWindow({
 You can listen on events with:
 
 ```javascript
-win.on('event-name', (...args) => console.log(...args));
+win.on("event-name", (...args) => console.log(...args));
 ```
 
 ## Methods
@@ -152,10 +152,10 @@ You can assign local media queries to a window using attributes. By default OS.j
 
 ```javascript
 const options = {
-  title: 'My Window',
+  title: "My Window",
   attributes: {
     mediaQueries: {
-      custom: 'screen and (min-width: 1280px)'
+      custom: "screen and (min-width: 1280px)"
     }
   }
 };

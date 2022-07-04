@@ -47,23 +47,23 @@ This allows you to interact with the underlying OS.js APIs and services from an 
       // Global function to send a message to OS.js Core that forwards it to the correct application/window.
       function sendMessage() {
         top.postMessage({
-          name: 'meeseOS/iframe:message',
+          name: "meeseOS/iframe:message",
           params: [{
             pid: pid,
             wid: wid,
             args: Array.prototype.slice.call(arguments)
           }]
-        }, '*');
+        }, "*");
       }
 
       // Listen from messages from OS.js Application
-      window.addEventListener('message', function(ev) {
+      window.addEventListener("message", function(ev) {
         // We should get "Pong" here
-        console.warn('Message from OS.js', ev.data);
+        console.warn("Message from OS.js", ev.data);
       });
 
       // Send an example message
-      sendMessage('Ping');
+      sendMessage("Ping");
     </script>
   </body>
 </html>
@@ -73,32 +73,32 @@ This allows you to interact with the underlying OS.js APIs and services from an 
 
 ```javascript
 proc.createWindow({dimension: {width: 400, height: 400}})
-  .on('destroy', () => proc.destroy())
+  .on("destroy", () => proc.destroy())
   .render(($content, win) => {
     // Add our process and window id to iframe URL
     const suffix = `?pid=${proc.pid}&wid=${win.wid}`;
 
     // Create an iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.src = proc.resource('/data/index.html') + suffix;
-    iframe.setAttribute('border', '0');
+    const iframe = document.createElement("iframe");
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.src = proc.resource("/data/index.html") + suffix;
+    iframe.setAttribute("border", "0");
 
     // Bind window events to iframe
-    win.on('blur', () => iframe.contentWindow.blur());
-    win.on('focus', () => iframe.contentWindow.focus());
+    win.on("blur", () => iframe.contentWindow.blur());
+    win.on("focus", () => iframe.contentWindow.focus());
 
     // Create an even for posting messages to an iframe (for easy reuse)
-    win.on('iframe:post', msg => iframe.contentWindow.postMessage(msg, window.location.href));
+    win.on("iframe:post", msg => iframe.contentWindow.postMessage(msg, window.location.href));
 
     // Listen for messages from iframe
-    win.on('iframe:get', msg => {
+    win.on("iframe:get", msg => {
       // We should get "Ping" here
-      console.warn('Message from Iframe', msg);
+      console.warn("Message from Iframe", msg);
 
       // In this case we just send "Pong" back
-      win.emit('iframe:post', 'Pong');
+      win.emit("iframe:post", "Pong");
     });
 
     $content.appendChild(iframe);

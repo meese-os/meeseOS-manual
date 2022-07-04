@@ -38,11 +38,11 @@ If you're familiar with frameworks similar to React, you can use the [JSX syntax
 ![Basic Example](example-1.png)
 
 ```javascript
-import {h, app} from 'hyperapp';
+import {h, app} from "hyperapp";
 
-const createView = (state, actions) => h('div', {}, [
-  h('div', {}, String(state.counter)),
-  h('button', {type: 'button', onclick: () => actions.increment()}, 'Increment counter')
+const createView = (state, actions) => h("div", {}, [
+  h("div", {}, String(state.counter)),
+  h("button", {type: "button", onclick: () => actions.increment()}, "Increment counter")
 ]);
 
 const createApp = ($content) => {
@@ -70,11 +70,11 @@ A [standard component library](https://manual.os-js.org/v3/api/osjs-gui/) for Hy
 ![Basic Example](example-2.png)
 
 ```javascript
-import {Box, BoxContainer, Button} from '@meeseOS/gui';
+import {Box, BoxContainer, Button} from "@meeseOS/gui";
 
 const createView = (state, actions) => h(Box, {}, [
   h(BoxContainer, {}, String(state.counter)),
-  h(Button, {onclick: () => actions.increment(), label: 'Increment counter'})
+  h(Button, {onclick: () => actions.increment(), label: "Increment counter"})
 ]);
 ```
 
@@ -118,31 +118,31 @@ const createView = (state, actions) => (
 You can create (context) menus via the GUI provider:
 
 ```javascript
-core.make('meeseOS/contextmenu', {
+core.make("meeseOS/contextmenu", {
   position: Event || Element || Object,
 
   menu: [{
-    label: 'Some label',
-    onclick: ev => console.log('Clicked')
+    label: "Some label",
+    onclick: ev => console.log("Clicked")
   }, {
-    label: 'Sub items',
+    label: "Sub items",
     items: [{
-      label: 'Sub item',
-      onclick: ev => console.log('Clicked sub item')
+      label: "Sub item",
+      onclick: ev => console.log("Clicked sub item")
     }, {
-      label: 'Check item 1',
+      label: "Check item 1",
       checked: true,
-      onclick: ev => console.log('Clicked sub item')
+      onclick: ev => console.log("Clicked sub item")
     }, {
-      label: 'Check item 2',
+      label: "Check item 2",
       checked: true,
-      onclick: ev => console.log('Clicked sub item')
+      onclick: ev => console.log("Clicked sub item")
     }]
   }]
 });
 ```
 
-You can also forcefully hide an open menu with `core.make('meeseOS/contextmenu').hide()`.
+You can also forcefully hide an open menu with `core.make("meeseOS/contextmenu").hide()`.
 
 ## Components
 
@@ -221,9 +221,9 @@ A simple three-row layout:
 
 ```javascript
 h(Box, {grow: 1, shrink: 1}, [
-  h(BoxContainer, {}, 'Row 1'),
-  h(BoxContainer, {}, 'Row 2'),
-  h(BoxContainer, {}, 'Row 3')
+  h(BoxContainer, {}, "Row 1"),
+  h(BoxContainer, {}, "Row 2"),
+  h(BoxContainer, {}, "Row 3")
 ])
 ```
 
@@ -236,14 +236,14 @@ Same as above, but contained within an outer `Box` with a `Menubar` and `Statusb
 ```javascript
 h(Box, {grow: 1, shrink: 1}, [
   h(Menubar, {}, [
-    h(MenubarItem, {onclick: () => alert('clicked')}, 'Menubar Item')
+    h(MenubarItem, {onclick: () => alert("clicked")}, "Menubar Item")
   ]),
   h(Box, {grow: 1}, [
-    h(BoxContainer, {}, 'Row 1'),
-    h(BoxContainer, {}, 'Row 2'),
-    h(BoxContainer, {}, 'Row 3')
+    h(BoxContainer, {}, "Row 1"),
+    h(BoxContainer, {}, "Row 2"),
+    h(BoxContainer, {}, "Row 3")
   ]),
-  h(Statusbar, {}, 'Some status here')
+  h(Statusbar, {}, "Some status here")
 ])
 ```
 
@@ -256,7 +256,7 @@ Reactive value for inputs:
 
 ```javascript
 app({
-  myfield: 'Initial value'
+  myfield: "Initial value"
 }, {
   setValue: myfield => () => ({myfield})
 }, (state, actions) => {
@@ -278,25 +278,25 @@ app({
 Certain components, like ListView needs some context and works a little bit different:
 
 ```javascript
-import {listView} from '@meeseOS/gui'; // Lower-case l
+import {listView} from "@meeseOS/gui"; // Lower-case l
 
 const initialRows = [{
   columns: [1, 2, 3],
-  data: {foo: 'bar'}
+  data: {foo: "bar"}
 }];
 
 app({
   mylistview: listView.state({
     // Set up the initial state
-    columns: ['A', 'B', 'C'],
+    columns: ["A", "B", "C"],
     rows: initialRows
  }),
 }, {
   // Register callback actions
   mylistview: listView.actions({
-    select: ({data, index, ev}) => console.log('Selected', data, index, ev),
-    activate: ({data, index, ev}) => console.log('Activated', data, index, ev),
-    contextmenu: ({data, index, ev}) => console.log('Menu', data, index, ev)
+    select: ({data, index, ev}) => console.log("Selected", data, index, ev),
+    activate: ({data, index, ev}) => console.log("Activated", data, index, ev),
+    contextmenu: ({data, index, ev}) => console.log("Menu", data, index, ev)
  }),
 }, (state, actions) => {
   // Creates a new component based on the state and actions created

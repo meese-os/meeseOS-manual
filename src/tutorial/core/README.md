@@ -19,25 +19,25 @@ These methods are shared between the server and client:
 
 ```javascript
 // Gets a configuration value
-const value = core.config('resolve.by.key', 'optional default value');
+const value = core.config("resolve.by.key", "optional default value");
 
 // Retrieves an instance of a service
-const service = core.make('namespace/service');
+const service = core.make("namespace/service");
 
 // Registers a new ServiceProvicer class
 core.register(SomeServiceProvider, {/* registration options */});
 
 // Registers a new singleton factory for service
-core.singleton('namespace/service', () => new SomeService());
+core.singleton("namespace/service", () => new SomeService());
 
 // Registers a new instance factory for service
-core.instance('namespace/service', () => new SomeService());
+core.instance("namespace/service", () => new SomeService());
 
 // Checks if given service exists
-const exists = core.has('namespace/service');
+const exists = core.has("namespace/service");
 
 // Subscribe to an event
-core.on('event-name', () => {});
+core.on("event-name", () => {});
 ```
 
 ### Client
@@ -46,25 +46,25 @@ The client has some extra methods for dealing with user data, requests, resource
 
 ```javascript
 // Creates a URL based on the public path
-const url = core.url('/foo/bar');
+const url = core.url("/foo/bar");
 
 // Creates a new fetch() request
-const promise = core.request('http://url', {/* options */}, 'type')
+const promise = core.request("http://url", {/* options */}, "type")
 
 // Launches an application
-core.run('Preview', {file: {path: 'home://image.png'}})
+core.run("Preview", {file: {path: "home://image.png"}})
 
 // Launches a new application based on a file
-core.open({path: 'home://image.png', mime: 'image/png'});
+core.open({path: "home://image.png", mime: "image/png"});
 
 // Gets user data
 const user = core.getUser();
 
 // Send an event to the server
-core.send('event-name', 1, 2, 3);
+core.send("event-name", 1, 2, 3);
 ```
 
-#### Global 'OSjs' namespace
+#### Global "OSjs" namespace
 
 The window global `OSjs` also lets you reach some of the core functionality.
 
@@ -139,7 +139,7 @@ These are the default provided services and their signatures:
 Example:
 
 ```javascript
-core.make('meeseOS/settings').save();
+core.make("meeseOS/settings").save();
 ```
 
 ### Server
@@ -148,11 +148,11 @@ The server also has some extra methods:
 
 ```javascript
 // Broadcast an event to all connected users (WebSocket)
-core.broadcast('event-name', [1, 2, 3])
+core.broadcast("event-name", [1, 2, 3])
 
 // Broadcast an event to a set of users
-core.broadcast('event-name', [1, 2, 3], ws => {
-  //The original 'req' containing session etc
+core.broadcast("event-name", [1, 2, 3], ws => {
+  //The original "req" containing session etc
   //ws.upgradeReq
 
   //The original session data
@@ -162,10 +162,10 @@ core.broadcast('event-name', [1, 2, 3], ws => {
 });
 
 // Broadcast to all alias but with expanded arguments:
-core.broadcastAll('event-name', 1, 2 , 3);
+core.broadcastAll("event-name", 1, 2 , 3);
 
 // Broadcast to a specific user, with expanded arguments:
-core.broadcastUser('username', 'event-name', 1, 2 , 3);
+core.broadcastUser("username", "event-name", 1, 2 , 3);
 
 // Express server
 const app = core.app;
@@ -181,7 +181,7 @@ const session = core.session;
 
 ```javascript
 // Client-side example:
-core.on('event-name', (a, b, c) => console.log(a, b, c)) // => 1 2 3
+core.on("event-name", (a, b, c) => console.log(a, b, c)) // => 1 2 3
 ```
 
 #### Server Services

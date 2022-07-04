@@ -13,11 +13,11 @@ The Virtual Filesystem (VFS) provides methods to use and manipulate local (or re
 
 To use the Virtual Filesystem, make the provided service:
 
-```javascript
-const vfs = core.make('meeseOS/vfs');
-
-const list = await vfs.readdir('meeseOS:/');
 console.log(list);
+```javascript
+const vfs = core.make("meeseOS/vfs");
+
+const list = await vfs.readdir("meeseOS:/");
 ```
 
 ## Methods
@@ -46,16 +46,16 @@ this *might* not work, so it is recommended that you use the `Object` signature 
 
 ```javascript
 // Ex
-.readdir('meeseOS:/')
+.readdir("meeseOS:/")
 
 // Vs
-.readdir({path: 'meeseOS:/'})
+.readdir({path: "meeseOS:/"})
 ```
 
 On a non-traditional filesystem, this might look like:
 
 ```javascript
-.readdir({path: 'custom-mountpoint:/', id: 'some-unique-resource-id'})
+.readdir({path: "custom-mountpoint:/", id: "some-unique-resource-id"})
 ```
 
 A File `Object` consists of the [Stat](#stat) described below.
@@ -124,20 +124,20 @@ You can interact with the VFS on the server-side as well, but it works slightly 
 > [info] API with interface that resembles the client is in progress.
 
 ```javascript
-core vfs = core.make('meeseOS/vfs');
+core vfs = core.make("meeseOS/vfs");
 
 // Gets the real filesystem path of a file in the VFS
 // NOTE: This does not work for filesystems that is not a mountpoint or physical drive
-const realPath = vfs.realpath('home:/filename', {username: 'meeseOS'});
+const realPath = vfs.realpath("home:/filename", {username: "meeseOS"});
 
 // Gets the mime type of a real filesystem file path
 const mimeType = vfs.mime(realPath);
 
 // Performs a VFS operation based on a HTTP action
-vfs.request('readdir', req, res)
+vfs.request("readdir", req, res)
   .then(result => {})
 
 // Performs a VFS operation directly
-vfs.call({method: 'readdir', user: {username: 'demo'}}, 'home:/')
+vfs.call({method: "readdir", user: {username: "demo"}}, "home:/")
   .then(result => {})
 ```

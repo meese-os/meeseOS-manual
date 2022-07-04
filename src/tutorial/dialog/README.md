@@ -21,7 +21,7 @@ To create a dialog use the provided service:
 ```javascript
 // name: dialog name (alert, confirm, prompt, color, font, file, progress)
 // args: an object with arguments for given dialog
-core.make('meeseOS/dialog', name, args, (btn, value) => {
+core.make("meeseOS/dialog", name, args, (btn, value) => {
   // btn: which button was pressed (ex: ok, yes, no, cancel)
   // value: the value of the dialog
 });
@@ -31,7 +31,7 @@ You can also provide custom window options:
 
 ```javascript
 const options = {parent: <parent>, attributes: {modal: true}};
-core.make('meeseOS/dialog', name, args, options, cb);
+core.make("meeseOS/dialog", name, args, options, cb);
 ```
 
 ## Custom Dialog
@@ -39,12 +39,12 @@ core.make('meeseOS/dialog', name, args, options, cb);
 The default Dialog Service provider allows you to add (or override) dialogs:
 
 ```javascript
-import {Dialog} from '@meeseOS/dialogs';
+import {Dialog} from "@meeseOS/dialogs";
 
 class MyDialog extends Dialog {
   constructor(core, args, callback) {
     super(core, Object.assign({
-      foo: 'My custom argument default'
+      foo: "My custom argument default"
     }, args), callback)
   }
 
@@ -64,13 +64,13 @@ class MyDialog extends Dialog {
 meeseOS.register(DialogServiceProvider, {
   args: {
     registry: {
-      'my-dialog': MyDialog
+      "my-dialog": MyDialog
     }
   }
 });
 
 // Runtime
-meeseOS.make('meeseOS/dialogs').register('my-dialog', MyDialog);
+meeseOS.make("meeseOS/dialogs").register("my-dialog", MyDialog);
 ```
 
 ## Programmatic
@@ -80,15 +80,15 @@ You can also use the `CustomDialog` instance to make your own programmatically:
 ```javascript
 // Options
 const options = {
-  buttons: ['ok', 'cancel'],
+  buttons: ["ok", "cancel"],
   window: {
-    title: 'My Dialog',
+    title: "My Dialog",
     dimension: {width: 400, height: 400}
   }
 };
 
 // Get the value for button callback
-const callbackValue = dialog => 'My value';
+const callbackValue = dialog => "My value";
 
 // Same as demonstrated in Usage
 const callbackButton = (button, value) => {};
@@ -96,7 +96,7 @@ const callbackButton = (button, value) => {};
 // The window.render() wrapper callback
 const callbackRender = ($innerContent, dialogWindow, dialog) => {};
 
-core.make('meeseOS/dialogs')
+core.make("meeseOS/dialogs")
   .create(options, callbackValue, callbackButton)
   .renderCustom(callbackRender);
 ```
@@ -127,8 +127,8 @@ Use the `.render()` callback instead of `.renderCustom()` to hook into the base 
 This allows you to extend the internal dialog view with `.createView()`:
 
 ```javascript
-import {app, h} from 'hyperapp';
-import {ComponentName} from '@meeseOS/gui';
+import {app, h} from "hyperapp";
+import {ComponentName} from "@meeseOS/gui";
 
 dialog.render($content => {
   app({

@@ -14,7 +14,7 @@ This tutorial will show you how to use the authentication system and create cust
 The client authentication service provides some API methods:
 
 ```javascript
-const auth = core.make('meeseOS/auth');
+const auth = core.make("meeseOS/auth");
 auth.user(); // Get user information
 auth.show(fn); // Shows the authentication dialog (internal usage only)
 auth.login({username, password}); // Log in a user
@@ -23,7 +23,7 @@ auth.logout(reload?); // Log out current user
 
 ## User Information
 
-You can get the user information from `core.make('meeseOS/auth').user()` in the client and `req.session.user` in the server.
+You can get the user information from `core.make("meeseOS/auth").user()` in the client and `req.session.user` in the server.
 
 ## Custom Authentication Adapter
 
@@ -62,8 +62,8 @@ const myAdapter = (core, config) => ({
   async login(req, res) {
     const {username, password} = req.body;
 
-    if (username === 'aaron' && password === 'meese') {
-      return {username, groups: ['admin']};
+    if (username === "aaron" && password === "meese") {
+      return {username, groups: ["admin"]};
     }
 
     return false;

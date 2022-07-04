@@ -16,9 +16,9 @@ This tutorial demonstrates how to create a new notification.
 You can spawn a notification using:
 
 ```javascript
-core.make('meeseOS/notification', {
-  message: 'Hello World',
-  icon: 'icon.src',
-  onclick: () => console.log('Clicked!')
+core.make("meeseOS/notification", {
+  message: "Hello World",
+  icon: "icon.src",
+  onclick: () => console.log("Clicked!")
 })
 ```

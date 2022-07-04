@@ -14,7 +14,7 @@ This tutorial will show you how to manage settings, and how to create your own s
 ### Global
 
 ```javascript
-const settings = core.make('meeseOS/settings');
+const settings = core.make("meeseOS/settings");
 
 // Saves all settings
 settings.save();
@@ -23,10 +23,10 @@ settings.save();
 settings.load();
 
 // Gets a settings object from a namespace
-settings.get('some/namespace');
+settings.get("some/namespace");
 
 // Sets a settings object to a namespace
-settings.set('some/namespace', 'key', 'value')
+settings.set("some/namespace", "key", "value")
 ```
 
 ### Application
@@ -34,25 +34,25 @@ settings.set('some/namespace', 'key', 'value')
 An application is given the namespace `meeseOS/application/{name}` (where the name is taken from your application metadata):
 
 ```javascript
-import {name as applicationName} from './metadata.json';
+import {name as applicationName} from "./metadata.json";
 
-OSjs.make('meeseOS/packages').register(applicationName, (core, args, options, metadata) => {
+OSjs.make("meeseOS/packages").register(applicationName, (core, args, options, metadata) => {
   // Default settings
   options.settings = {
-    foo: 'bar'
+    foo: "bar"
   };
 
-  const proc = core.make('name', {options, args, metadata});
+  const proc = core.make("name", {options, args, metadata});
 
   // Get a setting
   console.log(proc.settings.foo); // => "bar"
 
   // Set a setting
-  proc.settings.foo = 'baz';
+  proc.settings.foo = "baz";
 
   // Save settings
   proc.saveSettings()
-    .then(() => console.log('done'));
+    .then(() => console.log("done"));
 
   return proc;
 };
@@ -71,7 +71,7 @@ To generate a new adapter using the example via CLI run `npm run make:settings`.
 ```javascript
 const myAdapter = (core, options) => ({
   async save(values) {
-    // Create your own request here with 'values' settings
+    // Create your own request here with "values" settings
     return true;
   },
 

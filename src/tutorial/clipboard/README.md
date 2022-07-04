@@ -10,7 +10,7 @@ This tutorial shows you how to interact with the clipboard.
 ## Usage
 
 ```javascript
-const clipboard = core.make('meeseOS/clipboard');
+const clipboard = core.make("meeseOS/clipboard");
 
 // Sets current
 clipboard.set(value);

@@ -12,7 +12,7 @@ This tutorial shows you how to create and register your own widgets.
 ## Custom Widget
 
 ```javascript
-import {Widget} from '@meeseOS/widgets';
+import {Widget} from "@meeseOS/widgets";
 
 export default class MyWidget extends Widget {
 
@@ -29,11 +29,11 @@ export default class MyWidget extends Widget {
       }
     }, {
       // Custom options that can be saved
-      myText: 'Hello World'
+      myText: "Hello World"
     });
 
     // Other attributes are registered on your class:
-    this.color = '#ffffff';
+    this.color = "#ffffff";
   }
 
   // When widget is destructed
@@ -49,10 +49,10 @@ export default class MyWidget extends Widget {
   render({canvas, context, width, height}) {
     const text = this.options.myText;
 
-    context.font = 'monospace';
+    context.font = "monospace";
     context.fillStyle = this.color;
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
+    context.textAlign = "center";
+    context.textBaseline = "middle";
 
     context.clearRect(0, 0, width, height);
     context.fillText(text, width / 2, height / 2);
@@ -64,14 +64,14 @@ export default class MyWidget extends Widget {
   // A custom set of menu entries
   getContextMenu() {
     return [{
-      label: 'My Menu Item',
-      onclick: () => console.log('Hello!')
+      label: "My Menu Item",
+      onclick: () => console.log("Hello!")
     }];
   }
 
   static metadata(core) {
     return {
-      title: 'A title for your widget'
+      title: "A title for your widget"
     };
   }
 }
@@ -80,8 +80,8 @@ export default class MyWidget extends Widget {
 ### Attaching a dialog
 
 ```javascript
-import {h, app} from 'hyperapp';
-import {TextField} from '@meeseOS/gui';
+import {h, app} from "hyperapp";
+import {TextField} from "@meeseOS/gui";
 
 export default class MyWidget extends Widget {
 
@@ -104,12 +104,12 @@ export default class MyWidget extends Widget {
       }, $content);
     };
 
-    // Values are passed down to the 'options' object
+    // Values are passed down to the "options" object
     const value = dialog => dialog.app.getValues();
 
     // Use the internal dialog helper
     this._createDialog({
-      title: 'Some Title'
+      title: "Some Title"
     }, render, value);
   }
 
@@ -119,13 +119,13 @@ export default class MyWidget extends Widget {
 ### Registration
 
 ```javascript
-import {WidgetServiceProvider} from '@meeseOS/widgets';
-import MyWidget from 'path/to/MyWidget';
+import {WidgetServiceProvider} from "@meeseOS/widgets";
+import MyWidget from "path/to/MyWidget";
 
 meeseOS.register(WidgetServiceProvider, {
   args: {
     registry: {
-      'my-widget': MyWidget
+      "my-widget": MyWidget
     }
   }
 });

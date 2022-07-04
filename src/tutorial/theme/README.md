@@ -12,13 +12,13 @@ This tutorial will demonstrate how to create your own theme(s).
 The theme authentication service provides some API methods:
 
 ```javascript
-const theme = core.make('meeseOS/theme');
-theme.resource('file'); // Gets an URI to a theme resource (current theme)
-theme.icon('name'); // Gets an URI to a icon theme image (current theme)
+const theme = core.make("meeseOS/theme");
+theme.resource("file"); // Gets an URI to a theme resource (current theme)
+theme.icon("name"); // Gets an URI to a icon theme image (current theme)
 
-const sounds = core.make('meeseOS/sounds');
-sounds.resouce('file'); // Gets an URI to a sound theme resource (current theme)
-sounds.play('file'); // Plays a sound
+const sounds = core.make("meeseOS/sounds");
+sounds.resouce("file"); // Gets an URI to a sound theme resource (current theme)
+sounds.play("file"); // Plays a sound
 ```
 
 ## Creation

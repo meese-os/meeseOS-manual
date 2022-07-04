@@ -15,24 +15,24 @@ Register a callback to middleware defined by a group name:
 
 ```javascript
 const middlewareFunction = () => {};
-core.make('meeseOS/middleware')
-  .add('middleware-group-name', middlewareCallback);
+core.make("meeseOS/middleware")
+  .add("middleware-group-name", middlewareCallback);
 ```
 
 Alternatively you can the global registration function:
 
 ```javascript
-import meeseOS from 'meeseOS';
+import meeseOS from "meeseOS";
 
 const middlewareFunction = () => {};
-meeseOS.middleware('middleware-group-name', middlewareCallback);
+meeseOS.middleware("middleware-group-name", middlewareCallback);
 ```
 
 To get the list of registered middleware from a group:
 
 ```javascript
-const middlewareCallbacks = core.make('meeseOS/middleware')
-  .get('middleware-group-name'); // => [middlewareFunction]
+const middlewareCallbacks = core.make("meeseOS/middleware")
+  .get("middleware-group-name"); // => [middlewareFunction]
 ```
 
 ## Example
@@ -59,25 +59,25 @@ Then change the webpack config and add `middleware.js` as a new entry:
 
 ```javascript
 entry: {
-  main: path.resolve(__dirname, 'index.js'),
-  middleware: path.resolve(__dirname, 'middleware.js')
+  main: path.resolve(__dirname, "index.js"),
+  middleware: path.resolve(__dirname, "middleware.js")
 }
 ```
 
 Now the middleware can be added in the `middleware.js` file. In this example a callback is added to provide extra menu options based on options from the other application:
 
 ```javascript
-import meeseOS from 'meeseOS';
+import meeseOS from "meeseOS";
 
-meeseOS.middleware('meeseOS/filemanager:menu:edit', async (({file, isContextMenu}) => {
+meeseOS.middleware("meeseOS/filemanager:menu:edit", async (({file, isContextMenu}) => {
   // It should return an array of objects with `label`, `disabled` and `onclick`
 
   if (isContextMenu) {
     // Add this item only in context menu
     return [{
-      label: 'Open in my application',
+      label: "Open in my application",
       disabled: !file || !file.isFile,
-      onclick: () => meeseOS.run('my-app-name', {file})
+      onclick: () => meeseOS.run("my-app-name", {file})
     }];
   }
 

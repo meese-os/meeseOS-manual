@@ -27,21 +27,21 @@ You can use the provided methods to set up routes from your Applications and Ser
 > [info] Note that the last argument int `routeAuthenticated` (strict group check argument) defaults to `auth.requireAllGroups` configuration option.
 
 ```javascript
-const {route, routeAuthenticated} = core.make('meeseOS/express');
+const {route, routeAuthenticated} = core.make("meeseOS/express");
 
-const respond = (req, res) => res.json({result: 'pong'});
+const respond = (req, res) => res.json({result: "pong"});
 
 // Regular route
-route('GET', '/ping', respond);
+route("GET", "/ping", respond);
 
 // Same as above, except requires user to be authenticated
-routeAuthenticated('GET', '/ping', respond);
+routeAuthenticated("GET", "/ping", respond);
 
 // Same as above, but also requires user to belong to *some* given groups (see note above)
-routeAuthenticated('GET', '/ping', respond, ['admin']);
+routeAuthenticated("GET", "/ping", respond, ["admin"]);
 
 // Same as above, but also requires user to belong to *all* given groups
-routeAuthenticated('GET', '/ping', respond, ['admin'], true);
+routeAuthenticated("GET", "/ping", respond, ["admin"], true);
 ```
 
 ### Inject middleware to route handler
@@ -49,7 +49,7 @@ routeAuthenticated('GET', '/ping', respond, ['admin'], true);
 To inject middleware into the route handler (`route()` and `routeAuthenticated()`), use the following service:
 
 ```javascript
-const {middleware} = core.make('meeseOS/express');
+const {middleware} = core.make("meeseOS/express");
 
 middleware(true, (req, res, next) => {}); // routeAuthenticated()
 middleware(false, (req, res, next) => {}); // route()
@@ -65,7 +65,7 @@ In your `src/server/index.js` file:
 
 ```javascript
 const meeseOS = new Core(config, {});
-meeseOS.on('init', () => meeseOS.app.get('/ping', (req, res) => {}));
+meeseOS.on("init", () => meeseOS.app.get("/ping", (req, res) => {}));
 ```
 
 ### Using Service Provider
@@ -73,7 +73,7 @@ meeseOS.on('init', () => meeseOS.app.get('/ping', (req, res) => {}));
 ```javascript
 class ServiceProvider {
   start() {
-    this.core.app.get('/ping', (req, res) => {});
+    this.core.app.get("/ping", (req, res) => {});
   }
 }
 ```
@@ -87,7 +87,7 @@ To add middleware or other extensions to Express, you can add this in a couple o
 In your `src/server/index.js` file:
 
 ```javascript
-const something = require('library');
+const something = require("library");
 
 const meeseOS = new Core(config, {});
 meeseOS.app.use(something);
@@ -96,7 +96,7 @@ meeseOS.app.use(something);
 ### Using Service Provider
 
 ```javascript
-const something = require('library');
+const something = require("library");
 
 class ServiceProvider {
   constructor(core, options) {
