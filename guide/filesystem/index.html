@@ -2059,7 +2059,7 @@
                                 <section class="normal markdown-section">
                                 
   <h1 id="filesystem-guide">Filesystem Guide</h1>
-<p>OS.js uses an URI for filesystem paths.</p>
+<p>MeeseOS uses an URI for filesystem paths.</p>
 <blockquote>
 <p><code>name:/path#fragment</code></p>
 </blockquote>
@@ -2079,9 +2079,9 @@
 <pre><code class="lang-javascript">{
   <span class="hljs-attr">vfs</span>: {
     <span class="hljs-attr">mountpoints</span>: [{
-      <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;temp&apos;</span>,
-      <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Temporary Files&apos;</span>,
-      <span class="hljs-attr">adapter</span>: <span class="hljs-string">&apos;system&apos;</span>, <span class="hljs-comment">// You can leave this out as &apos;system&apos; is default</span>
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;temp&quot;</span>,
+      <span class="hljs-attr">label</span>: <span class="hljs-string">&quot;Temporary Files&quot;</span>,
+      <span class="hljs-attr">adapter</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-comment">// You can leave this out as &quot;system&quot; is default</span>
       <span class="hljs-attr">attributes</span>: {}
      }]
    }
@@ -2140,10 +2140,10 @@
 <pre><code class="lang-javascript">{
   <span class="hljs-attr">vfs</span>: {
     <span class="hljs-attr">mountpoints</span>: [{
-      <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;temp&apos;</span>,
-      <span class="hljs-attr">adapter</span>: <span class="hljs-string">&apos;system&apos;</span>, <span class="hljs-comment">// You can leave this out as &apos;system&apos; is default</span>
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;temp&quot;</span>,
+      <span class="hljs-attr">adapter</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-comment">// You can leave this out as &quot;system&quot; is default</span>
       <span class="hljs-attr">attributes</span>: {
-        <span class="hljs-attr">root</span>: <span class="hljs-string">&apos;/tmp&apos;</span>
+        <span class="hljs-attr">root</span>: <span class="hljs-string">&quot;/tmp&quot;</span>
       }
     }]
   }
@@ -2198,17 +2198,17 @@
 <pre><code class="lang-json">{
   <span class="hljs-attr">vfs</span>: {
     <span class="hljs-attr">mountpoints</span>: [{
-      <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;meeseOS&apos;</span>,
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;meeseOS&quot;</span>,
       <span class="hljs-attr">attributes</span>: {
-        <span class="hljs-attr">root</span>: <span class="hljs-string">&apos;{root}/dist&apos;</span>,
+        <span class="hljs-attr">root</span>: <span class="hljs-string">&quot;{root}/dist&quot;</span>,
         <span class="hljs-attr">groups</span>: [
-          <span class="hljs-comment">// Only allow users with the &apos;admin&apos; group</span>
-          <span class="hljs-string">&apos;admin&apos;</span>,
+          <span class="hljs-comment">// Only allow users with the &quot;admin&quot; group</span>
+          <span class="hljs-string">&quot;admin&quot;</span>,
 
-          <span class="hljs-comment">// Or, alternativelly do the same, but only for the &apos;readdir&apos;</span>
+          <span class="hljs-comment">// Or, alternativelly do the same, but only for the &quot;readdir&quot;</span>
           <span class="hljs-comment">// endpoint</span>
           {
-            <span class="hljs-attr">readdir</span>: [<span class="hljs-string">&apos;admin&apos;</span>]
+            <span class="hljs-attr">readdir</span>: [<span class="hljs-string">&quot;admin&quot;</span>]
           }
         ]
       }
@@ -2217,12 +2217,12 @@
 }
 </code></pre>
 <h2 id="adapters">Adapters</h2>
-<p>A <em>Adapter</em> is a module that makes the actual requests on behalf of OS.js APIs.</p>
+<p>An <em>Adapter</em> is a module that makes the actual requests on behalf of MeeseOS APIs.</p>
 <p>An example is the included <code>system</code> which uses the APIs provided by the server, which uses the underlying node <code>fs</code> module to provide a filesystem via the underlying OS.</p>
 <h3 id="adding-adapters">Adding Adapters</h3>
 <p>You can add custom adapters via the VFS service provider:</p>
 <h4 id="client">Client</h4>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> customAdapter <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;custom-adapter&apos;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> customAdapter <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;custom-adapter&quot;</span>;
 
 meeseOS.register(VFSServiceProvider, {
   <span class="hljs-attr">args</span>: {
@@ -2233,7 +2233,7 @@ meeseOS.register(VFSServiceProvider, {
 });
 </code></pre>
 <h4 id="server">Server</h4>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> customAdapter = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;custom-adapter&apos;</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> customAdapter = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;custom-adapter&quot;</span>);
 
 meeseOS.register(VFSServiceProvider, {
   <span class="hljs-attr">args</span>: {
@@ -2286,7 +2286,7 @@ meeseOS.register(VFSServiceProvider, {
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A guide on how to customize the virtual filesystem","full_title":"Filesystem Guide","title":"Filesystem","level":"5.4.4","depth":2,"next":{"title":"Misc","level":"5.5","depth":1,"ref":"","articles":[{"title":"Override modules","level":"5.5.1","depth":2,"path":"guide/modules/README.md","ref":"guide/modules/README.md","articles":[]},{"title":"Disabling Packages","level":"5.5.2","depth":2,"path":"guide/disabling-packages/README.md","ref":"guide/disabling-packages/README.md","articles":[]},{"title":"Publishing","level":"5.5.3","depth":2,"path":"guide/publish/README.md","ref":"guide/publish/README.md","articles":[]},{"title":"Visuals","level":"5.5.4","depth":2,"path":"guide/visuals/README.md","ref":"guide/visuals/README.md","articles":[]},{"title":"Customizing Login","level":"5.5.5","depth":2,"path":"guide/login/README.md","ref":"guide/login/README.md","articles":[]},{"title":"Embedding","level":"5.5.6","depth":2,"path":"guide/embed/README.md","ref":"guide/embed/README.md","articles":[]},{"title":"Standalone","level":"5.5.7","depth":2,"path":"guide/standalone/README.md","ref":"guide/standalone/README.md","articles":[]},{"title":"Remote Debugging","level":"5.5.8","depth":2,"path":"guide/remotedebug/README.md","ref":"guide/remotedebug/README.md","articles":[]}]},"previous":{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/filesystem/README.md","mtime":"2022-07-04T23:18:35.431Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:18:45.043Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A guide on how to customize the virtual filesystem","full_title":"Filesystem Guide","title":"Filesystem","level":"5.4.4","depth":2,"next":{"title":"Misc","level":"5.5","depth":1,"ref":"","articles":[{"title":"Override modules","level":"5.5.1","depth":2,"path":"guide/modules/README.md","ref":"guide/modules/README.md","articles":[]},{"title":"Disabling Packages","level":"5.5.2","depth":2,"path":"guide/disabling-packages/README.md","ref":"guide/disabling-packages/README.md","articles":[]},{"title":"Publishing","level":"5.5.3","depth":2,"path":"guide/publish/README.md","ref":"guide/publish/README.md","articles":[]},{"title":"Visuals","level":"5.5.4","depth":2,"path":"guide/visuals/README.md","ref":"guide/visuals/README.md","articles":[]},{"title":"Customizing Login","level":"5.5.5","depth":2,"path":"guide/login/README.md","ref":"guide/login/README.md","articles":[]},{"title":"Embedding","level":"5.5.6","depth":2,"path":"guide/embed/README.md","ref":"guide/embed/README.md","articles":[]},{"title":"Standalone","level":"5.5.7","depth":2,"path":"guide/standalone/README.md","ref":"guide/standalone/README.md","articles":[]},{"title":"Remote Debugging","level":"5.5.8","depth":2,"path":"guide/remotedebug/README.md","ref":"guide/remotedebug/README.md","articles":[]}]},"previous":{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/filesystem/README.md","mtime":"2022-07-04T23:23:44.775Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

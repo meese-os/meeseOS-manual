@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <title>Frameworks Guide - MeeseOS Web Desktop Manual</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="A guide on how to use different frameworks within OS.js">
+        <meta name="description" content="A guide on how to use different frameworks within MeeseOS">
         <meta name="generator" content="HonKit 3.7.4">
         <meta name="author" content="Aaron Meese <aaronjmeese@gmail.com>">
         
@@ -2059,11 +2059,11 @@
                                 <section class="normal markdown-section">
                                 
   <h1 id="frameworks-guide">Frameworks Guide</h1>
-<p>This guide shows you how to use some popular frameworks &quot;natively&quot; in OS.js.</p>
+<p>This guide shows you how to use some popular frameworks &quot;natively&quot; in MeeseOS.</p>
 <p>If you want to run your application completely sandboxed, see
 <a href="../../tutorial/iframe/">IFrame application</a> tutorial.</p>
 <blockquote>
-<p>[info] Since a OS.js window render methods gives you access to
+<p>[info] Since a MeeseOS window render methods gives you access to
 the DOM you are free to use any framework or library as you see fit.</p>
 </blockquote>
 <h2 id="react">React</h2>
@@ -2085,8 +2085,8 @@ the DOM you are free to use any framework or library as you see fit.</p>
 }
 </code></pre>
 <p>And finally in your <code>index.js</code> file:</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react&apos;</span>;
-<span class="hljs-keyword">import</span> ReactDOM <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react-dom&apos;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> ReactDOM <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-dom&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   <span class="hljs-function"><span class="hljs-title">render</span>(<span class="hljs-params"></span>)</span> {
@@ -2120,27 +2120,27 @@ the DOM you are free to use any framework or library as you see fit.</p>
 }
 </code></pre>
 <p>Then, add the following to your <code>webpack.config.js</code> file:</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> {VueLoaderPlugin} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;vue-loader&apos;</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> {VueLoaderPlugin} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;vue-loader&quot;</span>);
 <span class="hljs-built_in">module</span>.exports = {
   <span class="hljs-attr">plugins</span>: [
     <span class="hljs-keyword">new</span> VueLoaderPlugin()
   ],
   <span class="hljs-attr">resolve</span>: {
     <span class="hljs-attr">alias</span>: {
-       <span class="hljs-string">&apos;vue$&apos;</span>: <span class="hljs-string">&apos;vue/dist/vue.esm.js&apos;</span>
+       <span class="hljs-string">&quot;vue$&quot;</span>: <span class="hljs-string">&quot;vue/dist/vue.esm.js&quot;</span>
      }
   },
   <span class="hljs-attr">module</span>: {
     <span class="hljs-attr">rules</span>: [{
       <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.vue$/</span>,
-      loader: <span class="hljs-string">&apos;vue-loader&apos;</span>,
+      loader: <span class="hljs-string">&quot;vue-loader&quot;</span>,
     }]
   }
 };
 </code></pre>
 <p>And finally in your <code>index.js</code> file (assuming you have your base component named <code>App.vue</code>):</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;vue&apos;</span>;
-<span class="hljs-keyword">import</span> App <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./App.vue&apos;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;vue&quot;</span>;
+<span class="hljs-keyword">import</span> App <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./App.vue&quot;</span>;
 
 proc.createWindow({})
   .render(<span class="hljs-function"><span class="hljs-params">el</span> =&gt;</span> {
@@ -2151,7 +2151,7 @@ proc.createWindow({})
   });
 </code></pre>
 <h2 id="other">Other</h2>
-<p>To load generic libraries etc. (like jQuery) into OS.js you have two alternatives.</p>
+<p>To load generic libraries (like jQuery) into MeeseOS, you have two alternatives.</p>
 <blockquote>
 <p>[warning] Please note that using libraries optimized for bundling is recommended (<code>import</code> or <code>require</code> in your distro or packages), as some libraries older might pollute the global namespaces and/or styles. Also, including libraries that attach to the global namespace might cause issues when loading different versions.</p>
 </blockquote>
@@ -2172,12 +2172,12 @@ proc.createWindow({})
 <blockquote>
 <p>[info] If you use external resources, skip this step.</p>
 </blockquote>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> CopyWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;copy-webpack-plugin&apos;</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> CopyWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;copy-webpack-plugin&quot;</span>);
 <span class="hljs-built_in">module</span>.exports = {
   <span class="hljs-attr">plugins</span>: [
     <span class="hljs-keyword">new</span> CopyWebpackPlugin([
-      {<span class="hljs-attr">from</span>: <span class="hljs-string">&apos;foo/bar/library.js&apos;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&apos;library.js&apos;</span>},
-      {<span class="hljs-attr">from</span>: <span class="hljs-string">&apos;foo/bar/library.css&apos;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&apos;library.css&apos;</span>}
+      {<span class="hljs-attr">from</span>: <span class="hljs-string">&quot;foo/bar/library.js&quot;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&quot;library.js&quot;</span>},
+      {<span class="hljs-attr">from</span>: <span class="hljs-string">&quot;foo/bar/library.css&quot;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&quot;library.css&quot;</span>}
     ])
   ]
 };
@@ -2203,12 +2203,12 @@ proc.createWindow({})
 <blockquote>
 <p>[info] If you use external resources, skip this step.</p>
 </blockquote>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> CopyWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;copy-webpack-plugin&apos;</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> CopyWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;copy-webpack-plugin&quot;</span>);
 <span class="hljs-built_in">module</span>.exports = {
   <span class="hljs-attr">plugins</span>: [
     <span class="hljs-keyword">new</span> CopyWebpackPlugin([
-      {<span class="hljs-attr">from</span>: <span class="hljs-string">&apos;foo/bar/library.js&apos;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&apos;library.js&apos;</span>},
-      {<span class="hljs-attr">from</span>: <span class="hljs-string">&apos;foo/bar/library.css&apos;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&apos;library.css&apos;</span>}
+      {<span class="hljs-attr">from</span>: <span class="hljs-string">&quot;foo/bar/library.js&quot;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&quot;library.js&quot;</span>},
+      {<span class="hljs-attr">from</span>: <span class="hljs-string">&quot;foo/bar/library.css&quot;</span>, <span class="hljs-attr">to</span>: <span class="hljs-string">&quot;library.css&quot;</span>}
     ])
   ]
 };
@@ -2256,7 +2256,7 @@ proc.createWindow({})
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A guide on how to use different frameworks within OS.js","full_title":"Frameworks Guide","title":"Frameworks","level":"5.3","depth":1,"next":{"title":"Modules","level":"5.4","depth":1,"ref":"","articles":[{"title":"Service Provider","level":"5.4.1","depth":2,"path":"guide/provider/README.md","ref":"guide/provider/README.md","articles":[]},{"title":"Authentication","level":"5.4.2","depth":2,"path":"guide/auth/README.md","ref":"guide/auth/README.md","articles":[]},{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},{"title":"Filesystem","level":"5.4.4","depth":2,"path":"guide/filesystem/README.md","ref":"guide/filesystem/README.md","articles":[]}]},"previous":{"title":"Deployment","level":"5.2","depth":1,"path":"guide/deploy/README.md","ref":"guide/deploy/README.md","articles":[{"title":"Checklist","level":"5.2.1","depth":2,"anchor":"#checklist","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#checklist","articles":[]},{"title":"Building","level":"5.2.2","depth":2,"anchor":"#building","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#building","articles":[]},{"title":"Legacy Browsers","level":"5.2.3","depth":2,"anchor":"#legacy-browsers","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#legacy-browsers","articles":[]},{"title":"Reverse Proxy","level":"5.2.4","depth":2,"anchor":"#reverse-proxy","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#reverse-proxy","articles":[]},{"title":"Process Management","level":"5.2.5","depth":2,"anchor":"#process-management","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#process-management","articles":[]},{"title":"Session","level":"5.2.6","depth":2,"anchor":"#session","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#session","articles":[]},{"title":"Scaling","level":"5.2.7","depth":2,"anchor":"#scaling","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#scaling","articles":[]}]},"articles":[{"title":"React","level":"5.3.1","depth":2,"anchor":"#react","path":"guide/framework/README.md","ref":"guide/framework/README.md#react","articles":[]},{"title":"Vue","level":"5.3.2","depth":2,"anchor":"#vue","path":"guide/framework/README.md","ref":"guide/framework/README.md#vue","articles":[]},{"title":"Other","level":"5.3.3","depth":2,"anchor":"#misc","path":"guide/framework/README.md","ref":"guide/framework/README.md#misc","articles":[]}],"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/framework/README.md","mtime":"2022-07-04T23:18:35.431Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:18:45.043Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A guide on how to use different frameworks within MeeseOS","full_title":"Frameworks Guide","title":"Frameworks","level":"5.3","depth":1,"next":{"title":"Modules","level":"5.4","depth":1,"ref":"","articles":[{"title":"Service Provider","level":"5.4.1","depth":2,"path":"guide/provider/README.md","ref":"guide/provider/README.md","articles":[]},{"title":"Authentication","level":"5.4.2","depth":2,"path":"guide/auth/README.md","ref":"guide/auth/README.md","articles":[]},{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},{"title":"Filesystem","level":"5.4.4","depth":2,"path":"guide/filesystem/README.md","ref":"guide/filesystem/README.md","articles":[]}]},"previous":{"title":"Deployment","level":"5.2","depth":1,"path":"guide/deploy/README.md","ref":"guide/deploy/README.md","articles":[{"title":"Checklist","level":"5.2.1","depth":2,"anchor":"#checklist","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#checklist","articles":[]},{"title":"Building","level":"5.2.2","depth":2,"anchor":"#building","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#building","articles":[]},{"title":"Legacy Browsers","level":"5.2.3","depth":2,"anchor":"#legacy-browsers","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#legacy-browsers","articles":[]},{"title":"Reverse Proxy","level":"5.2.4","depth":2,"anchor":"#reverse-proxy","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#reverse-proxy","articles":[]},{"title":"Process Management","level":"5.2.5","depth":2,"anchor":"#process-management","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#process-management","articles":[]},{"title":"Session","level":"5.2.6","depth":2,"anchor":"#session","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#session","articles":[]},{"title":"Scaling","level":"5.2.7","depth":2,"anchor":"#scaling","path":"guide/deploy/README.md","ref":"guide/deploy/README.md#scaling","articles":[]}]},"articles":[{"title":"React","level":"5.3.1","depth":2,"anchor":"#react","path":"guide/framework/README.md","ref":"guide/framework/README.md#react","articles":[]},{"title":"Vue","level":"5.3.2","depth":2,"anchor":"#vue","path":"guide/framework/README.md","ref":"guide/framework/README.md#vue","articles":[]},{"title":"Other","level":"5.3.3","depth":2,"anchor":"#misc","path":"guide/framework/README.md","ref":"guide/framework/README.md#misc","articles":[]}],"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/framework/README.md","mtime":"2022-07-04T23:23:44.775Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

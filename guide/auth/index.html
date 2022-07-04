@@ -2070,8 +2070,8 @@ account and the server responds to any authentication request successfully.</p>
 <pre><code class="lang-javascript">{
   <span class="hljs-attr">auth</span>: {
     <span class="hljs-attr">login</span>: {
-      <span class="hljs-attr">username</span>: <span class="hljs-string">&apos;demo&apos;</span>,
-      <span class="hljs-attr">password</span>: <span class="hljs-string">&apos;demo&apos;</span>
+      <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;demo&quot;</span>,
+      <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;demo&quot;</span>
     }
   }
 }
@@ -2086,12 +2086,12 @@ account and the server responds to any authentication request successfully.</p>
 <p>Modifying the adapter requires changing the <code>AuthServiceProvider</code> options:</p>
 <h3 id="client">Client</h3>
 <p>To change the client-side authentication adapter, modify your bootstrap file <code>src/client/index.js</code>.</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> customAdapter <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;custom-adapter&apos;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> customAdapter <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;custom-adapter&quot;</span>;
 
 meeseOS.register(AuthServiceProvider, {
   <span class="hljs-attr">args</span>: {
     <span class="hljs-comment">// Default</span>
-    <span class="hljs-attr">adapter</span>: <span class="hljs-string">&apos;server&apos;</span>,
+    <span class="hljs-attr">adapter</span>: <span class="hljs-string">&quot;server&quot;</span>,
 
     <span class="hljs-comment">// Custom</span>
     <span class="hljs-attr">adapter</span>: customAdapter,
@@ -2101,7 +2101,7 @@ meeseOS.register(AuthServiceProvider, {
 </code></pre>
 <h3 id="server">Server</h3>
 <p>To change the server-side authentication adapter, modify your bootstrap file <code>src/server/index.js</code>.</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> customAdapter = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;custom-adapter&apos;</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> customAdapter = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;custom-adapter&quot;</span>);
 
 meeseOS.register(AuthServiceProvider, {
   <span class="hljs-attr">args</span>: {
@@ -2157,7 +2157,7 @@ meeseOS.register(AuthServiceProvider, {
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A guide for customizing authentication.","full_title":"Authentication Guide","title":"Authentication","level":"5.4.2","depth":2,"next":{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},"previous":{"title":"Service Provider","level":"5.4.1","depth":2,"path":"guide/provider/README.md","ref":"guide/provider/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/auth/README.md","mtime":"2022-07-04T23:18:35.431Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:18:45.043Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A guide for customizing authentication.","full_title":"Authentication Guide","title":"Authentication","level":"5.4.2","depth":2,"next":{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},"previous":{"title":"Service Provider","level":"5.4.1","depth":2,"path":"guide/provider/README.md","ref":"guide/provider/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/auth/README.md","mtime":"2022-07-04T23:23:44.775Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

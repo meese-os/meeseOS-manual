@@ -2079,7 +2079,7 @@ in your <code>src/client/config.js</code> file you can add the following options
 </blockquote>
 <pre><code class="lang-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
   <span class="hljs-attr">packages</span>: {
-    <span class="hljs-attr">hidden</span>: [<span class="hljs-string">&apos;Draw&apos;</span>]
+    <span class="hljs-attr">hidden</span>: [<span class="hljs-string">&quot;Draw&quot;</span>]
   }
 }
 </code></pre>
@@ -2093,7 +2093,7 @@ package name(s):</p>
 instead of modifying this file. Ex <code>Draw.disabled</code> in your <code>src/packages</code> folder.</p>
 </blockquote>
 <pre><code class="lang-javascript"><span class="hljs-built_in">module</span>.exports = {
-  <span class="hljs-attr">disabled</span>: [<span class="hljs-string">&apos;Draw&apos;</span>]
+  <span class="hljs-attr">disabled</span>: [<span class="hljs-string">&quot;Draw&quot;</span>]
 }
 </code></pre>
 <p>Now when you run <code>npm run package:discover</code> they will be ignored.</p>
@@ -2113,7 +2113,7 @@ in a package:</p>
         <span class="hljs-comment">// the groups match, and not *all*.</span>
         <span class="hljs-attr">strictGroups</span>: <span class="hljs-literal">true</span>,
 
-        <span class="hljs-attr">groups</span>: [<span class="hljs-string">&apos;a&apos;</span>, <span class="hljs-string">&apos;b&apos;</span>, <span class="hljs-string">&apos;c&apos;</span>]
+        <span class="hljs-attr">groups</span>: [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>]
       }
     }
   }
@@ -2178,7 +2178,7 @@ the groups match, and not <em>all</em>.</p>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A guide on how to disable packages","full_title":"Disabling packages","title":"Disabling Packages","level":"5.5.2","depth":2,"next":{"title":"Publishing","level":"5.5.3","depth":2,"path":"guide/publish/README.md","ref":"guide/publish/README.md","articles":[]},"previous":{"title":"Override modules","level":"5.5.1","depth":2,"path":"guide/modules/README.md","ref":"guide/modules/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/disabling-packages/README.md","mtime":"2022-07-04T23:18:35.431Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:18:45.043Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A guide on how to disable packages","full_title":"Disabling packages","title":"Disabling Packages","level":"5.5.2","depth":2,"next":{"title":"Publishing","level":"5.5.3","depth":2,"path":"guide/publish/README.md","ref":"guide/publish/README.md","articles":[]},"previous":{"title":"Override modules","level":"5.5.1","depth":2,"path":"guide/modules/README.md","ref":"guide/modules/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/disabling-packages/README.md","mtime":"2022-07-04T23:23:44.775Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <title>Standalone Mode - MeeseOS Web Desktop Manual</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="A guide on how to run OS.js in standalone mode">
+        <meta name="description" content="A guide on how to run MeeseOS in standalone mode">
         <meta name="generator" content="HonKit 3.7.4">
         <meta name="author" content="Aaron Meese <aaronjmeese@gmail.com>">
         
@@ -2061,14 +2061,14 @@
                                 <section class="normal markdown-section">
                                 
   <h1 id="standalone-mode-guide">Standalone Mode Guide</h1>
-<p>You can run OS.js in standalone mode, which does not require the backend to work.</p>
+<p>You can run MeeseOS in standalone mode, which does not require the backend to work.</p>
 <p>This has some limitations described below.</p>
 <p>Edit your <code>src/client/config.js</code> file and add the following setting:</p>
 <blockquote>
 <p>[info] Remember to rebuild with <code>npm run build</code> after you modify the configuration.</p>
 </blockquote>
-<pre><code class="lang-javscript">{
-  standalone: true
+<pre><code class="lang-javascript">{
+  <span class="hljs-attr">standalone</span>: <span class="hljs-literal">true</span>
 }
 </code></pre>
 <h2 id="with-a-webserver">With a webserver</h2>
@@ -2079,16 +2079,16 @@
 <p>[info] If your method of transfer does not resolve symlinks in the <code>dist/</code> directory (results in packages not loading), run <code>npm run package:discover -- --copy</code> to make a build without symlinks.</p>
 </blockquote>
 <h2 id="without-webserver">Without webserver</h2>
-<p>You can launch OS.js from <code>file://</code> (i.e. just opening the html file in <code>dist/</code>) by modifying the client configuration.</p>
+<p>You can launch MeeseOS from <code>file://</code> (i.e. just opening the html file in <code>dist/</code>) by modifying the client configuration.</p>
 <p>Note that HTTP requests cannot be made in this mode, so any feature that requires a network or internet connection will be unavailable.</p>
 <p>Since requests cannot be made you have to add the package manifest to your configuration.</p>
 <p>Edit your <code>src/client/config.js</code> file and add the following setting:</p>
-<pre><code class="lang-javscript">// Import the compiled package metadata
-import metadata from &apos;../../dist/metadata.json&apos;;
+<pre><code class="lang-javascript"><span class="hljs-comment">// Import the compiled package metadata</span>
+<span class="hljs-keyword">import</span> metadata <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../../dist/metadata.json&quot;</span>;
 
-export default {
-  // Append this to your config
-  packages: {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
+  <span class="hljs-comment">// Append this to your config</span>
+  <span class="hljs-attr">packages</span>: {
     metadata
   }
 }
@@ -2143,7 +2143,7 @@ export default {
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A guide on how to run OS.js in standalone mode","full_title":"Standalone Mode","title":"Standalone","level":"5.5.7","depth":2,"next":{"title":"Remote Debugging","level":"5.5.8","depth":2,"path":"guide/remotedebug/README.md","ref":"guide/remotedebug/README.md","articles":[]},"previous":{"title":"Embedding","level":"5.5.6","depth":2,"path":"guide/embed/README.md","ref":"guide/embed/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/standalone/README.md","mtime":"2022-07-04T23:18:35.431Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:18:45.043Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A guide on how to run MeeseOS in standalone mode","full_title":"Standalone Mode","title":"Standalone","level":"5.5.7","depth":2,"next":{"title":"Remote Debugging","level":"5.5.8","depth":2,"path":"guide/remotedebug/README.md","ref":"guide/remotedebug/README.md","articles":[]},"previous":{"title":"Embedding","level":"5.5.6","depth":2,"path":"guide/embed/README.md","ref":"guide/embed/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/standalone/README.md","mtime":"2022-07-04T23:23:44.779Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

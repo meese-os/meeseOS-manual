@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <title>Sentry Integration Guide - MeeseOS Web Desktop Manual</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="A guide on how to integrate sentry.io with OS.js">
+        <meta name="description" content="A guide on how to integrate sentry.io with MeeseOS">
         <meta name="generator" content="HonKit 3.7.4">
         <meta name="author" content="Aaron Meese <aaronjmeese@gmail.com>">
         
@@ -2057,14 +2057,14 @@
                                 <section class="normal markdown-section">
                                 
   <h1 id="sentry-integration-guide">Sentry Integration Guide</h1>
-<p>This guide shows how to set up <a href="https://sentry.io/" target="_blank">sentry.io</a> with OS.js.</p>
+<p>This guide shows how to set up <a href="https://sentry.io/" target="_blank">sentry.io</a> with MeeseOS.</p>
 <h2 id="prepare">Prepare</h2>
 <p>Create an account and a project for client (web) and server (node).</p>
 <h2 id="server-integration">Server Integration</h2>
 <p>First, run <code>npm install @sentry/node</code>.</p>
 <p>Then, in your <code>src/server/index.js</code> file, add the following:</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> Sentry = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;@sentry/node&apos;</span>);
-Sentry.init({<span class="hljs-attr">dsn</span>: <span class="hljs-string">&apos;https://xxxxxxxxxxxx@sentry.io/xxxxxx&apos;</span>});
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> Sentry = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;@sentry/node&quot;</span>);
+Sentry.init({<span class="hljs-attr">dsn</span>: <span class="hljs-string">&quot;https://xxxxxxxxxxxx@sentry.io/xxxxxx&quot;</span>});
 </code></pre>
 <blockquote>
 <p>[info] Restart your server after adding these changes</p>
@@ -2077,7 +2077,7 @@ Sentry.init({<span class="hljs-attr">dsn</span>: <span class="hljs-string">&apos
 <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
 </code></pre>
 <p>In the bottom of your <code>src/client/index.js</code> file, add the following:</p>
-<pre><code class="lang-javascript">Sentry.init({<span class="hljs-attr">dsn</span>: <span class="hljs-string">&apos;https://xxxxxxxxxxxx@sentry.io/xxxxxx&apos;</span>});
+<pre><code class="lang-javascript">Sentry.init({<span class="hljs-attr">dsn</span>: <span class="hljs-string">&quot;https://xxxxxxxxxxxx@sentry.io/xxxxxx&quot;</span>});
 </code></pre>
 <blockquote>
 <p>[info] Rebuild your client with <code>npm run build</code></p>
@@ -2121,7 +2121,7 @@ Sentry.init({<span class="hljs-attr">dsn</span>: <span class="hljs-string">&apos
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A guide on how to integrate sentry.io with OS.js","full_title":"Sentry Integration Guide","title":"sentry.io","level":"5.7.1","depth":2,"previous":{"title":"Integrations","level":"5.7","depth":1,"ref":"","articles":[{"title":"sentry.io","level":"5.7.1","depth":2,"path":"guide/integration/sentry/README.md","ref":"guide/integration/sentry/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/integration/sentry/README.md","mtime":"2022-07-04T23:18:35.431Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:18:45.043Z"},"basePath":"../../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A guide on how to integrate sentry.io with MeeseOS","full_title":"Sentry Integration Guide","title":"sentry.io","level":"5.7.1","depth":2,"previous":{"title":"Integrations","level":"5.7","depth":1,"ref":"","articles":[{"title":"sentry.io","level":"5.7.1","depth":2,"path":"guide/integration/sentry/README.md","ref":"guide/integration/sentry/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/integration/sentry/README.md","mtime":"2022-07-04T23:23:44.775Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../../..","book":{"language":""}});
         });
     </script>
 </div>

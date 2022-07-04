@@ -2059,7 +2059,7 @@
                                 <section class="normal markdown-section">
                                 
   <h1 id="service-provider-guide">Service Provider Guide</h1>
-<p>Service Providers are the main way to provide features and extensions for OS.js.</p>
+<p>Service Providers are the main way to provide features and extensions for MeeseOS.</p>
 <h2 id="installation">Installation</h2>
 <p>Service providers are usually provided as npm packages for easy installation:</p>
 <pre><code class="lang-shell">npm install --save some-provider
@@ -2076,7 +2076,7 @@ it within the <code>src/</code> directory of your installation.</p>
 <p>[info] If you&apos;re adding client-side service provider, you need to rebuild your
 client with <code>npm run build</code>.</p>
 </blockquote>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> MyService <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;some-provider&apos;</span>
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> MyService <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;some-provider&quot;</span>
 
 meeseOS.register(MyService)
 </code></pre>
@@ -2087,7 +2087,7 @@ meeseOS.register(MyService)
 </blockquote>
 <pre><code class="lang-javascript">meeseOS.register(MyService, {
   <span class="hljs-attr">args</span>: {
-    <span class="hljs-attr">foo</span>: <span class="hljs-string">&apos;bar&apos;</span>
+    <span class="hljs-attr">foo</span>: <span class="hljs-string">&quot;bar&quot;</span>
   }
 });
 </code></pre>
@@ -2110,13 +2110,13 @@ things in the correct order.</p>
 <p>These can be either set in the service provider:</p>
 <pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyService</span> </span>{
   <span class="hljs-function"><span class="hljs-title">depends</span>(<span class="hljs-params"></span>)</span> {
-    <span class="hljs-keyword">return</span> [<span class="hljs-string">&apos;meeseOS/core&apos;</span>]
+    <span class="hljs-keyword">return</span> [<span class="hljs-string">&quot;meeseOS/core&quot;</span>]
   }
 }
 </code></pre>
 <p>Or you can defined them in your bootstrap:</p>
 <pre><code class="lang-javascript">meeseOS.register(MyService, {
-  <span class="hljs-attr">depends</span>: [<span class="hljs-string">&apos;meeseOS/core&apos;</span>]
+  <span class="hljs-attr">depends</span>: [<span class="hljs-string">&quot;meeseOS/core&quot;</span>]
 })
 </code></pre>
 
@@ -2162,7 +2162,7 @@ things in the correct order.</p>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A guide on installing and using service providers","full_title":"Service Provider Guide","title":"Service Provider","level":"5.4.1","depth":2,"next":{"title":"Authentication","level":"5.4.2","depth":2,"path":"guide/auth/README.md","ref":"guide/auth/README.md","articles":[]},"previous":{"title":"Modules","level":"5.4","depth":1,"ref":"","articles":[{"title":"Service Provider","level":"5.4.1","depth":2,"path":"guide/provider/README.md","ref":"guide/provider/README.md","articles":[]},{"title":"Authentication","level":"5.4.2","depth":2,"path":"guide/auth/README.md","ref":"guide/auth/README.md","articles":[]},{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},{"title":"Filesystem","level":"5.4.4","depth":2,"path":"guide/filesystem/README.md","ref":"guide/filesystem/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/provider/README.md","mtime":"2022-07-04T23:18:35.431Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:18:45.043Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A guide on installing and using service providers","full_title":"Service Provider Guide","title":"Service Provider","level":"5.4.1","depth":2,"next":{"title":"Authentication","level":"5.4.2","depth":2,"path":"guide/auth/README.md","ref":"guide/auth/README.md","articles":[]},"previous":{"title":"Modules","level":"5.4","depth":1,"ref":"","articles":[{"title":"Service Provider","level":"5.4.1","depth":2,"path":"guide/provider/README.md","ref":"guide/provider/README.md","articles":[]},{"title":"Authentication","level":"5.4.2","depth":2,"path":"guide/auth/README.md","ref":"guide/auth/README.md","articles":[]},{"title":"Settings","level":"5.4.3","depth":2,"path":"guide/settings/README.md","ref":"guide/settings/README.md","articles":[]},{"title":"Filesystem","level":"5.4.4","depth":2,"path":"guide/filesystem/README.md","ref":"guide/filesystem/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"guide/provider/README.md","mtime":"2022-07-04T23:23:44.779Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>
