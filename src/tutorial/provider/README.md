@@ -16,7 +16,7 @@ A Service Provider registers services that provide features for OS.js.
 To create an instance of a service provided:
 
 ```javascript
-core.make('service-name', ...args);
+core.make("service-name", ...args);
 ```
 
 ## Custom Service Provider
@@ -63,7 +63,7 @@ To generate a new provider using the example via CLI run `npm run make:provider`
 To register a factory:
 
 ```javascript
-core.instance('service-name', (...args) => new SomeClass(...args));
+core.instance("service-name", (...args) => new SomeClass(...args));
 ```
 
 ### Singleton factory
@@ -71,7 +71,7 @@ core.instance('service-name', (...args) => new SomeClass(...args));
 To register a singleton:
 
 ```javascript
-core.singleton('service-name', () => new SomeClass({foo: 'bar'}));
+core.singleton("service-name", () => new SomeClass({foo: "bar"}));
 ```
 
 ## Basic example
@@ -88,18 +88,18 @@ export class MyApiServiceProvider
   }
 
   provides() {
-    return ['namespace/api'];
+    return ["namespace/api"];
   }
 
   async init() {
-    this.core.singleton('namespace/api', () => ({
+    this.core.singleton("namespace/api", () => ({
       greet: name => alert(`Hello ${name}!`)
     }));
   }
 }
 
 // src/client/index.js
-import {MyApiServiceProvider} from './myprovider.js';
+import {MyApiServiceProvider} from "./myprovider.js";
 
 // ...
 meeseOS.register(MyApiServiceProvider);
@@ -109,7 +109,7 @@ meeseOS.register(MyApiServiceProvider);
 You can test this by entering the following in your browser developer console:
 
 ```javascript
-OSjs.make('namespace/api').greet('World');
+meeseOS.make("namespace/api").greet("World");
 ```
 
 and you should see a browser alert box.

@@ -16,8 +16,8 @@ OS.js uses [Hyperapp v1](https://github.com/jorgebucaran/hyperapp/tree/V1) for i
 To create your own panel item, extend the PanelItem class provided by the panels package.
 
 ```javascript
-import {PanelItem} from '@meeseOS/panels';
-import {h} from 'hyperapp';
+import {PanelItem} from "@meeseOS/panels";
+import {h} from "hyperapp";
 
 export class MyPanelItem extends PanelItem {
 
@@ -32,8 +32,8 @@ export class MyPanelItem extends PanelItem {
 
   // Renders the interface
   render(state, actions) {
-    return super.render('my-panel-item', [
-      h('span', {}, 'Hello World!')
+    return super.render("my-panel-item", [
+      h("span", {}, "Hello World!")
     ]);
   }
 }
@@ -51,7 +51,7 @@ In the client bootstrap file (`src/client/index.js`) you can give the Panel Serv
 meeseOS.register(PanelServiceProvider, {
   args: {
     registry: {
-      'my-panel-item': MyPanelItem
+      "my-panel-item": MyPanelItem
     }
   }
 });
@@ -62,8 +62,8 @@ meeseOS.register(PanelServiceProvider, {
 It is also possible to register panel items on runtime.
 
 ```javascript
-meeseOS.make('meeseOS/panels')
-  .register('my-panel-item', MyPanelItem);
+meeseOS.make("meeseOS/panels")
+  .register("my-panel-item", MyPanelItem);
 ```
 
 ### Usage
@@ -79,13 +79,13 @@ module.exports = {
   desktop: {
     settings: {
       panels: [{
-        position: 'top',
+        position: "top",
         items: [
-          {name: 'menu'},
-          {name: 'windows'},
-          {name: 'my-panel-item'}, // Your panel item name
-          {name: 'tray'},
-          {name: 'clock'}
+          {name: "menu"},
+          {name: "windows"},
+          {name: "my-panel-item"}, // Your panel item name
+          {name: "tray"},
+          {name: "clock"}
         ]
       }]
     }

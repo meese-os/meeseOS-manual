@@ -1,17 +1,17 @@
 ---
-description: A guide for deploying OS.js
+description: A guide for deploying MeeseOS
 full_title: Deployment Guide
 ---
 
 # Deployment Guide
 
-Follow the regular installation guide to set up your OS.js installation.
+Follow the regular installation guide to set up your MeeseOS installation.
 
-This article contains instructions and recommendations for deploying your OS.js instance in a production environment.
+This article contains instructions and recommendations for deploying your MeeseOS instance in a production environment.
 
 ## Checklist
 
-This is the general checklist for setting up OS.js in a production environment:
+This is the general checklist for setting up MeeseOS in a production environment:
 
 1. Set a [session secret](#session).
 2. Disable [development mode](#configuration).
@@ -40,20 +40,20 @@ npm install --save-dev core-js regenerator-runtime element-remove whatwg-fetch
 Then modify your `src/client/index.js` file and add this to the top:
 
 ```javascript
-import 'core-js/stable';
-import 'element-remove';
-import 'whatwg-fetch';
-import 'regenerator-runtime/runtime';
+import "core-js/stable";
+import "element-remove";
+import "whatwg-fetch";
+import "regenerator-runtime/runtime";
 ```
 
 ## Reverse Proxy
 
-To make OS.js available via port `80/http` (or for SSL `443/https`) it is advised to configure a webserver as a reverse-proxy
-instead of exposing the OS.js node server directly to the internet (or intranet).
+To make MeeseOS available via port `80/http` (or for SSL `443/https`) it is advised to configure a webserver as a reverse-proxy
+instead of exposing the MeeseOS node server directly to the internet (or intranet).
 
 Before proceeding note the following:
 
-1. It is *not* recommended to reconfigure the OS.js server to run on either of these ports as this will impede performance and stability.
+1. It is *not* recommended to reconfigure the MeeseOS server to run on either of these ports as this will impede performance and stability.
 2. This guide assumes you have `meeseOS.test` set up as your hostname. Make sure this resolves in your DNS and/or hosts file.
 3. You can create your own [self-signed certificates](https://github.com/FiloSottile/mkcert) if you want to use SSL/HTTPS.
 4. In production you should terminate SSL (HTTPS) on your reverse-proxy (ex. nginx), not the node server!
@@ -126,7 +126,7 @@ Then set your Websocket path to `/ws` in `src/client/config.js`:
 ```javascript
 module.exports = {
   ws: {
-    uri: '/ws'
+    uri: "/ws"
   }
 };
 ```
@@ -170,7 +170,7 @@ To set the session store, update your configuration:
   session: {
     /* Set a custom session storage */
     store: {
-      module: require.resolve('connect-redis'),
+      module: require.resolve("connect-redis"),
       options: {
         /* See session store options */
       }
@@ -178,7 +178,7 @@ To set the session store, update your configuration:
 
     /* Set session secret */
     options: {
-      secret: 'yoursupersecret'
+      secret: "yoursupersecret"
     }
   }
 }
@@ -211,16 +211,16 @@ In this example we configure:
 {
   // HTTP Requests
   http: {
-    hostname: 'some-other-host.com',
+    hostname: "some-other-host.com",
     port: null,
-    path: '/meeseOS/server'
+    path: "/meeseOS/server"
   },
 
   // WebSocket requests
   ws: {
-    hostname: 'some-other-host.com',
+    hostname: "some-other-host.com",
     port: null,
-    path: '/meeseOS/server'
+    path: "/meeseOS/server"
   },
 }
 ```

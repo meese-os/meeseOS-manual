@@ -45,7 +45,6 @@ const meeseOS = new Core(config, {
 | `desktop.settings.icons`          | `Gnome`               | Standard icon theme                                      |
 | `desktop.settings.sounds`         | `FreedesktopSounds`   | Standard sound theme                                     |
 | `desktop.settings.background.src` | Internal              | Standard wallpaper                                       |
-| `locale.language`                 | `en_EN`               | Default language                                         |
 | `vfs.defaultPath`                 | `meeseOS:/`              | Default and fallback path for VFS                        |
 
 ## Server

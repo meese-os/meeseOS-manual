@@ -107,7 +107,6 @@
   * [Tray](tutorial/tray/README.md)
 * Misc
   * [Core](tutorial/core/README.md)
-  * [Localization](tutorial/locale/README.md)
   * [Bus](tutorial/bus/README.md)
   * [Middleware](tutorial/middleware/README.md)
   * [Clipboard](tutorial/clipboard/README.md)
@@ -116,7 +115,6 @@
 
 ### Guides
 
-* [Migration](guide/migrate/README.md)
 * [CLI](guide/cli/README.md)
   * [Commands](guide/cli/README.md#ommands)
   * [Server Arguments](guide/cli/README.md#server-arguments)
@@ -142,7 +140,6 @@
   * [Override modules](guide/modules/README.md)
   * [Disabling Packages](guide/disabling-packages/README.md)
   * [Publishing](guide/publish/README.md)
-  * [Translation](guide/translate/README.md)
   * [Visuals](guide/visuals/README.md)
   * [Customizing Login](guide/login/README.md)
   * [Embedding](guide/embed/README.md)

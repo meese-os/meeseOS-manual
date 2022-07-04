@@ -100,7 +100,6 @@ OSjs.url();
 * `meeseOS/window:change => (win, key, value)` - Window changed
 * `meeseOS/window:transitionend => (ev, win)` - Window transition ended
 * `meeseOS/desktop:transform => (rect)` - Desktop transformed
-* `meeseOS/locale:change => (name)` - Locale changed
 * `meeseOS/fs:mount => ()` - Filesystem mounted
 * `meeseOS/fs:unmount => ()` - Filesystem unmounted
 * `meeseOS/settings:save => ()` - Settings saved
@@ -126,7 +125,6 @@ These are the default provided services and their signatures:
 * `meeseOS/clipboard => ()` - APIs for performing [Clipboard](../clipboard/README.md)
 * `meeseOS/settings => ()` - APIs for [Settings](../settings/README.md)
 * `meeseOS/vfs => ()` - APIs for [VFS](../vfs/README.md)
-* `meeseOS/locale => ()` - APIs for handling [Localization](../locale/README.md)
 * `meeseOS/auth => ()` - APIs for [Authentication](../auth/README.md)
 * `meeseOS/contextmenu => (options?)` - APIs for [Context Menus](../gui/README.md#contextmenu)
 * `meeseOS/dialog => (name, ...args)` - APIs for [Dialogs](../dialog/README.md#usage)
