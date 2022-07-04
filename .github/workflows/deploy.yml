@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run Honkit
-        run: honkit build
+        run: npx honkit build
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
