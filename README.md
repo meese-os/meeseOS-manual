@@ -2,7 +2,7 @@
   <img alt="OS.js Logo" src="https://raw.githubusercontent.com/os-js/gfx/master/logo-big.png" />
 </p>
 
-[OS.js](https://www.os-js.org/) is an [open-source](https://raw.githubusercontent.com/os-js/OS.js/master/LICENSE) web desktop platform with a window manager, application APIs, GUI toolkit, filesystem abstractions and much more.
+[MeeseOS](https://www.os-js.org/) is an [open-source](https://raw.githubusercontent.com/os-js/OS.js/master/LICENSE) web desktop platform with a window manager, application APIs, GUI toolkit, filesystem abstractions and much more.
 
 [![Support](https://img.shields.io/badge/patreon-support-orange.svg)](https://www.patreon.com/user?u=2978551&ty=h&u=2978551)
 [![Support](https://img.shields.io/badge/opencollective-donate-red.svg)](https://opencollective.com/osjs)
@@ -12,22 +12,16 @@
 
 # OS.js Manual Sources
 
-* v3: Uses `gitbook`
-* v2: Uses `metalsmith`
-
 Live pages: https://manual.os-js.org/
 
 ## Usage
 
 ```
-// Build v3
-npx gitbook build
-
-// Build v2
-node index.js
+nvm install
+npm install
+npm run build
+npm run serve
 ```
-
-You can now serve `_book/` or `_metalsmith/`.
 
 ## Contribution
 
@@ -38,7 +32,7 @@ You can now serve `_book/` or `_metalsmith/`.
 
 ## Documentation
 
-See the [Official Manuals](https://manual.os-js.org/v3/) for articles, tutorials and guides.
+See the [Official Manuals](https://manual.os-js.org/) for articles, tutorials and guides.
 
 ## Links
 

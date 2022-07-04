@@ -1,45 +1,34 @@
 {
-  "name": "osjs-manual",
+  "name": "meeseOS-manual",
   "version": "1.0.0",
-  "description": "OS.js Manual",
+  "description": "MeeseOS Manual",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests implemented for meeseOS-manual\" && exit 0",
+    "build": "npx gitbook build",
+    "serve": "npx gitbook serve"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/os-js/manual.os-js.org.git"
+    "url": "git+https://github.com/meese-enterprises/meeseOS-manual.git"
   },
   "keywords": [
-    "os.js"
+    "meeseOS"
   ],
-  "author": "Anders Evenrud <andersevenrud@gmail.com>",
+  "author": "Aaron Meese <aaronjmeese@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/os-js/os.js.org/issues"
+    "url": "https://github.com/meese-enterprises/meeseOS/issues"
   },
-  "homepage": "https://github.com/os-js/os.js.org#readme",
+  "homepage": "https://github.com/meese-enterprises/meeseOS#readme",
   "dependencies": {
     "gitbook": "^3.2.3",
     "gitbook-cli": "^2.3.2",
-    "gitbook-plugin-adsense": "^1.0.3",
     "gitbook-plugin-alerts": "^0.2.0",
     "gitbook-plugin-codepen": "^0.1.2",
     "gitbook-plugin-edit-link": "^2.0.2",
-    "gitbook-plugin-ga": "^1.0.1",
     "gitbook-plugin-sitemap": "git+https://github.com/andersevenrud/plugin-sitemap.git#master",
     "handlebars": "^4.1.2",
-    "metalsmith": "^2.1.0",
-    "metalsmith-collections": "^0.9.0",
-    "metalsmith-ignore": "^0.1.2",
-    "metalsmith-layouts": "^1.4.1",
-    "metalsmith-less": "^2.0.0",
-    "metalsmith-markdown": "^0.2.1",
-    "metalsmith-mdinclude": "^0.1.0",
-    "metalsmith-permalinks": "^0.5.0",
-    "metalsmith-prism": "^3.0.1",
-    "metalsmith-sitemap": "^1.2.2",
-    "metalsmith-watch": "^1.0.3",
     "node-fs-extra": "^0.8.1"
   }
 }

@@ -1,26 +1,16 @@
 {
-  "root": "src/v3",
-  "author": "Anders Evenrud <andersevenrud@gmail.com>",
+  "root": "src",
+  "author": "Aaron Meese <aaronjmeese@gmail.com>",
   "language": "en",
-  "title": "OS.js Web Desktop Manual",
-  "plugins": ["sitemap", "adsense", "alerts", "edit-link", "ga", "codepen"],
+  "title": "MeeseOS Web Desktop Manual",
+  "plugins": ["sitemap", "alerts", "edit-link", "codepen"],
   "pluginsConfig": {
     "sitemap": {
-      "hostname": "https://manual.os-js.org",
+      "hostname": "https://manual.aaronmeese.com",
       "path": "/"
     },
-    "adsense": {
-      "client": "ca-pub-6145716264521226",
-      "slot": "9888011596",
-      "format": "auto",
-      "element": ".page-inner section",
-      "position": "top"
-    },
-    "ga": {
-      "token": "UA-90971004-4"
-    },
     "edit-link": {
-      "base": "https://github.com/os-js/manual.os-js.org/edit/master/src/v3",
+      "base": "https://github.com/meese-enterprises/meeseOS-manual/edit/master/src",
       "label": "Edit this page"
     }
   }
