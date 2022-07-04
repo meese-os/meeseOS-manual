@@ -5,7 +5,7 @@ full_title: Filesystem Guide
 
 # Filesystem Guide
 
-OS.js uses an URI for filesystem paths.
+MeeseOS uses an URI for filesystem paths.
 
 > `name:/path#fragment`
 
@@ -31,9 +31,9 @@ You can add mountpoints by updating your configuration files:
 {
   vfs: {
     mountpoints: [{
-      name: 'temp',
-      label: 'Temporary Files',
-      adapter: 'system', // You can leave this out as 'system' is default
+      name: "temp",
+      label: "Temporary Files",
+      adapter: "system", // You can leave this out as "system" is default
       attributes: {}
      }]
    }
@@ -57,10 +57,10 @@ Available attributes:
 {
   vfs: {
     mountpoints: [{
-      name: 'temp',
-      adapter: 'system', // You can leave this out as 'system' is default
+      name: "temp",
+      adapter: "system", // You can leave this out as "system" is default
       attributes: {
-        root: '/tmp'
+        root: "/tmp"
       }
     }]
   }
@@ -87,17 +87,17 @@ Example configuration (server):
 {
   vfs: {
     mountpoints: [{
-      name: 'meeseOS',
+      name: "meeseOS",
       attributes: {
-        root: '{root}/dist',
+        root: "{root}/dist",
         groups: [
-          // Only allow users with the 'admin' group
-          'admin',
+          // Only allow users with the "admin" group
+          "admin",
 
-          // Or, alternativelly do the same, but only for the 'readdir'
+          // Or, alternativelly do the same, but only for the "readdir"
           // endpoint
           {
-            readdir: ['admin']
+            readdir: ["admin"]
           }
         ]
       }
@@ -108,7 +108,7 @@ Example configuration (server):
 
 ## Adapters
 
-A *Adapter* is a module that makes the actual requests on behalf of OS.js APIs.
+An *Adapter* is a module that makes the actual requests on behalf of MeeseOS APIs.
 
 An example is the included `system` which uses the APIs provided by the server, which uses the underlying node `fs` module to provide a filesystem via the underlying OS.
 
@@ -119,7 +119,7 @@ You can add custom adapters via the VFS service provider:
 #### Client
 
 ```javascript
-import customAdapter from 'custom-adapter';
+import customAdapter from "custom-adapter";
 
 meeseOS.register(VFSServiceProvider, {
   args: {
@@ -133,7 +133,7 @@ meeseOS.register(VFSServiceProvider, {
 #### Server
 
 ```javascript
-const customAdapter = require('custom-adapter');
+const customAdapter = require("custom-adapter");
 
 meeseOS.register(VFSServiceProvider, {
   args: {

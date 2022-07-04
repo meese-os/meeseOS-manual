@@ -20,8 +20,8 @@ In your `src/client/config.js` file either comment out or remove this section en
 {
   auth: {
     login: {
-      username: 'demo',
-      password: 'demo'
+      username: "demo",
+      password: "demo"
     }
   }
 }
@@ -44,12 +44,12 @@ Modifying the adapter requires changing the `AuthServiceProvider` options:
 To change the client-side authentication adapter, modify your bootstrap file `src/client/index.js`.
 
 ```javascript
-import customAdapter from 'custom-adapter';
+import customAdapter from "custom-adapter";
 
 meeseOS.register(AuthServiceProvider, {
   args: {
     // Default
-    adapter: 'server',
+    adapter: "server",
 
     // Custom
     adapter: customAdapter,
@@ -63,7 +63,7 @@ meeseOS.register(AuthServiceProvider, {
 To change the server-side authentication adapter, modify your bootstrap file `src/server/index.js`.
 
 ```javascript
-const customAdapter = require('custom-adapter');
+const customAdapter = require("custom-adapter");
 
 meeseOS.register(AuthServiceProvider, {
   args: {

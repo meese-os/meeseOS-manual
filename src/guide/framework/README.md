@@ -1,16 +1,16 @@
 ---
-description: A guide on how to use different frameworks within OS.js
+description: A guide on how to use different frameworks within MeeseOS
 full_title: Frameworks Guide
 ---
 
 # Frameworks Guide
 
-This guide shows you how to use some popular frameworks "natively" in OS.js.
+This guide shows you how to use some popular frameworks "natively" in MeeseOS.
 
 If you want to run your application completely sandboxed, see
 [IFrame application](../../tutorial/iframe/README.md) tutorial.
 
-> [info] Since a OS.js window render methods gives you access to
+> [info] Since a MeeseOS window render methods gives you access to
 > the DOM you are free to use any framework or library as you see fit.
 
 ## React
@@ -41,8 +41,8 @@ Then in your `package.json`s `babel` section:
 And finally in your `index.js` file:
 
 ```javascript
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
 class App extends React.Component {
   render() {
@@ -86,20 +86,20 @@ Then in your `package.json`s `babel` section:
 Then, add the following to your `webpack.config.js` file:
 
 ```javascript
-const {VueLoaderPlugin} = require('vue-loader');
+const {VueLoaderPlugin} = require("vue-loader");
 module.exports = {
   plugins: [
     new VueLoaderPlugin()
   ],
   resolve: {
     alias: {
-       'vue$': 'vue/dist/vue.esm.js'
+       "vue$": "vue/dist/vue.esm.js"
      }
   },
   module: {
     rules: [{
       test: /\.vue$/,
-      loader: 'vue-loader',
+      loader: "vue-loader",
     }]
   }
 };
@@ -108,8 +108,8 @@ module.exports = {
 And finally in your `index.js` file (assuming you have your base component named `App.vue`):
 
 ```javascript
-import Vue from 'vue';
-import App from './App.vue';
+import Vue from "vue";
+import App from "./App.vue";
 
 proc.createWindow({})
   .render(el => {
@@ -122,7 +122,7 @@ proc.createWindow({})
 
 ## Other
 
-To load generic libraries etc. (like jQuery) into OS.js you have two alternatives.
+To load generic libraries (like jQuery) into MeeseOS, you have two alternatives.
 
 > [warning] Please note that using libraries optimized for bundling is recommended (`import` or `require` in your distro or packages), as some libraries older might pollute the global namespaces and/or styles. Also, including libraries that attach to the global namespace might cause issues when loading different versions.
 
@@ -149,12 +149,12 @@ then use `copy-webpack-plugin` in your `webpack.config.js` file:
 > [info] If you use external resources, skip this step.
 
 ```javascript
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   plugins: [
     new CopyWebpackPlugin([
-      {from: 'foo/bar/library.js', to: 'library.js'},
-      {from: 'foo/bar/library.css', to: 'library.css'}
+      {from: "foo/bar/library.js", to: "library.js"},
+      {from: "foo/bar/library.css", to: "library.css"}
     ])
   ]
 };
@@ -187,12 +187,12 @@ then use `copy-webpack-plugin` in your `webpack.config.js` file:
 > [info] If you use external resources, skip this step.
 
 ```javascript
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   plugins: [
     new CopyWebpackPlugin([
-      {from: 'foo/bar/library.js', to: 'library.js'},
-      {from: 'foo/bar/library.css', to: 'library.css'}
+      {from: "foo/bar/library.js", to: "library.js"},
+      {from: "foo/bar/library.css", to: "library.css"}
     ])
   ]
 };

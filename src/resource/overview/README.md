@@ -1,11 +1,11 @@
 ---
-description: A brief overview on the internals of OS.js.
+description: A brief overview on the internals of MeeseOS.
 full_title: Architecture and overview
 ---
 
 # Architecture and overview
 
-This article gives a brief overview of all of the different components that makes up OS.js.
+This article gives a brief overview of all of the different components that makes up MeeseOS.
 
 ## Codebase
 
@@ -20,7 +20,7 @@ Testing is done with [ESLint](https://eslint.org/), [Stylelint](https://stylelin
 
 ## Overview
 
-OS.js is a modular Web Desktop framework that consists of two parts: a client and a server.
+MeeseOS is a modular Web Desktop framework that consists of two parts: a client and a server.
 
 The client can run independently from the server, but the server provides a lot of features like persistent settings, authentication and backend filesystems.
 
@@ -34,23 +34,22 @@ Features are implemented via [service providers](../../guide/provider/README.md)
 
 These are the standard used core libraries:
 
-* https://github.com/os-js/osjs-common - Base (used in both client & server)
-* https://github.com/os-js/osjs-client - Client Core & Services
-* https://github.com/os-js/osjs-server - Server Core & Services
-* https://github.com/os-js/osjs-cli - CLI utilities
-* https://github.com/os-js/osjs-gui - GUI components
-* https://github.com/os-js/osjs-dialogs - GUI Dialogs
-* https://github.com/os-js/osjs-panels - GUI Panels
-* https://github.com/os-js/osjs-event-emitter - EventEmitter implementation
-* https://github.com/os-js/osjs-dev-meta - Development dependencies
-* https://github.com/os-js/eslint-config - ESLint configuration
-* https://github.com/os-js/stylelint-config - Stylelint configuration
+* https://github.com/meese-enterprises/meeseOS/tree/master/backend/common - Base (used in both client & server)
+* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/client - Client Core & Services
+* https://github.com/meese-enterprises/meeseOS/tree/master/backend/server - Server Core & Services
+* https://github.com/meese-enterprises/meeseOS/tree/master/development/cli - CLI utilities
+* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/gui - GUI components
+* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/dialogs - GUI Dialogs
+* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/panels - GUI Panels
+* https://github.com/meese-enterprises/meeseOS/tree/master/backend/event-emitter - EventEmitter implementation
+* https://github.com/meese-enterprises/meeseOS/tree/master/development/eslint - ESLint configuration
+* https://github.com/meese-enterprises/meeseOS/tree/master/development/stylelint - Stylelint configuration
 
 All source-code follows the [semantic versioning spesification](https://semver.org/).
 
 ## Installation (Distribution)
 
-The [OS.js repository](https://github.com/os-js/OS.js) contains a boilerplate you can use to build and bundle your own installations and distributions.
+The [MeeseOS repository](https://github.com/meese-enterprises/meeseOS) contains a boilerplate you can use to build and bundle your own installations and distributions.
 
 It comes with the following structure, that you can modify as you see fit:
 
@@ -117,12 +116,11 @@ See the [official extensions](../official/README.md) for a list of available pac
 
 [Webpack](https://webpack.js.org/) is used to build and bundle the installation/distribution, modules and packages.
 
-These are some of the plugins and loaders used throughout codebases (mostly via the [dev meta package](https://github.com/os-js/osjs-dev-meta)):
+These are some of the plugins and loaders used throughout codebases:
 
 * [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin)
 * [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin)
 * [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-extract-plugin)
-* [optimize-css-assets-webpack-plugin](https://github.com/NMFR/optimize-css-assets-webpack-plugin)
 * [babel-loader](https://github.com/babel/babel-loader)
 * [file-loader](https://github.com/webpack-contrib/file-loader)
 * [sass-loader](https://github.com/webpack-contrib/sass-loader)

@@ -107,7 +107,7 @@ contains this section for the package discovery to work:
 Typically `index.js`:
 
 ```javascript
-import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
 import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
@@ -307,7 +307,7 @@ Applications also supports [settings](/tutorial/settings/README.md) storage:
 
 ```javascript
 // Set default settings
-import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
 import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
@@ -341,7 +341,7 @@ core.run("MyApplication", {
 Retrieve arguments in application:
 
 ```javascript
-import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
 import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
@@ -359,7 +359,7 @@ The `args` property (see above) is stored in the session, so you can use this to
 save your application state whenever the user logs out:
 
 ```javascript
-import meeseOS from "meeseOS"; // Webpack external. Same as "window.OSjs"
+import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
 import {name as applicationName} from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {

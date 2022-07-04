@@ -1,11 +1,11 @@
 ---
-description: A guide on how to run OS.js in standalone mode
+description: A guide on how to run MeeseOS in standalone mode
 full_title: Standalone Mode
 ---
 
 # Standalone Mode Guide
 
-You can run OS.js in standalone mode, which does not require the backend to work.
+You can run MeeseOS in standalone mode, which does not require the backend to work.
 
 This has some limitations described below.
 
@@ -13,7 +13,7 @@ Edit your `src/client/config.js` file and add the following setting:
 
 > [info] Remember to rebuild with `npm run build` after you modify the configuration.
 
-```javscript
+```javascript
 {
   standalone: true
 }
@@ -31,7 +31,7 @@ Services and providers that does not interact with the OS.js backend will work a
 
 ## Without webserver
 
-You can launch OS.js from `file://` (i.e. just opening the html file in `dist/`) by modifying the client configuration.
+You can launch MeeseOS from `file://` (i.e. just opening the html file in `dist/`) by modifying the client configuration.
 
 Note that HTTP requests cannot be made in this mode, so any feature that requires a network or internet connection will be unavailable.
 
@@ -39,9 +39,9 @@ Since requests cannot be made you have to add the package manifest to your confi
 
 Edit your `src/client/config.js` file and add the following setting:
 
-```javscript
+```javascript
 // Import the compiled package metadata
-import metadata from '../../dist/metadata.json';
+import metadata from "../../dist/metadata.json";
 
 export default {
   // Append this to your config

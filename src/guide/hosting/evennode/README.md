@@ -1,15 +1,15 @@
 ---
-description: A guide on how to set up OS.js on EvenNode
+description: A guide on how to set up MeeseOS on EvenNode
 full_title: EvenNode Hosting Guide
 ---
 
 # EvenNode Hosting Guide
 
-This guide shows how to configure and deploy OS.js on [EvenNode hosting](https://www.evennode.com/docs/node).
+This guide shows how to configure and deploy MeeseOS on [EvenNode hosting](https://www.evennode.com/docs/node).
 
 ## Prepare
 
-EvenNode has a couple of requirements in order for OS.js server to launch properly:
+EvenNode has a couple of requirements in order for MeeseOS server to launch properly:
 
 ### Add startup script
 
@@ -30,12 +30,12 @@ This will build, copy applications and start the server on deployment.
 In your `src/server/config.js` file, add the `port` entry:
 
 ```javascript
-const path = require('path');
-const root = path.resolve(__dirname, '../../');
+const path = require("path");
+const root = path.resolve(__dirname, "../../");
 
 module.exports = {
   root,
-  public: path.resolve(root, 'dist'),
+  public: path.resolve(root, "dist"),
 
   // This is the new required entry
   port: process.env.PORT

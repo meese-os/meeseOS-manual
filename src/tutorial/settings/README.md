@@ -36,7 +36,7 @@ An application is given the namespace `meeseOS/application/{name}` (where the na
 ```javascript
 import {name as applicationName} from "./metadata.json";
 
-OSjs.make("meeseOS/packages").register(applicationName, (core, args, options, metadata) => {
+meeseOS.make("meeseOS/packages").register(applicationName, (core, args, options, metadata) => {
   // Default settings
   options.settings = {
     foo: "bar"

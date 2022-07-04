@@ -23,7 +23,7 @@ in your `src/client/config.js` file you can add the following options:
 ```javascript
 export default {
   packages: {
-    hidden: ['Draw']
+    hidden: ["Draw"]
   }
 }
 ```
@@ -41,7 +41,7 @@ package name(s):
 
 ```javascript
 module.exports = {
-  disabled: ['Draw']
+  disabled: ["Draw"]
 }
 ```
 
@@ -67,7 +67,7 @@ export default {
         // the groups match, and not *all*.
         strictGroups: true,
 
-        groups: ['a', 'b', 'c']
+        groups: ["a", "b", "c"]
       }
     }
   }

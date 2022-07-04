@@ -5,7 +5,7 @@ full_title: Service Provider Guide
 
 # Service Provider Guide
 
-Service Providers are the main way to provide features and extensions for OS.js.
+Service Providers are the main way to provide features and extensions for MeeseOS.
 
 ## Installation
 
@@ -29,7 +29,7 @@ it within the `src/` directory of your installation.
 > client with `npm run build`.
 
 ```javascript
-import MyService from 'some-provider'
+import MyService from "some-provider"
 
 meeseOS.register(MyService)
 ```
@@ -43,7 +43,7 @@ You can pass on arguments to the constructor of the Service Provider.
 ```javascript
 meeseOS.register(MyService, {
   args: {
-    foo: 'bar'
+    foo: "bar"
   }
 });
 ```
@@ -75,7 +75,7 @@ These can be either set in the service provider:
 ```javascript
 class MyService {
   depends() {
-    return ['meeseOS/core']
+    return ["meeseOS/core"]
   }
 }
 ```
@@ -84,6 +84,6 @@ Or you can defined them in your bootstrap:
 
 ```javascript
 meeseOS.register(MyService, {
-  depends: ['meeseOS/core']
+  depends: ["meeseOS/core"]
 })
 ```

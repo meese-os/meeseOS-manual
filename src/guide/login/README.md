@@ -19,8 +19,8 @@ In your client configuration (`src/client/config.js`) you can override certain a
 {
   auth: {
     ui: {
-      title: 'Welcome to Company',
-      stamp: 'custom-build version 1234'
+      title: "Welcome to Company",
+      stamp: "custom-build version 1234"
     }
   }
 }
@@ -35,36 +35,36 @@ You can set your own fields:
   auth: {
     ui: {
       fields: [{
-        tagName: 'input',
+        tagName: "input",
         attributes: {
-          name: 'username',
-          type: 'text',
-          placeholder: 'Username'
+          name: "username",
+          type: "text",
+          placeholder: "Username"
         }
       }, {
-        tagName: 'input',
+        tagName: "input",
         attributes: {
-          name: 'password',
-          type: 'password',
-          placeholder: 'Password'
+          name: "password",
+          type: "password",
+          placeholder: "Password"
         }
       }, {
-        tagName: 'select',
+        tagName: "select",
         attributes: {
-          name: 'provider'
+          name: "provider"
         },
         choices: [{
-          value: 'company-1',
-          label: 'Company 1'
+          value: "company-1",
+          label: "Company 1"
        }, {
-          value: 'company-2',
-          label: 'Company 2'
+          value: "company-2",
+          label: "Company 2"
        }]
       }, {
-        tagName: 'input',
+        tagName: "input",
         attributes: {
-          type: 'submit',
-          value: 'Login'
+          type: "submit",
+          value: "Login"
         }
       }]
     }
@@ -80,7 +80,7 @@ By default the login container uses the DOM id `#meeseOS-login`, which you can o
 {
   auth: {
     ui: {
-      id: 'custom-meeseOS-login'
+      id: "custom-meeseOS-login"
     }
   }
 }
@@ -95,13 +95,13 @@ You can also add a logo via configuration and customize via CSS:
 ![Login Logo Example](example2.png)
 
 ```javascript
-import logo from '../logo.png';
+import logo from "../logo.png";
 
 {
   auth: {
     ui: {
       logo: {
-        position: 'top', // top, bottom, left, right
+        position: "top", // top, bottom, left, right
         src: logo
       }
     }
@@ -126,26 +126,26 @@ You can also replace the default UI with your own:
 Extend the default adapter in for example `src/client/custom-login.js`:
 
 ```javascript
-import {Login} from '@meeseOS/client';
+import {Login} from "@meeseOS/client";
 
 export default class MyCustomLogin extends Login {
   render() {
     // Set a custom class name
-    this.$container.className = 'my-custom-login';
+    this.$container.className = "my-custom-login";
 
     // Add your HTML content
-    this.$container.innerHTML = 'Put your content here';
+    this.$container.innerHTML = "Put your content here";
 
     // Bind the events
-    this.on('login:start', () => console.log('Currently trying to log in...'));
-    this.on('login:stop', () => console.log('Login was aborted or stopped'));
-    this.on('login:error', err => console.error('An error occured while logging in', err));
+    this.on("login:start", () => console.log("Currently trying to log in..."));
+    this.on("login:stop", () => console.log("Login was aborted or stopped"));
+    this.on("login:error", err => console.error("An error occured while logging in", err));
 
     // To submit a login form (ex when you press a button):
     /*
-    this.emit('login:post', {
-      username: 'foo',
-      password: 'bar'
+    this.emit("login:post", {
+      username: "foo",
+      password: "bar"
     });
     */
   }
@@ -168,7 +168,7 @@ You can add your own styles in `src/client/index.scss`:
 In your client bootstrap script (`src/client/config.js`), update the authentication service provider:
 
 ```javascript
-import MyCustomLogin from './custom-login.js';
+import MyCustomLogin from "./custom-login.js";
 
 meeseOS.register(AuthServiceProvider, {
   before: true,

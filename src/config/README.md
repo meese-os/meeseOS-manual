@@ -1,5 +1,5 @@
 ---
-description: How to configure OS.js client and server
+description: How to configure MeeseOS client and server
 full_title: Configuration
 ---
 
@@ -7,7 +7,7 @@ full_title: Configuration
 
 You can find the configuration files (by default) in `src/client/config.js` and `src/server/config.js`.
 
-> [info] This list is not complete. See [`src/config.js`](https://github.com/os-js/osjs-client/blob/master/src/config.js) in `@osjs/client` and [`src/config.js`](https://github.com/os-js/osjs-server/blob/master/src/config.js) `@osjs/server` for advanced settings.
+> [info] This list is not complete. See [`src/config.js`](https://github.com/meese-enterprises/meeseOS/blob/master/frontend/client/src/config.js) in `@meeseOS/client` and [`src/config.js`](https://github.com/meese-enterprises/meeseOS/blob/master/backend/server/src/config.js) in `@meeseOS/server` for advanced settings.
 
 <!-- -->
 
@@ -39,13 +39,14 @@ const meeseOS = new Core(config, {
 | `ws.uri`                          | `<auto>`              | WebSocket connection URI                                 |
 | `auth.login.username`             | `demo`                | Default login username                                   |
 | `auth.login.password`             | `demo`                | Default login password                                   |
+| `auth.login.allowGuest`           | `true`                | Whether to show UI for guest authentication              |
 | `search.enabled`                  | `true`                | Enable searching feature                                 |
 | `desktop.settings.font`           | `Roboto`              | Standard font name                                       |
 | `desktop.settings.theme`          | `Standard`            | Standard style theme                                     |
 | `desktop.settings.icons`          | `Gnome`               | Standard icon theme                                      |
 | `desktop.settings.sounds`         | `FreedesktopSounds`   | Standard sound theme                                     |
 | `desktop.settings.background.src` | Internal              | Standard wallpaper                                       |
-| `vfs.defaultPath`                 | `meeseOS:/`              | Default and fallback path for VFS                        |
+| `vfs.defaultPath`                 | `meeseOS:/`           | Default and fallback path for VFS                        |
 
 ## Server
 
@@ -99,13 +100,13 @@ You can provide configuration via a dotenv (`.env`) file to make make it dynamic
 This applies to both the client and the server
 
 ```config
-OSJS_STANDALONE=true
+MEESEOS_STANDALONE=true
 ```
 
 And in your `src/client/config.js` file:
 
 ```javascript
 {
-  standalone: process.env.OSJS_STANDALONE === "true"
+  standalone: process.env.MEESEOS_STANDALONE === "true"
 }
 ```

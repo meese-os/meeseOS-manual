@@ -64,19 +64,19 @@ const user = core.getUser();
 core.send("event-name", 1, 2, 3);
 ```
 
-#### Global "OSjs" namespace
+#### Global "meeseOS" namespace
 
-The window global `OSjs` also lets you reach some of the core functionality.
+The window global `meeseOS` also lets you reach some of the core functionality.
 
 ```javascript
 // Same as above (but some services are restricted)
-OSjs.make();
+meeseOS.make();
 
 // These are the same as above
-OSjs.open();
-OSjs.request();
-OSjs.run();
-OSjs.url();
+meeseOS.open();
+meeseOS.request();
+meeseOS.run();
+meeseOS.url();
 ```
 
 #### Client Events

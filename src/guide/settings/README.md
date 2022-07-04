@@ -25,7 +25,7 @@ See [official resource list](/resource/official/README.md) for provided adapter.
 ```javascript
 meeseOS.register(SettingsServiceProvider, {
   args: {
-    adapter: 'server'
+    adapter: "server"
   }
 });
 ```
@@ -33,7 +33,7 @@ meeseOS.register(SettingsServiceProvider, {
 ### Server
 
 ```javascript
-const customAdapter = require('custom-adapter');
+const customAdapter = require("custom-adapter");
 
 meeseOS.register(SettingsServiceProvider, {
   args: {
@@ -44,7 +44,7 @@ meeseOS.register(SettingsServiceProvider, {
 
 ### Storing on filesystem
 
-You can use the provided 'fs' adapter to store settings on a filesystem:
+You can use the provided `fs` adapter to store settings on a filesystem:
 
 > Settings are stored in `home:/.meeseOS/settings.json` by default.
 
@@ -52,14 +52,14 @@ You can use the provided 'fs' adapter to store settings on a filesystem:
 // client
 meeseOS.register(SettingsServiceProvider, {
   args: {
-    adapter: 'server'
+    adapter: "server"
   }
 });
 
 // server
 meeseOS.register(SettingsServiceProvider, {
   args: {
-    adapter: 'fs',
+    adapter: "fs",
   }
 });
 ```

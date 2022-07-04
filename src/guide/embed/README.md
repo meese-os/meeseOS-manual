@@ -1,11 +1,11 @@
 ---
-description: A guide on how to embed OS.js
+description: A guide on how to embed MeeseOS
 full_title: Embedding Guide
 ---
 
 # Embedding Guide
 
-It is possible to select which DOM nodes to use for spawning the OS.js client.
+It is possible to select which DOM nodes to use for spawning the MeeseOS client.
 
 In your `src/client/index.js` file:
 
@@ -17,11 +17,11 @@ const init = () => {
     root: document.body,
 
     // What node to place dynamically loaded scripts etc.
-    resourceRoot: document.querySelector('head')
+    resourceRoot: document.querySelector("head")
   });
 
   // ...
 };
 
-window.addEventListener('DOMContentLoaded', () => init());
+window.addEventListener("DOMContentLoaded", () => init());
 ```

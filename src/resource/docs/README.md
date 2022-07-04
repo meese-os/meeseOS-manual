@@ -1,5 +1,5 @@
 ---
-description: OS.js Documentation and examples
+description: MeeseOS Documentation and examples
 full_title: Documentation and examples
 ---
 

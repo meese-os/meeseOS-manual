@@ -49,7 +49,7 @@ If you want to contribute changes back to the community, look at "How do I contr
 
 ## Q: How do I add login ?
 
-By default OS.js is set up to automatically log in with a "demo" user and a dummy authentication adapter.
+By default MeeseOS is set up to automatically log in with a "demo" user and a dummy authentication adapter.
 
 The adapter is what authenticates a user and you can [customize it](guide/auth/README.md). An example is the [database adapter](https://github.com/os-js/osjs-database-auth).
 

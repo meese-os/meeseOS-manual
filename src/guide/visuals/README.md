@@ -5,7 +5,7 @@ full_title: Visualization Customization Guide
 
 # Visualization Customization Guide
 
-This guide will walk through the different ways of customizing OS.js.
+This guide will walk through the different ways of customizing MeeseOS.
 
 ## Index File
 
@@ -23,34 +23,34 @@ Since some of the styles can be configured by a user at runtime, some styles are
 
 You can override these by [adding it](../../config/README.md#client) to your `src/client/config.js` file and modifying the values.
 
-> [info] Note, that if users have already customized their settings, the changes to the default configuration won't affect the users. In an [upcoming patch](https://github.com/os-js/osjs-client/issues/52) it will be able to migrate these changes. By default the settings are stored in the browser (`localStorage`) so you can clear these easily.
+> [info] Note: if users have already customized their settings, the changes to the default configuration won't affect the users. In an [upcoming patch](https://github.com/os-js/osjs-client/issues/52) it will be able to migrate these changes. By default the settings are stored in the browser (`localStorage`) so you can clear these easily.
 
 Example:
 
 ```javascript
 /* src/client/wallpaper.png */
-import wallpaper from './wallpaper.png';
+import wallpaper from "./wallpaper.png";
 
 module.exports = {
   desktop: {
     settings: {
-      font: 'Roboto',
-      theme: 'StandardTheme',
-      sounds: 'FreedesktopSounds',
-      icons: 'GnomeIcons',
+      font: "Roboto",
+      theme: "StandardTheme",
+      sounds: "FreedesktopSounds",
+      icons: "GnomeIcons",
       panels: [{
-        position: 'top',
+        position: "top",
         items: [
-          {name: 'menu'},
-          {name: 'windows'},
-          {name: 'tray'},
-          {name: 'clock'}
+          {name: "menu"},
+          {name: "windows"},
+          {name: "tray"},
+          {name: "clock"}
         ]
       }],
       background: {
         src: wallpaper,
-        color: '#000',
-        style: 'cover'
+        color: "#000",
+        style: "cover"
       }
     }
   }
@@ -74,7 +74,7 @@ By using this file you can override the default styles like the background, wall
 ```css
 .meeseOS-root {
   background-color: #000;
-  background-image: url('./wallpaper.png'); /* src/client/wallpaper.png */
+  background-image: url("./wallpaper.png"); /* src/client/wallpaper.png */
 }
 ```
 
@@ -87,11 +87,12 @@ If you want to simply customize the already provided styles on a window, you can
 > [info] The CSS class is on the root window element.
 
 When constructing a window, provide the following option(s):
-```
+
+```javascript
 {
-  id: 'MyWindowId',
+  id: "MyWindowId",
   attributes: {
-    classNames: ['MyWindowClass']
+    classNames: ["MyWindowClass"]
   }
 }
 ```
@@ -120,10 +121,10 @@ Add the styles to your client stylesheet file (see above).
 
 When constructing a window, provide the following option:
 
-```javasctipt
+```javascript
 {
   // Using a string:
-  template: '<div>Your HTML content here</div>',
+  template: "<div>Your HTML content here</div>",
 
   // Or using a callback:
   // The original template is added as a string, so you can modify it as you see fit
@@ -164,13 +165,13 @@ Use the `WindowBehavior` class in `@meeseOS/client` as your base class to extend
 To customize the initial splash screen you can override the internal class in your `src/client/index.js` file:
 
 ```javascript
-import {Core, Splash} from '@meeseOS/client';
+import {Core, Splash} from "@meeseOS/client";
 
 class CustomSplash extends Splash {
   init() {
     // This is the default, you can override this
     this.$loading
-      .appendChild(document.createTextNode('Loading...'));
+      .appendChild(document.createTextNode("Loading..."));
   }
 }
 

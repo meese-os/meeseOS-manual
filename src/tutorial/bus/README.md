@@ -152,6 +152,6 @@ const register = (core, args, options, metadata) => {
 };
 
 // The package manager registration call
-OSjs.make("meeseOS/packages")
+meeseOS.make("meeseOS/packages")
   .register("MyApplication", register);
 ```
