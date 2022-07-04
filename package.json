@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"No tests implemented for meeseOS-manual\" && exit 0",
-    "build": "npx gitbook build",
-    "serve": "npx gitbook serve"
+    "build": "honkit build",
+    "serve": "honkit serve"
   },
   "repository": {
     "type": "git",
@@ -22,13 +22,12 @@
   },
   "homepage": "https://github.com/meese-enterprises/meeseOS#readme",
   "dependencies": {
-    "gitbook": "^3.2.3",
-    "gitbook-cli": "^2.3.2",
     "gitbook-plugin-alerts": "^0.2.0",
     "gitbook-plugin-codepen": "^0.1.2",
     "gitbook-plugin-edit-link": "^2.0.2",
     "gitbook-plugin-sitemap": "git+https://github.com/andersevenrud/plugin-sitemap.git#master",
     "handlebars": "^4.1.2",
+    "honkit": "^3.7.4",
     "node-fs-extra": "^0.8.1"
   }
 }
