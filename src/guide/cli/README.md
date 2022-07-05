@@ -5,7 +5,7 @@ full_title: CLI Guide
 
 # CLI guide
 
-OS.js comes with a Node CLI utility that provides commands to manage your installation.
+MeeseOS comes with a Node CLI utility that provides commands to manage your installation.
 
 ## Commands
 
@@ -84,7 +84,7 @@ const path = require("path");
 
 module.exports = {
   discover: [
-    path.resolve(__dirname, "../packages") // OS.js/src/packages
+    path.resolve(__dirname, "../packages") // meeseOS/src/packages
   ]
 };
 ```

@@ -1,5 +1,5 @@
 ---
-description: A tutorial on how to create Iframe applications in OS.js
+description: A tutorial on how to create Iframe applications in MeeseOS
 full_title: IFrame Tutorial
 ---
 
@@ -11,7 +11,7 @@ This tutorial will show you how to create an [application](../application/README
 
 ## Creation
 
-To create a new application package, run the following command inside your OS.js installation: `npm run make:iframe-application`.
+To create a new application package, run the following command inside your MeeseOS installation: `npm run make:iframe-application`.
 
 The created application will be placed in `src/packages` (by default) and is based on the [official example](https://github.com/os-js/osjs-example-iframe-application).
 
@@ -28,9 +28,9 @@ If you want to load remote content, simply remove this directory (optional) and 
 
 ## Bi-directional communication
 
-OS.js has an internal event listener that can intercept iframe messages and forward them to the Window the content was loaded from.
+MeeseOS has an internal event listener that can intercept iframe messages and forward them to the Window the content was loaded from.
 
-This allows you to interact with the underlying OS.js APIs and services from an IFrame.
+This allows you to interact with the underlying MeeseOS APIs and services from an IFrame.
 
 ### IFrame implementation
 
@@ -44,7 +44,7 @@ This allows you to interact with the underlying OS.js APIs and services from an 
       var pid = parseInt(window.location.search.match(/pid=([^&]*)/)[1], 10);
       var wid = parseInt(window.location.search.match(/wid=([^&]*)/)[1], 10);
 
-      // Global function to send a message to OS.js Core that forwards it to the correct application/window.
+      // Global function to send a message to MeeseOS Core that forwards it to the correct application/window.
       function sendMessage() {
         top.postMessage({
           name: "meeseOS/iframe:message",
@@ -56,10 +56,10 @@ This allows you to interact with the underlying OS.js APIs and services from an 
         }, "*");
       }
 
-      // Listen from messages from OS.js Application
+      // Listen from messages from MeeseOS Application
       window.addEventListener("message", function(ev) {
         // We should get "Pong" here
-        console.warn("Message from OS.js", ev.data);
+        console.warn("Message from MeeseOS", ev.data);
       });
 
       // Send an example message

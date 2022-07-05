@@ -27,12 +27,12 @@ In your `src/client/index.ejs` file:
 
 ```html
   <body>
-    <script src="http://1.2.3.4:8001/target/target-script-min.js#osjs"></script>
+    <script src="http://1.2.3.4:8001/target/target-script-min.js#meeseOS"></script>
   </body>
 ```
 
-Replace `1.2.3.4` with the IP address of your OS.js server and `8001` with the port we specified above.
+Replace `1.2.3.4` with the IP address of your MeeseOS server and `8001` with the port we specified above.
 
 ## Test
 
-After you rebuild your dist you can run OS.js like normal and get some kind of response in your weinre interface at ex `http://localhost:8001/client/#osjs`.
+After you rebuild your dist you can run MeeseOS like normal and get some kind of response in your `weinre` interface at ex `http://localhost:8001/client/#osjs`.

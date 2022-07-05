@@ -24,7 +24,7 @@ This tutorial goes over how to create reactive UIs using components.
 
 ## Usage
 
-OS.js by default uses **[Hyperapp v1](https://github.com/jorgebucaran/hyperapp/tree/V1)** for creating reactive state based user interfaces.
+MeeseOS by default uses **[Hyperapp v1](https://github.com/jorgebucaran/hyperapp/tree/V1)** for creating reactive state based user interfaces.
 
 *This does not mean that you are restricted to usage of Hyperapp. You can use [React](../../guide/framework/README.md#react), [Vue](../../guide/framework/README.md#vue) or anything you like.*
 
@@ -65,7 +65,7 @@ You can of course insert this into any arbitrary DOM element.
 
 ### Using Components
 
-A [standard component library](https://manual.os-js.org/v3/api/osjs-gui/) for Hyperapp is officially provided.
+A [standard component library](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-gui/) for Hyperapp is officially provided.
 
 ![Basic Example](example-2.png)
 

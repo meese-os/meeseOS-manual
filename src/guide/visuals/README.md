@@ -19,7 +19,7 @@ See your `src/client/index.js` bootstrap file for provider registration and `src
 
 ### Overriding default desktop styles
 
-Since some of the styles can be configured by a user at runtime, some styles are defined in the [client configuration](https://github.com/os-js/osjs-client/blob/master/src/config.js) (see `desktop` section), like desktop and panels.
+Since some of the styles can be configured by a user at runtime, some styles are defined in the [client configuration](https://github.com/meese-enterprises/meeseOS/blob/master/frontend/client/src/config.js) (see `desktop` section), like desktop and panels.
 
 You can override these by [adding it](../../config/README.md#client) to your `src/client/config.js` file and modifying the values.
 

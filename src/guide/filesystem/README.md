@@ -13,7 +13,7 @@ MeeseOS uses an URI for filesystem paths.
 
 A mountpoint is an object that defines a name, label and which adapter to use. You can have several mountpoints using the same adapter, but resolves to different locations.
 
-An example would be the provided `meeseOS` mountpoint that resolves to `{root}/dist` (where "root" is the OS.js path) via the `system` adapter.
+An example would be the provided `meeseOS` mountpoint that resolves to `{root}/dist` (where "root" is the MeeseOS path) via the `system` adapter.
 
 > [info] By default the system adapter will resolve home directories in the `vfs/` folder of your installation. You can change this behaviour by modifying `vfs.root` in [server config](../../config/README.md#server)
 

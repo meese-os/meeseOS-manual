@@ -5,7 +5,7 @@ full_title: Settings Guide
 
 # Settings Guide
 
-OS.js provides options for customizing the settings storage.
+MeeseOS provides options for customizing the settings storage.
 
 Two adapters are provided by default:
 

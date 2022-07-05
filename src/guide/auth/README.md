@@ -5,7 +5,7 @@ full_title: Authentication Guide
 
 # Authentication Guide
 
-OS.js provides options for customizing the authentication procedure.
+MeeseOS provides options for customizing the authentication procedure.
 
 By default the client is set up to automatically log in with a "demo user"
 account and the server responds to any authentication request successfully.

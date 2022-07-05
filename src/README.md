@@ -24,6 +24,3 @@ MeeseOS is an open-source web desktop platform with a window manager, applicatio
 * [Paypal](https://paypal.me/andersevenrud)
 * [Patreon](https://www.patreon.com/user?u=2978551&ty=h&u=2978551)
 * [Github sponsorship](https://github.com/sponsors/andersevenrud)
-* Bitcoin: bc1q8wd9e9xlppr7nft09n4guz89j0cp9gepl606s0
-
-<img src="wallet.png" alt="bitcoin qr code" width="177" height="177" />

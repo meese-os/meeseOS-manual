@@ -67,13 +67,13 @@ const meeseOS = new Core(config, {
 | `express.maxFieldsSize`             | `20971520`          | HTTP Max POST form/fields size in bytes                           |
 | `express.maxFileSize`               | `209715200`         | HTTP Max POST file upload size in bytes                           |
 | `session.store.module`              | `connect-loki`      | HTTP Session storage                                              |
-| `session.options.name`              | `meeseOS.sid`          | HTTP Session cookie name                                          |
-| `session.options.secret`            | `meeseOS`              | HTTP Session secret                                               |
+| `session.options.name`              | `meeseOS.sid`       | HTTP Session cookie name                                          |
+| `session.options.secret`            | `meeseOS`           | HTTP Session secret                                               |
 | `session.options.resave`            | `false`             | HTTP Session re-save option                                       |
 | `session.options.saveUninitialized` | `false`             | HTTP Save uninitialized sessions                                  |
 | `session.options.cookie.secure`     | `<auto>`            | HTTP Secure cookie                                                |
 | `session.options.cookie.maxAge`     | `<auto>`            | HTTP cookie lifetime                                              |
-| `vfs.root`                          | `<auto>`            | VFS Root path (defaults to OS.js `vfs/` directory)                |
+| `vfs.root`                          | `<auto>`            | VFS Root path (defaults to MeeseOS `vfs/` directory)              |
 
 ### Proxies
 

@@ -1,11 +1,11 @@
 ---
-description: OS.js Contributed Extensions
+description: MeeseOS Contributed Extensions
 full_title: Contributed Extensions
 ---
 
 # Contributed Extensions
 
-If you want to submit your contribution, contact me by [email](mailto:contrib@os-js.org), join the [Gitter chatroom](https://gitter.im/os-js/OS.js) or create a [pull-request](https://github.com/os-js/manual.os-js.org/pulls).
+If you want to submit your contribution, contact me by [email](mailto:contrib@os-js.org), join the [Gitter chatroom](https://gitter.im/os-js/OS.js) or create a [pull-request](https://github.com/meese-enterprises/meeseOS-manual/pulls).
 
 > [info] These packages are provided by community members, so if you have any issues with these, make sure to create an issue in the appropriate Github project(s).
 
@@ -30,7 +30,7 @@ If you want to submit your contribution, contact me by [email](mailto:contrib@os
 ## Filesystem
 
 * https://github.com/SpaceboyRoss01/osjs-devices-adapter - Adds all hardware devices to a root mountpoint
-* https://github.com/BurnaSmartLab/osjs-monster-adapter - OpenStack Swift object storage VFS adapter 
+* https://github.com/BurnaSmartLab/osjs-monster-adapter - OpenStack Swift object storage VFS adapter
 
 ## Widgets
 * https://github.com/BurnaSmartLab/osjs-grafana-widget - A widget to show Grafana data in multiple charts

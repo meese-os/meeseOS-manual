@@ -10,9 +10,9 @@
 [![Donate](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://paypal.me/andersevenrud)
 [![Community](https://img.shields.io/badge/join-community-green.svg)](https://community.os-js.org/)
 
-# OS.js Manual Sources
+# MeeseOS Manual Sources
 
-Live pages: https://manual.os-js.org/
+Live pages: https://meese-enterprises.github.io/meeseOS-manual/
 
 ## Usage
 
@@ -32,7 +32,7 @@ npm run serve
 
 ## Documentation
 
-See the [Official Manuals](https://manual.os-js.org/) for articles, tutorials and guides.
+See the [Official Manuals](https://meese-enterprises.github.io/meeseOS-manual/) for articles, tutorials and guides.
 
 ## Links
 

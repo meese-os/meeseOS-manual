@@ -4,7 +4,7 @@ description: An introduction into development and related utilities
 
 # Development
 
-This article will walk you through the development process of OS.js modules and packages.
+This article will walk you through the development process of MeeseOS modules and packages.
 
 1. [Introduction](#introduction)
 2. [Naming conventions](#naming-conventions)
@@ -70,7 +70,7 @@ These are the default provided commands for performing test actions:
 
 ## Developing Modules
 
-The OS.js client and server are split up into several modules provided by `npm` packages (see `package.json`).
+The MeeseOS client and server are split up into several modules provided by `npm` packages (see `package.json`).
 
 To override these modules follow the [modules guide](../guide/modules/README.md).
 

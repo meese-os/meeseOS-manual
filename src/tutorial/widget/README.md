@@ -86,7 +86,7 @@ import {TextField} from "@meeseOS/gui";
 export default class MyWidget extends Widget {
 
   someMethod() {
-    // Renders dialog contents. By default OS.js uses Hyperapp,
+    // Renders dialog contents. By default MeeseOS uses Hyperapp,
     // but you're not restriced to use this.
     const render = ($content, dialogWindow, dialog) => {
       dialog.app = app({

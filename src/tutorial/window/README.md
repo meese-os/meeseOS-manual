@@ -144,7 +144,7 @@ win.setNextZindex(); // Sets next z-index (move to top)
 
 ## Media Queries
 
-You can assign local media queries to a window using attributes. By default OS.js provides:
+You can assign local media queries to a window using attributes. By default MeeseOS provides:
 
 * `small:<=640px`
 * `medium:<=1024px`

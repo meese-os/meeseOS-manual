@@ -139,11 +139,11 @@ You can use a process manager like [PM2](http://pm2.keymetrics.io/) to keep your
 
 You can also use systemd to keep a single instance of the node server alive. It will start on boot and restart on crashes etc.
 
-> [info] This assumes that you are running OS.js as a dedicated `meeseOS` host user and it is installed in `/opt/meeseOS`. You can change this as you see fit.
+> [info] This assumes that you are running MeeseOS as a dedicated `meeseOS` host user and it is installed in `/opt/meeseOS`. You can change this as you see fit.
 
 ```
 [Unit]
-Description=OS.js Node Server
+Description=MeeseOS Node Server
 Documentation=https://manual.os-js.org
 After=network.target
 
@@ -206,7 +206,7 @@ In this example we configure:
 
 ```javascript
 // src/client/config.js
-// By default all of these settings are detected with the URL you're using to visit OS.js
+// By default all of these settings are detected with the URL you're using to visit MeeseOS
 
 {
   // HTTP Requests

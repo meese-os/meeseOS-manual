@@ -9,7 +9,7 @@ This tutorial will show you how to create an application and use some of the fun
 
 ## Creation
 
-To create a new application package, run the following command inside your OS.js installation: `npm run make:application`.
+To create a new application package, run the following command inside your MeeseOS installation: `npm run make:application`.
 
 > The created application will be placed in `src/packages` (by default) and is based on the [official example](https://github.com/os-js/osjs-example-application).
 

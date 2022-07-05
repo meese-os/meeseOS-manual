@@ -18,13 +18,13 @@ The first option is to override the modules from within your installation/distri
 > [info] Note that you don't have to use git in this case. You can also download and extract an archived version.
 
 ```bash
-# Then inside the OS.js root directory
+# Then inside the MeeseOS root directory
 git clone https://github.com/os-js/meeseOS-client src/meeseOS-client
 cd src/meeseOS-client
 npm install
 npm run build
 
-# Then back inside the OS.js root directory
+# Then back inside the MeeseOS root directory
 npm install --save file:src/meeseOS-client
 npm run build
 ```
@@ -34,7 +34,7 @@ npm run build
 Same as above, except that the overridden modules are kept in separate repositories using Git [submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 ```bash
-# In your OS.js root directory, set up the submodule
+# In your MeeseOS root directory, set up the submodule
 git submodule add https://github.com/os-js/meeseOS-client src/meeseOS-client
 cd src/meeseOS-client
 npm install
@@ -73,7 +73,7 @@ npm install
 npm run build
 npm link
 
-# Then back inside the OS.js root directory
+# Then back inside the MeeseOS root directory
 npm link @meeseOS/client
 npm run build
 ```

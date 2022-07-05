@@ -7,7 +7,7 @@ full_title: Service Provider Tutorial
 
 This tutorial will explain how to create and use a service provider.
 
-A Service Provider registers services that provide features for OS.js.
+A Service Provider registers services that provide features for MeeseOS.
 
 > Service Providers have the same interface and initialization/startup procedure in both client and server.
 
