@@ -2062,52 +2062,49 @@
                                 
   <h1 id="faq">FAQ</h1>
 <p>This is a curated list of frequently asked questions.</p>
-<h2 id="q-what-is-this-">Q: What is this ?</h2>
-<p>OS.js is a free and open-source cloud/web desktop platform.</p>
+<h2 id="q-what-is-this">Q: What is this?</h2>
+<p>MeeseOS is a free and open-source cloud/web desktop platform.</p>
 <p>It serves web applications in an interface familiar to most desktop users.</p>
-<h2 id="q-how-do-i-get-support-">Q: How do I get support ?</h2>
+<h2 id="q-how-do-i-get-support">Q: How do I get support?</h2>
 <p>Send an email to hello@os-js.org or check out the <a href="https://github.com/os-js/OS.js#links" target="_blank">following links</a>.</p>
-<h2 id="q-how-do-i-report-a-bug-or-feature-requests-">Q: How do I report a bug or feature requests ?</h2>
+<h2 id="q-how-do-i-report-a-bug-or-feature-requests">Q: How do I report a bug or feature requests?</h2>
 <p>The best way is to create an issue on Github. Read <a href="https://github.com/os-js/OS.js/issues/705" target="_blank">this issue</a> for more information.</p>
 <p>You can also contact me via methods listed above, but an issue is preferred.</p>
-<h2 id="q-how-can-i-get-started-with-development-">Q: How can I get started with development ?</h2>
+<h2 id="q-how-can-i-get-started-with-development">Q: How can I get started with development?</h2>
 <p>Read this manual. It has chapters about <a href="install/">installation</a>, <a href="resource/overview/">general overview</a>, <a href="development/">development</a>, Tutorials, Guides and other articles.</p>
 <p>This project uses the following technologies: HTML, CSS (using Sass/SCSS), JavaScript (ES6 and Node), Webpack and npm.</p>
 <p>Most of the articles assume you at least have basic understanding of these.</p>
 <p>If you still have questions, head into the <a href="https://gitter.im/os-js/OS.js" target="_blank">chatroom</a>.</p>
-<h2 id="q-how-do-i-contribute-">Q: How do I contribute ?</h2>
+<h2 id="q-how-do-i-contribute">Q: How do I contribute?</h2>
 <p>See the following resources:</p>
 <ul>
 <li><a href="https://gitter.im/os-js/OS.js" target="_blank">Contributing overview</a></li>
 <li><a href="development/#contributing">Contributing guide</a></li>
 </ul>
-<h2 id="q-how-do-i-perform-installation-on-windows-">Q: How do I perform installation on windows ?</h2>
+<h2 id="q-how-do-i-perform-installation-on-windows">Q: How do I perform installation on Windows?</h2>
 <p><a href="https://github.com/os-js/OS.js/issues/710" target="_blank">Currently</a> there are no automated installers, so you either have to use <a href="https://git-scm.com/" target="_blank">git shell</a>, or PowerShell.</p>
-<p>Using windows explorer, enter the OS.js installation directory and press <code>ALT+D</code>, then type <code>powershell</code> and press <code>ENTER</code>.</p>
-<h2 id="q-can-i-make-changes-to-your-software-">Q: Can I make changes to your software ?</h2>
+<p>Using windows explorer, enter the MeeseOS installation directory and press <code>ALT+D</code>, then type <code>powershell</code> and press <code>ENTER</code>.</p>
+<h2 id="q-can-i-make-changes-to-your-software">Q: Can I make changes to your software?</h2>
 <p>Yes. This project is open-source and <a href="https://github.com/os-js/OS.js/blob/LICENSE" target="_blank">licensed</a> under BSD-2-clause which allows you to modify and distribute the software.</p>
 <p>If you want to contribute changes back to the community, look at &quot;How do I contribute&quot; above.</p>
-<h2 id="q-how-do-i-add-login-">Q: How do I add login ?</h2>
+<h2 id="q-how-do-i-add-login">Q: How do I add login?</h2>
 <p>By default MeeseOS is set up to automatically log in with a &quot;demo&quot; user and a dummy authentication adapter.</p>
 <p>The adapter is what authenticates a user and you can <a href="guide/auth/">customize it</a>. An example is the <a href="https://github.com/os-js/osjs-database-auth" target="_blank">database adapter</a>.</p>
-<h2 id="q-can-i-add-feature-x-or-application-y-">Q: Can I add feature X or application Y ?</h2>
+<h2 id="q-can-i-add-feature-x-or-application-y">Q: Can I add feature X or application Y?</h2>
 <p>Since OS.js runs on JavaScript within a browser environment and Node on the backend, these are your limitations.</p>
 <p>Anything that can use these technologies can technically run on this platform.</p>
-<h2 id="q-how-do-i-add-an-existing-web-application-">Q: How do I add an existing web application ?</h2>
+<h2 id="q-how-do-i-add-an-existing-web-application">Q: How do I add an existing web application?</h2>
 <p>The easiest way to add an existing web application is to to <a href="tutorial/application/#creation">create a new application</a> and simply use an <a href="tutorial/iframe/">iframe</a>.</p>
 <p>This way you can leave your entire codebase intact and just load it as you would normally, but within a Window.</p>
-<h3 id="apps-hosted-outside-osjs">Apps hosted outside OS.js</h3>
+<h3 id="apps-hosted-outside-meeseos">Apps hosted outside MeeseOS</h3>
 <p>An example on how to display an already running separate application:</p>
 <p><a href="https://gist.github.com/andersevenrud/637ef06e47aa32a96a06789b36d9a623" target="_blank">https://gist.github.com/andersevenrud/637ef06e47aa32a96a06789b36d9a623</a></p>
 <blockquote>
 <p>This file is a modified version of what <code>npm run make:application</code> creates.</p>
 </blockquote>
-<h3 id="hosted-within-osjs">Hosted within OS.js</h3>
+<h3 id="hosted-within-meeseos">Hosted within MeeseOS</h3>
 <p>See the <a href="tutorial/iframe/">IFrames tutorial</a>.</p>
-<h2 id="q-can-i-upgrade-from-v2-">Q: Can I upgrade from v2 ?</h2>
-<p>No. OS.js v3 is not compatible with the v2 APIs.</p>
-<p>If you developed your v2 applications using IFrames or custom frameworks, <em>transitioning</em> to v3 is possible.</p>
-<h2 id="q-is-there-a-matrix-channel-">Q: Is there a matrix channel ?</h2>
+<h2 id="q-is-there-a-matrix-channel">Q: Is there a matrix channel?</h2>
 <p>Gitter can now be used via Matrix officially:</p>
 <p><a href="https://matrix.to/#/#os-js_OS.js:gitter.im?utm_source=gitter" target="_blank">https://matrix.to/#/#os-js_OS.js:gitter.im?utm_source=gitter</a></p>
 
@@ -2157,7 +2154,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"FAQ","level":"1.4","depth":1,"next":{"title":"Architecture and overview","level":"2.1","depth":1,"path":"resource/overview/README.md","ref":"resource/overview/README.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"FAQ.md","mtime":"2022-07-04T23:23:44.775Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"FAQ","level":"1.4","depth":1,"next":{"title":"Architecture and overview","level":"2.1","depth":1,"path":"resource/overview/README.md","ref":"resource/overview/README.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"FAQ.md","mtime":"2022-07-05T00:18:26.632Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-05T00:18:34.763Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>

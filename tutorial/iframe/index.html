@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <title>IFrame Tutorial - MeeseOS Web Desktop Manual</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="A tutorial on how to create Iframe applications in OS.js">
+        <meta name="description" content="A tutorial on how to create Iframe applications in MeeseOS">
         <meta name="generator" content="HonKit 3.7.4">
         <meta name="author" content="Aaron Meese <aaronjmeese@gmail.com>">
         
@@ -2066,7 +2066,7 @@
 <p>For general information about development see <a href="../../development/">development article</a>.</p>
 </blockquote>
 <h2 id="creation">Creation</h2>
-<p>To create a new application package, run the following command inside your OS.js installation: <code>npm run make:iframe-application</code>.</p>
+<p>To create a new application package, run the following command inside your MeeseOS installation: <code>npm run make:iframe-application</code>.</p>
 <p>The created application will be placed in <code>src/packages</code> (by default) and is based on the <a href="https://github.com/os-js/osjs-example-iframe-application" target="_blank">official example</a>.</p>
 <blockquote>
 <p>Remember to run <code>npm run package:discover</code> after you generate a package to make it available.</p>
@@ -2079,8 +2079,8 @@
 loading of remote content may fail due to security measures.</p>
 </blockquote>
 <h2 id="bi-directional-communication">Bi-directional communication</h2>
-<p>OS.js has an internal event listener that can intercept iframe messages and forward them to the Window the content was loaded from.</p>
-<p>This allows you to interact with the underlying OS.js APIs and services from an IFrame.</p>
+<p>MeeseOS has an internal event listener that can intercept iframe messages and forward them to the Window the content was loaded from.</p>
+<p>This allows you to interact with the underlying MeeseOS APIs and services from an IFrame.</p>
 <h3 id="iframe-implementation">IFrame implementation</h3>
 <pre><code class="lang-html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
@@ -2091,7 +2091,7 @@ loading of remote content may fail due to security measures.</p>
       <span class="hljs-keyword">var</span> pid = <span class="hljs-built_in">parseInt</span>(<span class="hljs-built_in">window</span>.location.search.match(<span class="hljs-regexp">/pid=([^&amp;]*)/</span>)[<span class="hljs-number">1</span>], <span class="hljs-number">10</span>);
       <span class="hljs-keyword">var</span> wid = <span class="hljs-built_in">parseInt</span>(<span class="hljs-built_in">window</span>.location.search.match(<span class="hljs-regexp">/wid=([^&amp;]*)/</span>)[<span class="hljs-number">1</span>], <span class="hljs-number">10</span>);
 
-      <span class="hljs-comment">// Global function to send a message to OS.js Core that forwards it to the correct application/window.</span>
+      <span class="hljs-comment">// Global function to send a message to MeeseOS Core that forwards it to the correct application/window.</span>
       <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sendMessage</span>(<span class="hljs-params"></span>) </span>{
         top.postMessage({
           <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;meeseOS/iframe:message&quot;</span>,
@@ -2103,10 +2103,10 @@ loading of remote content may fail due to security measures.</p>
         }, <span class="hljs-string">&quot;*&quot;</span>);
       }
 
-      <span class="hljs-comment">// Listen from messages from OS.js Application</span>
+      <span class="hljs-comment">// Listen from messages from MeeseOS Application</span>
       <span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">&quot;message&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ev</span>) </span>{
         <span class="hljs-comment">// We should get &quot;Pong&quot; here</span>
-        <span class="hljs-built_in">console</span>.warn(<span class="hljs-string">&quot;Message from OS.js&quot;</span>, ev.data);
+        <span class="hljs-built_in">console</span>.warn(<span class="hljs-string">&quot;Message from MeeseOS&quot;</span>, ev.data);
       });
 
       <span class="hljs-comment">// Send an example message</span>
@@ -2195,7 +2195,7 @@ loading of remote content may fail due to security measures.</p>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"A tutorial on how to create Iframe applications in OS.js","full_title":"IFrame Tutorial","title":"IFrames","level":"4.12.6","depth":2,"next":{"title":"CLI","level":"5.1","depth":1,"path":"guide/cli/README.md","ref":"guide/cli/README.md","articles":[{"title":"Commands","level":"5.1.1","depth":2,"anchor":"#ommands","path":"guide/cli/README.md","ref":"guide/cli/README.md#ommands","articles":[]},{"title":"Server Arguments","level":"5.1.2","depth":2,"anchor":"#server-arguments","path":"guide/cli/README.md","ref":"guide/cli/README.md#server-arguments","articles":[]},{"title":"Custom Tasks","level":"5.1.3","depth":2,"anchor":"#custom-tasks","path":"guide/cli/README.md","ref":"guide/cli/README.md#custom-tasks","articles":[]}]},"previous":{"title":"Drag-and-Drop","level":"4.12.5","depth":2,"path":"tutorial/dnd/README.md","ref":"tutorial/dnd/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://manual.aaronmeese.com","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/iframe/README.md","mtime":"2022-07-04T23:23:44.779Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-04T23:23:52.727Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"A tutorial on how to create Iframe applications in MeeseOS","full_title":"IFrame Tutorial","title":"IFrames","level":"4.12.6","depth":2,"next":{"title":"CLI","level":"5.1","depth":1,"path":"guide/cli/README.md","ref":"guide/cli/README.md","articles":[{"title":"Commands","level":"5.1.1","depth":2,"anchor":"#ommands","path":"guide/cli/README.md","ref":"guide/cli/README.md#ommands","articles":[]},{"title":"Server Arguments","level":"5.1.2","depth":2,"anchor":"#server-arguments","path":"guide/cli/README.md","ref":"guide/cli/README.md#server-arguments","articles":[]},{"title":"Custom Tasks","level":"5.1.3","depth":2,"anchor":"#custom-tasks","path":"guide/cli/README.md","ref":"guide/cli/README.md#custom-tasks","articles":[]}]},"previous":{"title":"Drag-and-Drop","level":"4.12.5","depth":2,"path":"tutorial/dnd/README.md","ref":"tutorial/dnd/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/iframe/README.md","mtime":"2022-07-05T00:18:26.640Z","type":"markdown"},"gitbook":{"version":"3.7.4","time":"2022-07-05T00:18:34.763Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>
