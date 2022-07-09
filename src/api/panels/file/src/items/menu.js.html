@@ -183,8 +183,6 @@ const makeTree = (core, icon) =&gt; {
  */
 export default class MenuPanelItem extends PanelItem {
 	render(state, actions) {
-		// TODO: Try to fix this
-		console.log(&quot;OPTIONS in MenuPanelItem:&quot;, this.options);
 		const icon = this.options.icon || defaultIcon;
 
 		const logout = async (save) =&gt; {
