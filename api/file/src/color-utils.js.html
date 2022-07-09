@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/color-utils.js | meeseOS Dialog API</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="meeseOS Dialog API Documentation"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="meeseOS Dialog API"><meta property="twitter:description" content="meeseOS Dialog API Documentation"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-colorFromClick">colorFromClick</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-componentToHex">componentToHex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createPalette">createPalette</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hexToComponent">hexToComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-rangeContainer">rangeContainer</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#dialogs">dialogs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/dialogs/confirm.js~ConfirmDialog.html">ConfirmDialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/dialogs/progress.js~ProgressDialog.html">ProgressDialog</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/color-utils.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { Box, RangeField, TextField } from &quot;@meeseOS/gui&quot;;
+import { h } from &quot;hyperapp&quot;;
+
+/**
+ * Creates a palette canvas at the specified dimensions
+ * @param {Number} width
+ * @param {Number} height
+ */
+export const createPalette = (width = 98, height = 98) =&gt; {
+	const canvas = document.createElement(&quot;canvas&quot;);
+	canvas.width = width;
+	canvas.height = height;
+
+	const ctx = canvas.getContext(&quot;2d&quot;);
+
+	let gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+	gradient.addColorStop(0, &quot;rgb(255,   0,   0)&quot;);
+	gradient.addColorStop(0.15, &quot;rgb(255,   0, 255)&quot;);
+	gradient.addColorStop(0.33, &quot;rgb(0,     0, 255)&quot;);
+	gradient.addColorStop(0.49, &quot;rgb(0,   255, 255)&quot;);
+	gradient.addColorStop(0.67, &quot;rgb(0,   255,   0)&quot;);
+	gradient.addColorStop(0.84, &quot;rgb(255, 255,   0)&quot;);
+	gradient.addColorStop(1, &quot;rgb(255,   0,   0)&quot;);
+
+	ctx.fillStyle = gradient;
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+	gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+	gradient.addColorStop(0, &quot;rgba(255, 255, 255, 1)&quot;);
+	gradient.addColorStop(0.5, &quot;rgba(255, 255, 255, 0)&quot;);
+	gradient.addColorStop(0.5, &quot;rgba(0,     0,   0, 0)&quot;);
+	gradient.addColorStop(1, &quot;rgba(0,     0,   0, 1)&quot;);
+
+	ctx.fillStyle = gradient;
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+	return canvas;
+};
+
+/**
+ * Convert component values into hex
+ */
+export const componentToHex = ({ r, g, b }) =&gt; {
+	const hex = [
+		parseInt(r, 10).toString(16),
+		parseInt(g, 10).toString(16),
+		parseInt(b, 10).toString(16),
+	].map((i) =&gt; (String(i).length === 1 ? &quot;0&quot; + String(i) : i));
+
+	return &quot;#&quot; + hex.join(&quot;&quot;).toUpperCase();
+};
+
+/**
+ * Converts hex to its component values
+ */
+export const hexToComponent = (hex = &quot;#000000&quot;) =&gt; {
+	if (typeof hex === &quot;object&quot;) hex = hex.hex;
+	const rgb = parseInt(hex.replace(&quot;#&quot;, &quot;&quot;), 16);
+	const val = {};
+	val.r = (rgb &amp; (255 &lt;&lt; 16)) &gt;&gt; 16;
+	val.g = (rgb &amp; (255 &lt;&lt; 8)) &gt;&gt; 8;
+	val.b = rgb &amp; 255;
+	return val;
+};
+
+/**
+ * Gets the color of a clicked palette area
+ */
+export const colorFromClick = (ev, canvas) =&gt; {
+	const { clientX, clientY } = ev;
+	const box = canvas.getBoundingClientRect();
+	const cx = clientX - box.x;
+	const cy = clientY - box.y;
+	const ctx = canvas.getContext(&quot;2d&quot;);
+	const { data } = ctx.getImageData(cx, cy, 1, 1);
+	const [r, g, b] = data;
+	const hex = componentToHex({ r, g, b });
+	return { r, g, b, hex };
+};
+
+/**
+ * Creates and returns a range slider element
+ * @param {String} color hexadecimal color
+ * @param {Object} value TODO: typedef
+ * @param {Object} actions TODO: typedef
+ */
+export const rangeContainer = (color, value, actions) =&gt;
+	h(Box, { orientation: &quot;vertical&quot;, align: &quot;center&quot;, padding: false }, [
+		h(Box, { shrink: 1 }, h(&quot;div&quot;, {}, color.toUpperCase())),
+		h(RangeField, {
+			box: { grow: 1 },
+			min: 0,
+			max: 255,
+			value: value,
+			oncreate: (el) =&gt; (el.value = value),
+			oninput: (ev, newValue) =&gt; {
+				newValue = Number(newValue);
+				actions.setComponent({ color: color, newValue });
+			},
+			onchange: (ev, newValue) =&gt; {
+				newValue = Number(newValue);
+				actions.setComponent({ color: color, newValue });
+			},
+		}),
+		h(TextField, {
+			box: { shrink: 1, basis: &quot;5em&quot; },
+			type: &quot;number&quot;,
+			value: Number(value),
+			oncreate: (el) =&gt; (el.value = Number(value)),
+			oninput: (ev, newValue) =&gt; {
+				newValue = Number(newValue);
+				actions.setComponent({ color: color, newValue });
+			},
+		}),
+	]);
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
