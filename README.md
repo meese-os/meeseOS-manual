@@ -25,7 +25,7 @@ npm run serve
 
 ## Contribution
 
-* **Sponsor on [Github](https://github.com/sponsors/andersevenrud)**
+* **Sponsor on [Github](https://github.com/sponsors/ajmeese7)**
 * **Become a [Patreon](https://www.patreon.com/user?u=2978551&ty=h&u=2978551)**
 * **Support on [Open Collective](https://opencollective.com/osjs)**
 * [Contribution Guide](https://github.com/os-js/OS.js/blob/master/CONTRIBUTING.md)
@@ -38,8 +38,6 @@ See the [Official Manuals](https://meese-enterprises.github.io/meeseOS-manual/) 
 
 * [Official Chat](https://gitter.im/os-js/OS.js)
 * [Community Forums and Announcements](https://community.os-js.org/)
-* [Homepage](https://os-js.org/)
-* [Twitter](https://twitter.com/osjsorg) ([author](https://twitter.com/andersevenrud))
-* [Google+](https://plus.google.com/b/113399210633478618934/113399210633478618934)
-* [Facebook](https://www.facebook.com/os.js.org)
+* [Homepage](https://meese.enterprises/)
+* [Twitter](https://twitter.com/MeeseLLC) ([author](https://twitter.com/ajmeese7))
 * [Docker Hub](https://hub.docker.com/u/osjs/)

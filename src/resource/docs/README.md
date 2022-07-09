@@ -11,13 +11,13 @@ You can find the majority of documentation in this manual.
 
 You can find auto-generated documentation for the common core modules here:
 
-* [osjs-common](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-common/)
-* [osjs-client](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-client/)
-* [osjs-gui](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-gui/)
-* [osjs-dialogs](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-dialogs/)
-* [osjs-panels](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-panels/)
-* [osjs-server](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-server/)
-* [osjs-event-emitter](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-event-emitter/)
+* [common](https://meese-enterprises.github.io/meeseOS-manual/api/common/)
+* [client](https://meese-enterprises.github.io/meeseOS-manual/api/client/)
+* [gui](https://meese-enterprises.github.io/meeseOS-manual/api/gui/)
+* [dialogs](https://meese-enterprises.github.io/meeseOS-manual/api/dialogs/)
+* [panels](https://meese-enterprises.github.io/meeseOS-manual/api/panels/)
+* [server](https://meese-enterprises.github.io/meeseOS-manual/api/server/)
+* [event-emitter](https://meese-enterprises.github.io/meeseOS-manual/api/event-emitter/)
 
 ## Example Packages
 

@@ -65,7 +65,7 @@ You can of course insert this into any arbitrary DOM element.
 
 ### Using Components
 
-A [standard component library](https://meese-enterprises.github.io/meeseOS-manual/api/osjs-gui/) for Hyperapp is officially provided.
+A [standard component library](https://meese-enterprises.github.io/meeseOS-manual/api/gui/) for Hyperapp is officially provided.
 
 ![Basic Example](example-2.png)
 
