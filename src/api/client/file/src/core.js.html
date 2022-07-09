@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/core.js | meeseOS Core API</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="meeseOS Core API Documentation"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="meeseOS Core API"><meta property="twitter:description" content="meeseOS Core API Documentation"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/application.js~Application.html">Application</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/auth.js~Auth.html">Auth</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/basic-application.js~BasicApplication.html">BasicApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/clipboard.js~Clipboard.html">Clipboard</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core.js~Core.html">Core</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/desktop.js~Desktop.html">Desktop</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/filesystem.js~Filesystem.html">Filesystem</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/login.js~Login.html">Login</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/middleware.js~Middleware.html">Middleware</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/notification.js~Notification.html">Notification</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/notifications.js~Notifications.html">Notifications</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/packages.js~Packages.html">Packages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/search.js~Search.html">Search</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/session.js~Session.html">Session</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/splash.js~Splash.html">Splash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/tray.js~Tray.html">Tray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window.js~Window.html">Window</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-download">download</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mkdir">mkdir</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readdir">readdir</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readfile">readfile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-rename">rename</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-search">search</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-stat">stat</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-touch">touch</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-unlink">unlink</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-url">url</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-writefile">writefile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-move">move</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ApplicationData">ApplicationData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ApplicationOptions">ApplicationOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ApplicationSession">ApplicationSession</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapter">AuthAdapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreOpenOptions">CoreOpenOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreOptions">CoreOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreUserData">CoreUserData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DeskopOptions">DeskopOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DesktopContextMenuEntry">DesktopContextMenuEntry</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DesktopIconViewSettings">DesktopIconViewSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DesktopSettings">DesktopSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DesktopViewportRectangle">DesktopViewportRectangle</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-FilesystemAdapterMethods">FilesystemAdapterMethods</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-FilesystemMountpoint">FilesystemMountpoint</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-FilesystemMountpointAttributes">FilesystemMountpointAttributes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-FilesystemOptions">FilesystemOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-LoginOptions">LoginOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MiddlewareData">MiddlewareData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-NotificationOptions">NotificationOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PackageLaunchOptions">PackageLaunchOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PackageMetadata">PackageMetadata</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PackageReference">PackageReference</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsAdapter">SettingsAdapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsAdapterConfiguration">SettingsAdapterConfiguration</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsOptions">SettingsOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntry">TrayEntry</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntryData">TrayEntryData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSDownloadOptions">VFSDownloadOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WebsocketOptions">WebsocketOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WindowAttributes">WindowAttributes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WindowDimension">WindowDimension</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WindowOptions">WindowOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WindowPosition">WindowPosition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WindowSession">WindowSession</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WindowState">WindowState</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-auth">adapters/auth</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-localStorageAuth">localStorageAuth</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-serverAuth">serverAuth</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-settings">adapters/settings</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-localStorageSettings">localStorageSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-serverSettings">serverSettings</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-ui">adapters/ui</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/adapters/ui/iconview.js~DesktopIconView.html">DesktopIconView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-vfs">adapters/vfs</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-nullAdapter">nullAdapter</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#providers">providers</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/auth.js~AuthServiceProvider.html">AuthServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/desktop.js~DesktopServiceProvider.html">DesktopServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/notifications.js~NotificationServiceProvider.html">NotificationServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthProviderContract">AuthProviderContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthServiceOptions">AuthServiceOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderClipboardContract">CoreProviderClipboardContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderDOMContract">CoreProviderDOMContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderDnDContract">CoreProviderDnDContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderMiddlewareContract">CoreProviderMiddlewareContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderOptions">CoreProviderOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderPackagesContract">CoreProviderPackagesContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderSessionContract">CoreProviderSessionContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderSoundContract">CoreProviderSoundContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderThemeContract">CoreProviderThemeContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderTrayContract">CoreProviderTrayContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreProviderWindowContract">CoreProviderWindowContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DeskopProviderContract">DeskopProviderContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsProviderContract">SettingsProviderContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsServiceOptions">SettingsServiceOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSServiceContract">VFSServiceContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSServiceFilesystemContract">VFSServiceFilesystemContract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSServiceOptions">VFSServiceOptions</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/preloader.js~Preloader.html">Preloader</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-invertHex">invertHex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-applyBackgroundStyles">applyBackgroundStyles</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createPanelSubtraction">createPanelSubtraction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDroppingImage">isDroppingImage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validVfsDrop">validVfsDrop</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-draggable">draggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-droppable">droppable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-DomAnimator">DomAnimator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createCssText">createCssText</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createNativeNotification">createNativeNotification</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-escapeHtml">escapeHtml</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleTabOnTextarea">handleTabOnTextarea</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-playSound">playSound</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-script">script</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-style">style</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-supportedMedia">supportedMedia</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-fetch">fetch</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-doubleTap">doubleTap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getEvent">getEvent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-matchKeyCombo">matchKeyCombo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-urlResolver">urlResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-basename">basename</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createFileIter">createFileIter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createWatchEvents">createWatchEvents</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-filterMountByGroups">filterMountByGroups</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFileIcon">getFileIcon</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-humanFileSize">humanFileSize</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-parentDirectory">parentDirectory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-parseMountpointPrefix">parseMountpointPrefix</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-pathJoin">pathJoin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-pathname">pathname</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-transformArrayBuffer">transformArrayBuffer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-transformReaddir">transformReaddir</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createDOMAttributes">createDOMAttributes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createDOMStyles">createDOMStyles</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-loadOptionsFromConfig">loadOptionsFromConfig</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-supportsPassive">supportsPassive</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-supportsTransition">supportsTransition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DraggableInstance">DraggableInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DraggableOptions">DraggableOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DroppableInstance">DroppableInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DroppableOptions">DroppableOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-NormalizedEventPosition">NormalizedEventPosition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PreloaderEntry">PreloaderEntry</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PreloaderEntryElement">PreloaderEntryElement</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PreloaderResult">PreloaderResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-URLResolverOptions">URLResolverOptions</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/core.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/*
+ * OS.js - JavaScript Cloud/Web Desktop Platform
+ *
+ * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * @license Simplified BSD License
+ */
+
+import { CoreBase } from &quot;@meeseOS/common&quot;;
+import { defaultConfiguration } from &quot;./config&quot;;
+import { fetch } from &quot;./utils/fetch&quot;;
+import { urlResolver } from &quot;./utils/url&quot;;
+import Application from &quot;./application&quot;;
+import logger from &quot;./logger&quot;;
+import Splash from &quot;./splash&quot;;
+import Websocket from &quot;./websocket&quot;;
+import merge from &quot;deepmerge&quot;;
+
+/**
+ * @callback SplashCallback
+ * @param {Core} core
+ * @return {Splash}
+ */
+
+/**
+ * User Data
+ * @typedef {Object} CoreUserData
+ * @property {string} username
+ * @property {number} [id]
+ * @property {string[]} [groups=[]]
+ */
+
+/**
+ * Core Options
+ *
+ * @typedef {Object} CoreOptions
+ * @property {Element} [root] The root DOM element for elements
+ * @property {Element} [resourceRoot] The root DOM element for resources
+ * @property {String[]} [classNames] List of class names to apply to root dom element
+ * @property {SplashCallback|Splash} [splash] Custom callback function for creating splash screen
+ */
+
+/**
+ * Core Open File Options
+ *
+ * @typedef {Object} CoreOpenOptions
+ * @property {boolean} [useDefault] Use saved default application preference
+ * @property {boolean} [forceDialog] Force application choice dialog on multiple choices
+ */
+
+/**
+ * Main Core class for MeeseOS service providers and bootstrapping.
+ */
+export default class Core extends CoreBase {
+	/**
+	 * Create core instance
+	 * @param {CoreConfig} [config={}] Configuration tree
+	 * @param {CoreOptions} [options={}] Options
+	 */
+	constructor(config = {}, options = {}) {
+		options = {
+			classNames: [&quot;meeseOS-root&quot;],
+			root: document.body,
+			...(options || {}),
+		};
+
+		super(defaultConfiguration, config, options);
+
+		const $dynamicBackground = document.createElement(&quot;canvas&quot;);
+		$dynamicBackground.className = &quot;meeseOS-dynamic-background&quot;;
+
+		const $contents = document.createElement(&quot;div&quot;);
+		$contents.className = &quot;meeseOS-contents&quot;;
+		$contents.appendChild($dynamicBackground);
+
+		this.logger = logger;
+
+		/**
+		 * Websocket connection
+		 * @type {Websocket}
+		 */
+		this.ws = null;
+
+		/**
+		 * Ping (stay alive) interval
+		 * @type {number}
+		 */
+		this.ping = null;
+
+		/**
+		 * Main DOM element
+		 * @type {Element}
+		 * @readonly
+		 */
+		this.$root = options.root;
+
+		/**
+		 * Windows etc DOM element
+		 * @type {Element}
+		 * @readonly
+		 */
+		this.$contents = $contents;
+
+		/**
+		 * Resource script container DOM element
+		 * @type {Element}
+		 * @readonly
+		 */
+		this.$resourceRoot = options.resourceRoot || document.querySelector(&quot;head&quot;);
+
+		/**
+		 * Default fetch request options
+		 * @type {Object}
+		 */
+		this.requestOptions = {};
+
+		/**
+		 * Url Resolver
+		 * TODO: typedef
+		 * @type {function(): string}
+		 * @readonly
+		 */
+		this.urlResolver = urlResolver(this.configuration);
+
+		/**
+		 * Current user data
+		 * @type {CoreUserData}
+		 * @readonly
+		 */
+		this.user = this.config(&quot;auth.defaultUserData&quot;);
+
+		this.options.classNames.forEach((n) =&gt; this.$root.classList.add(n));
+
+		const { uri } = this.configuration.ws;
+		if (!uri.match(/^wss?:/)) {
+			const { protocol, host } = window.location;
+
+			this.configuration.ws.uri =
+				protocol.replace(/^http/, &quot;ws&quot;) +
+				&quot;//&quot; +
+				host +
+				uri.replace(/^\/+/, &quot;/&quot;);
+		}
+
+		// Only create the splash in production
+		if (this.configuration.development === false) {
+			/**
+			 * Splash instance
+			 * @type {Splash}
+			 * @readonly
+			 */
+			this.splash = options.splash ? options.splash(this) : new Splash(this);
+			this.splash.init();
+		}
+	}
+
+	/**
+	 * Destroy core instance
+	 * @return {boolean}
+	 */
+	destroy() {
+		if (this.destroyed) {
+			return Promise.resolve();
+		}
+
+		this.emit(&quot;meeseOS/core:destroy&quot;);
+
+		this.ping = clearInterval(this.ping);
+
+		Application.destroyAll();
+
+		if (this.ws) {
+			this.ws.close();
+		}
+
+		if (this.$contents) {
+			this.$contents.remove();
+			this.$contents = undefined;
+		}
+
+		this.user = this.config(&quot;auth.defaultUserData&quot;);
+		this.ws = null;
+		this.ping = null;
+
+		return super.destroy();
+	}
+
+	/**
+	 * Boots up MeeseOS
+	 * @return {Promise&lt;boolean&gt;}
+	 */
+	boot() {
+		const done = (e) =&gt; {
+			if (e) {
+				logger.error(&quot;Error while booting&quot;, e);
+			}
+
+			console.groupEnd();
+
+			return this.start();
+		};
+
+		if (this.booted) {
+			return Promise.resolve(false);
+		}
+
+		console.group(&quot;Core::boot()&quot;);
+
+		this.$root.appendChild(this.$contents);
+		this._attachEvents();
+		this.emit(&quot;meeseOS/core:boot&quot;);
+
+		// TODO: Listen for meeseOS/splash:finished based on settings
+		// TODO: Prevent flash of login UI if the local cookie is set
+
+		return super
+			.boot()
+			.then(() =&gt; {
+				this.emit(&quot;meeseOS/core:booted&quot;);
+
+				if (this.has(&quot;meeseOS/auth&quot;)) {
+					return this.make(&quot;meeseOS/auth&quot;).show((user) =&gt; {
+						const defaultData = this.config(&quot;auth.defaultUserData&quot;);
+						this.user = {
+							...defaultData,
+							...user,
+						};
+
+						if (this.has(&quot;meeseOS/settings&quot;)) {
+							this.make(&quot;meeseOS/settings&quot;)
+								.load()
+								.then(() =&gt; done())
+								.catch(() =&gt; done());
+						} else {
+							done();
+						}
+					});
+				}
+
+				logger.debug(&quot;MeeseOS STARTED WITHOUT ANY AUTHENTICATION&quot;);
+				return done();
+			})
+			.catch(done);
+	}
+
+	/**
+	 * Starts all core services
+	 * @return {Promise&lt;boolean&gt;}
+	 */
+	start() {
+		const connect = () =&gt;
+			new Promise((resolve, reject) =&gt; {
+				try {
+					const valid = this._createConnection((error) =&gt;
+						error ? reject(error) : resolve()
+					);
+					if (valid === false) {
+						// We can skip the connection
+						resolve();
+					}
+				} catch (e) {
+					reject(e);
+				}
+			});
+
+		const done = (err) =&gt; {
+			this.emit(&quot;meeseOS/core:started&quot;);
+
+			if (err) {
+				logger.warn(&quot;Error while starting&quot;, err);
+			}
+
+			console.groupEnd();
+			return !err;
+		};
+
+		if (this.started) {
+			return Promise.resolve(false);
+		}
+
+		console.group(&quot;Core::start()&quot;);
+		this.emit(&quot;meeseOS/core:start&quot;);
+		this._createListeners();
+
+		return super
+			.start()
+			.then((result) =&gt; {
+				console.groupEnd();
+
+				if (result) {
+					return connect()
+						.then(() =&gt; done())
+						.catch((err) =&gt; done(err));
+				}
+
+				return false;
+			})
+			.catch(done);
+	}
+
+	/**
+	 * Attaches some internal events
+	 * @private
+	 */
+	_attachEvents() {
+		// Attaches sounds for certain events
+		this.on(&quot;meeseOS/core:started&quot;, () =&gt; {
+			if (this.has(&quot;meeseOS/sounds&quot;)) {
+				// TODO: Don&apos;t attempt to run this on autologin via cookie; DOMException
+				this.make(&quot;meeseOS/sounds&quot;).play(&quot;service-login&quot;);
+			}
+		});
+
+		this.on(&quot;meeseOS/core:destroy&quot;, () =&gt; {
+			if (this.has(&quot;meeseOS/sounds&quot;)) {
+				this.make(&quot;meeseOS/sounds&quot;).play(&quot;service-logout&quot;);
+			}
+		});
+
+		// Forwards messages to an application from internal websocket
+		this.on(&quot;meeseOS/application:socket:message&quot;, ({ pid, args }) =&gt; {
+			const found = Application.getApplications().find(
+				(proc) =&gt; proc &amp;&amp; proc.pid === pid
+			);
+
+			if (found) {
+				found.emit(&quot;ws:message&quot;, ...args);
+			}
+		});
+
+		// Sets up a server ping
+		this.on(&quot;meeseOS/core:connected&quot;, (config) =&gt; {
+			const enabled = this.config(&quot;http.ping&quot;);
+
+			if (enabled) {
+				// Defaults to every 30 minutes if not specified otherwise
+				const pingTime = typeof enabled === &quot;number&quot; ? enabled : 30 * 60 * 1000;
+
+				this.ping = setInterval(() =&gt; {
+					if (this.ws) {
+						if (this.ws.connected &amp;&amp; !this.ws.reconnecting) {
+							this.request(&quot;/ping&quot;).catch((e) =&gt;
+								logger.warn(&quot;Error on ping&quot;, e)
+							);
+						}
+					}
+				}, pingTime);
+			}
+		});
+	}
+
+	/**
+	 * Creates the main connection to server
+	 *
+	 * @private
+	 * @param {Function} cb Callback function
+	 * @return {boolean}
+	 */
+	_createConnection(cb) {
+		if (this.configuration.standalone || this.configuration.ws.disabled) {
+			return false;
+		}
+
+		const { uri } = this.config(&quot;ws&quot;);
+		let wasConnected = false;
+
+		logger.debug(&quot;Creating websocket connection on&quot;, uri);
+		this.ws = new Websocket(&quot;CoreSocket&quot;, uri, {
+			interval: this.config(&quot;ws.connectInterval&quot;, 1000),
+		});
+
+		this.ws.once(&quot;connected&quot;, () =&gt; {
+			// Allow for some grace-time in case we close prematurely
+			setTimeout(() =&gt; {
+				wasConnected = true;
+				cb();
+			}, 100);
+		});
+
+		this.ws.on(&quot;connected&quot;, (ev, reconnected) =&gt; {
+			this.emit(&quot;meeseOS/core:connect&quot;, ev, reconnected);
+		});
+
+		this.ws.once(&quot;failed&quot;, (ev) =&gt; {
+			if (!wasConnected) {
+				cb(new Error(&quot;Connection closed&quot;));
+				this.emit(&quot;meeseOS/core:connection-failed&quot;, ev);
+			}
+		});
+
+		this.ws.on(&quot;disconnected&quot;, (ev) =&gt; {
+			this.emit(&quot;meeseOS/core:disconnect&quot;, ev);
+		});
+
+		this.ws.on(&quot;message&quot;, (ev) =&gt; {
+			try {
+				const data = JSON.parse(ev.data);
+				const params = data.params || [];
+				this.emit(data.name, ...params);
+			} catch (e) {
+				logger.warn(&quot;Exception on websocket message&quot;, e);
+			}
+		});
+
+		return true;
+	}
+
+	/**
+	 * Creates event listeners*
+	 * @private
+	 */
+	_createListeners() {
+		const handle = (data) =&gt; {
+			const { pid, wid, args } = data;
+			const proc = Application.getApplications().find((p) =&gt; p.pid === pid);
+			const win = proc ? proc.windows.find((w) =&gt; w.wid === wid) : null;
+
+			if (win) {
+				win.emit(&quot;iframe:get&quot;, ...(args || []));
+			}
+		};
+
+		window.addEventListener(&quot;message&quot;, (ev) =&gt; {
+			const message = ev.data || {};
+			if (message &amp;&amp; message.name === &quot;meeseOS/iframe:message&quot;) {
+				handle(...(message.params || []));
+			}
+		});
+	}
+
+	/**
+	 * Creates an URL based on configured public path
+	 *
+	 * If you give a options.type, the URL will be resolved
+	 * to the correct resource.
+	 *
+	 * @param {string} [endpoint=/] Endpoint
+	 * @param {object} [options] Additional options for resolving url
+	 * @param {boolean} [options.prefix=false] Returns a full URL complete with scheme, etc. (will always be true on websocket)
+	 * @param {string} [options.type] Optional URL type (websocket)
+	 * @param {PackageMetadata} [metadata] A package metadata
+	 * @return {string}
+	 */
+	url(endpoint = &quot;/&quot;, options = {}, metadata = {}) {
+		return this.urlResolver(endpoint, options, metadata);
+	}
+
+	/**
+	 * Make a HTTP request
+	 *
+	 * This is a wrapper for making a &apos;fetch&apos; request with some helpers
+	 * and integration with MeeseOS
+	 *
+	 * @param {string} url The endpoint
+	 * @param {Options} [options] fetch options
+	 * @param {string} [type] Request / Response type
+	 * @param {boolean} [force=false] Force request even when in standalone mode
+	 * @return {*}
+	 */
+	request(url, options = {}, type = null, force = false) {
+		if (this.config(&quot;standalone&quot;) &amp;&amp; !force) {
+			return Promise.reject(
+				new Error(&quot;Cannot make requests in standalone mode.&quot;)
+			);
+		}
+
+		if (!url.match(/^((http|ws|ftp)s?:)/i)) {
+			url = this.url(url);
+			options = merge(options, this.requestOptions);
+		}
+
+		return fetch(url, options, type).catch((error) =&gt; {
+			logger.warn(error);
+
+			throw new Error(`An error occured while performing a request: ${error}`);
+		});
+	}
+
+	/**
+	 * Create an application from a package
+	 *
+	 * @param {string} name Package name
+	 * @param {{foo: *}} [args] Launch arguments
+	 * @param {PackageLaunchOptions} [options] Launch options
+	 * @see {Packages}
+	 * @return {Promise&lt;Application&gt;}
+	 */
+	run(name, args = {}, options = {}) {
+		logger.debug(&quot;Core::run()&quot;, name, args, options);
+
+		return this.make(&quot;meeseOS/packages&quot;).launch(name, args, options);
+	}
+
+	/**
+	 * Spawns an application based on the file given
+	 * @param {VFSFile} file A file object
+	 * @param {CoreOpenOptions} [options] Options
+	 * @return {Boolean|Application}
+	 */
+	open(file, options = {}) {
+		if (file.mime === &quot;meeseOS/application&quot;) {
+			return this.run(file.path.split(&quot;/&quot;).pop());
+		}
+
+		const run = (app) =&gt; this.run(app, { file }, options);
+		const compatible = this.make(&quot;meeseOS/packages&quot;).getCompatiblePackages(
+			file.mime
+		);
+
+		if (compatible.length &gt; 0) {
+			if (compatible.length &gt; 1) {
+				try {
+					this._openApplicationDialog(options, compatible, file, run);
+
+					return true;
+				} catch (e) {
+					logger.warn(&quot;Exception on compability check&quot;, e);
+				}
+			}
+
+			run(compatible[0].name);
+
+			return Promise.resolve(true);
+		}
+
+		return Promise.resolve(false);
+	}
+
+	/**
+	 * Wrapper method to create an application choice dialog
+	 * @private
+	 */
+	_openApplicationDialog(options, compatible, file, run) {
+		const useDefault = options.useDefault &amp;&amp; this.has(&quot;meeseOS/settings&quot;);
+		const setDefault = (name) =&gt;
+			this.make(&quot;meeseOS/settings&quot;)
+				.set(&quot;meeseOS/default-application&quot;, file.mime, name)
+				.save();
+
+		const value = useDefault
+			? this.make(&quot;meeseOS/settings&quot;).get(
+				&quot;meeseOS/default-application&quot;,
+				file.mime
+			)
+			: null;
+
+		const type = useDefault ? &quot;defaultApplication&quot; : &quot;choice&quot;;
+
+		const args = {
+			title: &quot;Select application&quot;,
+			message: `Select application for &apos;${file.path}&apos;`,
+			choices: compatible.reduce((o, i) =&gt; ({ ...o, [i.name]: i.name }), {}),
+			value,
+		};
+
+		if (value &amp;&amp; !options.forceDialog) {
+			run(value);
+		} else {
+			this.make(&quot;meeseOS/dialog&quot;, type, args, (btn, choice) =&gt; {
+				if (btn === &quot;ok&quot;) {
+					if (type === &quot;defaultApplication&quot;) {
+						if (useDefault) {
+							setDefault(choice.checked ? choice.value : null);
+						}
+
+						run(choice.value);
+					} else if (choice) {
+						run(choice);
+					}
+				}
+			});
+		}
+	}
+
+	/**
+	 * Removes an event handler
+	 * @param {string} name
+	 * @param {Function} [callback=null]
+	 * @param {boolean} [force=false]
+	 * @return {Core} this
+	 */
+	off(name, callback = null, force = false) {
+		if (name.match(/^meeseOS\//) &amp;&amp; typeof callback !== &quot;function&quot;) {
+			throw new TypeError(&quot;The callback must be a function&quot;);
+		}
+
+		return super.off(name, callback, force);
+	}
+
+	/**
+	 * Sends a &apos;broadcast&apos; event with given arguments
+	 * to all applications matching given filter
+	 * @param {string|Function} pkg The filter
+	 * @param {string} name The event name
+	 * @param {*} ...args Arguments to pass to emit
+	 * @return {string[]} List of application names emitted to
+	 */
+	broadcast(pkg, name, ...args) {
+		const filter =
+			typeof pkg === &quot;function&quot; ? pkg : (p) =&gt; p.metadata.name === pkg;
+
+		const apps = Application.getApplications().filter(filter);
+
+		return apps.map((proc) =&gt; {
+			proc.emit(name, ...args);
+
+			return proc.name;
+		});
+	}
+
+	/**
+	 * Sends a signal to the server over websocket.
+	 * This will be interpreted as an event in the server core.
+	 * @param {string} name Event name
+	 * @param {*} ...params Event callback parameters
+	 */
+	send(name, ...params) {
+		return this.ws.send(
+			JSON.stringify({
+				name,
+				params,
+			})
+		);
+	}
+
+	/**
+	 * Set the internal fetch/request options
+	 * @param {object} options Request options
+	 */
+	setRequestOptions(options) {
+		this.requestOptions = { ...options };
+	}
+
+	/**
+	 * Gets the current user
+	 * @return {CoreUserData} User object
+	 */
+	getUser() {
+		return { ...this.user };
+	}
+
+	/**
+	 * Add middleware function to a group
+	 * @param {string} group Middleware group
+	 * @param {Function} callback Middleware function to add
+	 */
+	middleware(group, callback) {
+		return this.make(&quot;meeseOS/middleware&quot;).add(group, callback);
+	}
+
+	/**
+	 * Kills the specified application by name
+	 * @param {string} name Application name
+	 */
+	kill(name) {
+		const apps = Application.getApplications();
+		const found = apps.filter(proc =&gt; proc.metadata.name === name);
+		found.forEach(proc =&gt; proc.destroy());
+	}
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
