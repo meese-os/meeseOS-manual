@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/provider.js | meeseOS Widget API</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="meeseOS Panel API Documentation"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="meeseOS Widget API"><meta property="twitter:description" content="meeseOS Panel API Documentation"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/provider.js~WidgetServiceProvider.html">WidgetServiceProvider</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/provider.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/*
+ * OS.js - JavaScript Cloud/Web Desktop Platform
+ *
+ * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * @licence Simplified BSD License
+ */
+
+import DigitalClock from &quot;./items/digitalclock&quot;;
+import AnalogClock from &quot;./items/analogclock&quot;;
+
+/**
+ * Widget Service Provider
+ *
+ * @desc Provides methods to handle widgets on a desktop in MeeseOS
+ */
+export default class WidgetServiceProvider {
+	constructor(core, args = {}) {
+		this.core = core;
+		this.widgets = [];
+		this.inited = false;
+		this.registry = {
+			digitalclock: DigitalClock,
+			analogclock: AnalogClock,
+			...(args.registry || {}),
+		};
+	}
+
+	destroy() {
+		this.widgets.forEach(({ widget }) =&gt; widget.destroy());
+		this.widgets = [];
+	}
+
+	async init() {
+		const iface = {
+			register: (name, classRef) =&gt; {
+				if (this.registry[name]) {
+					console.warn(&quot;Overwriting previously registered widget item&quot;, name);
+				}
+
+				this.registry[name] = classRef;
+			},
+
+			removeAll: () =&gt; {
+				this.widgets.forEach(({ widget }) =&gt; widget.destroy());
+				this.widgets = [];
+			},
+
+			remove: (widget) =&gt; {
+				const index =
+					typeof widget === &quot;number&quot;
+						? widget
+						: this.widgets.findIndex((w) =&gt; w.widget === widget);
+
+				if (index &gt;= 0) {
+					this.widgets[index].widget.destroy();
+					this.widgets.splice(index, 1);
+				}
+			},
+
+			create: (item) =&gt; {
+				const ClassRef = this.registry[item.name];
+				const widget = new ClassRef(this.core, item.options);
+				this.widgets.push({ name: item.name, widget });
+
+				if (this.inited) {
+					widget.init();
+				}
+
+				return widget;
+			},
+
+			get: (name) =&gt; this.registry[name],
+
+			list: () =&gt; Object.keys(this.registry),
+
+			save: () =&gt; {
+				const settings = this.core.make(&quot;meeseOS/settings&quot;);
+				const widgets = this.widgets.map(({ name, widget }) =&gt; ({
+					name,
+					options: widget.options,
+				}));
+
+				return Promise.resolve(
+					settings.set(&quot;meeseOS/desktop&quot;, &quot;widgets&quot;, widgets)
+				).then(() =&gt; settings.save());
+			},
+		};
+
+		this.core.singleton(&quot;meeseOS/widgets&quot;, () =&gt; iface);
+
+		this.core.on(&quot;meeseOS/desktop:transform&quot;, () =&gt; {
+			this.widgets.forEach(({ widget }) =&gt; widget.updatePosition(true));
+		});
+	}
+
+	start() {
+		this.inited = true;
+		this.widgets.forEach(({ widget }) =&gt; widget.init());
+		const desktop = this.core.make(&quot;meeseOS/desktop&quot;);
+
+		let resizeDebounce;
+		window.addEventListener(&quot;resize&quot;, () =&gt; {
+			clearTimeout(resizeDebounce);
+			resizeDebounce = setTimeout(() =&gt; this._clampWidgets(), 200);
+		});
+
+		if (typeof desktop.addContextMenuEntries === &quot;function&quot;) {
+			desktop.addContextMenuEntries(() =&gt; {
+				const widgets = this.core.make(&quot;meeseOS/widgets&quot;);
+
+				return [
+					{
+						label: &quot;Add Widget&quot;,
+						items: widgets.list().map((t) =&gt; {
+							const classRef = this.registry[t];
+							const metadata = classRef.metadata(this.core);
+
+							return {
+								label: metadata.title ? metadata.title : t,
+								onclick: () =&gt; {
+									widgets.create({ name: t });
+									widgets.save();
+								},
+							};
+						}),
+					},
+				];
+			});
+		}
+
+		this._clampWidgets();
+	}
+
+	_clampWidgets(resize) {
+		if (resize &amp;&amp; !this.core.config(&quot;windows.clampToViewport&quot;)) {
+			return;
+		}
+
+		this.widgets.forEach((w) =&gt; w.widget.clampToViewport());
+	}
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

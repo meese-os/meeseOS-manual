@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/items/analogclock.js | meeseOS Widget API</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="meeseOS Panel API Documentation"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="meeseOS Widget API"><meta property="twitter:description" content="meeseOS Panel API Documentation"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/provider.js~WidgetServiceProvider.html">WidgetServiceProvider</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/items/analogclock.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/*
+ * OS.js - JavaScript Cloud/Web Desktop Platform
+ *
+ * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * @licence Simplified BSD License
+ */
+
+// TODO: Implement parent class override function for update time to make
+// the clock animation smooth if the other method does not work
+
+import Widget from &quot;../widget&quot;;
+
+export default class AnalogClockWidget extends Widget {
+	constructor(core, options) {
+		/** The default starting size for this widget. */
+		const startingSize = 250;
+
+		/** The minimum dimension for this widget. */
+		const minDimension = 150;
+
+		super(
+			core,
+			options,
+			{
+				minDimension: {
+					width: minDimension,
+					height: minDimension,
+				},
+				dimension: {
+					width: startingSize,
+					height: startingSize,
+				},
+			},
+			{
+				fontFamily: &quot;Monospace&quot;,
+				colors: {
+					numberColor: &quot;#000000&quot;,
+					hourHandColor: &quot;#000000&quot;,
+					minuteHandColor: &quot;#000000&quot;,
+					secondHandColor: &quot;#000000&quot;,
+				},
+			}
+		);
+
+		this.$tmpCanvas = document.createElement(&quot;canvas&quot;);
+		this.$tmpCanvas.width = startingSize;
+		this.$tmpCanvas.height = startingSize;
+		this.tmpContext = this.$tmpCanvas.getContext(&quot;2d&quot;);
+
+		/**
+		 * Indicates whether the clock has already been rendered at
+		 * the specified size.
+		 * @type {Boolean}
+		 */
+		this.firstRender = true;
+	}
+
+	compute() {
+		const { width, height } = this.$canvas;
+		const { $tmpCanvas } = this;
+
+		$tmpCanvas.width = width;
+		$tmpCanvas.height = height;
+	}
+
+	onResize() {
+		this.compute();
+		this.firstRender = true;
+	}
+
+	render({ context, width, height }) {
+		// Translate to center of canvas initially
+		if (this.firstRender) {
+			context.translate(width / 2, height / 2);
+			this.firstRender = false;
+		}
+
+		const size = Math.min(width, height);
+		const radius = (size / 2) * 0.9;
+		this.drawClock(context, radius);
+	}
+
+	getContextMenu() {
+		return [
+			{
+				label: &quot;Set Font&quot;,
+				onclick: () =&gt; this.createFontDialog(),
+			},
+			{
+				label: &quot;Set Colors&quot;,
+				onclick: () =&gt; this.createMultipleColorsDialog(),
+			},
+		];
+	}
+
+	createFontDialog() {
+		this.core.make(
+			&quot;meeseOS/dialog&quot;,
+			&quot;font&quot;,
+			{
+				name: this.options.fontFamily,
+				controls: [&quot;name&quot;],
+			},
+			(btn, value) =&gt; {
+				if (btn === &quot;ok&quot;) {
+					this.options.fontFamily = value.name;
+					this.compute();
+					this.saveSettings();
+				}
+			}
+		);
+	}
+
+	/**
+	 * Creates a color dialog for all of the widget&apos;s properties.
+	 */
+	createMultipleColorsDialog() {
+		this.core.make(
+			&quot;meeseOS/dialog&quot;,
+			&quot;multipleColors&quot;,
+			{
+				colors: this.options.colors,
+				title: &quot;Set Widget Colors&quot;,
+			},
+			(btn, value) =&gt; {
+				if (btn === &quot;ok&quot;) {
+					this.options.colors = value;
+					this.compute();
+					this.saveSettings();
+				}
+			}
+		);
+	}
+
+	/**
+	 * Draws the clock widget to the canvas.
+	 * @param {CanvasRenderingContext2D} context the canvas context
+	 * @param {Number} radius the radius of the clock
+	 * @private
+	 */
+	drawClock(ctx, radius) {
+		this.drawFace(ctx, radius);
+		this.drawNumbers(ctx, radius);
+		this.drawTime(ctx, radius);
+	}
+
+	/**
+	 * Draws the clock face to the canvas.
+	 * @param {CanvasRenderingContext2D} context the canvas context
+	 * @param {Number} radius the radius of the clock
+	 * @private
+	 */
+	drawFace(ctx, radius) {
+		// The background of the clock
+		ctx.beginPath();
+		ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+		ctx.fillStyle = &quot;white&quot;;
+		ctx.fill();
+
+		// Styling for the border of the clock
+		const circleRadius = radius * 0.95;
+		const circleEnding = radius * 1.05;
+		const gradient = ctx.createRadialGradient(
+			0,
+			0,
+			circleRadius,
+			0,
+			0,
+			circleEnding
+		);
+		gradient.addColorStop(0, &quot;#333&quot;);
+		gradient.addColorStop(0.5, &quot;white&quot;);
+		gradient.addColorStop(1, &quot;#333&quot;);
+
+		// Draw the border of the clock
+		ctx.strokeStyle = gradient;
+		ctx.lineWidth = radius * 0.1;
+		ctx.stroke();
+
+		// The center of the clock
+		ctx.beginPath();
+		ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
+		ctx.fillStyle = &quot;black&quot;;
+		ctx.fill();
+	}
+
+	/**
+	 * Draws the numbers to the canvas.
+	 * @param {CanvasRenderingContext2D} context the canvas context
+	 * @param {Number} radius the radius of the clock
+	 * @private
+	 */
+	drawNumbers(ctx, radius) {
+		const fontSize = radius * 0.15;
+		ctx.fillStyle = this.options.colors.numberColor;
+		ctx.font = `${fontSize}px ${this.options.fontFamily}`;
+		ctx.textBaseline = &quot;middle&quot;;
+		ctx.textAlign = &quot;center&quot;;
+
+		for (let num = 1; num &lt; 13; num++) {
+			const ang = (num * Math.PI) / 6;
+			ctx.rotate(ang);
+			ctx.translate(0, -radius * 0.85);
+			ctx.rotate(-ang);
+			ctx.fillText(num.toString(), 0, 0);
+			ctx.rotate(ang);
+			ctx.translate(0, radius * 0.85);
+			ctx.rotate(-ang);
+		}
+	}
+
+	/**
+	 * Draws the time hands to the canvas.
+	 * @param {CanvasRenderingContext2D} context the canvas context
+	 * @param {Number} radius the radius of the clock
+	 * @private
+	 */
+	drawTime(ctx, radius) {
+		const now = new Date();
+		let hour = now.getHours() % 12;
+		let minute = now.getMinutes();
+		let second = now.getSeconds();
+
+		// Hour hand
+		ctx.strokeStyle = this.options.colors.hourHandColor;
+		hour =
+			(hour * Math.PI) / 6 +
+			(minute * Math.PI) / (6 * 60) +
+			(second * Math.PI) / (360 * 60);
+		this.drawHand(ctx, hour, radius * 0.5, radius * 0.07);
+
+		// Minutes hand
+		ctx.strokeStyle = this.options.colors.minuteHandColor;
+		minute = (minute * Math.PI) / 30 + (second * Math.PI) / (30 * 60);
+		this.drawHand(ctx, minute, radius * 0.8, radius * 0.07);
+
+		// Second hand
+		ctx.strokeStyle = this.options.colors.secondHandColor;
+		second = (second * Math.PI) / 30;
+		this.drawHand(ctx, second, radius * 0.9, radius * 0.02);
+	}
+
+	/**
+	 * Draws a single specified hand to the canvas.
+	 * @param {CanvasRenderingContext2D} context the canvas context
+	 * @param {Number} radius the radius of the clock
+	 * @private
+	 */
+	drawHand(ctx, pos, length, width) {
+		// IDEA: Try to override the default widget behavior and get a
+		// smooth animation like https://codepen.io/rkosak/pen/mwyRLK
+		ctx.beginPath();
+		ctx.lineWidth = width;
+		ctx.lineCap = &quot;round&quot;;
+		ctx.moveTo(0, 0);
+		ctx.rotate(pos);
+		ctx.lineTo(0, -length);
+		ctx.stroke();
+		ctx.rotate(-pos);
+	}
+
+	static metadata() {
+		return {
+			...super.metadata(),
+			title: &quot;Analog Clock&quot;,
+		};
+	}
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
