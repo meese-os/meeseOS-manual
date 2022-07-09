@@ -550,8 +550,6 @@ export class DesktopIconView extends EventEmitter {
 		this.applySettings();
 		this.iconview.reload();
 		this._createWatcher();
-
-		this.core.on(&quot;meeseOS/settings:save&quot;, () =&gt; this.iconview.reload());
 	}
 
 	createFileContextMenu(ev, entry) {
