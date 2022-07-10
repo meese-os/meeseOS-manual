@@ -144,6 +144,7 @@
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/preloader.js~Preloader.html">Preloader</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-invertHex">invertHex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-applyBackgroundStyles">applyBackgroundStyles</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-applyCursorEffect">applyCursorEffect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createPanelSubtraction">createPanelSubtraction</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDroppingImage">isDroppingImage</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validVfsDrop">validVfsDrop</a></span></span></li>
@@ -226,18 +227,22 @@
 
 import logger from &quot;../logger&quot;;
 import { supportedMedia } from &quot;./dom&quot;;
+import cursorEffects from &quot;@meeseOS/cursor-effects&quot;;
 import dynamicWallpapers from &quot;@meeseOS/dynamic-wallpapers&quot;;
+import Core from &quot;../core&quot;;
 
 const imageDropMimes = [&quot;image/png&quot;, &quot;image/jpe?g&quot;, &quot;image/webp&quot;, &quot;image/gif&quot;];
 
 /**
  * Check if droppable data is a VFS type
+ * @param {Object} data
  * @return {boolean}
  */
 export const validVfsDrop = (data) =&gt; data &amp;&amp; data.path;
 
 /**
  * Check if droppable data contains image
+ * @param {Object} data
  * @return {boolean}
  */
 export const isDroppingImage = (data) =&gt;
@@ -303,6 +308,8 @@ const getRandomWallpaper = () =&gt; {
 
 /**
  * Creates a static background with an image and a color, if applicable
+ * @param {Core} core
+ * @param {Object} background
  */
 const createStaticBackground = (core, background) =&gt; {
 	const { $root } = core;
@@ -346,6 +353,7 @@ const createStaticBackground = (core, background) =&gt; {
 
 /**
  * Creates a dynamic background based on the specified settings
+ * @param {Object} background
  */
 const createDynamicBackground = (background) =&gt; {
 	const canvas = document.querySelector(&quot;.meeseOS-dynamic-background&quot;);
@@ -369,7 +377,9 @@ const hideDynamicBackground = () =&gt; {
 };
 
 /**
- * Creates a set of styles based on background settings
+ * Applies a set of styles based on background settings
+ * @param {Core} core
+ * @param {Object} background
  */
 export const applyBackgroundStyles = (core, background) =&gt; {
 	if (background.type === &quot;static&quot;) {
@@ -378,6 +388,25 @@ export const applyBackgroundStyles = (core, background) =&gt; {
 	} else if (background.type === &quot;dynamic&quot;) {
 		createDynamicBackground(background);
 	}
+};
+
+/**
+ * Applies a cursor effect based on the specified settings
+ * @param {Object} cursor
+ */
+export const applyCursorEffect = (cursor) =&gt; {
+	// Get the second to last element of the body and remove it if it is a canvas,
+	// which removes any previous cursor effects
+	const body = document.querySelector(&quot;body&quot;);
+	const secondToLastChild = body.children[body.children.length - 2];
+	if (secondToLastChild &amp;&amp; secondToLastChild.tagName === &quot;CANVAS&quot;) {
+		body.removeChild(secondToLastChild);
+	}
+
+	// Calls the cursor effect function by name
+	const effectName = cursor.effect || &quot;none&quot;;
+	const options = cursor.options || {};
+	cursorEffects[effectName].effect(options);
 };
 
 /**

@@ -192,6 +192,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "@meeseos/client/src/utils/desktop.js~applycursoreffect",
+    "function/index.html#static-function-applyCursorEffect",
+    "<span>applyCursorEffect</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/utils/vfs.js~basename",
     "function/index.html#static-function-basename",
     "<span>basename</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
