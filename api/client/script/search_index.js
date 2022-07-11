@@ -204,6 +204,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "@meeseos/client/src/utils/windows.js~clampposition",
+    "function/index.html#static-function-clampPosition",
+    "<span>clampPosition</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/vfs.js~copy",
     "function/index.html#static-function-copy",
     "<span>copy</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
@@ -219,6 +225,12 @@ window.esdocSearchIndex = [
     "@meeseos/client/src/adapters/ui/search.js~create",
     "function/index.html#static-function-create",
     "<span>create</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/ui/search.js</span>",
+    "function"
+  ],
+  [
+    "@meeseos/client/src/utils/windows.js~createattributes",
+    "function/index.html#static-function-createAttributes",
+    "<span>createAttributes</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -252,15 +264,33 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "@meeseos/client/src/utils/packages.js~createpackageavailabilitycheck",
+    "function/index.html#static-function-createPackageAvailabilityCheck",
+    "<span>createPackageAvailabilityCheck</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/packages.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/utils/desktop.js~createpanelsubtraction",
     "function/index.html#static-function-createPanelSubtraction",
     "<span>createPanelSubtraction</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
+    "@meeseos/client/src/utils/windows.js~createstate",
+    "function/index.html#static-function-createState",
+    "<span>createState</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/utils/vfs.js~createwatchevents",
     "function/index.html#static-function-createWatchEvents",
     "<span>createWatchEvents</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "function"
+  ],
+  [
+    "@meeseos/client/src/utils/windows.js~dimensionfromelement",
+    "function/index.html#static-function-dimensionFromElement",
+    "<span>dimensionFromElement</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -312,6 +342,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "@meeseos/client/src/utils/windows.js~getcascadeposition",
+    "function/index.html#static-function-getCascadePosition",
+    "<span>getCascadePosition</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/utils/input.js~getevent",
     "function/index.html#static-function-getEvent",
     "<span>getEvent</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/input.js</span>",
@@ -321,6 +357,12 @@ window.esdocSearchIndex = [
     "@meeseos/client/src/utils/vfs.js~getfileicon",
     "function/index.html#static-function-getFileIcon",
     "<span>getFileIcon</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "function"
+  ],
+  [
+    "@meeseos/client/src/utils/windows.js~getmediaqueryname",
+    "function/index.html#static-function-getMediaQueryName",
+    "<span>getMediaQueryName</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -384,6 +426,12 @@ window.esdocSearchIndex = [
     "variable"
   ],
   [
+    "@meeseos/client/src/utils/windows.js~mover",
+    "function/index.html#static-function-mover",
+    "<span>mover</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/adapters/vfs/null.js~nulladapter",
     "variable/index.html#static-variable-nullAdapter",
     "<span>nullAdapter</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/vfs/null.js</span>",
@@ -420,6 +468,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "@meeseos/client/src/utils/windows.js~positionfromgravity",
+    "function/index.html#static-function-positionFromGravity",
+    "<span>positionFromGravity</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/vfs.js~readdir",
     "function/index.html#static-function-readdir",
     "<span>readdir</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
@@ -435,6 +489,18 @@ window.esdocSearchIndex = [
     "@meeseos/client/src/vfs.js~rename",
     "function/index.html#static-function-rename",
     "<span>rename</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "function"
+  ],
+  [
+    "@meeseos/client/src/utils/windows.js~rendercallback",
+    "function/index.html#static-function-renderCallback",
+    "<span>renderCallback</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "function"
+  ],
+  [
+    "@meeseos/client/src/utils/windows.js~resizer",
+    "function/index.html#static-function-resizer",
+    "<span>resizer</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -507,6 +573,12 @@ window.esdocSearchIndex = [
     "@meeseos/client/src/utils/vfs.js~transformreaddir",
     "function/index.html#static-function-transformReaddir",
     "<span>transformReaddir</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "function"
+  ],
+  [
+    "@meeseos/client/src/utils/windows.js~transformvectors",
+    "function/index.html#static-function-transformVectors",
+    "<span>transformVectors</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
     "function"
   ],
   [

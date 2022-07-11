@@ -163,6 +163,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-doubleTap">doubleTap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getEvent">getEvent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-matchKeyCombo">matchKeyCombo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createPackageAvailabilityCheck">createPackageAvailabilityCheck</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-urlResolver">urlResolver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-basename">basename</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createFileIter">createFileIter</a></span></span></li>
@@ -176,9 +177,20 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-pathname">pathname</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-transformArrayBuffer">transformArrayBuffer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-transformReaddir">transformReaddir</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-clampPosition">clampPosition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createAttributes">createAttributes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createDOMAttributes">createDOMAttributes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createDOMStyles">createDOMStyles</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createState">createState</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-dimensionFromElement">dimensionFromElement</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getCascadePosition">getCascadePosition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getMediaQueryName">getMediaQueryName</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-loadOptionsFromConfig">loadOptionsFromConfig</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mover">mover</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-positionFromGravity">positionFromGravity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-renderCallback">renderCallback</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-resizer">resizer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-transformVectors">transformVectors</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-supportsPassive">supportsPassive</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-supportsTransition">supportsTransition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DraggableInstance">DraggableInstance</a></span></span></li>
@@ -195,7 +207,7 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/utils/windows.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/*
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
  * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
@@ -235,8 +247,9 @@ const MINIMUM_HEIGHT = 100;
 const ONTOP_ZINDEX = 8388635;
 const BOTTOM_ZINDEX = 10;
 
-/*
+/**
  * Creates window attributes from an object
+ * @param {Object} attrs
  */
 export const createAttributes = (attrs) =&gt; ({
 	classNames: [],
@@ -272,8 +285,11 @@ export const createAttributes = (attrs) =&gt; ({
 	...attrs,
 });
 
-/*
+/**
  * Creates window state from an object
+ * @param {WindowState} state
+ * @param {Object} options
+ * @param {WindowAttributes} attrs
  */
 export const createState = (state, options, attrs) =&gt; ({
 	title: options.title || options.id,
@@ -305,7 +321,7 @@ export const createState = (state, options, attrs) =&gt; ({
  * @param {string} id
  * @param {WindowState} state
  * @param {WindowAttributes} attributes
- * @return {object}
+ * @return {Object}
  */
 export const createDOMAttributes = (id, state, attributes) =&gt; ({
 	id: id,
@@ -328,7 +344,7 @@ export const createDOMAttributes = (id, state, attributes) =&gt; ({
  * Creates styles for window DOM
  * @param {WindowState} state
  * @param {WindowAttributes} attributes
- * @return {object}
+ * @return {Object}
  */
 export const createDOMStyles = (
 	{ zIndex, styles, position: { top, left }, dimension: { width, height } },
@@ -342,8 +358,9 @@ export const createDOMStyles = (
 	...styles,
 });
 
-/*
+/**
  * Clamps position to viewport
+ * @param {Object} rect
  */
 export const clampPosition = (rect, { dimension, position }) =&gt; {
 	const maxLeft = rect.width - dimension.width;
@@ -359,8 +376,10 @@ export const clampPosition = (rect, { dimension, position }) =&gt; {
 	};
 };
 
-/*
+/**
  * Window rendering callback function
+ * @param {Window} win
+ * @param {Function} callback
  */
 export const renderCallback = (win, callback) =&gt; {
 	if (typeof callback === &quot;function&quot;) {
@@ -385,8 +404,11 @@ export const renderCallback = (win, callback) =&gt; {
 	}
 };
 
-/*
+/**
  * Gets new position based on &quot;gravity&quot;
+ * @param {Window} win
+ * @param {Object} rect
+ * @param {string} gravity
  */
 export const positionFromGravity = (win, rect, gravity) =&gt; {
 	let { left, top } = win.state.position;
@@ -420,8 +442,11 @@ export const positionFromGravity = (win, rect, gravity) =&gt; {
 	return { left, top };
 };
 
-/*
+/**
  * Gets new dimension based on container
+ * @param {Window} win
+ * @param {Object} rect
+ * @param {HTMLElement} container
  */
 export const dimensionFromElement = (win, rect, container) =&gt; {
 	const innerBox = (
@@ -461,8 +486,9 @@ export const dimensionFromElement = (win, rect, container) =&gt; {
 	return { width, height };
 };
 
-/*
- * Transforms vector values (ex float to integer)
+/**
+ * Transforms vector values (ex. float to integer)
+ * @param {Object} rect
  */
 export const transformVectors = (rect, { width, height }, { top, left }) =&gt; {
 	const transform = (val, attr) =&gt; {
@@ -487,8 +513,9 @@ export const transformVectors = (rect, { width, height }, { top, left }) =&gt; {
 	};
 };
 
-/*
+/**
  * Creates a clamper for resize/move
+ * @param {Window} win
  */
 const clamper = (win) =&gt; {
 	const { maxDimension, minDimension } = win.attributes;
@@ -512,8 +539,9 @@ const clamper = (win) =&gt; {
 	});
 };
 
-/*
+/**
  * Creates a resize handler
+ * @param {Window} win
  */
 export const resizer = (win, handle) =&gt; {
 	const clamp = clamper(win);
@@ -533,8 +561,9 @@ export const resizer = (win, handle) =&gt; {
 	};
 };
 
-/*
+/**
  * Creates a movement handler
+ * @param {Window} win
  */
 export const mover = (win, rect) =&gt; {
 	const { position } = win.state;
@@ -547,8 +576,10 @@ export const mover = (win, rect) =&gt; {
 	};
 };
 
-/*
+/**
  * Calculates a new initial position for window
+ * @param {Window} win
+ * @param {Object} rect
  */
 export const getCascadePosition = (win, rect, pos) =&gt; {
 	const startX = CASCADE_DISTANCE + rect.left;
@@ -573,8 +604,10 @@ const getScreenOrientation = (screen) =&gt;
 			? &quot;portrait&quot;
 			: &quot;landscape&quot;;
 
-/*
+/**
  * Gets a media query name from a map
+ * @param {Window} win
+ * @returns {string}
  */
 export const getMediaQueryName = (win) =&gt;
 	Object.keys(win.attributes.mediaQueries)
