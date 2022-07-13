@@ -3974,7 +3974,7 @@
     "__docId__": 189,
     "kind": "file",
     "name": "src/providers/core.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-2020, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst path = require(\"path\");\nconst express = require(\"express\");\nconst chokidar = require(\"chokidar\");\nconst bodyParser = require(\"body-parser\");\nconst proxy = require(\"express-http-proxy\");\nconst nocache = require(\"nocache\");\nconst { ServiceProvider } = require(\"@meeseOS/common\");\nconst { isAuthenticated, closeWatches } = require(\"../utils/core.js\");\n\n/**\n * MeeseOS Core Service Provider\n */\nclass CoreServiceProvider extends ServiceProvider {\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.watches = [];\n\t}\n\n\tasync destroy() {\n\t\tawait closeWatches(this.watches);\n\t\tsuper.destroy();\n\t}\n\n\tasync init() {\n\t\tthis.initService();\n\t\tthis.initExtensions();\n\t\tthis.initResourceRoutes();\n\t\tthis.initSocketRoutes();\n\t\tthis.initProxies();\n\t}\n\n\tstart() {\n\t\tif (this.core.configuration.development) {\n\t\t\tthis.initDeveloperTools();\n\t\t}\n\t}\n\n\tprovides() {\n\t\treturn [\"meeseOS/express\"];\n\t}\n\n\t/**\n\t * Initializes the service APIs\n\t */\n\tinitService() {\n\t\tconst { app } = this.core;\n\t\tconst { requireAllGroups } = this.core.configuration.auth;\n\n\t\tconst middleware = {\n\t\t\troute: [],\n\t\t\trouteAuthenticated: [],\n\t\t};\n\n\t\tthis.core.singleton(\"meeseOS/express\", () => ({\n\t\t\tisAuthenticated,\n\n\t\t\tcall: (method, ...args) => app[method](...args),\n\t\t\tuse: (arg) => app.use(arg),\n\n\t\t\twebsocket: (p, cb) => app.ws(p, cb),\n\n\t\t\tmiddleware: (authentication, cb) => {\n\t\t\t\tmiddleware[authentication ? \"routeAuthenticated\" : \"route\"].push(cb);\n\t\t\t},\n\n\t\t\troute: (method, uri, cb) =>\n\t\t\t\tapp[method.toLowerCase()](uri, [...middleware.route], cb),\n\n\t\t\trouteAuthenticated: (\n\t\t\t\tmethod,\n\t\t\t\turi,\n\t\t\t\tcb,\n\t\t\t\tgroups = [],\n\t\t\t\tstrict = requireAllGroups\n\t\t\t) =>\n\t\t\t\tapp[method.toLowerCase()](\n\t\t\t\t\turi,\n\t\t\t\t\t[...middleware.routeAuthenticated, isAuthenticated(groups, strict)],\n\t\t\t\t\tcb\n\t\t\t\t),\n\n\t\t\trouter: () => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.route);\n\t\t\t\treturn router;\n\t\t\t},\n\n\t\t\trouterAuthenticated: (groups = [], strict = requireAllGroups) => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.routeAuthenticated);\n\t\t\t\trouter.use(isAuthenticated(groups, strict));\n\t\t\t\treturn router;\n\t\t\t},\n\t\t}));\n\t}\n\n\t/**\n\t * Initializes Express extensions\n\t */\n\tinitExtensions() {\n\t\tconst { app, session, configuration } = this.core;\n\t\tconst limit = configuration.express.maxBodySize;\n\n\t\tif (configuration.development) {\n\t\t\tapp.use(nocache());\n\t\t} else {\n\t\t\tapp.disable(\"x-powered-by\");\n\t\t}\n\n\t\t// Handle sessions\n\t\tapp.use(session);\n\n\t\t// Handle bodies\n\t\tapp.use(\n\t\t\tbodyParser.urlencoded({\n\t\t\t\textended: false,\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.json({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.raw({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\t}\n\n\t/**\n\t * Initializes Express base routes, etc\n\t */\n\tinitResourceRoutes() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst indexFile = path.join(configuration.public, configuration.index);\n\n\t\tapp.get(\"/\", (req, res) => res.sendFile(indexFile));\n\t\tapp.use(\"/\", express.static(configuration.public));\n\n\t\t// Internal ping\n\t\tapp.get(\"/ping\", (req, res) => {\n\t\t\tthis.core.emit(\"meeseOS/core:ping\", req);\n\n\t\t\ttry {\n\t\t\t\treq.session.touch();\n\t\t\t} catch (e) {\n\t\t\t\tthis.core.logger.warn(e);\n\t\t\t}\n\n\t\t\tres.status(200).send(\"ok\");\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Socket routes\n\t */\n\tinitSocketRoutes() {\n\t\tconst { app } = this.core;\n\n\t\tapp.ws(\"/\", (ws, req) => {\n\t\t\tws.upgradeReq = ws.upgradeReq || req;\n\t\t\tws._meeseOS_client = { ...req.session.user };\n\n\t\t\tconst interval = this.core.config(\"ws.ping\", 0);\n\n\t\t\tconst pingInterval = interval\n\t\t\t\t? setInterval(() => {\n\t\t\t\t\tws.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tname: \"meeseOS/core:ping\",\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t  }, interval)\n\t\t\t\t: undefined;\n\n\t\t\tws.on(\"close\", () => {\n\t\t\t\tclearInterval(pingInterval);\n\t\t\t});\n\n\t\t\tws.on(\"message\", (msg) => {\n\t\t\t\ttry {\n\t\t\t\t\tconst { name, params } = JSON.parse(msg);\n\n\t\t\t\t\tif (typeof name === \"string\" && params instanceof Array) {\n\t\t\t\t\t\t// We don't wanna allow any internal signals from the outside!\n\t\t\t\t\t\tif (\n\t\t\t\t\t\t\tname.match(/^meeseOS/) &&\n\t\t\t\t\t\t\tname !== \"meeseOS/application:socket:message\"\n\t\t\t\t\t\t) {\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tthis.core.emit(name, ws, ...params);\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {\n\t\t\t\t\tthis.core.logger.warn(e);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tws.send(\n\t\t\t\tJSON.stringify({\n\t\t\t\t\tname: \"meeseOS/core:connected\",\n\t\t\t\t\tparams: [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tcookie: {\n\t\t\t\t\t\t\t\tmaxAge: this.core.config(\"session.options.cookie.maxAge\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t],\n\t\t\t\t})\n\t\t\t);\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Express proxies\n\t */\n\tinitProxies() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst proxies = (configuration.proxy || [])\n\t\t\t.map((item) => ({\n\t\t\t\tsource: null,\n\t\t\t\tdestination: null,\n\t\t\t\toptions: {},\n\t\t\t\t...item,\n\t\t\t}))\n\t\t\t.filter((item) => item.source && item.destination);\n\n\t\tproxies.forEach((item) => {\n\t\t\tthis.core.logger.info(`Proxying ${item.source} -> ${item.destination}`);\n\t\t\tapp.use(item.source, proxy(item.destination, item.options));\n\t\t});\n\t}\n\n\t/**\n\t * Initializes some developer features\n\t */\n\tinitDeveloperTools() {\n\t\ttry {\n\t\t\tconst watchdir = path.resolve(this.core.configuration.public);\n\t\t\tconst watcher = chokidar.watch(watchdir);\n\n\t\t\twatcher.on(\"change\", (filename) => {\n\t\t\t\t// NOTE: 'ignored' does not work as expected with callback\n\t\t\t\t// ignored: str => str.match(/\\.(js|css)$/) === null\n\t\t\t\t// for unknown reasons\n\t\t\t\tif (!filename.match(/\\.(js|css)$/)) {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\tconst relative = filename.replace(watchdir, \"\");\n\t\t\t\tthis.core.broadcast(\"meeseOS/dist:changed\", [relative]);\n\t\t\t});\n\n\t\t\tthis.watches.push(watcher);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n}\n\nmodule.exports = CoreServiceProvider;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-2020, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst path = require(\"path\");\nconst express = require(\"express\");\nconst chokidar = require(\"chokidar\");\nconst bodyParser = require(\"body-parser\");\nconst proxy = require(\"express-http-proxy\");\nconst nocache = require(\"nocache\");\nconst { ServiceProvider } = require(\"@meeseOS/common\");\nconst { isAuthenticated, closeWatches } = require(\"../utils/core.js\");\n\n/**\n * MeeseOS Core Service Provider\n */\nclass CoreServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options] Arguments\n\t */\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.watches = [];\n\t}\n\n\t/**\n\t * Destroys provider\n\t */\n\tasync destroy() {\n\t\tawait closeWatches(this.watches);\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initializes provider\n\t */\n\tasync init() {\n\t\tthis.initService();\n\t\tthis.initExtensions();\n\t\tthis.initResourceRoutes();\n\t\tthis.initSocketRoutes();\n\t\tthis.initProxies();\n\t}\n\n\t/**\n\t * Starts provider\n\t */\n\tstart() {\n\t\tif (this.core.configuration.development) {\n\t\t\tthis.initDeveloperTools();\n\t\t}\n\t}\n\n\t/**\n\t * Get a list of services this provider registers\n\t * @return {string[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/express\"];\n\t}\n\n\t/**\n\t * Initializes the service APIs\n\t */\n\tinitService() {\n\t\tconst { app } = this.core;\n\t\tconst { requireAllGroups } = this.core.configuration.auth;\n\n\t\tconst middleware = {\n\t\t\troute: [],\n\t\t\trouteAuthenticated: [],\n\t\t};\n\n\t\tthis.core.singleton(\"meeseOS/express\", () => ({\n\t\t\tisAuthenticated,\n\n\t\t\tcall: (method, ...args) => app[method](...args),\n\t\t\tuse: (arg) => app.use(arg),\n\n\t\t\twebsocket: (p, cb) => app.ws(p, cb),\n\n\t\t\tmiddleware: (authentication, cb) => {\n\t\t\t\tmiddleware[authentication ? \"routeAuthenticated\" : \"route\"].push(cb);\n\t\t\t},\n\n\t\t\troute: (method, uri, cb) =>\n\t\t\t\tapp[method.toLowerCase()](uri, [...middleware.route], cb),\n\n\t\t\trouteAuthenticated: (\n\t\t\t\tmethod,\n\t\t\t\turi,\n\t\t\t\tcb,\n\t\t\t\tgroups = [],\n\t\t\t\tstrict = requireAllGroups\n\t\t\t) =>\n\t\t\t\tapp[method.toLowerCase()](\n\t\t\t\t\turi,\n\t\t\t\t\t[...middleware.routeAuthenticated, isAuthenticated(groups, strict)],\n\t\t\t\t\tcb\n\t\t\t\t),\n\n\t\t\trouter: () => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.route);\n\t\t\t\treturn router;\n\t\t\t},\n\n\t\t\trouterAuthenticated: (groups = [], strict = requireAllGroups) => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.routeAuthenticated);\n\t\t\t\trouter.use(isAuthenticated(groups, strict));\n\t\t\t\treturn router;\n\t\t\t},\n\t\t}));\n\t}\n\n\t/**\n\t * Initializes Express extensions\n\t */\n\tinitExtensions() {\n\t\tconst { app, session, configuration } = this.core;\n\t\tconst limit = configuration.express.maxBodySize;\n\n\t\tif (configuration.development) {\n\t\t\tapp.use(nocache());\n\t\t} else {\n\t\t\tapp.disable(\"x-powered-by\");\n\t\t}\n\n\t\t// Handle sessions\n\t\tapp.use(session);\n\n\t\t// Handle bodies\n\t\tapp.use(\n\t\t\tbodyParser.urlencoded({\n\t\t\t\textended: false,\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.json({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.raw({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\t}\n\n\t/**\n\t * Initializes Express base routes, etc\n\t */\n\tinitResourceRoutes() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst indexFile = path.join(configuration.public, configuration.index);\n\n\t\tapp.get(\"/\", (req, res) => res.sendFile(indexFile));\n\t\tapp.use(\"/\", express.static(configuration.public));\n\n\t\t// Internal ping\n\t\tapp.get(\"/ping\", (req, res) => {\n\t\t\tthis.core.emit(\"meeseOS/core:ping\", req);\n\n\t\t\ttry {\n\t\t\t\treq.session.touch();\n\t\t\t} catch (e) {\n\t\t\t\tthis.core.logger.warn(e);\n\t\t\t}\n\n\t\t\tres.status(200).send(\"ok\");\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Socket routes\n\t */\n\tinitSocketRoutes() {\n\t\tconst { app } = this.core;\n\n\t\tapp.ws(\"/\", (ws, req) => {\n\t\t\tws.upgradeReq = ws.upgradeReq || req;\n\t\t\tws._meeseOS_client = { ...req.session.user };\n\n\t\t\tconst interval = this.core.config(\"ws.ping\", 0);\n\n\t\t\tconst pingInterval = interval\n\t\t\t\t? setInterval(() => {\n\t\t\t\t\tws.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tname: \"meeseOS/core:ping\",\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t  }, interval)\n\t\t\t\t: undefined;\n\n\t\t\tws.on(\"close\", () => {\n\t\t\t\tclearInterval(pingInterval);\n\t\t\t});\n\n\t\t\tws.on(\"message\", (msg) => {\n\t\t\t\ttry {\n\t\t\t\t\tconst { name, params } = JSON.parse(msg);\n\n\t\t\t\t\tif (typeof name === \"string\" && params instanceof Array) {\n\t\t\t\t\t\t// We don't wanna allow any internal signals from the outside!\n\t\t\t\t\t\tif (\n\t\t\t\t\t\t\tname.match(/^meeseOS/) &&\n\t\t\t\t\t\t\tname !== \"meeseOS/application:socket:message\"\n\t\t\t\t\t\t) {\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tthis.core.emit(name, ws, ...params);\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {\n\t\t\t\t\tthis.core.logger.warn(e);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tws.send(\n\t\t\t\tJSON.stringify({\n\t\t\t\t\tname: \"meeseOS/core:connected\",\n\t\t\t\t\tparams: [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tcookie: {\n\t\t\t\t\t\t\t\tmaxAge: this.core.config(\"session.options.cookie.maxAge\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t],\n\t\t\t\t})\n\t\t\t);\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Express proxies\n\t */\n\tinitProxies() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst proxies = (configuration.proxy || [])\n\t\t\t.map((item) => ({\n\t\t\t\tsource: null,\n\t\t\t\tdestination: null,\n\t\t\t\toptions: {},\n\t\t\t\t...item,\n\t\t\t}))\n\t\t\t.filter((item) => item.source && item.destination);\n\n\t\tproxies.forEach((item) => {\n\t\t\tthis.core.logger.info(`Proxying ${item.source} -> ${item.destination}`);\n\t\t\tapp.use(item.source, proxy(item.destination, item.options));\n\t\t});\n\t}\n\n\t/**\n\t * Initializes some developer features\n\t */\n\tinitDeveloperTools() {\n\t\ttry {\n\t\t\tconst watchdir = path.resolve(this.core.configuration.public);\n\t\t\tconst watcher = chokidar.watch(watchdir);\n\n\t\t\twatcher.on(\"change\", (filename) => {\n\t\t\t\t// NOTE: 'ignored' does not work as expected with callback\n\t\t\t\t// ignored: str => str.match(/\\.(js|css)$/) === null\n\t\t\t\t// for unknown reasons\n\t\t\t\tif (!filename.match(/\\.(js|css)$/)) {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\tconst relative = filename.replace(watchdir, \"\");\n\t\t\t\tthis.core.broadcast(\"meeseOS/dist:changed\", [relative]);\n\t\t\t});\n\n\t\t\tthis.watches.push(watcher);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n}\n\nmodule.exports = CoreServiceProvider;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/providers/core.js",
     "access": "public",
@@ -4051,10 +4051,30 @@
     "static": false,
     "longname": "src/providers/core.js~CoreServiceProvider#constructor",
     "access": "public",
-    "description": null,
-    "lineNumber": 46,
-    "undocument": true,
-    "ignore": true
+    "description": "Create new instance",
+    "lineNumber": 51,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "options",
+        "description": "Arguments"
+      }
+    ]
   },
   {
     "__docId__": 194,
@@ -4065,7 +4085,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#watches",
     "access": "public",
     "description": null,
-    "lineNumber": 49,
+    "lineNumber": 54,
     "undocument": true,
     "type": {
       "types": [
@@ -4084,12 +4104,10 @@
     "static": false,
     "longname": "src/providers/core.js~CoreServiceProvider#destroy",
     "access": "public",
-    "description": null,
-    "lineNumber": 52,
-    "undocument": true,
+    "description": "Destroys provider",
+    "lineNumber": 60,
     "params": [],
-    "return": null,
-    "ignore": true
+    "return": null
   },
   {
     "__docId__": 196,
@@ -4101,12 +4119,10 @@
     "static": false,
     "longname": "src/providers/core.js~CoreServiceProvider#init",
     "access": "public",
-    "description": null,
-    "lineNumber": 57,
-    "undocument": true,
+    "description": "Initializes provider",
+    "lineNumber": 68,
     "params": [],
-    "return": null,
-    "ignore": true
+    "return": null
   },
   {
     "__docId__": 197,
@@ -4118,12 +4134,10 @@
     "static": false,
     "longname": "src/providers/core.js~CoreServiceProvider#start",
     "access": "public",
-    "description": null,
-    "lineNumber": 65,
-    "undocument": true,
+    "description": "Starts provider",
+    "lineNumber": 79,
     "params": [],
-    "return": null,
-    "ignore": true
+    "return": null
   },
   {
     "__docId__": 198,
@@ -4135,16 +4149,17 @@
     "static": false,
     "longname": "src/providers/core.js~CoreServiceProvider#provides",
     "access": "public",
-    "description": null,
-    "lineNumber": 71,
-    "undocument": true,
-    "params": [],
+    "description": "Get a list of services this provider registers",
+    "lineNumber": 89,
     "return": {
+      "nullable": null,
       "types": [
         "string[]"
-      ]
+      ],
+      "spread": false,
+      "description": ""
     },
-    "ignore": true
+    "params": []
   },
   {
     "__docId__": 199,
@@ -4157,7 +4172,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#initService",
     "access": "public",
     "description": "Initializes the service APIs",
-    "lineNumber": 78,
+    "lineNumber": 96,
     "params": [],
     "return": null
   },
@@ -4172,7 +4187,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#initExtensions",
     "access": "public",
     "description": "Initializes Express extensions",
-    "lineNumber": 133,
+    "lineNumber": 151,
     "params": [],
     "return": null
   },
@@ -4187,7 +4202,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#initResourceRoutes",
     "access": "public",
     "description": "Initializes Express base routes, etc",
-    "lineNumber": 170,
+    "lineNumber": 188,
     "params": [],
     "return": null
   },
@@ -4202,7 +4217,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#initSocketRoutes",
     "access": "public",
     "description": "Initializes Socket routes",
-    "lineNumber": 194,
+    "lineNumber": 212,
     "params": [],
     "return": null
   },
@@ -4217,7 +4232,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#initProxies",
     "access": "public",
     "description": "Initializes Express proxies",
-    "lineNumber": 255,
+    "lineNumber": 273,
     "params": [],
     "return": null
   },
@@ -4232,7 +4247,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#initDeveloperTools",
     "access": "public",
     "description": "Initializes some developer features",
-    "lineNumber": 275,
+    "lineNumber": 293,
     "params": [],
     "return": null
   },
@@ -4733,7 +4748,7 @@
     "__docId__": 233,
     "kind": "file",
     "name": "src/settings.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-2020, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst nullAdapter = require(\"./adapters/settings/null\");\nconst fsAdapter = require(\"./adapters/settings/fs\");\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapter\n */\n\n/**\n * Settings Service Options\n * @typedef {Object} SettingsOptions\n * @property {SettingsAdapter|string} [adapter]\n */\n\n/**\n * MeeseOS Settings Manager\n */\nclass Settings {\n\t/**\n\t * Create new instance\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsOptions} [options] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.options = {\n\t\t\tadapter: nullAdapter,\n\t\t\t...options,\n\t\t};\n\n\t\tif (this.options.adapter === \"fs\") {\n\t\t\tthis.options.adapter = fsAdapter;\n\t\t}\n\n\t\tthis.adapter = nullAdapter(core, this.options.config);\n\n\t\ttry {\n\t\t\tthis.adapter = this.options.adapter(core, this.options.config);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n\n\t/**\n\t * Destroy instance\n\t */\n\tdestroy() {\n\t\tif (this.adapter.destroy) {\n\t\t\tthis.adapter.destroy();\n\t\t}\n\t}\n\n\t/**\n\t * Initializes adapter\n\t * @return {Promise<boolean>}\n\t */\n\tasync init() {\n\t\tif (this.adapter.init) {\n\t\t\treturn this.adapter.init();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Sends save request to adapter\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @return {Promise<undefined>}\n\t */\n\tasync save(req, res) {\n\t\tconst result = await this.adapter.save(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Sends load request to adapter\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @return {Promise<undefined>}\n\t */\n\tasync load(req, res) {\n\t\tconst result = await this.adapter.load(req, res);\n\t\tres.json(result);\n\t}\n}\n\nmodule.exports = Settings;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-2020, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst nullAdapter = require(\"./adapters/settings/null\");\nconst fsAdapter = require(\"./adapters/settings/fs\");\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapter\n */\n\n/**\n * Settings Service Options\n * @typedef {Object} SettingsOptions\n * @property {SettingsAdapter|string} [adapter]\n */\n\n/**\n * MeeseOS Settings Manager\n */\nclass Settings {\n\t/**\n\t * Create new instance\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.options = {\n\t\t\tadapter: nullAdapter,\n\t\t\t...options,\n\t\t};\n\n\t\tif (this.options.adapter === \"fs\") {\n\t\t\tthis.options.adapter = fsAdapter;\n\t\t}\n\n\t\tthis.adapter = nullAdapter(core, this.options.config);\n\n\t\ttry {\n\t\t\tthis.adapter = this.options.adapter(core, this.options.config);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n\n\t/**\n\t * Destroy instance\n\t */\n\tdestroy() {\n\t\tif (this.adapter.destroy) {\n\t\t\tthis.adapter.destroy();\n\t\t}\n\t}\n\n\t/**\n\t * Initializes adapter\n\t * @return {Promise<boolean>}\n\t */\n\tasync init() {\n\t\tif (this.adapter.init) {\n\t\t\treturn this.adapter.init();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Sends save request to adapter\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @return {Promise<undefined>}\n\t */\n\tasync save(req, res) {\n\t\tconst result = await this.adapter.save(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Sends load request to adapter\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @return {Promise<undefined>}\n\t */\n\tasync load(req, res) {\n\t\tconst result = await this.adapter.load(req, res);\n\t\tres.json(result);\n\t}\n}\n\nmodule.exports = Settings;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/settings.js",
     "access": "public",
@@ -4832,6 +4847,8 @@
         ],
         "spread": false,
         "optional": true,
+        "defaultValue": "{}",
+        "defaultRaw": {},
         "name": "options",
         "description": "Instance options"
       }

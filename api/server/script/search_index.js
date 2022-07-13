@@ -984,6 +984,24 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/providers/core.js~coreserviceprovider#constructor",
+    "class/src/providers/core.js~CoreServiceProvider.html#instance-constructor-constructor",
+    "src/providers/core.js~CoreServiceProvider#constructor",
+    "method"
+  ],
+  [
+    "src/providers/core.js~coreserviceprovider#destroy",
+    "class/src/providers/core.js~CoreServiceProvider.html#instance-method-destroy",
+    "src/providers/core.js~CoreServiceProvider#destroy",
+    "method"
+  ],
+  [
+    "src/providers/core.js~coreserviceprovider#init",
+    "class/src/providers/core.js~CoreServiceProvider.html#instance-method-init",
+    "src/providers/core.js~CoreServiceProvider#init",
+    "method"
+  ],
+  [
     "src/providers/core.js~coreserviceprovider#initdevelopertools",
     "class/src/providers/core.js~CoreServiceProvider.html#instance-method-initDeveloperTools",
     "src/providers/core.js~CoreServiceProvider#initDeveloperTools",
@@ -1017,6 +1035,18 @@ window.esdocSearchIndex = [
     "src/providers/core.js~coreserviceprovider#initsocketroutes",
     "class/src/providers/core.js~CoreServiceProvider.html#instance-method-initSocketRoutes",
     "src/providers/core.js~CoreServiceProvider#initSocketRoutes",
+    "method"
+  ],
+  [
+    "src/providers/core.js~coreserviceprovider#provides",
+    "class/src/providers/core.js~CoreServiceProvider.html#instance-method-provides",
+    "src/providers/core.js~CoreServiceProvider#provides",
+    "method"
+  ],
+  [
+    "src/providers/core.js~coreserviceprovider#start",
+    "class/src/providers/core.js~CoreServiceProvider.html#instance-method-start",
+    "src/providers/core.js~CoreServiceProvider#start",
     "method"
   ],
   [
