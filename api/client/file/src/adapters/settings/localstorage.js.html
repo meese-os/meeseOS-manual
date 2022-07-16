@@ -268,7 +268,10 @@ const localStorageSettings = (core) =&gt; ({
 			Object.keys(localStorage).reduce((o, v) =&gt; {
 				let value = localStorage.getItem(v);
 				try {
-					value = JSON.parse(value);
+					// Parse all localStorage values as JSON, except emulator items
+					// since they are just strings
+					if (!v.startsWith(&quot;emulators&quot;))
+						value = JSON.parse(value);
 				} catch (e) {
 					logger.warn(&quot;localStorageAdapter parse error&quot;, e);
 				}
