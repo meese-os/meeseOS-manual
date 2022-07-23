@@ -291,7 +291,8 @@ export default class Splash {
 		];
 
 		core.on(&quot;meeseOS/core:boot&quot;, () =&gt; this.show());
-		core.on(&quot;meeseOS/core:logged-in&quot;, () =&gt; this.show());
+		// TODO: Replace this with the cookie login event or something
+		//core.on(&quot;meeseOS/core:logged-in&quot;, () =&gt; this.show());
 		core.on(&quot;meeseOS/splash:finished&quot;, () =&gt; this.destroy());
 	}
 
@@ -300,6 +301,7 @@ export default class Splash {
 	 */
 	init() {
 		this.$loading.appendChild(stringToHTML(loadingScreen));
+		this.$loading.style.transition = &quot;1s&quot;;
 		this.core.emit(&quot;meeseOS/splash:loaded&quot;);
 
 		// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#specifying_this_using_bind
@@ -334,9 +336,7 @@ export default class Splash {
 
 		// Fade out the loading screen after all the quips have been displayed
 		window.setTimeout(() =&gt; {
-			const loadingScreenElement =
-				document.getElementsByClassName(&quot;loadingPage&quot;)[1];
-			loadingScreenElement.style.opacity = 0;
+			this.$loading.style.opacity = 0;
 			this.core.$contents.style.opacity = 1;
 
 			setTimeout(() =&gt; {
@@ -363,7 +363,6 @@ export default class Splash {
 	 * Destroys splash
 	 */
 	destroy() {
-		// TODO: Make this transition ease out
 		if (this.$loading.parentNode) {
 			this.$loading.remove();
 		}
