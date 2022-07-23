@@ -824,7 +824,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {object} [settings] Initial settings\n * @property {object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
             "start": 1917,
             "end": 2227,
             "loc": {
@@ -3366,7 +3366,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {object}\n\t\t ",
+                          "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {Object}\n\t\t ",
                           "start": 3994,
                           "end": 4064,
                           "loc": {
@@ -3482,7 +3482,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {object}\n\t\t ",
+                          "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {Object}\n\t\t ",
                           "start": 3994,
                           "end": 4064,
                           "loc": {
@@ -8150,7 +8150,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
+                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
                     "start": 5779,
                     "end": 6027,
                     "loc": {
@@ -8524,7 +8524,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
+                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
                     "start": 5779,
                     "end": 6027,
                     "loc": {
@@ -10563,7 +10563,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {object} [options] Worker options\n\t * @return {Worker}\n\t ",
+                    "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @return {Worker}\n\t ",
                     "start": 7434,
                     "end": 7578,
                     "loc": {
@@ -11206,7 +11206,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {object} [options] Worker options\n\t * @return {Worker}\n\t ",
+                    "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @return {Worker}\n\t ",
                     "start": 7434,
                     "end": 7578,
                     "loc": {
@@ -18304,7 +18304,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {object} [settings] Initial settings\n * @property {object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+              "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
               "start": 1917,
               "end": 2227,
               "loc": {
@@ -18372,7 +18372,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {object} [settings] Initial settings\n * @property {object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
             "start": 1917,
             "end": 2227,
             "loc": {
@@ -18458,7 +18458,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {object} [settings] Initial settings\n * @property {object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
       "start": 1917,
       "end": 2227,
       "loc": {
@@ -18650,7 +18650,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {object}\n\t\t ",
+      "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {Object}\n\t\t ",
       "start": 3994,
       "end": 4064,
       "loc": {
@@ -18762,7 +18762,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
+      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
       "start": 5779,
       "end": 6027,
       "loc": {
@@ -18826,7 +18826,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {object} [options] Worker options\n\t * @return {Worker}\n\t ",
+      "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @return {Worker}\n\t ",
       "start": 7434,
       "end": 7578,
       "loc": {
@@ -20488,7 +20488,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {object} [settings] Initial settings\n * @property {object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
       "start": 1917,
       "end": 2227,
       "loc": {
@@ -24916,7 +24916,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {object}\n\t\t ",
+      "value": "*\n\t\t * Options for internal fetch/requests\n\t\t * @type {Object}\n\t\t ",
       "start": 3994,
       "end": 4064,
       "loc": {
@@ -34268,7 +34268,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
+      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @return {string} A complete URI\n\t ",
       "start": 5779,
       "end": 6027,
       "loc": {
@@ -38967,7 +38967,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {object} [options] Worker options\n\t * @return {Worker}\n\t ",
+      "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @return {Worker}\n\t ",
       "start": 7434,
       "end": 7578,
       "loc": {

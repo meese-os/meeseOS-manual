@@ -292,7 +292,7 @@ export default class Splash {
 
 		core.on(&quot;meeseOS/core:boot&quot;, () =&gt; this.show());
 		// TODO: Replace this with the cookie login event or something
-		//core.on(&quot;meeseOS/core:logged-in&quot;, () =&gt; this.show());
+		// core.on(&quot;meeseOS/core:logged-in&quot;, () =&gt; this.show());
 		core.on(&quot;meeseOS/splash:finished&quot;, () =&gt; this.destroy());
 	}
 
