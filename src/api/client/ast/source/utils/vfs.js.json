@@ -8402,7 +8402,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Transforms a readdir result\n * @param {object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
+              "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
               "start": 4430,
               "end": 4884,
               "loc": {
@@ -8439,7 +8439,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Transforms a readdir result\n * @param {object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
+            "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
             "start": 4430,
             "end": 4884,
             "loc": {
@@ -12045,7 +12045,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Transforms a readdir result\n * @param {object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
+              "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
               "start": 4430,
               "end": 4884,
               "loc": {
@@ -12082,7 +12082,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Transforms a readdir result\n * @param {object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
+            "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
             "start": 4430,
             "end": 4884,
             "loc": {
@@ -13094,7 +13094,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets an icon from file stat\n * @param {object} file The file stat object\n * @return {string|object}\n ",
+              "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @return {string|object}\n ",
               "start": 6580,
               "end": 6690,
               "loc": {
@@ -13131,7 +13131,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets an icon from file stat\n * @param {object} file The file stat object\n * @return {string|object}\n ",
+            "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @return {string|object}\n ",
             "start": 6580,
             "end": 6690,
             "loc": {
@@ -14283,7 +14283,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets an icon from file stat\n * @param {object} file The file stat object\n * @return {string|object}\n ",
+              "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @return {string|object}\n ",
               "start": 6580,
               "end": 6690,
               "loc": {
@@ -14301,7 +14301,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Creates a file iter for scandir\n * @param {object} stat file stat\n * @return {object}\n ",
+              "value": "*\n * Creates a file iter for scandir\n * @param {Object} stat file stat\n * @return {Object}\n ",
               "start": 7027,
               "end": 7123,
               "loc": {
@@ -14320,7 +14320,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets an icon from file stat\n * @param {object} file The file stat object\n * @return {string|object}\n ",
+            "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @return {string|object}\n ",
             "start": 6580,
             "end": 6690,
             "loc": {
@@ -14338,7 +14338,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a file iter for scandir\n * @param {object} stat file stat\n * @return {object}\n ",
+            "value": "*\n * Creates a file iter for scandir\n * @param {Object} stat file stat\n * @return {Object}\n ",
             "start": 7027,
             "end": 7123,
             "loc": {
@@ -15115,7 +15115,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Creates a file iter for scandir\n * @param {object} stat file stat\n * @return {object}\n ",
+              "value": "*\n * Creates a file iter for scandir\n * @param {Object} stat file stat\n * @return {Object}\n ",
               "start": 7027,
               "end": 7123,
               "loc": {
@@ -15152,7 +15152,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a file iter for scandir\n * @param {object} stat file stat\n * @return {object}\n ",
+            "value": "*\n * Creates a file iter for scandir\n * @param {Object} stat file stat\n * @return {Object}\n ",
             "start": 7027,
             "end": 7123,
             "loc": {
@@ -17873,7 +17873,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {object[]}\n ",
+              "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {Object[]}\n ",
               "start": 8382,
               "end": 8484,
               "loc": {
@@ -17910,7 +17910,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {object[]}\n ",
+            "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {Object[]}\n ",
             "start": 8382,
             "end": 8484,
             "loc": {
@@ -20311,7 +20311,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {object[]}\n ",
+              "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {Object[]}\n ",
               "start": 8382,
               "end": 8484,
               "loc": {
@@ -20331,7 +20331,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {object[]}\n ",
+            "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {Object[]}\n ",
             "start": 8382,
             "end": 8484,
             "loc": {
@@ -20529,7 +20529,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Transforms a readdir result\n * @param {object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
+      "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
       "start": 4430,
       "end": 4884,
       "loc": {
@@ -20577,7 +20577,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets an icon from file stat\n * @param {object} file The file stat object\n * @return {string|object}\n ",
+      "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @return {string|object}\n ",
       "start": 6580,
       "end": 6690,
       "loc": {
@@ -20593,7 +20593,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a file iter for scandir\n * @param {object} stat file stat\n * @return {object}\n ",
+      "value": "*\n * Creates a file iter for scandir\n * @param {Object} stat file stat\n * @return {Object}\n ",
       "start": 7027,
       "end": 7123,
       "loc": {
@@ -20673,7 +20673,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {object[]}\n ",
+      "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {Object[]}\n ",
       "start": 8382,
       "end": 8484,
       "loc": {
@@ -37992,7 +37992,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Transforms a readdir result\n * @param {object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
+      "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @return {Object[]}\n ",
       "start": 4430,
       "end": 4884,
       "loc": {
@@ -47571,7 +47571,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets an icon from file stat\n * @param {object} file The file stat object\n * @return {string|object}\n ",
+      "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @return {string|object}\n ",
       "start": 6580,
       "end": 6690,
       "loc": {
@@ -50077,7 +50077,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a file iter for scandir\n * @param {object} stat file stat\n * @return {object}\n ",
+      "value": "*\n * Creates a file iter for scandir\n * @param {Object} stat file stat\n * @return {Object}\n ",
       "start": 7027,
       "end": 7123,
       "loc": {
@@ -56728,7 +56728,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {object[]}\n ",
+      "value": "*\n * Creates a list of VFS events to simulate server-side\n * file watching\n * @return {Object[]}\n ",
       "start": 8382,
       "end": 8484,
       "loc": {
