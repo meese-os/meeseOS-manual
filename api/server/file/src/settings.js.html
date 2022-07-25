@@ -163,7 +163,7 @@ class Settings {
 
 	/**
 	 * Initializes adapter
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	async init() {
 		if (this.adapter.init) {
@@ -177,7 +177,7 @@ class Settings {
 	 * Sends save request to adapter
 	 * @param {Request} req Express request
 	 * @param {Response} res Express response
-	 * @return {Promise&lt;undefined&gt;}
+	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	async save(req, res) {
 		const result = await this.adapter.save(req, res);
@@ -188,7 +188,7 @@ class Settings {
 	 * Sends load request to adapter
 	 * @param {Request} req Express request
 	 * @param {Response} res Express response
-	 * @return {Promise&lt;undefined&gt;}
+	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	async load(req, res) {
 		const result = await this.adapter.load(req, res);

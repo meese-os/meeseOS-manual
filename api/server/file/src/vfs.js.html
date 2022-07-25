@@ -135,7 +135,7 @@ const requestFile = (req) =&gt; [
 /**
  * Parses the range request headers
  * @param {String} range
- * @return {Array}
+ * @returns {Array}
  */
 const parseRangeHeader = (range) =&gt; {
 	const [pstart, pend] = range.replace(/bytes=/, &quot;&quot;).split(&quot;-&quot;);
@@ -225,7 +225,7 @@ const createOptions = (req) =&gt; {
 /**
  * Standard request with only a target
  * @param {Function} findMountpoint
- * @return {*}
+ * @returns {*}
  */
 const createRequestFactory =
 	(findMountpoint) =&gt;

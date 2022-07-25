@@ -113,7 +113,7 @@ const defaultConfiguration = {
 	development: !(process.env.NODE_ENV || &quot;&quot;).match(/^prod/i),
 	logging: true,
 	index: &quot;index.html&quot;,
-	// NOTE: This will likely need to be `localhost` on Windows machines
+	// NOTE: You will likely need to override `localhost` on Windows machines
 	bind: &quot;0.0.0.0&quot;,
 	port: 8000,
 	public: null,
@@ -173,6 +173,7 @@ const defaultConfiguration = {
 		},
 		options: {
 			name: &quot;meeseOS.sid&quot;,
+			// NOTE: You should DEFINITELY override this in production
 			secret: &quot;meeseOS&quot;,
 			rolling: true,
 			resave: false,

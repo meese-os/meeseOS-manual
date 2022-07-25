@@ -357,7 +357,7 @@ const setDataTransfer = (type, effect, data, setDragImage) =&gt; {
  * Creates a &quot;draggable&quot; element
  * @param {Element} el The DOM element to apply to
  * @param {DraggableOptions} [options={}] Options
- * @return {DraggableInstance}
+ * @returns {DraggableInstance}
  */
 export const draggable = (el, options = {}) =&gt; {
 	const { type, effect, data, ondragstart, ondragend, setDragImage } = {
@@ -404,7 +404,7 @@ export const draggable = (el, options = {}) =&gt; {
  * Creates a &quot;droppable&quot; element
  * @param {Element} el The DOM element to apply to
  * @param {DroppableOptions} [options={}] Options
- * @return {DroppableInstance}
+ * @returns {DroppableInstance}
  */
 export const droppable = (el, options = {}) =&gt; {
 	const { strict, type, effect, ondragenter, ondragover, ondragleave, ondrop } =

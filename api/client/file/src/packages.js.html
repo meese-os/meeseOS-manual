@@ -346,7 +346,7 @@ export default class Packages {
 
 	/**
 	 * Initializes package manager
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	init() {
 		logger.debug(&quot;Packages::init()&quot;);
@@ -381,7 +381,7 @@ export default class Packages {
 	 * @param {PackageLaunchOptions} [options={}] Launch options
 	 * @see PackageServiceProvider
 	 * @throws {Error}
-	 * @return {Promise&lt;Application&gt;}
+	 * @returns {Promise&lt;Application&gt;}
 	 */
 	launch(name, args = {}, options = {}) {
 		logger.debug(&quot;Packages::launch()&quot;, name, args, options);
@@ -406,7 +406,7 @@ export default class Packages {
 	 * @param {Metadata} metadata Application metadata
 	 * @param {{foo: *}} args Launch arguments
 	 * @param {PackageLaunchOptions} options Launch options
-	 * @return {Promise&lt;Application&gt;}
+	 * @returns {Promise&lt;Application&gt;}
 	 */
 	_launchApplication(name, metadata, args, options) {
 		let signaled = false;
@@ -453,7 +453,7 @@ export default class Packages {
 	 * @param {string} name Package name
 	 * @param {Metadata} metadata Application metadata
 	 * @throws {Error}
-	 * @return {Promise&lt;object&gt;}
+	 * @returns {Promise&lt;object&gt;}
 	 */
 	_launchTheme(name, metadata) {
 		const preloads = this._getPreloads(metadata, &quot;preload&quot;, &quot;theme&quot;);
@@ -474,7 +474,7 @@ export default class Packages {
 	 * @param {Metadata} metadata Application metadata
 	 * @param {string} fileType Files type
 	 * @param {string} packageType Package type
-	 * @return {string[]}
+	 * @returns {string[]}
 	 */
 	_getPreloads(metadata, fileType, packageType) {
 		return metadataFilesToFilenames(
@@ -489,7 +489,7 @@ export default class Packages {
 	 * @param {string} name Package name
 	 * @param {{foo: *}} args Launch arguments
 	 * @param {PackageLaunchOptions} options Launch options
-	 * @return {Promise&lt;Application&gt;}
+	 * @returns {Promise&lt;Application&gt;}
 	 */
 	_launch(name, metadata, args, options) {
 		const canLaunch = createPackageAvailabilityCheck(this.core);
@@ -629,7 +629,7 @@ export default class Packages {
 	/**
 	 * Adds a set of packages
 	 * @param {PackageMetadata[]} list Package list
-	 * @return {PackageMetadata[]} Current list of packages
+	 * @returns {PackageMetadata[]} Current list of packages
 	 */
 	addPackages(list) {
 		if (list instanceof Array) {
@@ -647,7 +647,7 @@ export default class Packages {
 	/**
 	 * Gets a list of packages (metadata)
 	 * @param {Function} [filter] A filter function
-	 * @return {PackageMetadata[]}
+	 * @returns {PackageMetadata[]}
 	 */
 	getPackages(filter) {
 		filter = filter || (() =&gt; true);
@@ -669,7 +669,7 @@ export default class Packages {
 	 * Gets a list of packages compatible with the given mime type
 	 * @param {string} mimeType MIME Type
 	 * @see PackageManager#getPackages
-	 * @return {PackageMetadata[]}
+	 * @returns {PackageMetadata[]}
 	 */
 	getCompatiblePackages(mimeType) {
 		return this.getPackages((meta) =&gt; {
@@ -712,7 +712,7 @@ export default class Packages {
 
 	/**
 	 * Gets a list of running packages
-	 * @return {string[]}
+	 * @returns {string[]}
 	 */
 	running() {
 		return this._running;

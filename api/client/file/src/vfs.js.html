@@ -289,7 +289,7 @@ const handleDirectoryList = (path, options) =&gt; (result) =&gt;
  *
  * @param {string|VFSFile} path The path to read
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;object[]&gt;} A list of files
+ * @returns {Promise&lt;object[]&gt;} A list of files
  */
 export const readdir =
 	(adapter, mount) =&gt;
@@ -306,7 +306,7 @@ export const readdir =
  * @param {string|VFSFile} path The path to read
  * @param {string} [type=string] Return this content type
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;ArrayBuffer&gt;}
+ * @returns {Promise&lt;ArrayBuffer&gt;}
  */
 export const readfile =
 	(adapter, mount) =&gt;
@@ -322,7 +322,7 @@ export const readfile =
  * @param {string|VFSFile} path The path to write
  * @param {ArrayBuffer|Blob|string} data The data
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;number&gt;} File size
+ * @returns {Promise&lt;number&gt;} File size
  */
 export const writefile =
 	(adapter, mount) =&gt;
@@ -340,7 +340,7 @@ export const writefile =
  * @param {string|VFSFile} from The source (from)
  * @param {string|VFSFile} to The destination (to)
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;boolean&gt;}
+ * @returns {Promise&lt;boolean&gt;}
  */
 export const copy =
 	(adapter, mount) =&gt;
@@ -352,7 +352,7 @@ export const copy =
  * @param {string|VFSFile} from The source (from)
  * @param {string|VFSFile} to The destination (to)
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;boolean&gt;}
+ * @returns {Promise&lt;boolean&gt;}
  */
 export const rename =
 	(adapter, mount) =&gt;
@@ -364,7 +364,7 @@ export const rename =
  * @param {string|VFSFile} from The source (from)
  * @param {string|VFSFile} to The destination (to)
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;boolean&gt;}
+ * @returns {Promise&lt;boolean&gt;}
  */
 export const move = rename;
 
@@ -372,7 +372,7 @@ export const move = rename;
  * Creates a directory
  * @param {string|VFSFile} path The path to new directory
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;boolean&gt;}
+ * @returns {Promise&lt;boolean&gt;}
  */
 export const mkdir =
 	(adapter, mount) =&gt;
@@ -383,7 +383,7 @@ export const mkdir =
  * Removes a file or directory
  * @param {string|VFSFile} path The path to remove
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;boolean&gt;}
+ * @returns {Promise&lt;boolean&gt;}
  */
 export const unlink =
 	(adapter, mount) =&gt;
@@ -394,7 +394,7 @@ export const unlink =
  * Checks if path exists
  * @param {string|VFSFile} path The path to check
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;boolean&gt;}
+ * @returns {Promise&lt;boolean&gt;}
  */
 export const exists =
 	(adapter, mount) =&gt;
@@ -405,7 +405,7 @@ export const exists =
  * Gets the stats of the file or directory
  * @param {string|VFSFile} path The path to check
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;object&gt;}
+ * @returns {Promise&lt;object&gt;}
  */
 export const stat =
 	(adapter, mount) =&gt;
@@ -418,7 +418,7 @@ export const stat =
  * Gets an URL to a resource defined by file
  * @param {string|VFSFile} path The file
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;string&gt;}
+ * @returns {Promise&lt;string&gt;}
  */
 export const url =
 	(adapter, mount) =&gt;
@@ -429,7 +429,7 @@ export const url =
  * Initiates a native browser download of the file
  * @param {string|VFSFile} path The file
  * @param {VFSDownloadOptions} [options] Options
- * @return {Promise&lt;any&gt;}
+ * @returns {Promise&lt;any&gt;}
  */
 export const download =
 	(adapter, mount) =&gt;
@@ -459,7 +459,7 @@ export const download =
  * @param {string|VFSFile} root The root
  * @param {string} pattern Search pattern
  * @param {VFSMethodOptions} [options] Options
- * @return {Promise&lt;object[]&gt;} A list of files
+ * @returns {Promise&lt;object[]&gt;} A list of files
  */
 export const search =
 	(adapter, mount) =&gt;
@@ -476,7 +476,7 @@ export const search =
 /**
  * Touches a file
  * @param {string|VFSFile} path File path
- * @return {Promise&lt;boolean&gt;}
+ * @returns {Promise&lt;boolean&gt;}
  */
 export const touch =
 	(adapter, mount) =&gt;
