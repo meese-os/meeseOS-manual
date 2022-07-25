@@ -253,7 +253,7 @@ const localStorageSettings = (core) =&gt; {
 		/**
 		 * Clears the localStorage for the specified namespace
 		 * @param {string} [ns] The namespace
-		 * @return {Promise&lt;boolean&gt;}
+		 * @returns {Promise&lt;boolean&gt;}
 		 */
 		clear(ns) {
 			if (ns) {
@@ -268,7 +268,7 @@ const localStorageSettings = (core) =&gt; {
 		/**
 		 * Saves settings to localStorage
 		 * @param {Object} settings The settings to save
-		 * @return {Promise&lt;boolean&gt;}
+		 * @returns {Promise&lt;boolean&gt;}
 		 */
 		save(settings) {
 			Object.keys(settings).forEach((key) =&gt; {
@@ -280,7 +280,7 @@ const localStorageSettings = (core) =&gt; {
 
 		/**
 		 * Loads settings from localStorage
-		 * @return {Promise&lt;boolean&gt;}
+		 * @returns {Promise&lt;boolean&gt;}
 		 */
 		load() {
 			const entries = Object

@@ -305,7 +305,7 @@ export default class VFSServiceProvider extends ServiceProvider {
 
 	/**
 	 * Get a list of services this provider registers
-	 * @return {string[]}
+	 * @returns {string[]}
 	 */
 	provides() {
 		return [&quot;meeseOS/vfs&quot;, &quot;meeseOS/fs&quot;];
@@ -313,7 +313,7 @@ export default class VFSServiceProvider extends ServiceProvider {
 
 	/**
 	 * Initializes VFS providers
-	 * @return {Promise&lt;undefined&gt;}
+	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	init() {
 		this.core.singleton(&quot;meeseOS/vfs&quot;, () =&gt; this.createVFSContract());
@@ -323,14 +323,14 @@ export default class VFSServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * @return {VFSServiceContract}
+	 * @returns {VFSServiceContract}
 	 */
 	createVFSContract() {
 		return this.fs.request();
 	}
 
 	/**
-	 * @return {VFSServiceFilesystemContract}
+	 * @returns {VFSServiceFilesystemContract}
 	 */
 	createFilesystemContract() {
 		const iconMap = this.core.config(&quot;vfs.icons&quot;, {});

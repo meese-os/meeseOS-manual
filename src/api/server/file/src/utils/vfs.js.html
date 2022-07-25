@@ -275,7 +275,7 @@ const parseGet = (req) =&gt; {
 /**
  * Parses JSON body
  * @param {Object} req
- * @return {Object|Boolean}
+ * @returns {Object|Boolean}
  */
 const parseJson = (req) =&gt; {
 	const isJson =
@@ -311,7 +311,7 @@ const parseFormData = (req, { maxFieldsSize, maxFileSize }) =&gt; {
 /**
  * Middleware for handling HTTP requests
  * @param {Object} config
- * @return {Promise&lt;any&gt;}
+ * @returns {Promise&lt;any&gt;}
  */
 const parseFields = (config) =&gt; (req, res) =&gt; {
 	if ([&quot;get&quot;, &quot;head&quot;].indexOf(req.method.toLowerCase()) !== -1) {

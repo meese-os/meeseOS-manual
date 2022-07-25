@@ -250,7 +250,7 @@ import merge from &quot;deepmerge&quot;;
 /**
  * @callback SplashCallback
  * @param {Core} core
- * @return {Splash}
+ * @returns {Splash}
  */
 
 /**
@@ -387,7 +387,7 @@ export default class Core extends CoreBase {
 
 	/**
 	 * Destroy core instance
-	 * @return {boolean}
+	 * @returns {boolean}
 	 */
 	destroy() {
 		if (this.destroyed) {
@@ -418,7 +418,7 @@ export default class Core extends CoreBase {
 
 	/**
 	 * Boots up MeeseOS
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	boot() {
 		const done = (e) =&gt; {
@@ -475,7 +475,7 @@ export default class Core extends CoreBase {
 
 	/**
 	 * Starts all core services
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	start() {
 		const connect = () =&gt;
@@ -584,7 +584,7 @@ export default class Core extends CoreBase {
 	 *
 	 * @private
 	 * @param {Function} cb Callback function
-	 * @return {boolean}
+	 * @returns {boolean}
 	 */
 	_createConnection(cb) {
 		if (this.configuration.standalone || this.configuration.ws.disabled) {
@@ -669,7 +669,7 @@ export default class Core extends CoreBase {
 	 * @param {boolean} [options.prefix=false] Returns a full URL complete with scheme, etc. (will always be true on websocket)
 	 * @param {string} [options.type] Optional URL type (websocket)
 	 * @param {PackageMetadata} [metadata] A package metadata
-	 * @return {string}
+	 * @returns {string}
 	 */
 	url(endpoint = &quot;/&quot;, options = {}, metadata = {}) {
 		return this.urlResolver(endpoint, options, metadata);
@@ -685,7 +685,7 @@ export default class Core extends CoreBase {
 	 * @param {Options} [options] fetch options
 	 * @param {string} [type] Request / Response type
 	 * @param {boolean} [force=false] Force request even when in standalone mode
-	 * @return {*}
+	 * @returns {*}
 	 */
 	request(url, options = {}, type = null, force = false) {
 		if (this.config(&quot;standalone&quot;) &amp;&amp; !force) {
@@ -713,7 +713,7 @@ export default class Core extends CoreBase {
 	 * @param {{foo: *}} [args] Launch arguments
 	 * @param {PackageLaunchOptions} [options] Launch options
 	 * @see {Packages}
-	 * @return {Promise&lt;Application&gt;}
+	 * @returns {Promise&lt;Application&gt;}
 	 */
 	run(name, args = {}, options = {}) {
 		logger.debug(&quot;Core::run()&quot;, name, args, options);
@@ -725,7 +725,7 @@ export default class Core extends CoreBase {
 	 * Spawns an application based on the file given
 	 * @param {VFSFile} file A file object
 	 * @param {CoreOpenOptions} [options] Options
-	 * @return {Boolean|Application}
+	 * @returns {Boolean|Application}
 	 */
 	open(file, options = {}) {
 		if (file.mime === &quot;meeseOS/application&quot;) {
@@ -807,7 +807,7 @@ export default class Core extends CoreBase {
 	 * @param {string} name
 	 * @param {Function} [callback=null]
 	 * @param {boolean} [force=false]
-	 * @return {Core} this
+	 * @returns {Core} this
 	 */
 	off(name, callback = null, force = false) {
 		if (name.match(/^meeseOS\//) &amp;&amp; typeof callback !== &quot;function&quot;) {
@@ -823,7 +823,7 @@ export default class Core extends CoreBase {
 	 * @param {string|Function} pkg The filter
 	 * @param {string} name The event name
 	 * @param {*} ...args Arguments to pass to emit
-	 * @return {string[]} List of application names emitted to
+	 * @returns {string[]} List of application names emitted to
 	 */
 	broadcast(pkg, name, ...args) {
 		const filter =
@@ -863,7 +863,7 @@ export default class Core extends CoreBase {
 
 	/**
 	 * Gets the current user
-	 * @return {CoreUserData} User object
+	 * @returns {CoreUserData} User object
 	 */
 	getUser() {
 		return { ...this.user };

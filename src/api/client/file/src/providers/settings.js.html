@@ -280,7 +280,7 @@ export default class SettingsServiceProvider extends ServiceProvider {
 
 	/**
 	 * Get a list of services this provider registers
-	 * @return {string[]}
+	 * @returns {string[]}
 	 */
 	provides() {
 		return [&quot;meeseOS/settings&quot;];
@@ -288,7 +288,7 @@ export default class SettingsServiceProvider extends ServiceProvider {
 
 	/**
 	 * Initializes settings
-	 * @return {Promise&lt;undefined&gt;}
+	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	init() {
 		this.core.singleton(&quot;meeseOS/settings&quot;, () =&gt;
@@ -299,7 +299,7 @@ export default class SettingsServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * @return {SettingsProviderContract}
+	 * @returns {SettingsProviderContract}
 	 */
 	createSettingsContract() {
 		return {

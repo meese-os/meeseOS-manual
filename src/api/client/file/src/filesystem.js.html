@@ -297,7 +297,7 @@ import systemAdapter from &quot;./adapters/vfs/system&quot;;
 
 /**
  * @callback FilesystemAdapterWrapper
- * @return {FilesystemAdapterMethods}
+ * @returns {FilesystemAdapterMethods}
  */
 
 /**
@@ -374,7 +374,7 @@ export default class Filesystem extends EventEmitter {
 	/**
 	 * Mounts all configured mountpoints
 	 * @param {boolean} [stopOnError=true] Stop on first error
-	 * @return {Promise&lt;boolean[]&gt;}
+	 * @returns {Promise&lt;boolean[]&gt;}
 	 */
 	mountAll(stopOnError = true) {
 		this.mounts = this._getConfiguredMountpoints();
@@ -393,7 +393,7 @@ export default class Filesystem extends EventEmitter {
 	 * Adds a new mountpoint
 	 * @param {FilesystemMountpoint} props Mountpoint props
 	 * @param {boolean} [automount=true] Automount after creation
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	addMountpoint(props, automount = true) {
 		const mount = this.createMountpoint(props);
@@ -410,7 +410,7 @@ export default class Filesystem extends EventEmitter {
 	 * Mount given mountpoint
 	 * @param {string|FilesystemMountpoint} mountpoint Mountpoint name or object
 	 * @throws {Error} On invalid name or if already mounted
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	mount(mountpoint) {
 		if (typeof mountpoint === &quot;string&quot;) {
@@ -424,7 +424,7 @@ export default class Filesystem extends EventEmitter {
 	 * Unmount given filesystem
 	 * @param {string} name Filesystem name
 	 * @throws {Error} On invalid name or if already unmounted
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	unmount(name) {
 		return this._mountAction(name, true);
@@ -436,7 +436,7 @@ export default class Filesystem extends EventEmitter {
 	 * @private
 	 * @param {FilesystemMountpoint} mountpoint The mountpoint
 	 * @param {boolean} [unmount=false] If action is unmounting
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	_mountpointAction(mountpoint, unmount = false) {
 		const eventName = unmount ? &quot;unmounted&quot; : &quot;mounted&quot;;
@@ -460,7 +460,7 @@ export default class Filesystem extends EventEmitter {
 	 * @private
 	 * @param {string} name Mountpoint name
 	 * @param {boolean} [unmount=false] If action is unmounting
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	_mountAction(name, unmount) {
 		return Promise.resolve(this.mounts.find((m) =&gt; m.name === name)).then(
@@ -482,7 +482,7 @@ export default class Filesystem extends EventEmitter {
 	/**
 	 * Gets the proxy for VFS methods
 	 * FIXME: Not correct type, but works for documentation atm
-	 * @return {FilesystemAdapterMethods} A map of VFS functions
+	 * @returns {FilesystemAdapterMethods} A map of VFS functions
 	 */
 	request() {
 		return this.proxy;
@@ -494,7 +494,7 @@ export default class Filesystem extends EventEmitter {
 	 * @private
 	 * @param {string} method VFS method name
 	 * @param {*} ...args Arguments
-	 * @return {*}
+	 * @returns {*}
 	 */
 	_request(method, ...args) {
 		const ev = `meeseOS/vfs:${method}`;
@@ -527,7 +527,7 @@ export default class Filesystem extends EventEmitter {
 	 * @private
 	 * @param {string} method
 	 * @param {*} ...args Arguments
-	 * @return {Promise&lt;*&gt;}
+	 * @returns {Promise&lt;*&gt;}
 	 */
 	_requestAction(method, ...args) {
 		if ([&quot;rename&quot;, &quot;move&quot;, &quot;copy&quot;].indexOf(method) !== -1) {
@@ -560,7 +560,7 @@ export default class Filesystem extends EventEmitter {
 	/**
 	 * Creates a new mountpoint based on given properties
 	 * @param {FilesystemMountpoint} props Properties
-	 * @return {FilesystemMountpoint}
+	 * @returns {FilesystemMountpoint}
 	 */
 	createMountpoint(props) {
 		const name = props.adapter || this.core.config(&quot;vfs.defaultAdapter&quot;);
@@ -592,7 +592,7 @@ export default class Filesystem extends EventEmitter {
 	/**
 	 * Gets mountpoint from given path
 	 * @param {string|VFSFile} file The file
-	 * @return {FilesystemMountpoint|null}
+	 * @returns {FilesystemMountpoint|null}
 	 */
 	getMountpointFromPath(file) {
 		if (!file) return null;
@@ -615,7 +615,7 @@ export default class Filesystem extends EventEmitter {
 
 	/**
 	 * Gets all mountpoints
-	 * @return {FilesystemMountpoint[]}
+	 * @returns {FilesystemMountpoint[]}
 	 */
 	getMounts(all = false) {
 		const user = this.core.getUser();
@@ -646,7 +646,7 @@ export default class Filesystem extends EventEmitter {
 
 	/**
 	 * Gets configured mountpoints
-	 * @return {FilesystemMountpoint[]}
+	 * @returns {FilesystemMountpoint[]}
 	 */
 	_getConfiguredMountpoints() {
 		const list = [

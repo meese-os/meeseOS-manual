@@ -245,7 +245,7 @@ const supportsNativeNotification = &quot;Notification&quot; in window;
  * Creates a new CSS DOM element
  * @param {Element} root Root node
  * @param {string} src Source
- * @return {Promise&lt;ScriptElement&gt;}
+ * @returns {Promise&lt;ScriptElement&gt;}
  */
 export const style = (root, src) =&gt;
 	new Promise((resolve, reject) =&gt; {
@@ -265,7 +265,7 @@ export const style = (root, src) =&gt;
  * Creates a new Script DOM element
  * @param {Element} root Root node
  * @param {string} src Source
- * @return {Promise&lt;StyleElement&gt;}
+ * @returns {Promise&lt;StyleElement&gt;}
  */
 export const script = (root, src) =&gt;
 	new Promise((resolve, reject) =&gt; {
@@ -287,7 +287,7 @@ export const script = (root, src) =&gt;
 /**
  * Escape text so it is &quot;safe&quot; for HTML usage
  * @param {string} text Input text
- * @return {string}
+ * @returns {string}
  */
 export const escapeHtml = (text) =&gt; {
 	const div = document.createElement(&quot;div&quot;);
@@ -298,7 +298,7 @@ export const escapeHtml = (text) =&gt; {
 /**
  * Serialize an object to CSS
  * @param {Object} obj Object
- * @return {string} CSS text
+ * @returns {string} CSS text
  */
 export const createCssText = (obj) =&gt;
 	Object.keys(obj)
@@ -328,7 +328,7 @@ export const handleTabOnTextarea = (ev) =&gt; {
 /*
  * Get active element if belonging to root
  * @param {Element} root DOM Element
- * @return {Element|null}
+ * @returns {Element|null}
  */
 export const getActiveElement = (root) =&gt; {
 	if (root) {
@@ -343,7 +343,7 @@ export const getActiveElement = (root) =&gt; {
 /**
  * Checks if passive events is supported
  * @link https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
- * @return {boolean}
+ * @returns {boolean}
  */
 export const supportsPassive = (function() {
 	let supportsPassive = false;
@@ -365,7 +365,7 @@ export const supportsPassive = (function() {
  * Plays a sound
  * @param {string} src Sound source
  * @param {Object} [options] Options
- * @return {Promise&lt;HTMLAudioElement&gt;}
+ * @returns {Promise&lt;HTMLAudioElement&gt;}
  */
 export const playSound = (src, options = {}) =&gt; {
 	const opts = {
@@ -393,7 +393,7 @@ export const playSound = (src, options = {}) =&gt; {
 
 /**
  * Gets supported media types
- * @return {Object}
+ * @returns {Object}
  */
 export const supportedMedia = () =&gt; {
 	const videoFormats = {
@@ -423,7 +423,7 @@ export const supportedMedia = () =&gt; {
 
 /**
  * Gets if CSS transitions is supported
- * @return {boolean}
+ * @returns {boolean}
  */
 export const supportsTransition = (function() {
 	const el = document.createElement(&quot;div&quot;);
@@ -442,7 +442,7 @@ export const supportsTransition = (function() {
  * Creates a native notification
  * @param {Object} options Notification options
  * @param {Function} [onclick] Callback on click
- * @return {Promise&lt;window.Notification&gt;}
+ * @returns {Promise&lt;window.Notification&gt;}
  */
 export const createNativeNotification = (options, onclick) =&gt; {
 	const Notif = window.Notification;

@@ -265,7 +265,7 @@ export default class Session {
 
 	/**
 	 * Saves session
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	save() {
 		const apps = Application.getApplications().filter(
@@ -283,7 +283,7 @@ export default class Session {
 	/**
 	 * Loads session
 	 * @param {boolean} [fresh=false] Kill all current applications first
-	 * @return {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	load(fresh = false) {
 		if (fresh) {
