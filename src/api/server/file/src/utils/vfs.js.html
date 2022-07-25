@@ -264,7 +264,7 @@ const mountpointResolver = (core) =&gt; async (path) =&gt; {
 };
 
 /**
- * Parses URL Body
+ * Parses URL body
  */
 const parseGet = (req) =&gt; {
 	const { query } = url.parse(req.url, true);
@@ -273,7 +273,9 @@ const parseGet = (req) =&gt; {
 };
 
 /**
- * Parses JSON Body
+ * Parses JSON body
+ * @param {Object} req
+ * @return {Object|Boolean}
  */
 const parseJson = (req) =&gt; {
 	const isJson =
@@ -288,7 +290,11 @@ const parseJson = (req) =&gt; {
 };
 
 /**
- * Parses Form Body
+ * Parses form body
+ * @param {Object} req
+ * @param {Number} config.maxFieldsSize
+ * @param {Number} config.maxFileSize
+ * @returns {Promise&lt;any&gt;}
  */
 const parseFormData = (req, { maxFieldsSize, maxFileSize }) =&gt; {
 	const form = new formidable.IncomingForm();
@@ -304,6 +310,8 @@ const parseFormData = (req, { maxFieldsSize, maxFileSize }) =&gt; {
 
 /**
  * Middleware for handling HTTP requests
+ * @param {Object} config
+ * @return {Promise&lt;any&gt;}
  */
 const parseFields = (config) =&gt; (req, res) =&gt; {
 	if ([&quot;get&quot;, &quot;head&quot;].indexOf(req.method.toLowerCase()) !== -1) {
@@ -311,9 +319,7 @@ const parseFields = (config) =&gt; (req, res) =&gt; {
 	}
 
 	const json = parseJson(req);
-	if (json) {
-		return Promise.resolve(json);
-	}
+	if (json) return Promise.resolve(json);
 
 	return parseFormData(req, config);
 };

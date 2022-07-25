@@ -973,9 +973,7 @@ export default class Desktop extends EventEmitter {
 	 */
 	onContextMenu(ev) {
 		const lockSettings = this.core.config(&quot;desktop.lock&quot;);
-		const extras = [].concat(
-			...this.contextmenuEntries.map((e) =&gt; (typeof e === &quot;function&quot; ? e() : e))
-		);
+		const extras = this.contextmenuEntries.flatMap((e) =&gt; (typeof e === &quot;function&quot; ? e() : e));
 		const config = this.core.config(&quot;desktop.contextmenu&quot;);
 		const hasIconview = this.core
 			.make(&quot;meeseOS/settings&quot;)
