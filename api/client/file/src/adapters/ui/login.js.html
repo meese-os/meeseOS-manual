@@ -240,6 +240,13 @@
 import { app, h } from &quot;hyperapp&quot;;
 import { EventEmitter } from &quot;@meeseOS/event-emitter&quot;;
 
+/**
+ * Creates the attributes for a given field
+ * @param {Object} props
+ * @param {HTMLElement} field
+ * @param {Boolean} disabled
+ * @returns {Object}
+ */
 const createAttributes = (props, field, disabled) =&gt; {
 	disabled = disabled ? &quot;disabled&quot; : undefined;
 	if (field.tagName === &quot;input&quot;) {
@@ -259,10 +266,17 @@ const createAttributes = (props, field, disabled) =&gt; {
 	return { disabled, ...field.attributes };
 };
 
+/**
+ * Creates the fields for the login form
+ * @param {Object} props
+ * @param {HTMLElement[]} fields
+ * @param {Boolean} disabled
+ * @returns {Array}
+ */
 const createFields = (props, fields, disabled) =&gt; {
-	const children = (f) =&gt; {
-		if (f.tagName === &quot;select&quot; &amp;&amp; f.choices) {
-			return f.choices.map((c) =&gt;
+	const children = (field) =&gt; {
+		if (field.tagName === &quot;select&quot; &amp;&amp; field.choices) {
+			return field.choices.map((c) =&gt;
 				h(
 					&quot;option&quot;,
 					{
@@ -274,20 +288,24 @@ const createFields = (props, fields, disabled) =&gt; {
 			);
 		}
 
-		return f.children || [];
+		return field.children || [];
 	};
 
-	return fields.map((f) =&gt;
+	return fields.map((field) =&gt;
 		h(
 			&quot;div&quot;,
 			{
-				class: &quot;meeseOS-login-field meeseOS-login-field-&quot; + f.tagName,
+				class: &quot;meeseOS-login-field meeseOS-login-field-&quot; + field.tagName,
 			},
-			h(f.tagName, createAttributes(props, f, disabled), children(f))
+			h(field.tagName, createAttributes(props, field, disabled), children(field))
 		)
 	);
 };
 
+/**
+ * Creates the view for the login UI
+ * @param {Object} options
+ */
 const createView = (options) =&gt; {
 	const { src, position } = options.logo;
 
@@ -392,6 +410,11 @@ const createView = (options) =&gt; {
 
 /**
  * Login UI Adapter
+ * @param {Object} options
+ * @param {*} login
+ * @param {*} startHidden
+ * @param {*} $container
+ * @returns {EventEmitter}
  */
 const create = (options, login, startHidden, $container) =&gt; {
 	const ee = new EventEmitter(&quot;LoginUI&quot;);
@@ -406,10 +429,7 @@ const create = (options, login, startHidden, $container) =&gt; {
 			setError: (error) =&gt; ({ error, hidden: false }),
 			submit: (ev) =&gt; (state) =&gt; {
 				ev.preventDefault();
-
-				if (state.loading) {
-					return;
-				}
+				if (state.loading) return;
 
 				let values = {};
 				if (ev.submitter.id === &quot;guest-login&quot;) {
