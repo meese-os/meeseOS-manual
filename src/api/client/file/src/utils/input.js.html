@@ -241,17 +241,17 @@ const modifierNames = [&quot;ctrl&quot;, &quot;shift&quot;, &quot;alt&quot;, &qu
 
 /**
  * @typedef {Object} NormalizedEventPosition
- * @property {number} clientX
- * @property {number} clientY
- * @property {boolean} touch
+ * @property {Number} clientX
+ * @property {Number} clientY
+ * @property {Boolean} touch
  * @property {Element} target
  */
 
 /**
  * Checks if keycombo matches
- * @param {string} combo Key combo
+ * @param {String} combo Key combo
  * @param {Event} ev Event
- * @returns {boolean}
+ * @returns {Boolean}
  */
 export const matchKeyCombo = (combo, ev) =&gt; {
 	const checkKeys = String(combo).toLowerCase().split(&quot;+&quot;);
@@ -282,7 +282,7 @@ export const getEvent = (ev) =&gt; {
 
 /**
  * Creates a double-tap event handler
- * @param {number} [timeout=250] Timeout
+ * @param {Number} [timeout=250] Timeout
  * @returns {Function} Handler with =&gt; (ev, cb)
  */
 export const doubleTap = (timeout = 250) =&gt; {

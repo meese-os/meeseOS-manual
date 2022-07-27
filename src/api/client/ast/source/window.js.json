@@ -1002,7 +1002,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {number} width Width in pixels (or float for percentage in setters)\n * @property {number} height Height in pixels (or float for percentage in setters)\n ",
+            "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {Number} width Width in pixels (or float for percentage in setters)\n * @property {Number} height Height in pixels (or float for percentage in setters)\n ",
             "start": 1977,
             "end": 2216,
             "loc": {
@@ -1018,7 +1018,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {number} left Left in pixels (or float for percentage in setters)\n * @property {number} top Top in pixels (or float for percentage in setters)\n ",
+            "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {Number} left Left in pixels (or float for percentage in setters)\n * @property {Number} top Top in pixels (or float for percentage in setters)\n ",
             "start": 2218,
             "end": 2447,
             "loc": {
@@ -1034,7 +1034,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {number} id\n * @property {boolean} maximized\n * @property {boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
+            "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {Number} id\n * @property {Boolean} maximized\n * @property {Boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
             "start": 2449,
             "end": 2680,
             "loc": {
@@ -1050,7 +1050,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {string[]} [classNames=[]] A list of class names\n * @property {boolean} [ontop=false] If always on top\n * @property {string} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {boolean} [resizable=true] If resizable\n * @property {boolean} [focusable=true] If focusable\n * @property {boolean} [maximizable=true] If window if maximizable\n * @property {boolean} [minimizable=true] If minimizable\n * @property {boolean} [moveable=true] If moveable\n * @property {boolean} [closeable=true] If closeable\n * @property {boolean} [header=true] Show header\n * @property {boolean} [controls=true] Show controls\n * @property {string} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {boolean} [clamp=true] Clamp the window position upon creation\n * @property {boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
+            "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {String[]} [classNames=[]] A list of class names\n * @property {Boolean} [ontop=false] If always on top\n * @property {String} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {Boolean} [resizable=true] If resizable\n * @property {Boolean} [focusable=true] If focusable\n * @property {Boolean} [maximizable=true] If window if maximizable\n * @property {Boolean} [minimizable=true] If minimizable\n * @property {Boolean} [moveable=true] If moveable\n * @property {Boolean} [closeable=true] If closeable\n * @property {Boolean} [header=true] Show header\n * @property {Boolean} [controls=true] Show controls\n * @property {String} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {Boolean} [clamp=true] Clamp the window position upon creation\n * @property {Boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
             "start": 2682,
             "end": 3872,
             "loc": {
@@ -1066,7 +1066,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {string} title Title\n * @property {string} icon Icon\n * @property {boolean} [moving=false] If moving\n * @property {boolean} [resizing=false] If resizing\n * @property {boolean} [loading=false] If loading\n * @property {boolean} [focused=false] If focused\n * @property {boolean} [maximized=false] If maximized\n * @property {boolean} [mimimized=false] If mimimized\n * @property {boolean} [modal=false] If modal to the parent\n * @property {number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
+            "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {String} title Title\n * @property {String} icon Icon\n * @property {Boolean} [moving=false] If moving\n * @property {Boolean} [resizing=false] If resizing\n * @property {Boolean} [loading=false] If loading\n * @property {Boolean} [focused=false] If focused\n * @property {Boolean} [maximized=false] If maximized\n * @property {Boolean} [mimimized=false] If mimimized\n * @property {Boolean} [modal=false] If modal to the parent\n * @property {Number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
             "start": 3874,
             "end": 4545,
             "loc": {
@@ -1082,7 +1082,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {string} id Window Id (not globaly unique)\n * @property {string} [title] Window Title\n * @property {string} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {string|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
+            "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {String} id Window Id (not globaly unique)\n * @property {String} [title] Window Title\n * @property {String} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {String|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
             "start": 4547,
             "end": 5307,
             "loc": {
@@ -1168,7 +1168,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {number} width Width in pixels (or float for percentage in setters)\n * @property {number} height Height in pixels (or float for percentage in setters)\n ",
+            "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {Number} width Width in pixels (or float for percentage in setters)\n * @property {Number} height Height in pixels (or float for percentage in setters)\n ",
             "start": 1977,
             "end": 2216,
             "loc": {
@@ -1184,7 +1184,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {number} left Left in pixels (or float for percentage in setters)\n * @property {number} top Top in pixels (or float for percentage in setters)\n ",
+            "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {Number} left Left in pixels (or float for percentage in setters)\n * @property {Number} top Top in pixels (or float for percentage in setters)\n ",
             "start": 2218,
             "end": 2447,
             "loc": {
@@ -1200,7 +1200,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {number} id\n * @property {boolean} maximized\n * @property {boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
+            "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {Number} id\n * @property {Boolean} maximized\n * @property {Boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
             "start": 2449,
             "end": 2680,
             "loc": {
@@ -1216,7 +1216,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {string[]} [classNames=[]] A list of class names\n * @property {boolean} [ontop=false] If always on top\n * @property {string} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {boolean} [resizable=true] If resizable\n * @property {boolean} [focusable=true] If focusable\n * @property {boolean} [maximizable=true] If window if maximizable\n * @property {boolean} [minimizable=true] If minimizable\n * @property {boolean} [moveable=true] If moveable\n * @property {boolean} [closeable=true] If closeable\n * @property {boolean} [header=true] Show header\n * @property {boolean} [controls=true] Show controls\n * @property {string} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {boolean} [clamp=true] Clamp the window position upon creation\n * @property {boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
+            "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {String[]} [classNames=[]] A list of class names\n * @property {Boolean} [ontop=false] If always on top\n * @property {String} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {Boolean} [resizable=true] If resizable\n * @property {Boolean} [focusable=true] If focusable\n * @property {Boolean} [maximizable=true] If window if maximizable\n * @property {Boolean} [minimizable=true] If minimizable\n * @property {Boolean} [moveable=true] If moveable\n * @property {Boolean} [closeable=true] If closeable\n * @property {Boolean} [header=true] Show header\n * @property {Boolean} [controls=true] Show controls\n * @property {String} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {Boolean} [clamp=true] Clamp the window position upon creation\n * @property {Boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
             "start": 2682,
             "end": 3872,
             "loc": {
@@ -1232,7 +1232,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {string} title Title\n * @property {string} icon Icon\n * @property {boolean} [moving=false] If moving\n * @property {boolean} [resizing=false] If resizing\n * @property {boolean} [loading=false] If loading\n * @property {boolean} [focused=false] If focused\n * @property {boolean} [maximized=false] If maximized\n * @property {boolean} [mimimized=false] If mimimized\n * @property {boolean} [modal=false] If modal to the parent\n * @property {number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
+            "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {String} title Title\n * @property {String} icon Icon\n * @property {Boolean} [moving=false] If moving\n * @property {Boolean} [resizing=false] If resizing\n * @property {Boolean} [loading=false] If loading\n * @property {Boolean} [focused=false] If focused\n * @property {Boolean} [maximized=false] If maximized\n * @property {Boolean} [mimimized=false] If mimimized\n * @property {Boolean} [modal=false] If modal to the parent\n * @property {Number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
             "start": 3874,
             "end": 4545,
             "loc": {
@@ -1248,7 +1248,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {string} id Window Id (not globaly unique)\n * @property {string} [title] Window Title\n * @property {string} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {string|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
+            "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {String} id Window Id (not globaly unique)\n * @property {String} [title] Window Title\n * @property {String} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {String|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
             "start": 4547,
             "end": 5307,
             "loc": {
@@ -3158,7 +3158,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The Window ID\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+                          "value": "*\n\t\t * The Window ID\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
                           "start": 7169,
                           "end": 7232,
                           "loc": {
@@ -3308,7 +3308,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The Window ID\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+                          "value": "*\n\t\t * The Window ID\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
                           "start": 7169,
                           "end": 7232,
                           "loc": {
@@ -3918,7 +3918,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window destruction state\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The window destruction state\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 7650,
                           "end": 7714,
                           "loc": {
@@ -4034,7 +4034,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window destruction state\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The window destruction state\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 7650,
                           "end": 7714,
                           "loc": {
@@ -4052,7 +4052,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window rendered state\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The window rendered state\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 7744,
                           "end": 7805,
                           "loc": {
@@ -4168,7 +4168,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window rendered state\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The window rendered state\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 7744,
                           "end": 7805,
                           "loc": {
@@ -4186,7 +4186,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window was inited\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The window was inited\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 7834,
                           "end": 7891,
                           "loc": {
@@ -4302,7 +4302,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window was inited\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The window was inited\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 7834,
                           "end": 7891,
                           "loc": {
@@ -5526,7 +5526,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 8627,
                           "end": 8770,
                           "loc": {
@@ -5642,7 +5642,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 8627,
                           "end": 8770,
                           "loc": {
@@ -5660,7 +5660,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 8814,
                           "end": 8936,
                           "loc": {
@@ -5775,7 +5775,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 8814,
                           "end": 8936,
                           "loc": {
@@ -5793,7 +5793,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {string|Function}\n\t\t ",
+                          "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {String|Function}\n\t\t ",
                           "start": 8972,
                           "end": 9049,
                           "loc": {
@@ -5943,7 +5943,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {string|Function}\n\t\t ",
+                          "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {String|Function}\n\t\t ",
                           "start": 8972,
                           "end": 9049,
                           "loc": {
@@ -6640,7 +6640,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {string}\n\t\t ",
+                          "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {String}\n\t\t ",
                           "start": 9425,
                           "end": 9498,
                           "loc": {
@@ -6760,7 +6760,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {string}\n\t\t ",
+                          "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {String}\n\t\t ",
                           "start": 9425,
                           "end": 9498,
                           "loc": {
@@ -20365,7 +20365,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Close the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Close the window\n\t * @returns {Boolean}\n\t ",
                     "start": 14219,
                     "end": 14271,
                     "loc": {
@@ -20763,7 +20763,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Close the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Close the window\n\t * @returns {Boolean}\n\t ",
                     "start": 14219,
                     "end": 14271,
                     "loc": {
@@ -20781,7 +20781,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Focus the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Focus the window\n\t * @returns {Boolean}\n\t ",
                     "start": 14387,
                     "end": 14439,
                     "loc": {
@@ -21272,7 +21272,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Focus the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Focus the window\n\t * @returns {Boolean}\n\t ",
                     "start": 14387,
                     "end": 14439,
                     "loc": {
@@ -21724,7 +21724,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 14768,
                     "end": 14830,
                     "loc": {
@@ -22204,7 +22204,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 14768,
                     "end": 14830,
                     "loc": {
@@ -22222,7 +22222,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Minimize (hide) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Minimize (hide) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15072,
                     "end": 15134,
                     "loc": {
@@ -22711,7 +22711,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Minimize (hide) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Minimize (hide) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15072,
                     "end": 15134,
                     "loc": {
@@ -22729,7 +22729,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15311,
                     "end": 15377,
                     "loc": {
@@ -22943,7 +22943,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15311,
                     "end": 15377,
                     "loc": {
@@ -22961,7 +22961,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Maximize the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Maximize the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15451,
                     "end": 15506,
                     "loc": {
@@ -23281,7 +23281,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Maximize the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Maximize the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15451,
                     "end": 15506,
                     "loc": {
@@ -23299,7 +23299,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15616,
                     "end": 15684,
                     "loc": {
@@ -23473,7 +23473,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {Boolean}\n\t ",
                     "start": 15616,
                     "end": 15684,
                     "loc": {
@@ -23491,7 +23491,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {boolean} toggle Maximize or restore\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {Boolean} toggle Maximize or restore\n\t * @returns {Boolean}\n\t ",
                     "start": 15735,
                     "end": 15864,
                     "loc": {
@@ -24731,7 +24731,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {boolean} toggle Maximize or restore\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {Boolean} toggle Maximize or restore\n\t * @returns {Boolean}\n\t ",
                     "start": 15735,
                     "end": 15864,
                     "loc": {
@@ -26083,7 +26083,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Clamps the position to viewport\n\t * @param {boolean} [update=true] Update DOM\n\t ",
+                    "value": "*\n\t * Clamps the position to viewport\n\t * @param {Boolean} [update=true] Update DOM\n\t ",
                     "start": 16820,
                     "end": 16910,
                     "loc": {
@@ -27066,7 +27066,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Clamps the position to viewport\n\t * @param {boolean} [update=true] Update DOM\n\t ",
+                    "value": "*\n\t * Clamps the position to viewport\n\t * @param {Boolean} [update=true] Update DOM\n\t ",
                     "start": 16820,
                     "end": 16910,
                     "loc": {
@@ -27084,7 +27084,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set the Window icon\n\t * @param {string} uri Icon URI\n\t ",
+                    "value": "*\n\t * Set the Window icon\n\t * @param {String} uri Icon URI\n\t ",
                     "start": 17204,
                     "end": 17269,
                     "loc": {
@@ -27388,7 +27388,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set the Window icon\n\t * @param {string} uri Icon URI\n\t ",
+                    "value": "*\n\t * Set the Window icon\n\t * @param {String} uri Icon URI\n\t ",
                     "start": 17204,
                     "end": 17269,
                     "loc": {
@@ -27406,7 +27406,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set the Window title\n\t * @param {string} title Title\n\t ",
+                    "value": "*\n\t * Set the Window title\n\t * @param {String} title Title\n\t ",
                     "start": 17345,
                     "end": 17410,
                     "loc": {
@@ -27931,7 +27931,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set the Window title\n\t * @param {string} title Title\n\t ",
+                    "value": "*\n\t * Set the Window title\n\t * @param {String} title Title\n\t ",
                     "start": 17345,
                     "end": 17410,
                     "loc": {
@@ -28807,7 +28807,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
+                    "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {Boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
                     "start": 17864,
                     "end": 18049,
                     "loc": {
@@ -29841,7 +29841,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
+                    "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {Boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
                     "start": 17864,
                     "end": 18049,
                     "loc": {
@@ -30300,7 +30300,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Sets the Window to next z index\n\t * @param {boolean} [force] Force next index\n\t ",
+                    "value": "*\n\t * Sets the Window to next z index\n\t * @param {Boolean} [force] Force next index\n\t ",
                     "start": 18541,
                     "end": 18631,
                     "loc": {
@@ -30740,7 +30740,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Sets the Window to next z index\n\t * @param {boolean} [force] Force next index\n\t ",
+                    "value": "*\n\t * Sets the Window to next z index\n\t * @param {Boolean} [force] Force next index\n\t ",
                     "start": 18541,
                     "end": 18631,
                     "loc": {
@@ -30758,7 +30758,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set a state by value\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
+                    "value": "*\n\t * Set a state by value\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
                     "start": 18783,
                     "end": 18958,
                     "loc": {
@@ -31726,7 +31726,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Set a state by value\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
+                    "value": "*\n\t * Set a state by value\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
                     "start": 18783,
                     "end": 18958,
                     "loc": {
@@ -31744,7 +31744,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {string} gravity Gravity\n\t ",
+                    "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {String} gravity Gravity\n\t ",
                     "start": 19326,
                     "end": 19415,
                     "loc": {
@@ -32457,7 +32457,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {string} gravity Gravity\n\t ",
+                    "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {String} gravity Gravity\n\t ",
                     "start": 19326,
                     "end": 19415,
                     "loc": {
@@ -34152,7 +34152,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @param {boolean} [updateAll=true] Update the entire DOM\n\t ",
+                    "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @param {Boolean} [updateAll=true] Update the entire DOM\n\t ",
                     "start": 20405,
                     "end": 20643,
                     "loc": {
@@ -35020,7 +35020,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @param {boolean} [updateAll=true] Update the entire DOM\n\t ",
+                    "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @param {Boolean} [updateAll=true] Update the entire DOM\n\t ",
                     "start": 20405,
                     "end": 20643,
                     "loc": {
@@ -35038,7 +35038,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {string} name State name\n\t * @param {any} value State value\n\t * @param {string} eventName Name of event to emit\n\t * @param {boolean} [update=true] Update the DOM\n\t ",
+                    "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {String} name State name\n\t * @param {any} value State value\n\t * @param {String} eventName Name of event to emit\n\t * @param {Boolean} [update=true] Update the DOM\n\t ",
                     "start": 20917,
                     "end": 21150,
                     "loc": {
@@ -36149,7 +36149,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {string} name State name\n\t * @param {any} value State value\n\t * @param {string} eventName Name of event to emit\n\t * @param {boolean} [update=true] Update the DOM\n\t ",
+                    "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {String} name State name\n\t * @param {any} value State value\n\t * @param {String} eventName Name of event to emit\n\t * @param {Boolean} [update=true] Update the DOM\n\t ",
                     "start": 20917,
                     "end": 21150,
                     "loc": {
@@ -36167,7 +36167,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {Boolean}\n\t ",
                     "start": 21530,
                     "end": 21614,
                     "loc": {
@@ -37563,7 +37563,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {boolean}\n\t ",
+                    "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {Boolean}\n\t ",
                     "start": 21530,
                     "end": 21614,
                     "loc": {
@@ -43832,7 +43832,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {number} width Width in pixels (or float for percentage in setters)\n * @property {number} height Height in pixels (or float for percentage in setters)\n ",
+      "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {Number} width Width in pixels (or float for percentage in setters)\n * @property {Number} height Height in pixels (or float for percentage in setters)\n ",
       "start": 1977,
       "end": 2216,
       "loc": {
@@ -43848,7 +43848,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {number} left Left in pixels (or float for percentage in setters)\n * @property {number} top Top in pixels (or float for percentage in setters)\n ",
+      "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {Number} left Left in pixels (or float for percentage in setters)\n * @property {Number} top Top in pixels (or float for percentage in setters)\n ",
       "start": 2218,
       "end": 2447,
       "loc": {
@@ -43864,7 +43864,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {number} id\n * @property {boolean} maximized\n * @property {boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
+      "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {Number} id\n * @property {Boolean} maximized\n * @property {Boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
       "start": 2449,
       "end": 2680,
       "loc": {
@@ -43880,7 +43880,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {string[]} [classNames=[]] A list of class names\n * @property {boolean} [ontop=false] If always on top\n * @property {string} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {boolean} [resizable=true] If resizable\n * @property {boolean} [focusable=true] If focusable\n * @property {boolean} [maximizable=true] If window if maximizable\n * @property {boolean} [minimizable=true] If minimizable\n * @property {boolean} [moveable=true] If moveable\n * @property {boolean} [closeable=true] If closeable\n * @property {boolean} [header=true] Show header\n * @property {boolean} [controls=true] Show controls\n * @property {string} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {boolean} [clamp=true] Clamp the window position upon creation\n * @property {boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
+      "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {String[]} [classNames=[]] A list of class names\n * @property {Boolean} [ontop=false] If always on top\n * @property {String} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {Boolean} [resizable=true] If resizable\n * @property {Boolean} [focusable=true] If focusable\n * @property {Boolean} [maximizable=true] If window if maximizable\n * @property {Boolean} [minimizable=true] If minimizable\n * @property {Boolean} [moveable=true] If moveable\n * @property {Boolean} [closeable=true] If closeable\n * @property {Boolean} [header=true] Show header\n * @property {Boolean} [controls=true] Show controls\n * @property {String} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {Boolean} [clamp=true] Clamp the window position upon creation\n * @property {Boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
       "start": 2682,
       "end": 3872,
       "loc": {
@@ -43896,7 +43896,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {string} title Title\n * @property {string} icon Icon\n * @property {boolean} [moving=false] If moving\n * @property {boolean} [resizing=false] If resizing\n * @property {boolean} [loading=false] If loading\n * @property {boolean} [focused=false] If focused\n * @property {boolean} [maximized=false] If maximized\n * @property {boolean} [mimimized=false] If mimimized\n * @property {boolean} [modal=false] If modal to the parent\n * @property {number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
+      "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {String} title Title\n * @property {String} icon Icon\n * @property {Boolean} [moving=false] If moving\n * @property {Boolean} [resizing=false] If resizing\n * @property {Boolean} [loading=false] If loading\n * @property {Boolean} [focused=false] If focused\n * @property {Boolean} [maximized=false] If maximized\n * @property {Boolean} [mimimized=false] If mimimized\n * @property {Boolean} [modal=false] If modal to the parent\n * @property {Number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
       "start": 3874,
       "end": 4545,
       "loc": {
@@ -43912,7 +43912,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {string} id Window Id (not globaly unique)\n * @property {string} [title] Window Title\n * @property {string} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {string|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
+      "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {String} id Window Id (not globaly unique)\n * @property {String} [title] Window Title\n * @property {String} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {String|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
       "start": 4547,
       "end": 5307,
       "loc": {
@@ -43976,7 +43976,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The Window ID\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+      "value": "*\n\t\t * The Window ID\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
       "start": 7169,
       "end": 7232,
       "loc": {
@@ -44056,7 +44056,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window destruction state\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The window destruction state\n\t\t * @type {Boolean}\n\t\t ",
       "start": 7650,
       "end": 7714,
       "loc": {
@@ -44072,7 +44072,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window rendered state\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The window rendered state\n\t\t * @type {Boolean}\n\t\t ",
       "start": 7744,
       "end": 7805,
       "loc": {
@@ -44088,7 +44088,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window was inited\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The window was inited\n\t\t * @type {Boolean}\n\t\t ",
       "start": 7834,
       "end": 7891,
       "loc": {
@@ -44216,7 +44216,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
       "start": 8627,
       "end": 8770,
       "loc": {
@@ -44232,7 +44232,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
       "start": 8814,
       "end": 8936,
       "loc": {
@@ -44248,7 +44248,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {string|Function}\n\t\t ",
+      "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {String|Function}\n\t\t ",
       "start": 8972,
       "end": 9049,
       "loc": {
@@ -44312,7 +44312,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {string}\n\t\t ",
+      "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {String}\n\t\t ",
       "start": 9425,
       "end": 9498,
       "loc": {
@@ -44536,7 +44536,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Close the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Close the window\n\t * @returns {Boolean}\n\t ",
       "start": 14219,
       "end": 14271,
       "loc": {
@@ -44552,7 +44552,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Focus the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Focus the window\n\t * @returns {Boolean}\n\t ",
       "start": 14387,
       "end": 14439,
       "loc": {
@@ -44584,7 +44584,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {Boolean}\n\t ",
       "start": 14768,
       "end": 14830,
       "loc": {
@@ -44616,7 +44616,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Minimize (hide) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Minimize (hide) the window\n\t * @returns {Boolean}\n\t ",
       "start": 15072,
       "end": 15134,
       "loc": {
@@ -44632,7 +44632,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {Boolean}\n\t ",
       "start": 15311,
       "end": 15377,
       "loc": {
@@ -44648,7 +44648,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Maximize the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Maximize the window\n\t * @returns {Boolean}\n\t ",
       "start": 15451,
       "end": 15506,
       "loc": {
@@ -44664,7 +44664,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {Boolean}\n\t ",
       "start": 15616,
       "end": 15684,
       "loc": {
@@ -44680,7 +44680,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {boolean} toggle Maximize or restore\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {Boolean} toggle Maximize or restore\n\t * @returns {Boolean}\n\t ",
       "start": 15735,
       "end": 15864,
       "loc": {
@@ -44728,7 +44728,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Clamps the position to viewport\n\t * @param {boolean} [update=true] Update DOM\n\t ",
+      "value": "*\n\t * Clamps the position to viewport\n\t * @param {Boolean} [update=true] Update DOM\n\t ",
       "start": 16820,
       "end": 16910,
       "loc": {
@@ -44744,7 +44744,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set the Window icon\n\t * @param {string} uri Icon URI\n\t ",
+      "value": "*\n\t * Set the Window icon\n\t * @param {String} uri Icon URI\n\t ",
       "start": 17204,
       "end": 17269,
       "loc": {
@@ -44760,7 +44760,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set the Window title\n\t * @param {string} title Title\n\t ",
+      "value": "*\n\t * Set the Window title\n\t * @param {String} title Title\n\t ",
       "start": 17345,
       "end": 17410,
       "loc": {
@@ -44792,7 +44792,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
+      "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {Boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
       "start": 17864,
       "end": 18049,
       "loc": {
@@ -44824,7 +44824,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Sets the Window to next z index\n\t * @param {boolean} [force] Force next index\n\t ",
+      "value": "*\n\t * Sets the Window to next z index\n\t * @param {Boolean} [force] Force next index\n\t ",
       "start": 18541,
       "end": 18631,
       "loc": {
@@ -44840,7 +44840,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set a state by value\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
+      "value": "*\n\t * Set a state by value\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
       "start": 18783,
       "end": 18958,
       "loc": {
@@ -44888,7 +44888,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {string} gravity Gravity\n\t ",
+      "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {String} gravity Gravity\n\t ",
       "start": 19326,
       "end": 19415,
       "loc": {
@@ -44968,7 +44968,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @param {boolean} [updateAll=true] Update the entire DOM\n\t ",
+      "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @param {Boolean} [updateAll=true] Update the entire DOM\n\t ",
       "start": 20405,
       "end": 20643,
       "loc": {
@@ -44984,7 +44984,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {string} name State name\n\t * @param {any} value State value\n\t * @param {string} eventName Name of event to emit\n\t * @param {boolean} [update=true] Update the DOM\n\t ",
+      "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {String} name State name\n\t * @param {any} value State value\n\t * @param {String} eventName Name of event to emit\n\t * @param {Boolean} [update=true] Update the DOM\n\t ",
       "start": 20917,
       "end": 21150,
       "loc": {
@@ -45000,7 +45000,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {Boolean}\n\t ",
       "start": 21530,
       "end": 21614,
       "loc": {
@@ -46635,7 +46635,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {number} width Width in pixels (or float for percentage in setters)\n * @property {number} height Height in pixels (or float for percentage in setters)\n ",
+      "value": "*\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {Number} width Width in pixels (or float for percentage in setters)\n * @property {Number} height Height in pixels (or float for percentage in setters)\n ",
       "start": 1977,
       "end": 2216,
       "loc": {
@@ -46651,7 +46651,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {number} left Left in pixels (or float for percentage in setters)\n * @property {number} top Top in pixels (or float for percentage in setters)\n ",
+      "value": "*\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {Number} left Left in pixels (or float for percentage in setters)\n * @property {Number} top Top in pixels (or float for percentage in setters)\n ",
       "start": 2218,
       "end": 2447,
       "loc": {
@@ -46667,7 +46667,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {number} id\n * @property {boolean} maximized\n * @property {boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
+      "value": "*\n * Window session\n * @typedef {Object} WindowSession\n * @property {Number} id\n * @property {Boolean} maximized\n * @property {Boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n ",
       "start": 2449,
       "end": 2680,
       "loc": {
@@ -46683,7 +46683,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {string[]} [classNames=[]] A list of class names\n * @property {boolean} [ontop=false] If always on top\n * @property {string} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {boolean} [resizable=true] If resizable\n * @property {boolean} [focusable=true] If focusable\n * @property {boolean} [maximizable=true] If window if maximizable\n * @property {boolean} [minimizable=true] If minimizable\n * @property {boolean} [moveable=true] If moveable\n * @property {boolean} [closeable=true] If closeable\n * @property {boolean} [header=true] Show header\n * @property {boolean} [controls=true] Show controls\n * @property {string} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {boolean} [clamp=true] Clamp the window position upon creation\n * @property {boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
+      "value": "*\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {String[]} [classNames=[]] A list of class names\n * @property {Boolean} [ontop=false] If always on top\n * @property {String} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {Boolean} [resizable=true] If resizable\n * @property {Boolean} [focusable=true] If focusable\n * @property {Boolean} [maximizable=true] If window if maximizable\n * @property {Boolean} [minimizable=true] If minimizable\n * @property {Boolean} [moveable=true] If moveable\n * @property {Boolean} [closeable=true] If closeable\n * @property {Boolean} [header=true] Show header\n * @property {Boolean} [controls=true] Show controls\n * @property {String} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {Boolean} [clamp=true] Clamp the window position upon creation\n * @property {Boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n ",
       "start": 2682,
       "end": 3872,
       "loc": {
@@ -46699,7 +46699,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {string} title Title\n * @property {string} icon Icon\n * @property {boolean} [moving=false] If moving\n * @property {boolean} [resizing=false] If resizing\n * @property {boolean} [loading=false] If loading\n * @property {boolean} [focused=false] If focused\n * @property {boolean} [maximized=false] If maximized\n * @property {boolean} [mimimized=false] If mimimized\n * @property {boolean} [modal=false] If modal to the parent\n * @property {number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
+      "value": "*\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {String} title Title\n * @property {String} icon Icon\n * @property {Boolean} [moving=false] If moving\n * @property {Boolean} [resizing=false] If resizing\n * @property {Boolean} [loading=false] If loading\n * @property {Boolean} [focused=false] If focused\n * @property {Boolean} [maximized=false] If maximized\n * @property {Boolean} [mimimized=false] If mimimized\n * @property {Boolean} [modal=false] If modal to the parent\n * @property {Number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n ",
       "start": 3874,
       "end": 4545,
       "loc": {
@@ -46715,7 +46715,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {string} id Window Id (not globaly unique)\n * @property {string} [title] Window Title\n * @property {string} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {string|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
+      "value": "*\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {String} id Window Id (not globaly unique)\n * @property {String} [title] Window Title\n * @property {String} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {String|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n ",
       "start": 4547,
       "end": 5307,
       "loc": {
@@ -50705,7 +50705,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The Window ID\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+      "value": "*\n\t\t * The Window ID\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
       "start": 7169,
       "end": 7232,
       "loc": {
@@ -51736,7 +51736,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window destruction state\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The window destruction state\n\t\t * @type {Boolean}\n\t\t ",
       "start": 7650,
       "end": 7714,
       "loc": {
@@ -51913,7 +51913,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window rendered state\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The window rendered state\n\t\t * @type {Boolean}\n\t\t ",
       "start": 7744,
       "end": 7805,
       "loc": {
@@ -52090,7 +52090,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window was inited\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The window was inited\n\t\t * @type {Boolean}\n\t\t ",
       "start": 7834,
       "end": 7891,
       "loc": {
@@ -54043,7 +54043,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
       "start": 8627,
       "end": 8770,
       "loc": {
@@ -54220,7 +54220,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t ",
       "start": 8814,
       "end": 8936,
       "loc": {
@@ -54397,7 +54397,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {string|Function}\n\t\t ",
+      "value": "*\n\t\t * The window template\n\t\t * @private\n\t\t * @type {String|Function}\n\t\t ",
       "start": 8972,
       "end": 9049,
       "loc": {
@@ -55750,7 +55750,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {string}\n\t\t ",
+      "value": "*\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {String}\n\t\t ",
       "start": 9425,
       "end": 9498,
       "loc": {
@@ -82786,7 +82786,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Close the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Close the window\n\t * @returns {Boolean}\n\t ",
       "start": 14219,
       "end": 14271,
       "loc": {
@@ -83643,7 +83643,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Focus the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Focus the window\n\t * @returns {Boolean}\n\t ",
       "start": 14387,
       "end": 14439,
       "loc": {
@@ -85504,7 +85504,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Blur (un-focus) the window\n\t * @returns {Boolean}\n\t ",
       "start": 14768,
       "end": 14830,
       "loc": {
@@ -86501,7 +86501,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Minimize (hide) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Minimize (hide) the window\n\t * @returns {Boolean}\n\t ",
       "start": 15072,
       "end": 15134,
       "loc": {
@@ -87615,7 +87615,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Raise (un-minimize) the window\n\t * @returns {Boolean}\n\t ",
       "start": 15311,
       "end": 15377,
       "loc": {
@@ -88075,7 +88075,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Maximize the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Maximize the window\n\t * @returns {Boolean}\n\t ",
       "start": 15451,
       "end": 15506,
       "loc": {
@@ -88771,7 +88771,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Restore (un-maximize) the window\n\t * @returns {Boolean}\n\t ",
       "start": 15616,
       "end": 15684,
       "loc": {
@@ -89125,7 +89125,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {boolean} toggle Maximize or restore\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {Boolean} toggle Maximize or restore\n\t * @returns {Boolean}\n\t ",
       "start": 15735,
       "end": 15864,
       "loc": {
@@ -94256,7 +94256,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Clamps the position to viewport\n\t * @param {boolean} [update=true] Update DOM\n\t ",
+      "value": "*\n\t * Clamps the position to viewport\n\t * @param {Boolean} [update=true] Update DOM\n\t ",
       "start": 16820,
       "end": 16910,
       "loc": {
@@ -96254,7 +96254,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set the Window icon\n\t * @param {string} uri Icon URI\n\t ",
+      "value": "*\n\t * Set the Window icon\n\t * @param {String} uri Icon URI\n\t ",
       "start": 17204,
       "end": 17269,
       "loc": {
@@ -96789,7 +96789,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set the Window title\n\t * @param {string} title Title\n\t ",
+      "value": "*\n\t * Set the Window title\n\t * @param {String} title Title\n\t ",
       "start": 17345,
       "end": 17410,
       "loc": {
@@ -99244,7 +99244,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
+      "value": "*\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {Boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t ",
       "start": 17864,
       "end": 18049,
       "loc": {
@@ -101906,7 +101906,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Sets the Window to next z index\n\t * @param {boolean} [force] Force next index\n\t ",
+      "value": "*\n\t * Sets the Window to next z index\n\t * @param {Boolean} [force] Force next index\n\t ",
       "start": 18541,
       "end": 18631,
       "loc": {
@@ -102778,7 +102778,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Set a state by value\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
+      "value": "*\n\t * Set a state by value\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t ",
       "start": 18783,
       "end": 18958,
       "loc": {
@@ -104802,7 +104802,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {string} gravity Gravity\n\t ",
+      "value": "*\n\t * Gravitates window towards a certain area\n\t * @param {String} gravity Gravity\n\t ",
       "start": 19326,
       "end": 19415,
       "loc": {
@@ -109473,7 +109473,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {string} name State name\n\t * @param {*} value State value\n\t * @param {boolean} [update=true] Update the DOM\n\t * @param {boolean} [updateAll=true] Update the entire DOM\n\t ",
+      "value": "*\n\t * Internal method for setting state\n\t * @private\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @param {Boolean} [updateAll=true] Update the entire DOM\n\t ",
       "start": 20405,
       "end": 20643,
       "loc": {
@@ -111291,7 +111291,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {string} name State name\n\t * @param {any} value State value\n\t * @param {string} eventName Name of event to emit\n\t * @param {boolean} [update=true] Update the DOM\n\t ",
+      "value": "*\n\t * Internal method for toggling state\n\t * @private\n\t * @param {String} name State name\n\t * @param {any} value State value\n\t * @param {String} eventName Name of event to emit\n\t * @param {Boolean} [update=true] Update the DOM\n\t ",
       "start": 20917,
       "end": 21150,
       "loc": {
@@ -113738,7 +113738,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {boolean}\n\t ",
+      "value": "*\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {Boolean}\n\t ",
       "start": 21530,
       "end": 21614,
       "loc": {

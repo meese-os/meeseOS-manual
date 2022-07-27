@@ -340,7 +340,7 @@ module.exports = (core) =&gt; {
 		 * Creates directory
 		 * @param {String} file The file path from client
 		 * @param {Object} [options={}] Options
-		 * @returns {boolean}
+		 * @returns {Boolean}
 		 */
 		mkdir: wrapper(&quot;mkdir&quot;, (promise, options = {}) =&gt; {
 			return promise
@@ -393,7 +393,7 @@ module.exports = (core) =&gt; {
 		 * @param {String} src The source file path from client
 		 * @param {String} dest The destination file path from client
 		 * @param {Object} [options={}] Options
-		 * @returns {boolean}
+		 * @returns {Boolean}
 		 */
 		rename: crossWrapper(&quot;rename&quot;),
 
@@ -402,7 +402,7 @@ module.exports = (core) =&gt; {
 		 * @param {String} src The source file path from client
 		 * @param {String} dest The destination file path from client
 		 * @param {Object} [options={}] Options
-		 * @returns {boolean}
+		 * @returns {Boolean}
 		 */
 		copy: crossWrapper(&quot;copy&quot;),
 
@@ -410,7 +410,7 @@ module.exports = (core) =&gt; {
 		 * Removes given file or directory
 		 * @param {String} file The file path from client
 		 * @param {Object} [options={}] Options
-		 * @returns {boolean}
+		 * @returns {Boolean}
 		 */
 		unlink: wrapper(&quot;remove&quot;),
 
@@ -418,7 +418,7 @@ module.exports = (core) =&gt; {
 		 * Searches for files and folders
 		 * @param {String} file The file path from client
 		 * @param {Object} [options={}] Options
-		 * @returns {boolean}
+		 * @returns {Boolean}
 		 */
 		search:
 			(vfs) =&gt;
@@ -453,7 +453,7 @@ module.exports = (core) =&gt; {
 		 * Touches a file
 		 * @param {String} file The file path from client
 		 * @param {Object} [options={}] Options
-		 * @returns {boolean}
+		 * @returns {Boolean}
 		 */
 		touch: wrapper(&quot;ensureFile&quot;),
 
@@ -461,7 +461,7 @@ module.exports = (core) =&gt; {
 		 * Gets the real filesystem path (internal only)
 		 * @param {String} file The file path from client
 		 * @param {Object} [options={}] Options
-		 * @returns {string}
+		 * @returns {String}
 		 */
 		realpath:
 			(vfs) =&gt;

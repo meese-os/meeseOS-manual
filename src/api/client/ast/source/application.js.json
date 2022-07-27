@@ -824,7 +824,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {Boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {Boolean} [sessionable=true] Allow session storage\n ",
             "start": 1917,
             "end": 2227,
             "loc": {
@@ -856,7 +856,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {string} name\n * @property {WindowSession[]} windows\n ",
+            "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {String} name\n * @property {WindowSession[]} windows\n ",
             "start": 2455,
             "end": 2628,
             "loc": {
@@ -3500,7 +3500,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The application destruction state\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The application destruction state\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 4096,
                           "end": 4165,
                           "loc": {
@@ -3616,7 +3616,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The application destruction state\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * The application destruction state\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 4096,
                           "end": 4165,
                           "loc": {
@@ -8150,7 +8150,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {string} A complete URI\n\t ",
+                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {String} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {String} A complete URI\n\t ",
                     "start": 5779,
                     "end": 6028,
                     "loc": {
@@ -8524,7 +8524,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {string} A complete URI\n\t ",
+                    "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {String} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {String} A complete URI\n\t ",
                     "start": 5779,
                     "end": 6028,
                     "loc": {
@@ -8542,7 +8542,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {string} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {string} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
+                    "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {String} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
                     "start": 6126,
                     "end": 6423,
                     "loc": {
@@ -9069,7 +9069,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {string} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {string} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
+                    "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {String} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
                     "start": 6126,
                     "end": 6423,
                     "loc": {
@@ -9087,7 +9087,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new Websocket\n\t * @param {string} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
+                    "value": "*\n\t * Creates a new Websocket\n\t * @param {String} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
                     "start": 6565,
                     "end": 6747,
                     "loc": {
@@ -10012,7 +10012,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new Websocket\n\t * @param {string} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
+                    "value": "*\n\t * Creates a new Websocket\n\t * @param {String} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
                     "start": 6565,
                     "end": 6747,
                     "loc": {
@@ -10563,7 +10563,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
+                    "value": "*\n\t * Creates a new Worker\n\t * @param {String} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
                     "start": 7437,
                     "end": 7582,
                     "loc": {
@@ -11206,7 +11206,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
+                    "value": "*\n\t * Creates a new Worker\n\t * @param {String} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
                     "start": 7437,
                     "end": 7582,
                     "loc": {
@@ -18304,7 +18304,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+              "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {Boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {Boolean} [sessionable=true] Allow session storage\n ",
               "start": 1917,
               "end": 2227,
               "loc": {
@@ -18336,7 +18336,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {string} name\n * @property {WindowSession[]} windows\n ",
+              "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {String} name\n * @property {WindowSession[]} windows\n ",
               "start": 2455,
               "end": 2628,
               "loc": {
@@ -18372,7 +18372,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+            "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {Boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {Boolean} [sessionable=true] Allow session storage\n ",
             "start": 1917,
             "end": 2227,
             "loc": {
@@ -18404,7 +18404,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {string} name\n * @property {WindowSession[]} windows\n ",
+            "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {String} name\n * @property {WindowSession[]} windows\n ",
             "start": 2455,
             "end": 2628,
             "loc": {
@@ -18458,7 +18458,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {Boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {Boolean} [sessionable=true] Allow session storage\n ",
       "start": 1917,
       "end": 2227,
       "loc": {
@@ -18490,7 +18490,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {string} name\n * @property {WindowSession[]} windows\n ",
+      "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {String} name\n * @property {WindowSession[]} windows\n ",
       "start": 2455,
       "end": 2628,
       "loc": {
@@ -18666,7 +18666,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The application destruction state\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The application destruction state\n\t\t * @type {Boolean}\n\t\t ",
       "start": 4096,
       "end": 4165,
       "loc": {
@@ -18762,7 +18762,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {string} A complete URI\n\t ",
+      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {String} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {String} A complete URI\n\t ",
       "start": 5779,
       "end": 6028,
       "loc": {
@@ -18778,7 +18778,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {string} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {string} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
+      "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {String} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
       "start": 6126,
       "end": 6423,
       "loc": {
@@ -18794,7 +18794,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new Websocket\n\t * @param {string} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
+      "value": "*\n\t * Creates a new Websocket\n\t * @param {String} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
       "start": 6565,
       "end": 6747,
       "loc": {
@@ -18826,7 +18826,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
+      "value": "*\n\t * Creates a new Worker\n\t * @param {String} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
       "start": 7437,
       "end": 7582,
       "loc": {
@@ -20488,7 +20488,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {boolean} [sessionable=true] Allow session storage\n ",
+      "value": "*\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {Boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {Boolean} [sessionable=true] Allow session storage\n ",
       "start": 1917,
       "end": 2227,
       "loc": {
@@ -20520,7 +20520,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {string} name\n * @property {WindowSession[]} windows\n ",
+      "value": "*\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {String} name\n * @property {WindowSession[]} windows\n ",
       "start": 2455,
       "end": 2628,
       "loc": {
@@ -25115,7 +25115,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The application destruction state\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * The application destruction state\n\t\t * @type {Boolean}\n\t\t ",
       "start": 4096,
       "end": 4165,
       "loc": {
@@ -34268,7 +34268,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {string} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {string} A complete URI\n\t ",
+      "value": "*\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {String} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {String} A complete URI\n\t ",
       "start": 5779,
       "end": 6028,
       "loc": {
@@ -35039,7 +35039,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {string} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {string} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
+      "value": "*\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {String} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t ",
       "start": 6126,
       "end": 6423,
       "loc": {
@@ -36125,7 +36125,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new Websocket\n\t * @param {string} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
+      "value": "*\n\t * Creates a new Websocket\n\t * @param {String} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t ",
       "start": 6565,
       "end": 6747,
       "loc": {
@@ -38967,7 +38967,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new Worker\n\t * @param {string} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
+      "value": "*\n\t * Creates a new Worker\n\t * @param {String} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t ",
       "start": 7437,
       "end": 7582,
       "loc": {

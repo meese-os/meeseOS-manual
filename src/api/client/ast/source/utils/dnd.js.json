@@ -167,7 +167,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} DroppableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {boolean} [strict=false] Drop element must match exactly\n ",
+            "value": "*\n * @typedef {Object} DroppableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {Boolean} [strict=false] Drop element must match exactly\n ",
             "start": 1818,
             "end": 2345,
             "loc": {
@@ -199,7 +199,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} DraggableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
+            "value": "*\n * @typedef {Object} DraggableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
             "start": 2427,
             "end": 2818,
             "loc": {
@@ -911,7 +911,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} DroppableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {boolean} [strict=false] Drop element must match exactly\n ",
+            "value": "*\n * @typedef {Object} DroppableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {Boolean} [strict=false] Drop element must match exactly\n ",
             "start": 1818,
             "end": 2345,
             "loc": {
@@ -943,7 +943,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} DraggableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
+            "value": "*\n * @typedef {Object} DraggableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
             "start": 2427,
             "end": 2818,
             "loc": {
@@ -12951,7 +12951,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} DroppableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {boolean} [strict=false] Drop element must match exactly\n ",
+      "value": "*\n * @typedef {Object} DroppableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {Boolean} [strict=false] Drop element must match exactly\n ",
       "start": 1818,
       "end": 2345,
       "loc": {
@@ -12983,7 +12983,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} DraggableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
+      "value": "*\n * @typedef {Object} DraggableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
       "start": 2427,
       "end": 2818,
       "loc": {
@@ -13246,7 +13246,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} DroppableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {boolean} [strict=false] Drop element must match exactly\n ",
+      "value": "*\n * @typedef {Object} DroppableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DroppableEvent} [ondragenter] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragover] Callback to event (ev) => {}\n * @property {DroppableEvent} [ondragleave] Callback to event (ev) => {}\n * @property {DroppedEvent} [ondrop] Callback to event (ev, data, files) => {}\n * @property {Boolean} [strict=false] Drop element must match exactly\n ",
       "start": 1818,
       "end": 2345,
       "loc": {
@@ -13278,7 +13278,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} DraggableOptions\n * @property {string} [type=application/json] Content Type\n * @property {string} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
+      "value": "*\n * @typedef {Object} DraggableOptions\n * @property {String} [type=application/json] Content Type\n * @property {String} [effect=move] DnD effect (cursor)\n * @property {DraggableEvent} [ondragstart] Callback to event (ev) => {}\n * @property {DraggableEvent} [ondragend] Callback to event (ev) => {}\n * @property {DraggableEvent} [setDragImage] Set custom drag image (browser dependent)\n ",
       "start": 2427,
       "end": 2818,
       "loc": {

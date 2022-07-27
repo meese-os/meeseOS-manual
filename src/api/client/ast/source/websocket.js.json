@@ -352,7 +352,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {boolean} [reconnect=true] Enable reconnection\n * @property {number} [interval=1000] Reconnect interval\n * @property {boolean} [open=true] Immediately open socket after creation\n ",
+            "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {Boolean} [reconnect=true] Enable reconnection\n * @property {Number} [interval=1000] Reconnect interval\n * @property {Boolean} [open=true] Immediately open socket after creation\n ",
             "start": 1690,
             "end": 1947,
             "loc": {
@@ -838,7 +838,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Socket URI\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+                          "value": "*\n\t\t * Socket URI\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
                           "start": 2529,
                           "end": 2589,
                           "loc": {
@@ -955,7 +955,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * Socket URI\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+                          "value": "*\n\t\t * Socket URI\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
                           "start": 2529,
                           "end": 2589,
                           "loc": {
@@ -973,7 +973,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is closed\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is closed\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2611,
                           "end": 2666,
                           "loc": {
@@ -1089,7 +1089,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is closed\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is closed\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2611,
                           "end": 2666,
                           "loc": {
@@ -1107,7 +1107,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is connected\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is connected\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2693,
                           "end": 2751,
                           "loc": {
@@ -1223,7 +1223,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is connected\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is connected\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2693,
                           "end": 2751,
                           "loc": {
@@ -1241,7 +1241,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is connecting\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is connecting\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2781,
                           "end": 2840,
                           "loc": {
@@ -1357,7 +1357,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is connecting\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is connecting\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2781,
                           "end": 2840,
                           "loc": {
@@ -1375,7 +1375,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2871,
                           "end": 2932,
                           "loc": {
@@ -1491,7 +1491,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2871,
                           "end": 2932,
                           "loc": {
@@ -1509,7 +1509,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2965,
                           "end": 3028,
                           "loc": {
@@ -1625,7 +1625,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 2965,
                           "end": 3028,
                           "loc": {
@@ -2378,7 +2378,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Create a new Websocket\n\t * @param {string} name Instance name\n\t * @param {string} uri Connection URI\n\t * @param {WebsocketOptions} [options={}] Websocket options\n\t ",
+                    "value": "*\n\t * Create a new Websocket\n\t * @param {String} name Instance name\n\t * @param {String} uri Connection URI\n\t * @param {WebsocketOptions} [options={}] Websocket options\n\t ",
                     "start": 2226,
                     "end": 2400,
                     "loc": {
@@ -5675,7 +5675,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Opens the connection\n\t * @param {boolean} [reconnect=false] Force reconnection\n\t ",
+                    "value": "*\n\t * Opens the connection\n\t * @param {Boolean} [reconnect=false] Force reconnection\n\t ",
                     "start": 4498,
                     "end": 4589,
                     "loc": {
@@ -6925,7 +6925,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Opens the connection\n\t * @param {boolean} [reconnect=false] Force reconnection\n\t ",
+                    "value": "*\n\t * Opens the connection\n\t * @param {Boolean} [reconnect=false] Force reconnection\n\t ",
                     "start": 4498,
                     "end": 4589,
                     "loc": {
@@ -7642,7 +7642,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {boolean} [reconnect=true] Enable reconnection\n * @property {number} [interval=1000] Reconnect interval\n * @property {boolean} [open=true] Immediately open socket after creation\n ",
+              "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {Boolean} [reconnect=true] Enable reconnection\n * @property {Number} [interval=1000] Reconnect interval\n * @property {Boolean} [open=true] Immediately open socket after creation\n ",
               "start": 1690,
               "end": 1947,
               "loc": {
@@ -7678,7 +7678,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {boolean} [reconnect=true] Enable reconnection\n * @property {number} [interval=1000] Reconnect interval\n * @property {boolean} [open=true] Immediately open socket after creation\n ",
+            "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {Boolean} [reconnect=true] Enable reconnection\n * @property {Number} [interval=1000] Reconnect interval\n * @property {Boolean} [open=true] Immediately open socket after creation\n ",
             "start": 1690,
             "end": 1947,
             "loc": {
@@ -7732,7 +7732,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {boolean} [reconnect=true] Enable reconnection\n * @property {number} [interval=1000] Reconnect interval\n * @property {boolean} [open=true] Immediately open socket after creation\n ",
+      "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {Boolean} [reconnect=true] Enable reconnection\n * @property {Number} [interval=1000] Reconnect interval\n * @property {Boolean} [open=true] Immediately open socket after creation\n ",
       "start": 1690,
       "end": 1947,
       "loc": {
@@ -7764,7 +7764,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Create a new Websocket\n\t * @param {string} name Instance name\n\t * @param {string} uri Connection URI\n\t * @param {WebsocketOptions} [options={}] Websocket options\n\t ",
+      "value": "*\n\t * Create a new Websocket\n\t * @param {String} name Instance name\n\t * @param {String} uri Connection URI\n\t * @param {WebsocketOptions} [options={}] Websocket options\n\t ",
       "start": 2226,
       "end": 2400,
       "loc": {
@@ -7780,7 +7780,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Socket URI\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+      "value": "*\n\t\t * Socket URI\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
       "start": 2529,
       "end": 2589,
       "loc": {
@@ -7796,7 +7796,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is closed\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is closed\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2611,
       "end": 2666,
       "loc": {
@@ -7812,7 +7812,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is connected\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is connected\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2693,
       "end": 2751,
       "loc": {
@@ -7828,7 +7828,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is connecting\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is connecting\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2781,
       "end": 2840,
       "loc": {
@@ -7844,7 +7844,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2871,
       "end": 2932,
       "loc": {
@@ -7860,7 +7860,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2965,
       "end": 3028,
       "loc": {
@@ -7940,7 +7940,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Opens the connection\n\t * @param {boolean} [reconnect=false] Force reconnection\n\t ",
+      "value": "*\n\t * Opens the connection\n\t * @param {Boolean} [reconnect=false] Force reconnection\n\t ",
       "start": 4498,
       "end": 4589,
       "loc": {
@@ -8715,7 +8715,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {boolean} [reconnect=true] Enable reconnection\n * @property {number} [interval=1000] Reconnect interval\n * @property {boolean} [open=true] Immediately open socket after creation\n ",
+      "value": "*\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {Boolean} [reconnect=true] Enable reconnection\n * @property {Number} [interval=1000] Reconnect interval\n * @property {Boolean} [open=true] Immediately open socket after creation\n ",
       "start": 1690,
       "end": 1947,
       "loc": {
@@ -8936,7 +8936,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Create a new Websocket\n\t * @param {string} name Instance name\n\t * @param {string} uri Connection URI\n\t * @param {WebsocketOptions} [options={}] Websocket options\n\t ",
+      "value": "*\n\t * Create a new Websocket\n\t * @param {String} name Instance name\n\t * @param {String} uri Connection URI\n\t * @param {WebsocketOptions} [options={}] Websocket options\n\t ",
       "start": 2226,
       "end": 2400,
       "loc": {
@@ -9729,7 +9729,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * Socket URI\n\t\t * @type {string}\n\t\t * @readonly\n\t\t ",
+      "value": "*\n\t\t * Socket URI\n\t\t * @type {String}\n\t\t * @readonly\n\t\t ",
       "start": 2529,
       "end": 2589,
       "loc": {
@@ -9904,7 +9904,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is closed\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is closed\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2611,
       "end": 2666,
       "loc": {
@@ -10081,7 +10081,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is connected\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is connected\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2693,
       "end": 2751,
       "loc": {
@@ -10258,7 +10258,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is connecting\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is connecting\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2781,
       "end": 2840,
       "loc": {
@@ -10435,7 +10435,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket is reconnecting\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2871,
       "end": 2932,
       "loc": {
@@ -10612,7 +10612,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If socket failed to connect\n\t\t * @type {Boolean}\n\t\t ",
       "start": 2965,
       "end": 3028,
       "loc": {
@@ -18720,7 +18720,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Opens the connection\n\t * @param {boolean} [reconnect=false] Force reconnection\n\t ",
+      "value": "*\n\t * Opens the connection\n\t * @param {Boolean} [reconnect=false] Force reconnection\n\t ",
       "start": 4498,
       "end": 4589,
       "loc": {

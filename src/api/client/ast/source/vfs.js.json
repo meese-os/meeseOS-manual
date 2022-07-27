@@ -250,7 +250,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {boolean} [readfile] Set to false to force backend fetch\n ",
+            "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {Boolean} [readfile] Set to false to force backend fetch\n ",
             "start": 1724,
             "end": 1868,
             "loc": {
@@ -266,7 +266,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {string} path\n * @property {string} [filename]\n * @property {boolean} [isDirectory]\n * @property {boolean} [isFile]\n * @property {string} [mime]\n * @property {Object} [stat]\n ",
+            "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {String} path\n * @property {String} [filename]\n * @property {Boolean} [isDirectory]\n * @property {Boolean} [isFile]\n * @property {String} [mime]\n * @property {Object} [stat]\n ",
             "start": 1870,
             "end": 2115,
             "loc": {
@@ -673,7 +673,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {boolean} [readfile] Set to false to force backend fetch\n ",
+            "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {Boolean} [readfile] Set to false to force backend fetch\n ",
             "start": 1724,
             "end": 1868,
             "loc": {
@@ -689,7 +689,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {string} path\n * @property {string} [filename]\n * @property {boolean} [isDirectory]\n * @property {boolean} [isFile]\n * @property {string} [mime]\n * @property {Object} [stat]\n ",
+            "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {String} path\n * @property {String} [filename]\n * @property {Boolean} [isDirectory]\n * @property {Boolean} [isFile]\n * @property {String} [mime]\n * @property {Object} [stat]\n ",
             "start": 1870,
             "end": 2115,
             "loc": {
@@ -1553,7 +1553,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Read a directory\n *\n * @param {string|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+            "value": "*\n * Read a directory\n *\n * @param {String|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
             "start": 2578,
             "end": 2752,
             "loc": {
@@ -2067,7 +2067,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Read a directory\n *\n * @param {string|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+              "value": "*\n * Read a directory\n *\n * @param {String|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
               "start": 2578,
               "end": 2752,
               "loc": {
@@ -2085,7 +2085,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {string|VFSFile} path The path to read\n * @param {string} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
+              "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
               "start": 2931,
               "end": 3214,
               "loc": {
@@ -2104,7 +2104,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Read a directory\n *\n * @param {string|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+            "value": "*\n * Read a directory\n *\n * @param {String|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
             "start": 2578,
             "end": 2752,
             "loc": {
@@ -2122,7 +2122,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {string|VFSFile} path The path to read\n * @param {string} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
+            "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
             "start": 2931,
             "end": 3214,
             "loc": {
@@ -2826,7 +2826,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {string|VFSFile} path The path to read\n * @param {string} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
+              "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
               "start": 2931,
               "end": 3214,
               "loc": {
@@ -2844,7 +2844,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Writes a file\n * @param {string|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
+              "value": "*\n * Writes a file\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
               "start": 3464,
               "end": 3675,
               "loc": {
@@ -2863,7 +2863,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {string|VFSFile} path The path to read\n * @param {string} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
+            "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
             "start": 2931,
             "end": 3214,
             "loc": {
@@ -2881,7 +2881,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Writes a file\n * @param {string|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
+            "value": "*\n * Writes a file\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
             "start": 3464,
             "end": 3675,
             "loc": {
@@ -3682,7 +3682,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Writes a file\n * @param {string|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
+              "value": "*\n * Writes a file\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
               "start": 3464,
               "end": 3675,
               "loc": {
@@ -3700,7 +3700,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Copies a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Copies a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 3982,
               "end": 4205,
               "loc": {
@@ -3719,7 +3719,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Writes a file\n * @param {string|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
+            "value": "*\n * Writes a file\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
             "start": 3464,
             "end": 3675,
             "loc": {
@@ -3737,7 +3737,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Copies a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Copies a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 3982,
             "end": 4205,
             "loc": {
@@ -4201,7 +4201,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Copies a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Copies a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 3982,
               "end": 4205,
               "loc": {
@@ -4219,7 +4219,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Renames a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Renames a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 4349,
               "end": 4573,
               "loc": {
@@ -4238,7 +4238,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Copies a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Copies a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 3982,
             "end": 4205,
             "loc": {
@@ -4256,7 +4256,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Renames a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Renames a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 4349,
             "end": 4573,
             "loc": {
@@ -4720,7 +4720,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Renames a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Renames a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 4349,
               "end": 4573,
               "loc": {
@@ -4738,7 +4738,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Alias of 'readme'\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Alias of 'readme'\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 4721,
               "end": 4928,
               "loc": {
@@ -4757,7 +4757,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Renames a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Renames a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 4349,
             "end": 4573,
             "loc": {
@@ -4775,7 +4775,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Alias of 'readme'\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Alias of 'readme'\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 4721,
             "end": 4928,
             "loc": {
@@ -4878,7 +4878,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Alias of 'readme'\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Alias of 'readme'\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 4721,
               "end": 4928,
               "loc": {
@@ -4896,7 +4896,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Creates a directory\n * @param {string|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 4958,
               "end": 5124,
               "loc": {
@@ -4915,7 +4915,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Alias of 'readme'\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Alias of 'readme'\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 4721,
             "end": 4928,
             "loc": {
@@ -4933,7 +4933,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a directory\n * @param {string|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 4958,
             "end": 5124,
             "loc": {
@@ -5329,7 +5329,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Creates a directory\n * @param {string|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 4958,
               "end": 5124,
               "loc": {
@@ -5347,7 +5347,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Removes a file or directory\n * @param {string|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 5248,
               "end": 5415,
               "loc": {
@@ -5366,7 +5366,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a directory\n * @param {string|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 4958,
             "end": 5124,
             "loc": {
@@ -5384,7 +5384,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Removes a file or directory\n * @param {string|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 5248,
             "end": 5415,
             "loc": {
@@ -5780,7 +5780,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Removes a file or directory\n * @param {string|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 5248,
               "end": 5415,
               "loc": {
@@ -5798,7 +5798,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Checks if path exists\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 5541,
               "end": 5701,
               "loc": {
@@ -5817,7 +5817,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Removes a file or directory\n * @param {string|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 5248,
             "end": 5415,
             "loc": {
@@ -5835,7 +5835,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Checks if path exists\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 5541,
             "end": 5701,
             "loc": {
@@ -6231,7 +6231,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Checks if path exists\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
               "start": 5541,
               "end": 5701,
               "loc": {
@@ -6249,7 +6249,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets the stats of the file or directory\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
+              "value": "*\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
               "start": 5827,
               "end": 6004,
               "loc": {
@@ -6268,7 +6268,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Checks if path exists\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
             "start": 5541,
             "end": 5701,
             "loc": {
@@ -6286,7 +6286,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets the stats of the file or directory\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
+            "value": "*\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
             "start": 5827,
             "end": 6004,
             "loc": {
@@ -6821,7 +6821,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets the stats of the file or directory\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
+              "value": "*\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
               "start": 5827,
               "end": 6004,
               "loc": {
@@ -6839,7 +6839,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets an URL to a resource defined by file\n * @param {string|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
+              "value": "*\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
               "start": 6173,
               "end": 6343,
               "loc": {
@@ -6858,7 +6858,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets the stats of the file or directory\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
+            "value": "*\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
             "start": 5827,
             "end": 6004,
             "loc": {
@@ -6876,7 +6876,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets an URL to a resource defined by file\n * @param {string|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
+            "value": "*\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
             "start": 6173,
             "end": 6343,
             "loc": {
@@ -7272,7 +7272,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets an URL to a resource defined by file\n * @param {string|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
+              "value": "*\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
               "start": 6173,
               "end": 6343,
               "loc": {
@@ -7290,7 +7290,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Initiates a native browser download of the file\n * @param {string|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
+              "value": "*\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
               "start": 6463,
               "end": 6638,
               "loc": {
@@ -7309,7 +7309,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets an URL to a resource defined by file\n * @param {string|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
+            "value": "*\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
             "start": 6173,
             "end": 6343,
             "loc": {
@@ -7327,7 +7327,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Initiates a native browser download of the file\n * @param {string|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
+            "value": "*\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
             "start": 6463,
             "end": 6638,
             "loc": {
@@ -9650,7 +9650,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Initiates a native browser download of the file\n * @param {string|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
+              "value": "*\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
               "start": 6463,
               "end": 6638,
               "loc": {
@@ -9668,7 +9668,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Searches for files and folders\n * @param {string|VFSFile} root The root\n * @param {string} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+              "value": "*\n * Searches for files and folders\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
               "start": 7297,
               "end": 7516,
               "loc": {
@@ -9687,7 +9687,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Initiates a native browser download of the file\n * @param {string|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
+            "value": "*\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
             "start": 6463,
             "end": 6638,
             "loc": {
@@ -9705,7 +9705,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Searches for files and folders\n * @param {string|VFSFile} root The root\n * @param {string} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+            "value": "*\n * Searches for files and folders\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
             "start": 7297,
             "end": 7516,
             "loc": {
@@ -10599,7 +10599,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Searches for files and folders\n * @param {string|VFSFile} root The root\n * @param {string} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+              "value": "*\n * Searches for files and folders\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
               "start": 7297,
               "end": 7516,
               "loc": {
@@ -10617,7 +10617,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Touches a file\n * @param {string|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
               "start": 7831,
               "end": 7929,
               "loc": {
@@ -10636,7 +10636,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Searches for files and folders\n * @param {string|VFSFile} root The root\n * @param {string} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+            "value": "*\n * Searches for files and folders\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
             "start": 7297,
             "end": 7516,
             "loc": {
@@ -10654,7 +10654,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Touches a file\n * @param {string|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
             "start": 7831,
             "end": 7929,
             "loc": {
@@ -11050,7 +11050,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Touches a file\n * @param {string|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
+              "value": "*\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
               "start": 7831,
               "end": 7929,
               "loc": {
@@ -11070,7 +11070,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Touches a file\n * @param {string|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
+            "value": "*\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
             "start": 7831,
             "end": 7929,
             "loc": {
@@ -11124,7 +11124,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {boolean} [readfile] Set to false to force backend fetch\n ",
+      "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {Boolean} [readfile] Set to false to force backend fetch\n ",
       "start": 1724,
       "end": 1868,
       "loc": {
@@ -11140,7 +11140,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {string} path\n * @property {string} [filename]\n * @property {boolean} [isDirectory]\n * @property {boolean} [isFile]\n * @property {string} [mime]\n * @property {Object} [stat]\n ",
+      "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {String} path\n * @property {String} [filename]\n * @property {Boolean} [isDirectory]\n * @property {Boolean} [isFile]\n * @property {String} [mime]\n * @property {Object} [stat]\n ",
       "start": 1870,
       "end": 2115,
       "loc": {
@@ -11188,7 +11188,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Read a directory\n *\n * @param {string|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+      "value": "*\n * Read a directory\n *\n * @param {String|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
       "start": 2578,
       "end": 2752,
       "loc": {
@@ -11204,7 +11204,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {string|VFSFile} path The path to read\n * @param {string} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
+      "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
       "start": 2931,
       "end": 3214,
       "loc": {
@@ -11220,7 +11220,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Writes a file\n * @param {string|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
+      "value": "*\n * Writes a file\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
       "start": 3464,
       "end": 3675,
       "loc": {
@@ -11236,7 +11236,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Copies a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Copies a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 3982,
       "end": 4205,
       "loc": {
@@ -11252,7 +11252,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Renames a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Renames a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 4349,
       "end": 4573,
       "loc": {
@@ -11268,7 +11268,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Alias of 'readme'\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Alias of 'readme'\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 4721,
       "end": 4928,
       "loc": {
@@ -11284,7 +11284,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a directory\n * @param {string|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 4958,
       "end": 5124,
       "loc": {
@@ -11300,7 +11300,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Removes a file or directory\n * @param {string|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 5248,
       "end": 5415,
       "loc": {
@@ -11316,7 +11316,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Checks if path exists\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 5541,
       "end": 5701,
       "loc": {
@@ -11332,7 +11332,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets the stats of the file or directory\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
+      "value": "*\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
       "start": 5827,
       "end": 6004,
       "loc": {
@@ -11348,7 +11348,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets an URL to a resource defined by file\n * @param {string|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
+      "value": "*\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
       "start": 6173,
       "end": 6343,
       "loc": {
@@ -11364,7 +11364,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Initiates a native browser download of the file\n * @param {string|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
+      "value": "*\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
       "start": 6463,
       "end": 6638,
       "loc": {
@@ -11380,7 +11380,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Searches for files and folders\n * @param {string|VFSFile} root The root\n * @param {string} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+      "value": "*\n * Searches for files and folders\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
       "start": 7297,
       "end": 7516,
       "loc": {
@@ -11396,7 +11396,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Touches a file\n * @param {string|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
       "start": 7831,
       "end": 7929,
       "loc": {
@@ -11759,7 +11759,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {boolean} [readfile] Set to false to force backend fetch\n ",
+      "value": "*\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {Boolean} [readfile] Set to false to force backend fetch\n ",
       "start": 1724,
       "end": 1868,
       "loc": {
@@ -11775,7 +11775,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {string} path\n * @property {string} [filename]\n * @property {boolean} [isDirectory]\n * @property {boolean} [isFile]\n * @property {string} [mime]\n * @property {Object} [stat]\n ",
+      "value": "*\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {String} path\n * @property {String} [filename]\n * @property {Boolean} [isDirectory]\n * @property {Boolean} [isFile]\n * @property {String} [mime]\n * @property {Object} [stat]\n ",
       "start": 1870,
       "end": 2115,
       "loc": {
@@ -14302,7 +14302,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Read a directory\n *\n * @param {string|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+      "value": "*\n * Read a directory\n *\n * @param {String|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
       "start": 2578,
       "end": 2752,
       "loc": {
@@ -15428,7 +15428,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {string|VFSFile} path The path to read\n * @param {string} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
+      "value": "*\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n ",
       "start": 2931,
       "end": 3214,
       "loc": {
@@ -16970,7 +16970,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Writes a file\n * @param {string|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
+      "value": "*\n * Writes a file\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n ",
       "start": 3464,
       "end": 3675,
       "loc": {
@@ -18757,7 +18757,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Copies a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Copies a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 3982,
       "end": 4205,
       "loc": {
@@ -19807,7 +19807,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Renames a file or directory (move)\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Renames a file or directory (move)\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 4349,
       "end": 4573,
       "loc": {
@@ -20857,7 +20857,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Alias of 'readme'\n * @param {string|VFSFile} from The source (from)\n * @param {string|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Alias of 'readme'\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 4721,
       "end": 4928,
       "loc": {
@@ -21034,7 +21034,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a directory\n * @param {string|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 4958,
       "end": 5124,
       "loc": {
@@ -21904,7 +21904,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Removes a file or directory\n * @param {string|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 5248,
       "end": 5415,
       "loc": {
@@ -22774,7 +22774,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Checks if path exists\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n ",
       "start": 5541,
       "end": 5701,
       "loc": {
@@ -23644,7 +23644,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets the stats of the file or directory\n * @param {string|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
+      "value": "*\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n ",
       "start": 5827,
       "end": 6004,
       "loc": {
@@ -24820,7 +24820,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets an URL to a resource defined by file\n * @param {string|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
+      "value": "*\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n ",
       "start": 6173,
       "end": 6343,
       "loc": {
@@ -25690,7 +25690,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Initiates a native browser download of the file\n * @param {string|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
+      "value": "*\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n ",
       "start": 6463,
       "end": 6638,
       "loc": {
@@ -30194,7 +30194,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Searches for files and folders\n * @param {string|VFSFile} root The root\n * @param {string} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
+      "value": "*\n * Searches for files and folders\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n ",
       "start": 7297,
       "end": 7516,
       "loc": {
@@ -32180,7 +32180,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Touches a file\n * @param {string|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
+      "value": "*\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n ",
       "start": 7831,
       "end": 7929,
       "loc": {

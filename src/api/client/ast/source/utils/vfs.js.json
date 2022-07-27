@@ -747,7 +747,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * Get parent directory\n * @param {string} path Directory\n * @returns {string} Parent directory\n ",
+              "value": "*\n * Get parent directory\n * @param {String} path Directory\n * @returns {String} Parent directory\n ",
               "start": 1544,
               "end": 1647,
               "loc": {
@@ -765,7 +765,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Joins paths\n * @param {string[]} args paths\n * @returns {string}\n ",
+              "value": "*\n * Joins paths\n * @param {String[]} args paths\n * @returns {String}\n ",
               "start": 1829,
               "end": 1904,
               "loc": {
@@ -800,7 +800,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Get parent directory\n * @param {string} path Directory\n * @returns {string} Parent directory\n ",
+            "value": "*\n * Get parent directory\n * @param {String} path Directory\n * @returns {String} Parent directory\n ",
             "start": 1544,
             "end": 1647,
             "loc": {
@@ -818,7 +818,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Joins paths\n * @param {string[]} args paths\n * @returns {string}\n ",
+            "value": "*\n * Joins paths\n * @param {String[]} args paths\n * @returns {String}\n ",
             "start": 1829,
             "end": 1904,
             "loc": {
@@ -1548,7 +1548,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Joins paths\n * @param {string[]} args paths\n * @returns {string}\n ",
+              "value": "*\n * Joins paths\n * @param {String[]} args paths\n * @returns {String}\n ",
               "start": 1829,
               "end": 1904,
               "loc": {
@@ -1585,7 +1585,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Joins paths\n * @param {string[]} args paths\n * @returns {string}\n ",
+            "value": "*\n * Joins paths\n * @param {String[]} args paths\n * @returns {String}\n ",
             "start": 1829,
             "end": 1904,
             "loc": {
@@ -4533,7 +4533,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates \"special\" directory entries\n * @param {string} path The path to the readdir root\n * @returns {Object[]}\n ",
+            "value": "*\n * Creates \"special\" directory entries\n * @param {String} path The path to the readdir root\n * @returns {Object[]}\n ",
             "start": 2899,
             "end": 3021,
             "loc": {
@@ -5678,7 +5678,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates \"special\" directory entries\n * @param {string} path The path to the readdir root\n * @returns {Object[]}\n ",
+            "value": "*\n * Creates \"special\" directory entries\n * @param {String} path The path to the readdir root\n * @returns {Object[]}\n ",
             "start": 2899,
             "end": 3021,
             "loc": {
@@ -5696,7 +5696,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a FileReader (promisified)\n * @param {string} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @returns {Promise}\n ",
+            "value": "*\n * Creates a FileReader (promisified)\n * @param {String} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @returns {Promise}\n ",
             "start": 3369,
             "end": 3562,
             "loc": {
@@ -6686,7 +6686,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Creates a FileReader (promisified)\n * @param {string} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @returns {Promise}\n ",
+            "value": "*\n * Creates a FileReader (promisified)\n * @param {String} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @returns {Promise}\n ",
             "start": 3369,
             "end": 3562,
             "loc": {
@@ -6704,7 +6704,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {string}\n ",
+            "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {String}\n ",
             "start": 3815,
             "end": 3974,
             "loc": {
@@ -8384,7 +8384,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {string}\n ",
+              "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {String}\n ",
               "start": 3815,
               "end": 3974,
               "loc": {
@@ -8402,7 +8402,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
+              "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {String} [options.sortBy='filename'] Sort by this attribute\n * @param {String} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
               "start": 4435,
               "end": 4890,
               "loc": {
@@ -8421,7 +8421,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {string}\n ",
+            "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {String}\n ",
             "start": 3815,
             "end": 3974,
             "loc": {
@@ -8439,7 +8439,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
+            "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {String} [options.sortBy='filename'] Sort by this attribute\n * @param {String} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
             "start": 4435,
             "end": 4890,
             "loc": {
@@ -12045,7 +12045,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
+              "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {String} [options.sortBy='filename'] Sort by this attribute\n * @param {String} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
               "start": 4435,
               "end": 4890,
               "loc": {
@@ -12063,7 +12063,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @param {string} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
+              "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @param {String} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
               "start": 6030,
               "end": 6241,
               "loc": {
@@ -12082,7 +12082,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
+            "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {String} [options.sortBy='filename'] Sort by this attribute\n * @param {String} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
             "start": 4435,
             "end": 4890,
             "loc": {
@@ -12100,7 +12100,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @param {string} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
+            "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @param {String} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
             "start": 6030,
             "end": 6241,
             "loc": {
@@ -13076,7 +13076,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @param {string} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
+              "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @param {String} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
               "start": 6030,
               "end": 6241,
               "loc": {
@@ -13094,7 +13094,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {string|object}\n ",
+              "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {String|object}\n ",
               "start": 6587,
               "end": 6698,
               "loc": {
@@ -13113,7 +13113,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @param {string} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
+            "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @param {String} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
             "start": 6030,
             "end": 6241,
             "loc": {
@@ -13131,7 +13131,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {string|object}\n ",
+            "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {String|object}\n ",
             "start": 6587,
             "end": 6698,
             "loc": {
@@ -14283,7 +14283,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {string|object}\n ",
+              "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {String|object}\n ",
               "start": 6587,
               "end": 6698,
               "loc": {
@@ -14320,7 +14320,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {string|object}\n ",
+            "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {String|object}\n ",
             "start": 6587,
             "end": 6698,
             "loc": {
@@ -15133,7 +15133,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Get basename of a file\n * @param {string} path The path\n * @returns {string}\n ",
+              "value": "*\n * Get basename of a file\n * @param {String} path The path\n * @returns {String}\n ",
               "start": 7370,
               "end": 7457,
               "loc": {
@@ -15170,7 +15170,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Get basename of a file\n * @param {string} path The path\n * @returns {string}\n ",
+            "value": "*\n * Get basename of a file\n * @param {String} path The path\n * @returns {String}\n ",
             "start": 7370,
             "end": 7457,
             "loc": {
@@ -15483,7 +15483,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Get basename of a file\n * @param {string} path The path\n * @returns {string}\n ",
+              "value": "*\n * Get basename of a file\n * @param {String} path The path\n * @returns {String}\n ",
               "start": 7370,
               "end": 7457,
               "loc": {
@@ -15501,7 +15501,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Get path of a file\n * @param {string} path The path\n * @returns {string}\n ",
+              "value": "*\n * Get path of a file\n * @param {String} path The path\n * @returns {String}\n ",
               "start": 7523,
               "end": 7606,
               "loc": {
@@ -15520,7 +15520,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Get basename of a file\n * @param {string} path The path\n * @returns {string}\n ",
+            "value": "*\n * Get basename of a file\n * @param {String} path The path\n * @returns {String}\n ",
             "start": 7370,
             "end": 7457,
             "loc": {
@@ -15538,7 +15538,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Get path of a file\n * @param {string} path The path\n * @returns {string}\n ",
+            "value": "*\n * Get path of a file\n * @param {String} path The path\n * @returns {String}\n ",
             "start": 7523,
             "end": 7606,
             "loc": {
@@ -16365,7 +16365,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Get path of a file\n * @param {string} path The path\n * @returns {string}\n ",
+              "value": "*\n * Get path of a file\n * @param {String} path The path\n * @returns {String}\n ",
               "start": 7523,
               "end": 7606,
               "loc": {
@@ -16383,7 +16383,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets prefix from a VFS path\n * @param {string} str Input\n * @returns {string}\n ",
+              "value": "*\n * Gets prefix from a VFS path\n * @param {String} str Input\n * @returns {String}\n ",
               "start": 7799,
               "end": 7887,
               "loc": {
@@ -16402,7 +16402,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Get path of a file\n * @param {string} path The path\n * @returns {string}\n ",
+            "value": "*\n * Get path of a file\n * @param {String} path The path\n * @returns {String}\n ",
             "start": 7523,
             "end": 7606,
             "loc": {
@@ -16420,7 +16420,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets prefix from a VFS path\n * @param {string} str Input\n * @returns {string}\n ",
+            "value": "*\n * Gets prefix from a VFS path\n * @param {String} str Input\n * @returns {String}\n ",
             "start": 7799,
             "end": 7887,
             "loc": {
@@ -17192,7 +17192,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Gets prefix from a VFS path\n * @param {string} str Input\n * @returns {string}\n ",
+              "value": "*\n * Gets prefix from a VFS path\n * @param {String} str Input\n * @returns {String}\n ",
               "start": 7799,
               "end": 7887,
               "loc": {
@@ -17210,7 +17210,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Filters a mountpoint by user groups\n * @returns {boolean}\n ",
+              "value": "*\n * Filters a mountpoint by user groups\n * @returns {Boolean}\n ",
               "start": 8101,
               "end": 8169,
               "loc": {
@@ -17229,7 +17229,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Gets prefix from a VFS path\n * @param {string} str Input\n * @returns {string}\n ",
+            "value": "*\n * Gets prefix from a VFS path\n * @param {String} str Input\n * @returns {String}\n ",
             "start": 7799,
             "end": 7887,
             "loc": {
@@ -17247,7 +17247,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Filters a mountpoint by user groups\n * @returns {boolean}\n ",
+            "value": "*\n * Filters a mountpoint by user groups\n * @returns {Boolean}\n ",
             "start": 8101,
             "end": 8169,
             "loc": {
@@ -17855,7 +17855,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Filters a mountpoint by user groups\n * @returns {boolean}\n ",
+              "value": "*\n * Filters a mountpoint by user groups\n * @returns {Boolean}\n ",
               "start": 8101,
               "end": 8169,
               "loc": {
@@ -17892,7 +17892,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Filters a mountpoint by user groups\n * @returns {boolean}\n ",
+            "value": "*\n * Filters a mountpoint by user groups\n * @returns {Boolean}\n ",
             "start": 8101,
             "end": 8169,
             "loc": {
@@ -20369,7 +20369,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Get parent directory\n * @param {string} path Directory\n * @returns {string} Parent directory\n ",
+      "value": "*\n * Get parent directory\n * @param {String} path Directory\n * @returns {String} Parent directory\n ",
       "start": 1544,
       "end": 1647,
       "loc": {
@@ -20385,7 +20385,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Joins paths\n * @param {string[]} args paths\n * @returns {string}\n ",
+      "value": "*\n * Joins paths\n * @param {String[]} args paths\n * @returns {String}\n ",
       "start": 1829,
       "end": 1904,
       "loc": {
@@ -20481,7 +20481,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates \"special\" directory entries\n * @param {string} path The path to the readdir root\n * @returns {Object[]}\n ",
+      "value": "*\n * Creates \"special\" directory entries\n * @param {String} path The path to the readdir root\n * @returns {Object[]}\n ",
       "start": 2899,
       "end": 3021,
       "loc": {
@@ -20497,7 +20497,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a FileReader (promisified)\n * @param {string} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @returns {Promise}\n ",
+      "value": "*\n * Creates a FileReader (promisified)\n * @param {String} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @returns {Promise}\n ",
       "start": 3369,
       "end": 3562,
       "loc": {
@@ -20513,7 +20513,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {string}\n ",
+      "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {String}\n ",
       "start": 3815,
       "end": 3974,
       "loc": {
@@ -20529,7 +20529,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
+      "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {String} [options.sortBy='filename'] Sort by this attribute\n * @param {String} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
       "start": 4435,
       "end": 4890,
       "loc": {
@@ -20561,7 +20561,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @param {string} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
+      "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @param {String} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
       "start": 6030,
       "end": 6241,
       "loc": {
@@ -20577,7 +20577,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {string|object}\n ",
+      "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {String|object}\n ",
       "start": 6587,
       "end": 6698,
       "loc": {
@@ -20609,7 +20609,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Get basename of a file\n * @param {string} path The path\n * @returns {string}\n ",
+      "value": "*\n * Get basename of a file\n * @param {String} path The path\n * @returns {String}\n ",
       "start": 7370,
       "end": 7457,
       "loc": {
@@ -20625,7 +20625,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Get path of a file\n * @param {string} path The path\n * @returns {string}\n ",
+      "value": "*\n * Get path of a file\n * @param {String} path The path\n * @returns {String}\n ",
       "start": 7523,
       "end": 7606,
       "loc": {
@@ -20641,7 +20641,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets prefix from a VFS path\n * @param {string} str Input\n * @returns {string}\n ",
+      "value": "*\n * Gets prefix from a VFS path\n * @param {String} str Input\n * @returns {String}\n ",
       "start": 7799,
       "end": 7887,
       "loc": {
@@ -20657,7 +20657,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Filters a mountpoint by user groups\n * @returns {boolean}\n ",
+      "value": "*\n * Filters a mountpoint by user groups\n * @returns {Boolean}\n ",
       "start": 8101,
       "end": 8169,
       "loc": {
@@ -20707,7 +20707,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Get parent directory\n * @param {string} path Directory\n * @returns {string} Parent directory\n ",
+      "value": "*\n * Get parent directory\n * @param {String} path Directory\n * @returns {String} Parent directory\n ",
       "start": 1544,
       "end": 1647,
       "loc": {
@@ -22107,7 +22107,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Joins paths\n * @param {string[]} args paths\n * @returns {string}\n ",
+      "value": "*\n * Joins paths\n * @param {String[]} args paths\n * @returns {String}\n ",
       "start": 1829,
       "end": 1904,
       "loc": {
@@ -29731,7 +29731,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates \"special\" directory entries\n * @param {string} path The path to the readdir root\n * @returns {Object[]}\n ",
+      "value": "*\n * Creates \"special\" directory entries\n * @param {String} path The path to the readdir root\n * @returns {Object[]}\n ",
       "start": 2899,
       "end": 3021,
       "loc": {
@@ -32104,7 +32104,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Creates a FileReader (promisified)\n * @param {string} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @returns {Promise}\n ",
+      "value": "*\n * Creates a FileReader (promisified)\n * @param {String} method The method to call\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @returns {Promise}\n ",
       "start": 3369,
       "end": 3562,
       "loc": {
@@ -34297,7 +34297,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {string}\n ",
+      "value": "*\n * Converts a number (bytez) into human-readable string\n * @param {Number} bytes Input\n * @param {Boolean} [si=false] Use SI units\n * @returns {String}\n ",
       "start": 3815,
       "end": 3974,
       "loc": {
@@ -37992,7 +37992,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {string} [options.sortBy='filename'] Sort by this attribute\n * @param {string} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
+      "value": "*\n * Transforms a readdir result\n * @param {Object} root The path to the readdir root\n * @param Object[] files An array of readdir results\n * @param {Object} options Options\n * @param {Boolean} [options.showHiddenFiles=false] Show hidden files\n * @param {Function} [options.filter] A filter\n * @param {String} [options.sortBy='filename'] Sort by this attribute\n * @param {String} [options.sortDir='asc'] Sort in this direction\n * @returns {Object[]}\n ",
       "start": 4435,
       "end": 4890,
       "loc": {
@@ -45236,7 +45236,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {string} mime The MIME type\n * @param {string} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
+      "value": "*\n * Transform an ArrayBuffer\n * @param {ArrayBuffer} ab The ArrayBuffer\n * @param {String} mime The MIME type\n * @param {String} type Transform to this type\n * @returns {DOMString|string|Blob|ArrayBuffer}\n ",
       "start": 6030,
       "end": 6241,
       "loc": {
@@ -47571,7 +47571,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {string|object}\n ",
+      "value": "*\n * Gets an icon from file stat\n * @param {Object} file The file stat object\n * @returns {String|object}\n ",
       "start": 6587,
       "end": 6698,
       "loc": {
@@ -51721,7 +51721,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Get basename of a file\n * @param {string} path The path\n * @returns {string}\n ",
+      "value": "*\n * Get basename of a file\n * @param {String} path The path\n * @returns {String}\n ",
       "start": 7370,
       "end": 7457,
       "loc": {
@@ -52310,7 +52310,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Get path of a file\n * @param {string} path The path\n * @returns {string}\n ",
+      "value": "*\n * Get path of a file\n * @param {String} path The path\n * @returns {String}\n ",
       "start": 7523,
       "end": 7606,
       "loc": {
@@ -53946,7 +53946,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Gets prefix from a VFS path\n * @param {string} str Input\n * @returns {string}\n ",
+      "value": "*\n * Gets prefix from a VFS path\n * @param {String} str Input\n * @returns {String}\n ",
       "start": 7799,
       "end": 7887,
       "loc": {
@@ -55509,7 +55509,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Filters a mountpoint by user groups\n * @returns {boolean}\n ",
+      "value": "*\n * Filters a mountpoint by user groups\n * @returns {Boolean}\n ",
       "start": 8101,
       "end": 8169,
       "loc": {

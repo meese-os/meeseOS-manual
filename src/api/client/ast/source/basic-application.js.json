@@ -271,7 +271,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {string[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {string[]} [loadMimeTypes] What MIME types to support on load\n * @property {string[]} [saveMimeTypes] What MIME types to support on save\n * @property {string} [defaultFilename] Default filename of a new file\n ",
+            "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {String[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {String[]} [loadMimeTypes] What MIME types to support on load\n * @property {String[]} [saveMimeTypes] What MIME types to support on save\n * @property {String} [defaultFilename] Default filename of a new file\n ",
             "start": 1650,
             "end": 2033,
             "loc": {
@@ -2497,7 +2497,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets options for a dialog\n\t * @param {string} type Dialog type\n\t * @returns {Object}\n\t ",
+                    "value": "*\n\t * Gets options for a dialog\n\t * @param {String} type Dialog type\n\t * @returns {Object}\n\t ",
                     "start": 3521,
                     "end": 3618,
                     "loc": {
@@ -4610,7 +4610,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets options for a dialog\n\t * @param {string} type Dialog type\n\t * @returns {Object}\n\t ",
+                    "value": "*\n\t * Gets options for a dialog\n\t * @param {String} type Dialog type\n\t * @returns {Object}\n\t ",
                     "start": 3521,
                     "end": 3618,
                     "loc": {
@@ -5250,7 +5250,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new dialog of a type\n\t * @param {string} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
+                    "value": "*\n\t * Creates a new dialog of a type\n\t * @param {String} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
                     "start": 4530,
                     "end": 4691,
                     "loc": {
@@ -6159,7 +6159,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates a new dialog of a type\n\t * @param {string} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
+                    "value": "*\n\t * Creates a new dialog of a type\n\t * @param {String} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
                     "start": 4530,
                     "end": 4691,
                     "loc": {
@@ -8013,7 +8013,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {string} eventName Event to fire\n\t ",
+                    "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {String} eventName Event to fire\n\t ",
                     "start": 5970,
                     "end": 6106,
                     "loc": {
@@ -8513,7 +8513,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {string} eventName Event to fire\n\t ",
+                    "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {String} eventName Event to fire\n\t ",
                     "start": 5970,
                     "end": 6106,
                     "loc": {
@@ -8531,7 +8531,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {string} prefix Title prefix\n\t * @returns {string}\n\t ",
+                    "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {String} prefix Title prefix\n\t * @returns {String}\n\t ",
                     "start": 6236,
                     "end": 6352,
                     "loc": {
@@ -9244,7 +9244,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {string} prefix Title prefix\n\t * @returns {string}\n\t ",
+                    "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {String} prefix Title prefix\n\t * @returns {String}\n\t ",
                     "start": 6236,
                     "end": 6352,
                     "loc": {
@@ -9265,7 +9265,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {string[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {string[]} [loadMimeTypes] What MIME types to support on load\n * @property {string[]} [saveMimeTypes] What MIME types to support on save\n * @property {string} [defaultFilename] Default filename of a new file\n ",
+              "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {String[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {String[]} [loadMimeTypes] What MIME types to support on load\n * @property {String[]} [saveMimeTypes] What MIME types to support on save\n * @property {String} [defaultFilename] Default filename of a new file\n ",
               "start": 1650,
               "end": 2033,
               "loc": {
@@ -9301,7 +9301,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {string[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {string[]} [loadMimeTypes] What MIME types to support on load\n * @property {string[]} [saveMimeTypes] What MIME types to support on save\n * @property {string} [defaultFilename] Default filename of a new file\n ",
+            "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {String[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {String[]} [loadMimeTypes] What MIME types to support on load\n * @property {String[]} [saveMimeTypes] What MIME types to support on save\n * @property {String} [defaultFilename] Default filename of a new file\n ",
             "start": 1650,
             "end": 2033,
             "loc": {
@@ -9355,7 +9355,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {string[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {string[]} [loadMimeTypes] What MIME types to support on load\n * @property {string[]} [saveMimeTypes] What MIME types to support on save\n * @property {string} [defaultFilename] Default filename of a new file\n ",
+      "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {String[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {String[]} [loadMimeTypes] What MIME types to support on load\n * @property {String[]} [saveMimeTypes] What MIME types to support on save\n * @property {String} [defaultFilename] Default filename of a new file\n ",
       "start": 1650,
       "end": 2033,
       "loc": {
@@ -9499,7 +9499,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets options for a dialog\n\t * @param {string} type Dialog type\n\t * @returns {Object}\n\t ",
+      "value": "*\n\t * Gets options for a dialog\n\t * @param {String} type Dialog type\n\t * @returns {Object}\n\t ",
       "start": 3521,
       "end": 3618,
       "loc": {
@@ -9531,7 +9531,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new dialog of a type\n\t * @param {string} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
+      "value": "*\n\t * Creates a new dialog of a type\n\t * @param {String} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
       "start": 4530,
       "end": 4691,
       "loc": {
@@ -9643,7 +9643,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {string} eventName Event to fire\n\t ",
+      "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {String} eventName Event to fire\n\t ",
       "start": 5970,
       "end": 6106,
       "loc": {
@@ -9659,7 +9659,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {string} prefix Title prefix\n\t * @returns {string}\n\t ",
+      "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {String} prefix Title prefix\n\t * @returns {String}\n\t ",
       "start": 6236,
       "end": 6352,
       "loc": {
@@ -10111,7 +10111,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {string[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {string[]} [loadMimeTypes] What MIME types to support on load\n * @property {string[]} [saveMimeTypes] What MIME types to support on save\n * @property {string} [defaultFilename] Default filename of a new file\n ",
+      "value": "*\n * Basic Application Options\n *\n * @typedef {Object} BasicApplicationOptions\n * @property {String[]} [mimeTypes] What MIME types to support (all/fallback)\n * @property {String[]} [loadMimeTypes] What MIME types to support on load\n * @property {String[]} [saveMimeTypes] What MIME types to support on save\n * @property {String} [defaultFilename] Default filename of a new file\n ",
       "start": 1650,
       "end": 2033,
       "loc": {
@@ -14141,7 +14141,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets options for a dialog\n\t * @param {string} type Dialog type\n\t * @returns {Object}\n\t ",
+      "value": "*\n\t * Gets options for a dialog\n\t * @param {String} type Dialog type\n\t * @returns {Object}\n\t ",
       "start": 3521,
       "end": 3618,
       "loc": {
@@ -19241,7 +19241,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates a new dialog of a type\n\t * @param {string} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
+      "value": "*\n\t * Creates a new dialog of a type\n\t * @param {String} type Dialog type\n\t * @param {Function} cb Callback\n\t * @param {Object} [options] Override options\n\t ",
       "start": 4530,
       "end": 4691,
       "loc": {
@@ -24682,7 +24682,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {string} eventName Event to fire\n\t ",
+      "value": "*\n\t * Sets file from open/save action\n\t *\n\t * @private\n\t * @param {VFSFile} item File\n\t * @param {String} eventName Event to fire\n\t ",
       "start": 5970,
       "end": 6106,
       "loc": {
@@ -25631,7 +25631,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {string} prefix Title prefix\n\t * @returns {string}\n\t ",
+      "value": "*\n\t * Creates the window title\n\t *\n\t * @private\n\t * @param {String} prefix Title prefix\n\t * @returns {String}\n\t ",
       "start": 6236,
       "end": 6352,
       "loc": {

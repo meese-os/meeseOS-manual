@@ -5886,7 +5886,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {string} [ns] The namespace\n\t * @param {string} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
+                    "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {String} [ns] The namespace\n\t * @param {String} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
                     "start": 4627,
                     "end": 4867,
                     "loc": {
@@ -6913,7 +6913,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {string} [ns] The namespace\n\t * @param {string} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
+                    "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {String} [ns] The namespace\n\t * @param {String} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
                     "start": 4627,
                     "end": 4867,
                     "loc": {
@@ -6931,7 +6931,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {string} ns The namespace\n\t * @param {string} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
+                    "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {String} ns The namespace\n\t * @param {String} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
                     "start": 5207,
                     "end": 5425,
                     "loc": {
@@ -8687,7 +8687,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {string} ns The namespace\n\t * @param {string} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
+                    "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {String} ns The namespace\n\t * @param {String} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
                     "start": 5207,
                     "end": 5425,
                     "loc": {
@@ -8705,7 +8705,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Clears a namespace by root key\n\t * @param {string} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Clears a namespace by root key\n\t * @param {String} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5928,
                     "end": 6040,
                     "loc": {
@@ -9332,7 +9332,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Clears a namespace by root key\n\t * @param {string} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Clears a namespace by root key\n\t * @param {String} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5928,
                     "end": 6040,
                     "loc": {
@@ -9763,7 +9763,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {string} [ns] The namespace\n\t * @param {string} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
+      "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {String} [ns] The namespace\n\t * @param {String} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
       "start": 4627,
       "end": 4867,
       "loc": {
@@ -9779,7 +9779,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {string} ns The namespace\n\t * @param {string} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
+      "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {String} ns The namespace\n\t * @param {String} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
       "start": 5207,
       "end": 5425,
       "loc": {
@@ -9795,7 +9795,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Clears a namespace by root key\n\t * @param {string} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Clears a namespace by root key\n\t * @param {String} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5928,
       "end": 6040,
       "loc": {
@@ -21524,7 +21524,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {string} [ns] The namespace\n\t * @param {string} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
+      "value": "*\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {String} [ns] The namespace\n\t * @param {String} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t ",
       "start": 4627,
       "end": 4867,
       "loc": {
@@ -23759,7 +23759,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {string} ns The namespace\n\t * @param {string} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
+      "value": "*\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {String} ns The namespace\n\t * @param {String} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t ",
       "start": 5207,
       "end": 5425,
       "loc": {
@@ -27555,7 +27555,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Clears a namespace by root key\n\t * @param {string} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Clears a namespace by root key\n\t * @param {String} ns The namespace\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5928,
       "end": 6040,
       "loc": {
