@@ -1530,6 +1530,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/core.js~core#pkill",
+    "class/src/core.js~Core.html#instance-method-pkill",
+    "src/core.js~Core#pkill",
+    "method"
+  ],
+  [
     "src/core.js~core#request",
     "class/src/core.js~Core.html#instance-method-request",
     "src/core.js~Core#request",
