@@ -210,7 +210,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -378,17 +378,16 @@ export const clampPosition = (rect, { dimension, position }) =&gt; {
 
 /**
  * Window rendering callback function
- * @param {Window} win
+ * @param {Window} win Window reference
  * @param {Function} callback
  */
 export const renderCallback = (win, callback) =&gt; {
 	if (typeof callback === &quot;function&quot;) {
 		if (win.attributes.shadowDOM) {
 			try {
-				const mode =
-					typeof win.attributes.shadowDOM === &quot;string&quot;
-						? win.attributes.shadowDOM
-						: &quot;open&quot;;
+				const mode = typeof win.attributes.shadowDOM === &quot;string&quot;
+					? win.attributes.shadowDOM
+					: &quot;open&quot;;
 
 				const shadow = win.$content.attachShadow({ mode });
 
@@ -406,7 +405,7 @@ export const renderCallback = (win, callback) =&gt; {
 
 /**
  * Gets new position based on &quot;gravity&quot;
- * @param {Window} win
+ * @param {Window} win Window reference
  * @param {Object} rect
  * @param {String} gravity
  */
@@ -444,7 +443,7 @@ export const positionFromGravity = (win, rect, gravity) =&gt; {
 
 /**
  * Gets new dimension based on container
- * @param {Window} win
+ * @param {Window} win Window reference
  * @param {Object} rect
  * @param {HTMLElement} container
  */
@@ -515,7 +514,7 @@ export const transformVectors = (rect, { width, height }, { top, left }) =&gt; {
 
 /**
  * Creates a clamper for resize/move
- * @param {Window} win
+ * @param {Window} win Window reference
  */
 const clamper = (win) =&gt; {
 	const { maxDimension, minDimension } = win.attributes;
@@ -541,7 +540,7 @@ const clamper = (win) =&gt; {
 
 /**
  * Creates a resize handler
- * @param {Window} win
+ * @param {Window} win Window reference
  */
 export const resizer = (win, handle) =&gt; {
 	const clamp = clamper(win);
@@ -563,7 +562,7 @@ export const resizer = (win, handle) =&gt; {
 
 /**
  * Creates a movement handler
- * @param {Window} win
+ * @param {Window} win Window reference
  */
 export const mover = (win, rect) =&gt; {
 	const { position } = win.state;
@@ -578,7 +577,7 @@ export const mover = (win, rect) =&gt; {
 
 /**
  * Calculates a new initial position for window
- * @param {Window} win
+ * @param {Window} win Window reference
  * @param {Object} rect
  */
 export const getCascadePosition = (win, rect, pos) =&gt; {
@@ -606,7 +605,7 @@ const getScreenOrientation = (screen) =&gt;
 
 /**
  * Gets a media query name from a map
- * @param {Window} win
+ * @param {Window} win Window reference
  * @returns {String}
  */
 export const getMediaQueryName = (win) =&gt;

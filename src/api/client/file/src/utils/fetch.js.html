@@ -210,7 +210,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -322,8 +322,9 @@ const fetchXhr = (target, fetchOptions) =&gt;
 		};
 
 		if (typeof fetchOptions.onProgress === &quot;function&quot;) {
-			const rel =
-				fetchOptions.method.toUpperCase() === &quot;GET&quot; ? req : req.upload;
+			const rel = fetchOptions.method.toUpperCase() === &quot;GET&quot;
+				? req
+				: req.upload;
 			rel.addEventListener(&quot;progress&quot;, (ev) =&gt; {
 				if (ev.lengthComputable) {
 					const percentComplete = Math.round((ev.loaded / ev.total) * 100);

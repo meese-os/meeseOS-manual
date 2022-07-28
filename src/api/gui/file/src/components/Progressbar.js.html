@@ -68,7 +68,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,10 +106,9 @@ import { h } from &quot;hyperapp&quot;;
  * @param {h[]} children Children
  */
 export const Progressbar = (props, children = []) =&gt; {
-	const value =
-		typeof props.value === &quot;number&quot;
-			? Math.min(100, Math.max(0, Math.abs(props.value)))
-			: 0;
+	const value = typeof props.value === &quot;number&quot;
+		? Math.min(100, Math.max(0, Math.abs(props.value)))
+		: 0;
 
 	const c = h(&quot;div&quot;, { class: &quot;meeseOS-gui-progressbar-wrapper&quot; }, [
 		h(&quot;div&quot;, {
