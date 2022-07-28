@@ -506,7 +506,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {string} name The package name\n * @property {string} [category] Package category\n * @property {string} [icon] Package icon\n * @property {boolean} [singleton] If only one instance allowed\n * @property {boolean} [autostart] Autostart on boot\n * @property {boolean} [hidden] Hide from launch menus etc.\n * @property {string} [server] Server script filename\n * @property {string[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {string} title String title of package\n * @property {string} description String description of package\n ",
+            "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {String} name The package name\n * @property {String} [category] Package category\n * @property {String} [icon] Package icon\n * @property {Boolean} [singleton] If only one instance allowed\n * @property {Boolean} [autostart] Autostart on boot\n * @property {Boolean} [hidden] Hide from launch menus etc.\n * @property {String} [server] Server script filename\n * @property {String[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {String} title String title of package\n * @property {String} description String description of package\n ",
             "start": 2008,
             "end": 2690,
             "loc": {
@@ -522,7 +522,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {boolean} [forcePreload=false] Force preload reloading\n ",
+            "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {Boolean} [forcePreload=false] Force preload reloading\n ",
             "start": 2692,
             "end": 2838,
             "loc": {
@@ -1076,7 +1076,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {string[]}\n\t\t ",
+                          "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {String[]}\n\t\t ",
                           "start": 3387,
                           "end": 3524,
                           "loc": {
@@ -1192,7 +1192,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {string[]}\n\t\t ",
+                          "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {String[]}\n\t\t ",
                           "start": 3387,
                           "end": 3524,
                           "loc": {
@@ -1412,7 +1412,7 @@
                       "trailingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If inited\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If inited\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 3670,
                           "end": 3715,
                           "loc": {
@@ -1528,7 +1528,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * If inited\n\t\t * @type {boolean}\n\t\t ",
+                          "value": "*\n\t\t * If inited\n\t\t * @type {Boolean}\n\t\t ",
                           "start": 3670,
                           "end": 3715,
                           "loc": {
@@ -4051,7 +4051,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {string} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
+                    "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
                     "start": 4575,
                     "end": 4861,
                     "loc": {
@@ -5390,7 +5390,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {string} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
+                    "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
                     "start": 4575,
                     "end": 4861,
                     "loc": {
@@ -5408,7 +5408,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {string} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+                    "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {String} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
                     "start": 5302,
                     "end": 5602,
                     "loc": {
@@ -7929,7 +7929,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {string} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+                    "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {String} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
                     "start": 5302,
                     "end": 5602,
                     "loc": {
@@ -7947,7 +7947,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
+                    "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
                     "start": 6465,
                     "end": 6662,
                     "loc": {
@@ -8886,7 +8886,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
+                    "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
                     "start": 6465,
                     "end": 6662,
                     "loc": {
@@ -8904,7 +8904,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {string} fileType Files type\n\t * @param {string} packageType Package type\n\t * @returns {string[]}\n\t ",
+                    "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {String} fileType Files type\n\t * @param {String} packageType Package type\n\t * @returns {String[]}\n\t ",
                     "start": 6956,
                     "end": 7163,
                     "loc": {
@@ -9504,7 +9504,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {string} fileType Files type\n\t * @param {string} packageType Package type\n\t * @returns {string[]}\n\t ",
+                    "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {String} fileType Files type\n\t * @param {String} packageType Package type\n\t * @returns {String[]}\n\t ",
                     "start": 6956,
                     "end": 7163,
                     "loc": {
@@ -9522,7 +9522,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+                    "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
                     "start": 7382,
                     "end": 7632,
                     "loc": {
@@ -15318,7 +15318,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+                    "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
                     "start": 7382,
                     "end": 7632,
                     "loc": {
@@ -16575,7 +16575,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Registers a package\n\t *\n\t * @param {string} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
+                    "value": "*\n\t * Registers a package\n\t *\n\t * @param {String} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
                     "start": 10090,
                     "end": 10267,
                     "loc": {
@@ -18071,7 +18071,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Registers a package\n\t *\n\t * @param {string} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
+                    "value": "*\n\t * Registers a package\n\t *\n\t * @param {String} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
                     "start": 10090,
                     "end": 10267,
                     "loc": {
@@ -20557,7 +20557,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {string} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
+                    "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {String} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
                     "start": 11824,
                     "end": 12004,
                     "loc": {
@@ -21578,7 +21578,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {string} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
+                    "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {String} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
                     "start": 11824,
                     "end": 12004,
                     "loc": {
@@ -22610,7 +22610,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a list of running packages\n\t * @returns {string[]}\n\t ",
+                    "value": "*\n\t * Gets a list of running packages\n\t * @returns {String[]}\n\t ",
                     "start": 12827,
                     "end": 12895,
                     "loc": {
@@ -22750,7 +22750,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets a list of running packages\n\t * @returns {string[]}\n\t ",
+                    "value": "*\n\t * Gets a list of running packages\n\t * @returns {String[]}\n\t ",
                     "start": 12827,
                     "end": 12895,
                     "loc": {
@@ -22787,7 +22787,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {string} name The package name\n * @property {string} [category] Package category\n * @property {string} [icon] Package icon\n * @property {boolean} [singleton] If only one instance allowed\n * @property {boolean} [autostart] Autostart on boot\n * @property {boolean} [hidden] Hide from launch menus etc.\n * @property {string} [server] Server script filename\n * @property {string[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {string} title String title of package\n * @property {string} description String description of package\n ",
+              "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {String} name The package name\n * @property {String} [category] Package category\n * @property {String} [icon] Package icon\n * @property {Boolean} [singleton] If only one instance allowed\n * @property {Boolean} [autostart] Autostart on boot\n * @property {Boolean} [hidden] Hide from launch menus etc.\n * @property {String} [server] Server script filename\n * @property {String[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {String} title String title of package\n * @property {String} description String description of package\n ",
               "start": 2008,
               "end": 2690,
               "loc": {
@@ -22803,7 +22803,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {boolean} [forcePreload=false] Force preload reloading\n ",
+              "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {Boolean} [forcePreload=false] Force preload reloading\n ",
               "start": 2692,
               "end": 2838,
               "loc": {
@@ -22855,7 +22855,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {string} name The package name\n * @property {string} [category] Package category\n * @property {string} [icon] Package icon\n * @property {boolean} [singleton] If only one instance allowed\n * @property {boolean} [autostart] Autostart on boot\n * @property {boolean} [hidden] Hide from launch menus etc.\n * @property {string} [server] Server script filename\n * @property {string[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {string} title String title of package\n * @property {string} description String description of package\n ",
+            "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {String} name The package name\n * @property {String} [category] Package category\n * @property {String} [icon] Package icon\n * @property {Boolean} [singleton] If only one instance allowed\n * @property {Boolean} [autostart] Autostart on boot\n * @property {Boolean} [hidden] Hide from launch menus etc.\n * @property {String} [server] Server script filename\n * @property {String[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {String} title String title of package\n * @property {String} description String description of package\n ",
             "start": 2008,
             "end": 2690,
             "loc": {
@@ -22871,7 +22871,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {boolean} [forcePreload=false] Force preload reloading\n ",
+            "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {Boolean} [forcePreload=false] Force preload reloading\n ",
             "start": 2692,
             "end": 2838,
             "loc": {
@@ -22941,7 +22941,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {string} name The package name\n * @property {string} [category] Package category\n * @property {string} [icon] Package icon\n * @property {boolean} [singleton] If only one instance allowed\n * @property {boolean} [autostart] Autostart on boot\n * @property {boolean} [hidden] Hide from launch menus etc.\n * @property {string} [server] Server script filename\n * @property {string[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {string} title String title of package\n * @property {string} description String description of package\n ",
+      "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {String} name The package name\n * @property {String} [category] Package category\n * @property {String} [icon] Package icon\n * @property {Boolean} [singleton] If only one instance allowed\n * @property {Boolean} [autostart] Autostart on boot\n * @property {Boolean} [hidden] Hide from launch menus etc.\n * @property {String} [server] Server script filename\n * @property {String[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {String} title String title of package\n * @property {String} description String description of package\n ",
       "start": 2008,
       "end": 2690,
       "loc": {
@@ -22957,7 +22957,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {boolean} [forcePreload=false] Force preload reloading\n ",
+      "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {Boolean} [forcePreload=false] Force preload reloading\n ",
       "start": 2692,
       "end": 2838,
       "loc": {
@@ -23053,7 +23053,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {string[]}\n\t\t ",
+      "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {String[]}\n\t\t ",
       "start": 3387,
       "end": 3524,
       "loc": {
@@ -23085,7 +23085,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If inited\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If inited\n\t\t * @type {Boolean}\n\t\t ",
       "start": 3670,
       "end": 3715,
       "loc": {
@@ -23133,7 +23133,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {string} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
+      "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
       "start": 4575,
       "end": 4861,
       "loc": {
@@ -23149,7 +23149,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {string} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+      "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {String} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
       "start": 5302,
       "end": 5602,
       "loc": {
@@ -23165,7 +23165,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
+      "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
       "start": 6465,
       "end": 6662,
       "loc": {
@@ -23181,7 +23181,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {string} fileType Files type\n\t * @param {string} packageType Package type\n\t * @returns {string[]}\n\t ",
+      "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {String} fileType Files type\n\t * @param {String} packageType Package type\n\t * @returns {String[]}\n\t ",
       "start": 6956,
       "end": 7163,
       "loc": {
@@ -23197,7 +23197,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+      "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
       "start": 7382,
       "end": 7632,
       "loc": {
@@ -23245,7 +23245,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Registers a package\n\t *\n\t * @param {string} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
+      "value": "*\n\t * Registers a package\n\t *\n\t * @param {String} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
       "start": 10090,
       "end": 10267,
       "loc": {
@@ -23293,7 +23293,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {string} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
+      "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {String} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
       "start": 11824,
       "end": 12004,
       "loc": {
@@ -23325,7 +23325,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a list of running packages\n\t * @returns {string[]}\n\t ",
+      "value": "*\n\t * Gets a list of running packages\n\t * @returns {String[]}\n\t ",
       "start": 12827,
       "end": 12895,
       "loc": {
@@ -24139,7 +24139,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {string} name The package name\n * @property {string} [category] Package category\n * @property {string} [icon] Package icon\n * @property {boolean} [singleton] If only one instance allowed\n * @property {boolean} [autostart] Autostart on boot\n * @property {boolean} [hidden] Hide from launch menus etc.\n * @property {string} [server] Server script filename\n * @property {string[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {string} title String title of package\n * @property {string} description String description of package\n ",
+      "value": "*\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {String} name The package name\n * @property {String} [category] Package category\n * @property {String} [icon] Package icon\n * @property {Boolean} [singleton] If only one instance allowed\n * @property {Boolean} [autostart] Autostart on boot\n * @property {Boolean} [hidden] Hide from launch menus etc.\n * @property {String} [server] Server script filename\n * @property {String[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {String} title String title of package\n * @property {String} description String description of package\n ",
       "start": 2008,
       "end": 2690,
       "loc": {
@@ -24155,7 +24155,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {boolean} [forcePreload=false] Force preload reloading\n ",
+      "value": "*\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {Boolean} [forcePreload=false] Force preload reloading\n ",
       "start": 2692,
       "end": 2838,
       "loc": {
@@ -25042,7 +25042,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {string[]}\n\t\t ",
+      "value": "*\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {String[]}\n\t\t ",
       "start": 3387,
       "end": 3524,
       "loc": {
@@ -25574,7 +25574,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * If inited\n\t\t * @type {boolean}\n\t\t ",
+      "value": "*\n\t\t * If inited\n\t\t * @type {Boolean}\n\t\t ",
       "start": 3670,
       "end": 3715,
       "loc": {
@@ -30844,7 +30844,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {string} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
+      "value": "*\n\t * Launches a (application) package\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t ",
       "start": 4575,
       "end": 4861,
       "loc": {
@@ -33850,7 +33850,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {string} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+      "value": "*\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {String} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
       "start": 5302,
       "end": 5602,
       "loc": {
@@ -39365,7 +39365,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
+      "value": "*\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t ",
       "start": 6465,
       "end": 6662,
       "loc": {
@@ -41426,7 +41426,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {string} fileType Files type\n\t * @param {string} packageType Package type\n\t * @returns {string[]}\n\t ",
+      "value": "*\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {String} fileType Files type\n\t * @param {String} packageType Package type\n\t * @returns {String[]}\n\t ",
       "start": 6956,
       "end": 7163,
       "loc": {
@@ -42754,7 +42754,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {string} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
+      "value": "*\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t ",
       "start": 7382,
       "end": 7632,
       "loc": {
@@ -57716,7 +57716,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Registers a package\n\t *\n\t * @param {string} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
+      "value": "*\n\t * Registers a package\n\t *\n\t * @param {String} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t ",
       "start": 10090,
       "end": 10267,
       "loc": {
@@ -65720,7 +65720,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {string} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
+      "value": "*\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {String} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t ",
       "start": 11824,
       "end": 12004,
       "loc": {
@@ -70151,7 +70151,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets a list of running packages\n\t * @returns {string[]}\n\t ",
+      "value": "*\n\t * Gets a list of running packages\n\t * @returns {String[]}\n\t ",
       "start": 12827,
       "end": 12895,
       "loc": {

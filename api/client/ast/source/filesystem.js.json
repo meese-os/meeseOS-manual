@@ -766,7 +766,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {string} [visibility='global'] Visibility in UI\n * @property {boolean} [local=true] Local filesystem ?\n * @property {boolean} [searchable=true] If can be searched\n * @property {boolean} [readOnly=false] Readonly\n ",
+            "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {String} [visibility='global'] Visibility in UI\n * @property {Boolean} [local=true] Local filesystem ?\n * @property {Boolean} [searchable=true] If can be searched\n * @property {Boolean} [readOnly=false] Readonly\n ",
             "start": 2087,
             "end": 2403,
             "loc": {
@@ -782,7 +782,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {string} name Name\n * @property {string} label Label\n * @property {string} adapter Adater name\n * @property {string} [root] System adapter root\n * @property {boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
+            "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {String} name Name\n * @property {String} label Label\n * @property {String} adapter Adater name\n * @property {String} [root] System adapter root\n * @property {Boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
             "start": 2405,
             "end": 2754,
             "loc": {
@@ -2815,7 +2815,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+                    "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
                     "start": 4737,
                     "end": 4877,
                     "loc": {
@@ -3775,7 +3775,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+                    "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
                     "start": 4737,
                     "end": 4877,
                     "loc": {
@@ -3793,7 +3793,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5180,
                     "end": 5366,
                     "loc": {
@@ -4478,7 +4478,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5180,
                     "end": 5366,
                     "loc": {
@@ -4496,7 +4496,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mount given mountpoint\n\t * @param {string|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Mount given mountpoint\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5578,
                     "end": 5781,
                     "loc": {
@@ -4909,7 +4909,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mount given mountpoint\n\t * @param {string|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Mount given mountpoint\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5578,
                     "end": 5781,
                     "loc": {
@@ -4927,7 +4927,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Unmount given filesystem\n\t * @param {string} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Unmount given filesystem\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5942,
                     "end": 6112,
                     "loc": {
@@ -5136,7 +5136,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Unmount given filesystem\n\t * @param {string} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Unmount given filesystem\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 5942,
                     "end": 6112,
                     "loc": {
@@ -5154,7 +5154,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 6175,
                     "end": 6398,
                     "loc": {
@@ -6277,7 +6277,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 6175,
                     "end": 6398,
                     "loc": {
@@ -6295,7 +6295,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {string} name Mountpoint name\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 6816,
                     "end": 7028,
                     "loc": {
@@ -7667,7 +7667,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {string} name Mountpoint name\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 6816,
                     "end": 7028,
                     "loc": {
@@ -7844,7 +7844,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {string} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
+                    "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {String} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
                     "start": 7752,
                     "end": 7903,
                     "loc": {
@@ -9715,7 +9715,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {string} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
+                    "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {String} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
                     "start": 7752,
                     "end": 7903,
                     "loc": {
@@ -9733,7 +9733,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {string} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
+                    "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {String} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
                     "start": 8411,
                     "end": 8549,
                     "loc": {
@@ -12217,7 +12217,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {string} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
+                    "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {String} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
                     "start": 8411,
                     "end": 8549,
                     "loc": {
@@ -13720,7 +13720,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets mountpoint from given path\n\t * @param {string|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
+                    "value": "*\n\t * Gets mountpoint from given path\n\t * @param {String|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
                     "start": 10050,
                     "end": 10177,
                     "loc": {
@@ -14898,7 +14898,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Gets mountpoint from given path\n\t * @param {string|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
+                    "value": "*\n\t * Gets mountpoint from given path\n\t * @param {String|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
                     "start": 10050,
                     "end": 10177,
                     "loc": {
@@ -19416,7 +19416,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {string} [visibility='global'] Visibility in UI\n * @property {boolean} [local=true] Local filesystem ?\n * @property {boolean} [searchable=true] If can be searched\n * @property {boolean} [readOnly=false] Readonly\n ",
+              "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {String} [visibility='global'] Visibility in UI\n * @property {Boolean} [local=true] Local filesystem ?\n * @property {Boolean} [searchable=true] If can be searched\n * @property {Boolean} [readOnly=false] Readonly\n ",
               "start": 2087,
               "end": 2403,
               "loc": {
@@ -19432,7 +19432,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {string} name Name\n * @property {string} label Label\n * @property {string} adapter Adater name\n * @property {string} [root] System adapter root\n * @property {boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
+              "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {String} name Name\n * @property {String} label Label\n * @property {String} adapter Adater name\n * @property {String} [root] System adapter root\n * @property {Boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
               "start": 2405,
               "end": 2754,
               "loc": {
@@ -19548,7 +19548,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {string} [visibility='global'] Visibility in UI\n * @property {boolean} [local=true] Local filesystem ?\n * @property {boolean} [searchable=true] If can be searched\n * @property {boolean} [readOnly=false] Readonly\n ",
+            "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {String} [visibility='global'] Visibility in UI\n * @property {Boolean} [local=true] Local filesystem ?\n * @property {Boolean} [searchable=true] If can be searched\n * @property {Boolean} [readOnly=false] Readonly\n ",
             "start": 2087,
             "end": 2403,
             "loc": {
@@ -19564,7 +19564,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {string} name Name\n * @property {string} label Label\n * @property {string} adapter Adater name\n * @property {string} [root] System adapter root\n * @property {boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
+            "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {String} name Name\n * @property {String} label Label\n * @property {String} adapter Adater name\n * @property {String} [root] System adapter root\n * @property {Boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
             "start": 2405,
             "end": 2754,
             "loc": {
@@ -19698,7 +19698,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {string} [visibility='global'] Visibility in UI\n * @property {boolean} [local=true] Local filesystem ?\n * @property {boolean} [searchable=true] If can be searched\n * @property {boolean} [readOnly=false] Readonly\n ",
+      "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {String} [visibility='global'] Visibility in UI\n * @property {Boolean} [local=true] Local filesystem ?\n * @property {Boolean} [searchable=true] If can be searched\n * @property {Boolean} [readOnly=false] Readonly\n ",
       "start": 2087,
       "end": 2403,
       "loc": {
@@ -19714,7 +19714,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {string} name Name\n * @property {string} label Label\n * @property {string} adapter Adater name\n * @property {string} [root] System adapter root\n * @property {boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
+      "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {String} name Name\n * @property {String} label Label\n * @property {String} adapter Adater name\n * @property {String} [root] System adapter root\n * @property {Boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
       "start": 2405,
       "end": 2754,
       "loc": {
@@ -19890,7 +19890,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+      "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
       "start": 4737,
       "end": 4877,
       "loc": {
@@ -19906,7 +19906,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5180,
       "end": 5366,
       "loc": {
@@ -19922,7 +19922,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mount given mountpoint\n\t * @param {string|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Mount given mountpoint\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5578,
       "end": 5781,
       "loc": {
@@ -19938,7 +19938,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Unmount given filesystem\n\t * @param {string} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Unmount given filesystem\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5942,
       "end": 6112,
       "loc": {
@@ -19954,7 +19954,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 6175,
       "end": 6398,
       "loc": {
@@ -19970,7 +19970,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {string} name Mountpoint name\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 6816,
       "end": 7028,
       "loc": {
@@ -20018,7 +20018,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {string} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
+      "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {String} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
       "start": 7752,
       "end": 7903,
       "loc": {
@@ -20034,7 +20034,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {string} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
+      "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {String} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
       "start": 8411,
       "end": 8549,
       "loc": {
@@ -20066,7 +20066,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets mountpoint from given path\n\t * @param {string|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
+      "value": "*\n\t * Gets mountpoint from given path\n\t * @param {String|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
       "start": 10050,
       "end": 10177,
       "loc": {
@@ -21511,7 +21511,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {string} [visibility='global'] Visibility in UI\n * @property {boolean} [local=true] Local filesystem ?\n * @property {boolean} [searchable=true] If can be searched\n * @property {boolean} [readOnly=false] Readonly\n ",
+      "value": "*\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {String} [visibility='global'] Visibility in UI\n * @property {Boolean} [local=true] Local filesystem ?\n * @property {Boolean} [searchable=true] If can be searched\n * @property {Boolean} [readOnly=false] Readonly\n ",
       "start": 2087,
       "end": 2403,
       "loc": {
@@ -21527,7 +21527,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {string} name Name\n * @property {string} label Label\n * @property {string} adapter Adater name\n * @property {string} [root] System adapter root\n * @property {boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
+      "value": "*\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {String} name Name\n * @property {String} label Label\n * @property {String} adapter Adater name\n * @property {String} [root] System adapter root\n * @property {Boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n ",
       "start": 2405,
       "end": 2754,
       "loc": {
@@ -25497,7 +25497,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+      "value": "*\n\t * Mounts all configured mountpoints\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
       "start": 4737,
       "end": 4877,
       "loc": {
@@ -27437,7 +27437,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5180,
       "end": 5366,
       "loc": {
@@ -28835,7 +28835,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mount given mountpoint\n\t * @param {string|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Mount given mountpoint\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5578,
       "end": 5781,
       "loc": {
@@ -29713,7 +29713,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Unmount given filesystem\n\t * @param {string} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Unmount given filesystem\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 5942,
       "end": 6112,
       "loc": {
@@ -30145,7 +30145,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 6175,
       "end": 6398,
       "loc": {
@@ -32454,7 +32454,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {string} name Mountpoint name\n\t * @param {boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 6816,
       "end": 7028,
       "loc": {
@@ -35902,7 +35902,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {string} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
+      "value": "*\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {String} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t ",
       "start": 7752,
       "end": 7903,
       "loc": {
@@ -39958,7 +39958,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {string} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
+      "value": "*\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {String} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t ",
       "start": 8411,
       "end": 8549,
       "loc": {
@@ -48317,7 +48317,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Gets mountpoint from given path\n\t * @param {string|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
+      "value": "*\n\t * Gets mountpoint from given path\n\t * @param {String|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t ",
       "start": 10050,
       "end": 10177,
       "loc": {

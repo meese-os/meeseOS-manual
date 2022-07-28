@@ -2786,7 +2786,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} AuthForm\n * @property {string} [username]\n * @property {string} [password]\n ",
+            "value": "*\n * @typedef {Object} AuthForm\n * @property {String} [username]\n * @property {String} [password]\n ",
             "start": 2686,
             "end": 2789,
             "loc": {
@@ -2834,7 +2834,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {boolean}\n ",
+            "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {Boolean}\n ",
             "start": 2966,
             "end": 3047,
             "loc": {
@@ -4656,7 +4656,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Run the shutdown procedure\n\t * @param {boolean} [reload] Reload afterwards\n\t ",
+                    "value": "*\n\t * Run the shutdown procedure\n\t * @param {Boolean} [reload] Reload afterwards\n\t ",
                     "start": 4279,
                     "end": 4366,
                     "loc": {
@@ -5566,7 +5566,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Run the shutdown procedure\n\t * @param {boolean} [reload] Reload afterwards\n\t ",
+                    "value": "*\n\t * Run the shutdown procedure\n\t * @param {Boolean} [reload] Reload afterwards\n\t ",
                     "start": 4279,
                     "end": 4366,
                     "loc": {
@@ -10096,7 +10096,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Performs a logout\n\t * @param {boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Performs a logout\n\t * @param {Boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 6590,
                     "end": 6712,
                     "loc": {
@@ -10971,7 +10971,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Performs a logout\n\t * @param {boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Performs a logout\n\t * @param {Boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
                     "start": 6590,
                     "end": 6712,
                     "loc": {
@@ -12466,7 +12466,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * @typedef {Object} AuthForm\n * @property {string} [username]\n * @property {string} [password]\n ",
+              "value": "*\n * @typedef {Object} AuthForm\n * @property {String} [username]\n * @property {String} [password]\n ",
               "start": 2686,
               "end": 2789,
               "loc": {
@@ -12514,7 +12514,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {boolean}\n ",
+              "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {Boolean}\n ",
               "start": 2966,
               "end": 3047,
               "loc": {
@@ -12598,7 +12598,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} AuthForm\n * @property {string} [username]\n * @property {string} [password]\n ",
+            "value": "*\n * @typedef {Object} AuthForm\n * @property {String} [username]\n * @property {String} [password]\n ",
             "start": 2686,
             "end": 2789,
             "loc": {
@@ -12646,7 +12646,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {boolean}\n ",
+            "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {Boolean}\n ",
             "start": 2966,
             "end": 3047,
             "loc": {
@@ -12748,7 +12748,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} AuthForm\n * @property {string} [username]\n * @property {string} [password]\n ",
+      "value": "*\n * @typedef {Object} AuthForm\n * @property {String} [username]\n * @property {String} [password]\n ",
       "start": 2686,
       "end": 2789,
       "loc": {
@@ -12796,7 +12796,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {boolean}\n ",
+      "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {Boolean}\n ",
       "start": 2966,
       "end": 3047,
       "loc": {
@@ -12956,7 +12956,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Run the shutdown procedure\n\t * @param {boolean} [reload] Reload afterwards\n\t ",
+      "value": "*\n\t * Run the shutdown procedure\n\t * @param {Boolean} [reload] Reload afterwards\n\t ",
       "start": 4279,
       "end": 4366,
       "loc": {
@@ -13116,7 +13116,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Performs a logout\n\t * @param {boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Performs a logout\n\t * @param {Boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 6590,
       "end": 6712,
       "loc": {
@@ -19026,7 +19026,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} AuthForm\n * @property {string} [username]\n * @property {string} [password]\n ",
+      "value": "*\n * @typedef {Object} AuthForm\n * @property {String} [username]\n * @property {String} [password]\n ",
       "start": 2686,
       "end": 2789,
       "loc": {
@@ -19074,7 +19074,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {boolean}\n ",
+      "value": "*\n * @callback AuthCallback\n * @param {AuthForm} data\n * @returns {Boolean}\n ",
       "start": 2966,
       "end": 3047,
       "loc": {
@@ -22377,7 +22377,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Run the shutdown procedure\n\t * @param {boolean} [reload] Reload afterwards\n\t ",
+      "value": "*\n\t * Run the shutdown procedure\n\t * @param {Boolean} [reload] Reload afterwards\n\t ",
       "start": 4279,
       "end": 4366,
       "loc": {
@@ -33086,7 +33086,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Performs a logout\n\t * @param {boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Performs a logout\n\t * @param {Boolean} [reload=true] Reload client afterwards\n\t * @returns {Promise<boolean>}\n\t ",
       "start": 6590,
       "end": 6712,
       "loc": {

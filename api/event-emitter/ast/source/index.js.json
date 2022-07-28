@@ -753,7 +753,7 @@
                       "leadingComments": [
                         {
                           "type": "CommentBlock",
-                          "value": "*\n\t\t * The name of the handler\n\t\t * @type {string}\n\t\t ",
+                          "value": "*\n\t\t * The name of the handler\n\t\t * @type {String}\n\t\t ",
                           "start": 2001,
                           "end": 2059,
                           "loc": {
@@ -910,7 +910,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Create Event Handler\n\t * @param {string} [name] A name for logging\n\t ",
+                    "value": "*\n\t * Create Event Handler\n\t * @param {String} [name] A name for logging\n\t ",
                     "start": 1884,
                     "end": 1963,
                     "loc": {
@@ -1119,7 +1119,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+                    "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {Boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {Boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
                     "start": 2232,
                     "end": 2681,
                     "loc": {
@@ -2291,7 +2291,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+                    "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {Boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {Boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
                     "start": 2232,
                     "end": 2681,
                     "loc": {
@@ -2622,7 +2622,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+                    "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {Boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
                     "start": 3193,
                     "end": 3626,
                     "loc": {
@@ -4666,7 +4666,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+                    "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {Boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
                     "start": 3193,
                     "end": 3626,
                     "loc": {
@@ -4684,7 +4684,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+                    "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
                     "start": 4185,
                     "end": 4433,
                     "loc": {
@@ -6198,7 +6198,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+                    "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
                     "start": 4185,
                     "end": 4433,
                     "loc": {
@@ -6309,7 +6309,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Create Event Handler\n\t * @param {string} [name] A name for logging\n\t ",
+      "value": "*\n\t * Create Event Handler\n\t * @param {String} [name] A name for logging\n\t ",
       "start": 1884,
       "end": 1963,
       "loc": {
@@ -6325,7 +6325,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The name of the handler\n\t\t * @type {string}\n\t\t ",
+      "value": "*\n\t\t * The name of the handler\n\t\t * @type {String}\n\t\t ",
       "start": 2001,
       "end": 2059,
       "loc": {
@@ -6373,7 +6373,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+      "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {Boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {Boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
       "start": 2232,
       "end": 2681,
       "loc": {
@@ -6405,7 +6405,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+      "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {Boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
       "start": 3193,
       "end": 3626,
       "loc": {
@@ -6421,7 +6421,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+      "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
       "start": 4185,
       "end": 4433,
       "loc": {
@@ -7377,7 +7377,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Create Event Handler\n\t * @param {string} [name] A name for logging\n\t ",
+      "value": "*\n\t * Create Event Handler\n\t * @param {String} [name] A name for logging\n\t ",
       "start": 1884,
       "end": 1963,
       "loc": {
@@ -7574,7 +7574,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t\t * The name of the handler\n\t\t * @type {string}\n\t\t ",
+      "value": "*\n\t\t * The name of the handler\n\t\t * @type {String}\n\t\t ",
       "start": 2001,
       "end": 2059,
       "loc": {
@@ -8298,7 +8298,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+      "value": "*\n\t * Add an event handler\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} callback Callback function\n\t * @param {Object} [options] Options\n\t * @param {Boolean} [options.persist] This even handler cannot be removed unless forced\n\t * @param {Boolean} [options.once] Fire only once\n\t * @returns {EventEmitter} Returns current instance\n\t ",
       "start": 2232,
       "end": 2681,
       "loc": {
@@ -11342,7 +11342,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+      "value": "*\n\t * Removes an event handler\n\t *\n\t * If no callback is provided, all events bound to given name will be removed.\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {Function} [callback] Callback function\n\t * @param {Boolean} [force=false] Forces removal even if set to persis\n\t * @returns {EventEmitter} Returns current instance\n\t ",
       "start": 3193,
       "end": 3626,
       "loc": {
@@ -15578,7 +15578,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {string|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
+      "value": "*\n\t * Emits an event\n\t *\n\t * You can supply an array of event names or a comma separated list with a string\n\t *\n\t * @param {String|string[]} name Event name\n\t * @param {*} [args] Arguments\n\t * @returns {EventEmitter} Returns current instance\n\t ",
       "start": 4185,
       "end": 4433,
       "loc": {

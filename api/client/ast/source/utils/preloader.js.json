@@ -270,7 +270,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {string} [entry]\n * @property {string} [error]\n ",
+            "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {Boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {String} [entry]\n * @property {String} [error]\n ",
             "start": 1695,
             "end": 1871,
             "loc": {
@@ -286,7 +286,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} PreloaderResult\n * @property {string[]} errors\n * @property {{string: PreloaderEntryElement}} elements\n ",
+            "value": "*\n * @typedef {Object} PreloaderResult\n * @property {String[]} errors\n * @property {{String: PreloaderEntryElement}} elements\n ",
             "start": 1873,
             "end": 2004,
             "loc": {
@@ -863,7 +863,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Loads all resources required for a package\n\t * @param {string[]} list A list of resources\n\t * @param {boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
+                    "value": "*\n\t * Loads all resources required for a package\n\t * @param {String[]} list A list of resources\n\t * @param {Boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
                     "start": 2292,
                     "end": 2540,
                     "loc": {
@@ -2988,7 +2988,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Loads all resources required for a package\n\t * @param {string[]} list A list of resources\n\t * @param {boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
+                    "value": "*\n\t * Loads all resources required for a package\n\t * @param {String[]} list A list of resources\n\t * @param {Boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
                     "start": 2292,
                     "end": 2540,
                     "loc": {
@@ -3006,7 +3006,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {string[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
+                    "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {String[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
                     "start": 3110,
                     "end": 3288,
                     "loc": {
@@ -4823,7 +4823,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {string[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
+                    "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {String[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
                     "start": 3110,
                     "end": 3288,
                     "loc": {
@@ -4860,7 +4860,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {string} [entry]\n * @property {string} [error]\n ",
+              "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {Boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {String} [entry]\n * @property {String} [error]\n ",
               "start": 1695,
               "end": 1871,
               "loc": {
@@ -4876,7 +4876,7 @@
             },
             {
               "type": "CommentBlock",
-              "value": "*\n * @typedef {Object} PreloaderResult\n * @property {string[]} errors\n * @property {{string: PreloaderEntryElement}} elements\n ",
+              "value": "*\n * @typedef {Object} PreloaderResult\n * @property {String[]} errors\n * @property {{String: PreloaderEntryElement}} elements\n ",
               "start": 1873,
               "end": 2004,
               "loc": {
@@ -4928,7 +4928,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {string} [entry]\n * @property {string} [error]\n ",
+            "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {Boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {String} [entry]\n * @property {String} [error]\n ",
             "start": 1695,
             "end": 1871,
             "loc": {
@@ -4944,7 +4944,7 @@
           },
           {
             "type": "CommentBlock",
-            "value": "*\n * @typedef {Object} PreloaderResult\n * @property {string[]} errors\n * @property {{string: PreloaderEntryElement}} elements\n ",
+            "value": "*\n * @typedef {Object} PreloaderResult\n * @property {String[]} errors\n * @property {{String: PreloaderEntryElement}} elements\n ",
             "start": 1873,
             "end": 2004,
             "loc": {
@@ -5014,7 +5014,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {string} [entry]\n * @property {string} [error]\n ",
+      "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {Boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {String} [entry]\n * @property {String} [error]\n ",
       "start": 1695,
       "end": 1871,
       "loc": {
@@ -5030,7 +5030,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} PreloaderResult\n * @property {string[]} errors\n * @property {{string: PreloaderEntryElement}} elements\n ",
+      "value": "*\n * @typedef {Object} PreloaderResult\n * @property {String[]} errors\n * @property {{String: PreloaderEntryElement}} elements\n ",
       "start": 1873,
       "end": 2004,
       "loc": {
@@ -5094,7 +5094,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Loads all resources required for a package\n\t * @param {string[]} list A list of resources\n\t * @param {boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
+      "value": "*\n\t * Loads all resources required for a package\n\t * @param {String[]} list A list of resources\n\t * @param {Boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
       "start": 2292,
       "end": 2540,
       "loc": {
@@ -5110,7 +5110,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {string[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
+      "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {String[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
       "start": 3110,
       "end": 3288,
       "loc": {
@@ -5528,7 +5528,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {string} [entry]\n * @property {string} [error]\n ",
+      "value": "*\n * @typedef {Object} PreloaderEntry\n * @property {Boolean} success\n * @property {PreloaderEntryElement} [el]\n * @property {String} [entry]\n * @property {String} [error]\n ",
       "start": 1695,
       "end": 1871,
       "loc": {
@@ -5544,7 +5544,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} PreloaderResult\n * @property {string[]} errors\n * @property {{string: PreloaderEntryElement}} elements\n ",
+      "value": "*\n * @typedef {Object} PreloaderResult\n * @property {String[]} errors\n * @property {{String: PreloaderEntryElement}} elements\n ",
       "start": 1873,
       "end": 2004,
       "loc": {
@@ -6550,7 +6550,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Loads all resources required for a package\n\t * @param {string[]} list A list of resources\n\t * @param {boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
+      "value": "*\n\t * Loads all resources required for a package\n\t * @param {String[]} list A list of resources\n\t * @param {Boolean} [force=false] Force loading even though previously cached\n\t * @returns {Promise<PreloaderResult>} A list of failed resources\n\t ",
       "start": 2292,
       "end": 2540,
       "loc": {
@@ -10867,7 +10867,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {string[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
+      "value": "*\n\t * Checks the loaded list\n\t * @private\n\t * @param {Object[]} results Preload results\n\t * @param {String[]} cached Already cached preloads\n\t * @returns {PreloaderResult}\n\t ",
       "start": 3110,
       "end": 3288,
       "loc": {
