@@ -44,7 +44,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -92,12 +92,11 @@ export default class ConfirmDialog extends Dialog {
 	constructor(core, args, callback) {
 		const yesno = typeof args.yesno === &quot;undefined&quot; || args.yesno === true;
 
-		const buttons =
-			args.buttons instanceof Array
-				? args.buttons
-				: yesno
-					? [&quot;yes&quot;, &quot;no&quot;]
-					: [&quot;ok&quot;, &quot;cancel&quot;];
+		const buttons = args.buttons instanceof Array
+			? args.buttons
+			: yesno
+				? [&quot;yes&quot;, &quot;no&quot;]
+				: [&quot;ok&quot;, &quot;cancel&quot;];
 
 		super(
 			core,

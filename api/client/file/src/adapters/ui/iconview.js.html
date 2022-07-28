@@ -210,7 +210,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -246,15 +246,14 @@ import { pathJoin } from &quot;../../utils/vfs&quot;;
 
 const tapper = doubleTap();
 
-const onDropAction =
-	(actions) =&gt;
-		(ev, data, files, shortcut = true) =&gt; {
-			if (validVfsDrop(data)) {
-				actions.addEntry({ entry: data, shortcut });
-			} else if (files.length &gt; 0) {
-				actions.uploadEntries(files);
-			}
-		};
+const onDropAction = (actions) =&gt;
+	(ev, data, files, shortcut = true) =&gt; {
+		if (validVfsDrop(data)) {
+			actions.addEntry({ entry: data, shortcut });
+		} else if (files.length &gt; 0) {
+			actions.uploadEntries(files);
+		}
+	};
 
 const isRootElement = (ev) =&gt;
 	ev.target &amp;&amp;
@@ -448,9 +447,7 @@ export class DesktopIconView extends EventEmitter {
 	}
 
 	render(root) {
-		if (!this._render(root)) {
-			return;
-		}
+		if (!this._render(root)) return;
 
 		this.$root = document.createElement(&quot;div&quot;);
 		this.$root.className = &quot;meeseOS-desktop-iconview&quot;;
@@ -510,51 +507,52 @@ export class DesktopIconView extends EventEmitter {
 					// TODO
 				},
 
-				addEntry:
-					({ entry, shortcut }) =&gt;
-						(state, actions) =&gt; {
-							const dest = `${root}/${entry.filename}`;
+				addEntry: ({ entry, shortcut }) =&gt;
+					(state, actions) =&gt; {
+						const dest = `${root}/${entry.filename}`;
 
-							mkdir(root)
-								.catch(() =&gt; true)
-								.then(() =&gt; {
-									if (shortcut || entry.mime === &quot;meeseOS/application&quot;) {
-										return shortcuts.add(entry);
-									}
+						mkdir(root)
+							.catch(() =&gt; true)
+							.then(() =&gt; {
+								if (shortcut || entry.mime === &quot;meeseOS/application&quot;) {
+									return shortcuts.add(entry);
+								}
 
-									return copy(entry, dest)
-										.then(() =&gt; actions.reload(true))
-										.catch(error);
-								})
-								.then(() =&gt; actions.reload(true));
+								return copy(entry, dest)
+									.then(() =&gt; actions.reload(true))
+									.catch(error);
+							})
+							.then(() =&gt; actions.reload(true));
 
-							return { selected: -1 };
-						},
+						return { selected: -1 };
+					},
 
-				removeEntry: (entry) =&gt; (state, actions) =&gt; {
-					if (entry.shortcut !== false) {
-						shortcuts
-							.remove(entry.shortcut)
-							.then(() =&gt; actions.reload(true))
-							.catch(error);
-					} else {
-						unlink(entry)
-							.then(() =&gt; actions.reload(true))
-							.catch(error);
-					}
+				removeEntry: (entry) =&gt;
+					(state, actions) =&gt; {
+						if (entry.shortcut !== false) {
+							shortcuts
+								.remove(entry.shortcut)
+								.then(() =&gt; actions.reload(true))
+								.catch(error);
+						} else {
+							unlink(entry)
+								.then(() =&gt; actions.reload(true))
+								.catch(error);
+						}
 
-					return { selected: -1 };
-				},
+						return { selected: -1 };
+					},
 
-				reload: (fromUI) =&gt; (state, actions) =&gt; {
-					if (fromUI &amp;&amp; this.core.config(&quot;vfs.watch&quot;)) {
-						return;
-					}
+				reload: (fromUI) =&gt;
+					(state, actions) =&gt; {
+						if (fromUI &amp;&amp; this.core.config(&quot;vfs.watch&quot;)) {
+							return;
+						}
 
-					read()
-						.then((entries) =&gt; entries.filter((e) =&gt; e.filename !== &quot;..&quot;))
-						.then((entries) =&gt; actions.setEntries(entries));
-				},
+						read()
+							.then((entries) =&gt; entries.filter((e) =&gt; e.filename !== &quot;..&quot;))
+							.then((entries) =&gt; actions.setEntries(entries));
+					},
 			},
 			view(fileIcon, themeIcon, droppable),
 			this.$root
@@ -563,6 +561,8 @@ export class DesktopIconView extends EventEmitter {
 		this.applySettings();
 		this.iconview.reload();
 		this._createWatcher();
+
+		this.core.on(&quot;meeseOS/settings:save&quot;, () =&gt; this.iconview.reload());
 	}
 
 	createFileContextMenu(ev, entry) {

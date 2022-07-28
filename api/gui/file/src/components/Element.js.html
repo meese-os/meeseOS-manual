@@ -68,7 +68,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -133,8 +133,9 @@ const boxPropNames = {
  * @param {h[]} children Children
  */
 export const Element = (props, children = []) =&gt; {
-	const givenClassNames =
-		props.class instanceof Array ? props.class : [props.class];
+	const givenClassNames = props.class instanceof Array
+		? props.class
+		: [props.class];
 
 	const classNames = [&quot;meeseOS-gui&quot;, ...givenClassNames];
 
@@ -142,8 +143,9 @@ export const Element = (props, children = []) =&gt; {
 		classNames.push(&quot;meeseOS-gui-&quot; + props.orientation);
 	}
 
-	const defaultStyle =
-		typeof props.style === &quot;string&quot; ? {} : ({ ...props.style || {} });
+	const defaultStyle = typeof props.style === &quot;string&quot;
+		? {}
+		: ({ ...props.style || {} });
 
 	const style = Object.keys(props).reduce((result, prop) =&gt; {
 		const value = boxPropNames[prop]

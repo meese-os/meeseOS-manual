@@ -68,7 +68,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -122,11 +122,10 @@ const ul = (props, children = [], level = 0) =&gt; {
 			return child.element();
 		}
 
-		const className =
-			child.type === &quot;separator&quot;
-				? &quot;meeseOS-gui-menu-separator&quot;
-				: &quot;meeseOS-gui-menu-label &quot; +
-				  (child.disabled ? &quot;meeseOS__disabled&quot; : &quot;&quot;);
+		const className = child.type === &quot;separator&quot;
+			? &quot;meeseOS-gui-menu-separator&quot;
+			: &quot;meeseOS-gui-menu-label &quot; +
+				(child.disabled ? &quot;meeseOS__disabled&quot; : &quot;&quot;);
 
 		const children = [h(&quot;span&quot;, { class: className }, label(child))];
 

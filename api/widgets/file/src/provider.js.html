@@ -38,7 +38,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-2020, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,10 +106,9 @@ export default class WidgetServiceProvider {
 			},
 
 			remove: (widget) =&gt; {
-				const index =
-					typeof widget === &quot;number&quot;
-						? widget
-						: this.widgets.findIndex((w) =&gt; w.widget === widget);
+				const index = typeof widget === &quot;number&quot;
+					? widget
+					: this.widgets.findIndex((w) =&gt; w.widget === widget);
 
 				if (index &gt;= 0) {
 					this.widgets[index].widget.destroy();
