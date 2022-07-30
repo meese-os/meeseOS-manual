@@ -115,6 +115,7 @@ const chokidar = require(&quot;chokidar&quot;);
  * @param {Core} core MeeseOS Core instance reference
  * @param {String} realRoot
  * @param {String} file
+ * @returns {Object}
  */
 const createFileIter = (core, realRoot, file) =&gt; {
 	const filename = path.basename(file);
@@ -197,6 +198,7 @@ const resolveSegments = (core, session, str) =&gt;
  * Resolves a given file path based on a request
  * Will take out segments from the resulting string
  * and replace them with a list of defined variables.
+ *
  * @param {Core} core MeeseOS Core instance reference
  * @param {*} session
  * @param {Object} mount
@@ -291,16 +293,15 @@ module.exports = (core) =&gt; {
 		 * @param {Object} [options={}] Options
 		 * @returns {Object}
 		 */
-		stat:
-			(vfs) =&gt;
-				(file, options = {}) =&gt;
-					Promise.resolve(
-						getRealPath(core, options.session, vfs.mount, file)
-					).then((realPath) =&gt; {
-						return fs
-							.access(realPath, fs.F_OK)
-							.then(() =&gt; createFileIter(core, path.dirname(realPath), realPath));
-					}),
+		stat: (vfs) =&gt;
+			(file, options = {}) =&gt;
+				Promise.resolve(
+					getRealPath(core, options.session, vfs.mount, file)
+				).then((realPath) =&gt; {
+					return fs
+						.access(realPath, fs.F_OK)
+						.then(() =&gt; createFileIter(core, path.dirname(realPath), realPath));
+				}),
 
 		/**
 		 * Reads directory
