@@ -80,15 +80,17 @@
 <p>Contains all services and interfaces required to run a node server for MeeseOS.</p>
 <h2 id="vfs-chain">VFS Chain</h2><p><!-- https://mermaid-js.github.io/mermaid/#/flowchart -->
 </p>
-<pre><code class="lang-mermaid"><code class="source-code prettyprint">flowchart LR;
-    subgraph Client;
-        Application--&gt;VFS function call--&gt;VFS Client Adapter--&gt;HTTP Request;
-    end;
-    subgraph Server;
-        HTTP endpoint matching VFS function name--&gt;VFS Server Adapter--&gt;Actual Filesystem;
-    end;
+<pre><code class="lang-mermaid"><code class="source-code prettyprint">flowchart TD
+    subgraph Client
+        direction LR
+        A1[&quot;Application&quot;] --&gt; B1[&quot;VFS function call&quot;] --&gt; C1[&quot;VFS Client Adapter&quot;] --&gt; D1[&quot;HTTP Request&quot;]
+    end
+    subgraph Server
+        direction LR
+        A2[&quot;HTTP endpoint matching VFS function name&quot;] --&gt; B2[&quot;VFS Server Adapter&quot;] --&gt; C2[&quot;Actual Filesystem&quot;]
+    end
 
-    Client --&gt; Server;</code>
+    Client --&gt; Server</code>
 </code></pre>
 <p>The client always represents stuff with virtual paths, wihch the VFS server adapter is able to resolve to access a physical filesystem.</p>
 <p>The APIs are not limited to the MeeseOS server. A VFS client adapter can theoretically connect to anything as long as the file objects have the correct shape.</p>
