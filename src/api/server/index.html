@@ -77,7 +77,21 @@
 <div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="meeseos-server">MeeseOS Server</h1><p><a href="https://codeclimate.com/github/os-js/osjs-server/maintainability"><img src="https://api.codeclimate.com/v1/badges/b2e4c52db03e57b4ad76/maintainability" alt="Maintainability"></a>
 <a href="https://codeclimate.com/github/os-js/osjs-server/test_coverage"><img src="https://api.codeclimate.com/v1/badges/b2e4c52db03e57b4ad76/test_coverage" alt="Test Coverage"></a></p>
 <p>This is the main node server module for MeeseOS.</p>
-<p>Contains all services and interfaces required to run a node server for MeeseOS</p>
+<p>Contains all services and interfaces required to run a node server for MeeseOS.</p>
+<h2 id="vfs-chain">VFS Chain</h2><p><!-- https://mermaid-js.github.io/mermaid/#/flowchart -->
+</p>
+<pre><code class="lang-mermaid"><code class="source-code prettyprint">flowchart LR;
+    subgraph Client;
+        Application--&gt;VFS function call--&gt;VFS Client Adapter--&gt;HTTP Request;
+    end;
+    subgraph Server;
+        HTTP endpoint matching VFS function name--&gt;VFS Server Adapter--&gt;Actual Filesystem;
+    end;
+
+    Client --&gt; Server;</code>
+</code></pre>
+<p>The client always represents stuff with virtual paths, wihch the VFS server adapter is able to resolve to access a physical filesystem.</p>
+<p>The APIs are not limited to the MeeseOS server. A VFS client adapter can theoretically connect to anything as long as the file objects have the correct shape.</p>
 </div>
 </div>
 

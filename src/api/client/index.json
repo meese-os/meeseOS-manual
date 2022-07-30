@@ -6696,7 +6696,7 @@
     "__docId__": 293,
     "kind": "file",
     "name": "src/filesystem.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateWatchEvents,\n\tfilterMountByGroups,\n\tparseMountpointPrefix,\n} from \"./utils/vfs\";\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport * as VFS from \"./vfs\";\nimport appsAdapter from \"./adapters/vfs/apps\";\nimport defaultAdapter from \"./adapters/vfs/null\";\nimport logger from \"./logger\";\nimport merge from \"deepmerge\";\nimport systemAdapter from \"./adapters/vfs/system\";\n\n// TODO: Maybe try to add selection in this file\n// https://github.com/DustinBrett/daedalOS/blob/main/components/system/Files/FileManager/Selection/\n\n/**\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {String} [visibility='global'] Visibility in UI\n * @property {Boolean} [local=true] Local filesystem ?\n * @property {Boolean} [searchable=true] If can be searched\n * @property {Boolean} [readOnly=false] Readonly\n */\n\n/**\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {String} name Name\n * @property {String} label Label\n * @property {String} adapter Adater name\n * @property {String} [root] System adapter root\n * @property {Boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n */\n\n/**\n * Filesystem Adapter Methods\n * TODO: typedef\n * @typedef {Object} FilesystemAdapterMethods\n * @property {Function} readdir\n * @property {Function} readfile\n * @property {Function} writefile\n * @property {Function} copy\n * @property {Function} move\n * @property {Function} rename\n * @property {Function} mkdir\n * @property {Function} unlink\n * @property {Function} exists\n * @property {Function} stat\n * @property {Function} url\n * @property {Function} download\n * @property {Function} search\n * @property {Function} touch\n */\n\n/**\n * @callback FilesystemAdapterWrapper\n * @returns {FilesystemAdapterMethods}\n */\n\n/**\n * Filesystem Options\n *\n * @typedef {Object} FilesystemOptions\n * @property {{name: FilesystemAdapterWrapper}} [adapters] Adapter registry\n * @property {FilesystemMountpoint[]} [mounts] Mountpoints\n */\n\n/**\n * Filesystem Class that manages filesystems and adapters\n */\nexport default class Filesystem extends EventEmitter {\n\t/**\n\t * Create filesystem manager\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {FilesystemOptions} [options] Options\n\t */\n\tconstructor(core, options = {}) {\n\t\toptions = {\n\t\t\tadapters: {},\n\t\t\tmounts: [],\n\t\t\t...options,\n\t\t};\n\n\t\tsuper(\"Filesystem\");\n\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Adapter registry\n\t\t * @type {{name: FilesystemAdapterWrapper}}\n\t\t * @readonly\n\t\t */\n\t\tthis.adapters = {\n\t\t\tsystem: systemAdapter,\n\t\t\tapps: appsAdapter,\n\t\t\t...this.core.config(\"vfs.adapters\", {}),\n\t\t\t...options.adapters,\n\t\t};\n\n\t\t/**\n\t\t * Mountpoints\n\t\t * @type {FilesystemMountpoint[]}\n\t\t */\n\t\tthis.mounts = [];\n\n\t\t/**\n\t\t * Options\n\t\t * @type {FilesystemOptions}\n\t\t */\n\t\tthis.options = {};\n\n\t\t/**\n\t\t * A wrapper for VFS method requests\n\t\t * @type {{key: Function}}\n\t\t * @readonly\n\t\t */\n\t\tthis.proxy = Object.keys(VFS).reduce((result, method) => {\n\t\t\treturn {\n\t\t\t\t[method]: (...args) => this._request(method, ...args),\n\t\t\t\t...result,\n\t\t\t};\n\t\t}, {});\n\t}\n\n\t/**\n\t * Mounts all configured mountpoints\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t */\n\tmountAll(stopOnError = true) {\n\t\tthis.mounts = this._getConfiguredMountpoints();\n\n\t\tconst fn = (m) =>\n\t\t\tstopOnError\n\t\t\t\t? this._mountpointAction(m)\n\t\t\t\t: this._mountpointAction(m).catch((err) =>\n\t\t\t\t\tlogger.warn(\"Error while mounting\", m, err)\n\t\t\t\t);\n\n\t\treturn Promise.all(this.mounts.map(fn));\n\t}\n\n\t/**\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t */\n\taddMountpoint(props, automount = true) {\n\t\tconst mount = this.createMountpoint(props);\n\t\tthis.mounts.push(mount);\n\n\t\tif (automount) {\n\t\t\treturn this.mount(mount.name);\n\t\t}\n\n\t\treturn Promise.resolve(true);\n\t}\n\n\t/**\n\t * Mount given mountpoint\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t */\n\tmount(mountpoint) {\n\t\tif (typeof mountpoint === \"string\") {\n\t\t\treturn this._mountAction(mountpoint, false);\n\t\t}\n\n\t\treturn this.addMountpoint(mountpoint);\n\t}\n\n\t/**\n\t * Unmount given filesystem\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t */\n\tunmount(name) {\n\t\treturn this._mountAction(name, true);\n\t}\n\n\t/**\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t */\n\t_mountpointAction(mountpoint, unmount = false) {\n\t\tconst eventName = unmount ? \"unmounted\" : \"mounted\";\n\t\tconst coreEventName = unmount ? \"unmount\" : \"mount\";\n\n\t\treturn mountpoint._adapter[coreEventName]({}, mountpoint).then((result) => {\n\t\t\tif (result) {\n\t\t\t\tmountpoint.mounted = !unmount;\n\n\t\t\t\tthis.emit(eventName, mountpoint);\n\t\t\t\tthis.core.emit(\"meeseOS/fs:\" + coreEventName);\n\t\t\t}\n\n\t\t\treturn result;\n\t\t});\n\t}\n\n\t/**\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t */\n\t_mountAction(name, unmount) {\n\t\treturn Promise.resolve(this.mounts.find((m) => m.name === name)).then(\n\t\t\t(found) => {\n\t\t\t\t// FIXME: Add already mounting state\n\t\t\t\tif (!found) {\n\t\t\t\t\tthrow new Error(`Filesystem '${name}' not found`);\n\t\t\t\t} else if (unmount && !found.mounted) {\n\t\t\t\t\tthrow new Error(`Filesystem '${name}' not mounted`);\n\t\t\t\t} else if (!unmount && found.mounted) {\n\t\t\t\t\tthrow new Error(`Filesystem '${name}' already mounted`);\n\t\t\t\t}\n\n\t\t\t\treturn this._mountpointAction(found, unmount);\n\t\t\t}\n\t\t);\n\t}\n\n\t/**\n\t * Gets the proxy for VFS methods\n\t * FIXME: Not correct type, but works for documentation atm\n\t * @returns {FilesystemAdapterMethods} A map of VFS functions\n\t */\n\trequest() {\n\t\treturn this.proxy;\n\t}\n\n\t/**\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {String} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t */\n\t_request(method, ...args) {\n\t\tconst ev = `meeseOS/vfs:${method}`;\n\n\t\tconst done = (error) => {\n\t\t\tthis.core.emit(`${ev}:done`, ...args);\n\n\t\t\tif (!error && this.core.config(\"vfs.watch\")) {\n\t\t\t\tconst eva = createWatchEvents(method, args);\n\t\t\t\teva.forEach(([e, a]) => this.core.emit(e, a));\n\t\t\t}\n\t\t};\n\n\t\tthis.core.emit(ev, ...args);\n\n\t\treturn this._requestAction(method, ...args)\n\t\t\t.then((result) => {\n\t\t\t\tdone();\n\t\t\t\treturn result;\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tdone(error);\n\t\t\t\tthrow error;\n\t\t\t});\n\t}\n\n\t/**\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {String} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t */\n\t_requestAction(method, ...args) {\n\t\tif ([\"rename\", \"move\", \"copy\"].indexOf(method) !== -1) {\n\t\t\tconst [src, dest] = args;\n\t\t\tconst srcMount = this.getMountpointFromPath(src);\n\t\t\tconst destMount = this.getMountpointFromPath(dest);\n\t\t\tconst sameAdapter = srcMount.adapter === destMount.adapter;\n\n\t\t\tif (!sameAdapter) {\n\t\t\t\treturn VFS.readfile(\n\t\t\t\t\tsrcMount._adapter,\n\t\t\t\t\tsrcMount\n\t\t\t\t)(src)\n\t\t\t\t\t.then((ab) => VFS.writefile(destMount._adapter, destMount)(dest, ab))\n\t\t\t\t\t.then((result) => {\n\t\t\t\t\t\treturn method === \"rename\"\n\t\t\t\t\t\t\t? VFS.unlink(srcMount._adapter, srcMount)(src).then(() => result)\n\t\t\t\t\t\t\t: result;\n\t\t\t\t\t});\n\t\t\t}\n\t\t}\n\n\t\tconst [file] = args;\n\t\tconst mount = this.getMountpointFromPath(file);\n\t\tif (!mount) return Promise.reject(new Error(\"No file was specified\"));\n\n\t\treturn VFS[method](mount._adapter, mount)(...args);\n\t}\n\n\t/**\n\t * Creates a new mountpoint based on given properties\n\t * @param {FilesystemMountpoint} props Properties\n\t * @returns {FilesystemMountpoint}\n\t */\n\tcreateMountpoint(props) {\n\t\tconst name = props.adapter || this.core.config(\"vfs.defaultAdapter\");\n\t\tconst adapter = { ...defaultAdapter, ...this.adapters[name](this.core) };\n\n\t\tconst result = merge(\n\t\t\t{\n\t\t\t\tenabled: true,\n\t\t\t\tmounted: false,\n\t\t\t\tadapter: name,\n\t\t\t\tattributes: {\n\t\t\t\t\tvisibility: \"global\",\n\t\t\t\t\tlocal: true,\n\t\t\t\t\tsearchable: true,\n\t\t\t\t\treadOnly: false,\n\t\t\t\t},\n\t\t\t},\n\t\t\tprops\n\t\t);\n\n\t\treturn {\n\t\t\t_adapter: adapter,\n\t\t\tlabel: name,\n\t\t\troot: `${result.name || name}:/`,\n\t\t\t...result,\n\t\t};\n\t}\n\n\t/**\n\t * Gets mountpoint from given path\n\t * @param {String|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t */\n\tgetMountpointFromPath(file) {\n\t\tif (!file) return null;\n\n\t\tconst path = typeof file === \"string\" ? file : file.path;\n\t\tconst prefix = parseMountpointPrefix(path);\n\n\t\tif (!prefix) {\n\t\t\tthrow new Error(`Given path '${path}' does not match 'name:/path'`);\n\t\t}\n\n\t\tconst found = this.mounts.find((m) => m.name === prefix);\n\n\t\tif (!found) {\n\t\t\tthrow new Error(`Filesystem not found for '${prefix}':`);\n\t\t}\n\n\t\treturn found;\n\t}\n\n\t/**\n\t * Gets all mountpoints\n\t * @returns {FilesystemMountpoint[]}\n\t */\n\tgetMounts(all = false) {\n\t\tconst user = this.core.getUser();\n\t\tconst theme = this.core.make(\"meeseOS/theme\");\n\t\tconst icon = (str) =>\n\t\t\tstr\n\t\t\t\t? typeof str === \"string\"\n\t\t\t\t\t? str\n\t\t\t\t\t: theme.icon(str.name)\n\t\t\t\t: theme.icon(\"drive-harddisk\");\n\n\t\treturn this.mounts\n\t\t\t.filter((m) => all || m.mounted)\n\t\t\t.filter((m) => m.enabled !== false)\n\t\t\t.filter((m) => {\n\t\t\t\tconst mg = m.attributes ? m.attributes.groups : [];\n\t\t\t\tconst ms = m.attributes ? m.attributes.strictGroups !== false : true;\n\t\t\t\treturn filterMountByGroups(user.groups)(mg, ms);\n\t\t\t})\n\t\t\t.map((m) => ({\n\t\t\t\tattributes: { ...m.attributes },\n\t\t\t\ticon: icon(m.icon),\n\t\t\t\tname: m.name,\n\t\t\t\tlabel: m.label,\n\t\t\t\troot: m.root,\n\t\t\t}));\n\t}\n\n\t/**\n\t * Gets configured mountpoints\n\t * @returns {FilesystemMountpoint[]}\n\t */\n\t_getConfiguredMountpoints() {\n\t\tconst list = [\n\t\t\t...this.core.config(\"vfs.mountpoints\", []),\n\t\t\t...(this.options.mounts || []),\n\t\t];\n\n\t\treturn list\n\t\t\t.map((mount) => {\n\t\t\t\ttry {\n\t\t\t\t\treturn this.createMountpoint(mount);\n\t\t\t\t} catch (e) {\n\t\t\t\t\tlogger.warn(\"Error while creating mountpoint\", e);\n\t\t\t\t}\n\n\t\t\t\treturn null;\n\t\t\t})\n\t\t\t.filter((mount, pos, arr) => {\n\t\t\t\tconst index = arr.findIndex(\n\t\t\t\t\t(item) => item.label === mount.label || item.root === mount.label\n\t\t\t\t);\n\t\t\t\tif (index === pos) {\n\t\t\t\t\treturn true;\n\t\t\t\t}\n\n\t\t\t\tlogger.warn(\"Removed duplicate mountpoint\", mount);\n\t\t\t\treturn false;\n\t\t\t})\n\t\t\t.filter((mount) => mount !== null);\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateWatchEvents,\n\tfilterMountByGroups,\n\tparseMountpointPrefix,\n} from \"./utils/vfs\";\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport * as VFS from \"./vfs\";\nimport appsAdapter from \"./adapters/vfs/apps\";\nimport defaultAdapter from \"./adapters/vfs/null\";\nimport logger from \"./logger\";\nimport merge from \"deepmerge\";\nimport systemAdapter from \"./adapters/vfs/system\";\n\n// TODO: Maybe try to add selection in this file\n// https://github.com/DustinBrett/daedalOS/blob/main/components/system/Files/FileManager/Selection/\n\n/**\n * VFS Mountpoint attributes\n *\n * @typedef {Object} FilesystemMountpointAttributes\n * @property {String} [visibility='global'] Visibility in UI\n * @property {Boolean} [local=true] Local filesystem ?\n * @property {Boolean} [searchable=true] If can be searched\n * @property {Boolean} [readOnly=false] Readonly\n */\n\n/**\n * VFS Mountpoint\n *\n * @typedef {Object} FilesystemMountpoint\n * @property {String} name Name\n * @property {String} label Label\n * @property {String} adapter Adater name\n * @property {String} [root] System adapter root\n * @property {Boolean} [enabled=true] Enabled state\n * @property {FilesystemMountpointAttributes} [attributes] Attributes\n */\n\n/**\n * Filesystem Adapter Methods\n * @todo: typedef\n * @typedef {Object} FilesystemAdapterMethods\n * @property {Function} readdir\n * @property {Function} readfile\n * @property {Function} writefile\n * @property {Function} copy\n * @property {Function} move\n * @property {Function} rename\n * @property {Function} mkdir\n * @property {Function} unlink\n * @property {Function} exists\n * @property {Function} stat\n * @property {Function} url\n * @property {Function} download\n * @property {Function} search\n * @property {Function} touch\n */\n\n/**\n * @callback FilesystemAdapterWrapper\n * @returns {FilesystemAdapterMethods}\n */\n\n/**\n * Filesystem Options\n *\n * @typedef {Object} FilesystemOptions\n * @property {{name: FilesystemAdapterWrapper}} [adapters] Adapter registry\n * @property {FilesystemMountpoint[]} [mounts] Mountpoints\n */\n\n/**\n * Filesystem Class that manages filesystems and adapters\n */\nexport default class Filesystem extends EventEmitter {\n\t/**\n\t * Create filesystem manager\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {FilesystemOptions} [options] Options\n\t */\n\tconstructor(core, options = {}) {\n\t\toptions = {\n\t\t\tadapters: {},\n\t\t\tmounts: [],\n\t\t\t...options,\n\t\t};\n\n\t\tsuper(\"Filesystem\");\n\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Adapter registry\n\t\t * @type {{name: FilesystemAdapterWrapper}}\n\t\t * @readonly\n\t\t */\n\t\tthis.adapters = {\n\t\t\tsystem: systemAdapter,\n\t\t\tapps: appsAdapter,\n\t\t\t...this.core.config(\"vfs.adapters\", {}),\n\t\t\t...options.adapters,\n\t\t};\n\n\t\t/**\n\t\t * Mountpoints\n\t\t * @type {FilesystemMountpoint[]}\n\t\t */\n\t\tthis.mounts = [];\n\n\t\t/**\n\t\t * Options\n\t\t * @type {FilesystemOptions}\n\t\t */\n\t\tthis.options = {};\n\n\t\t/**\n\t\t * A wrapper for VFS method requests\n\t\t * @type {{key: Function}}\n\t\t * @readonly\n\t\t */\n\t\tthis.proxy = Object.keys(VFS).reduce((result, method) => {\n\t\t\treturn {\n\t\t\t\t[method]: (...args) => this._request(method, ...args),\n\t\t\t\t...result,\n\t\t\t};\n\t\t}, {});\n\t}\n\n\t/**\n\t * Mounts all configured mountpoints\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t */\n\tmountAll(stopOnError = true) {\n\t\tthis.mounts = this._getConfiguredMountpoints();\n\n\t\tconst fn = (m) =>\n\t\t\tstopOnError\n\t\t\t\t? this._mountpointAction(m)\n\t\t\t\t: this._mountpointAction(m).catch((err) =>\n\t\t\t\t\tlogger.warn(\"Error while mounting\", m, err)\n\t\t\t\t);\n\n\t\treturn Promise.all(this.mounts.map(fn));\n\t}\n\n\t/**\n\t * Adds a new mountpoint\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t */\n\taddMountpoint(props, automount = true) {\n\t\tconst mount = this.createMountpoint(props);\n\t\tthis.mounts.push(mount);\n\n\t\tif (automount) {\n\t\t\treturn this.mount(mount.name);\n\t\t}\n\n\t\treturn Promise.resolve(true);\n\t}\n\n\t/**\n\t * Mount given mountpoint\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t */\n\tmount(mountpoint) {\n\t\tif (typeof mountpoint === \"string\") {\n\t\t\treturn this._mountAction(mountpoint, false);\n\t\t}\n\n\t\treturn this.addMountpoint(mountpoint);\n\t}\n\n\t/**\n\t * Unmount given filesystem\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t */\n\tunmount(name) {\n\t\treturn this._mountAction(name, true);\n\t}\n\n\t/**\n\t * Internal wrapper for mounting/unmounting\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t */\n\t_mountpointAction(mountpoint, unmount = false) {\n\t\tconst eventName = unmount ? \"unmounted\" : \"mounted\";\n\t\tconst coreEventName = unmount ? \"unmount\" : \"mount\";\n\n\t\treturn mountpoint._adapter[coreEventName]({}, mountpoint).then((result) => {\n\t\t\tif (result) {\n\t\t\t\tmountpoint.mounted = !unmount;\n\n\t\t\t\tthis.emit(eventName, mountpoint);\n\t\t\t\tthis.core.emit(\"meeseOS/fs:\" + coreEventName);\n\t\t\t}\n\n\t\t\treturn result;\n\t\t});\n\t}\n\n\t/**\n\t * Internal wrapper for mounting/unmounting by name\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t */\n\t_mountAction(name, unmount) {\n\t\treturn Promise.resolve(this.mounts.find((m) => m.name === name)).then(\n\t\t\t(found) => {\n\t\t\t\t// FIXME: Add already mounting state\n\t\t\t\tif (!found) {\n\t\t\t\t\tthrow new Error(`Filesystem '${name}' not found`);\n\t\t\t\t} else if (unmount && !found.mounted) {\n\t\t\t\t\tthrow new Error(`Filesystem '${name}' not mounted`);\n\t\t\t\t} else if (!unmount && found.mounted) {\n\t\t\t\t\tthrow new Error(`Filesystem '${name}' already mounted`);\n\t\t\t\t}\n\n\t\t\t\treturn this._mountpointAction(found, unmount);\n\t\t\t}\n\t\t);\n\t}\n\n\t/**\n\t * Gets the proxy for VFS methods\n\t * FIXME: Not correct type, but works for documentation atm\n\t * @returns {FilesystemAdapterMethods} A map of VFS functions\n\t */\n\trequest() {\n\t\treturn this.proxy;\n\t}\n\n\t/**\n\t * Perform a VFS method request\n\t *\n\t * @private\n\t * @param {String} method VFS method name\n\t * @param {*} ...args Arguments\n\t * @returns {*}\n\t */\n\t_request(method, ...args) {\n\t\tconst ev = `meeseOS/vfs:${method}`;\n\n\t\tconst done = (error) => {\n\t\t\tthis.core.emit(`${ev}:done`, ...args);\n\n\t\t\tif (!error && this.core.config(\"vfs.watch\")) {\n\t\t\t\tconst eva = createWatchEvents(method, args);\n\t\t\t\teva.forEach(([e, a]) => this.core.emit(e, a));\n\t\t\t}\n\t\t};\n\n\t\tthis.core.emit(ev, ...args);\n\n\t\treturn this._requestAction(method, ...args)\n\t\t\t.then((result) => {\n\t\t\t\tdone();\n\t\t\t\treturn result;\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tdone(error);\n\t\t\t\tthrow error;\n\t\t\t});\n\t}\n\n\t/**\n\t * Request action wrapper\n\t *\n\t * @private\n\t * @param {String} method\n\t * @param {*} ...args Arguments\n\t * @returns {Promise<*>}\n\t */\n\t_requestAction(method, ...args) {\n\t\tif ([\"rename\", \"move\", \"copy\"].indexOf(method) !== -1) {\n\t\t\tconst [src, dest] = args;\n\t\t\tconst srcMount = this.getMountpointFromPath(src);\n\t\t\tconst destMount = this.getMountpointFromPath(dest);\n\t\t\tconst sameAdapter = srcMount.adapter === destMount.adapter;\n\n\t\t\tif (!sameAdapter) {\n\t\t\t\treturn VFS.readfile(\n\t\t\t\t\tsrcMount._adapter,\n\t\t\t\t\tsrcMount\n\t\t\t\t)(src)\n\t\t\t\t\t.then((ab) => VFS.writefile(destMount._adapter, destMount)(dest, ab))\n\t\t\t\t\t.then((result) => {\n\t\t\t\t\t\treturn method === \"rename\"\n\t\t\t\t\t\t\t? VFS.unlink(srcMount._adapter, srcMount)(src).then(() => result)\n\t\t\t\t\t\t\t: result;\n\t\t\t\t\t});\n\t\t\t}\n\t\t}\n\n\t\tconst [file] = args;\n\t\tconst mount = this.getMountpointFromPath(file);\n\t\tif (!mount) return Promise.reject(new Error(\"No file was specified\"));\n\n\t\treturn VFS[method](mount._adapter, mount)(...args);\n\t}\n\n\t/**\n\t * Creates a new mountpoint based on given properties\n\t * @param {FilesystemMountpoint} props Properties\n\t * @returns {FilesystemMountpoint}\n\t */\n\tcreateMountpoint(props) {\n\t\tconst name = props.adapter || this.core.config(\"vfs.defaultAdapter\");\n\t\tconst adapter = { ...defaultAdapter, ...this.adapters[name](this.core) };\n\n\t\tconst result = merge(\n\t\t\t{\n\t\t\t\tenabled: true,\n\t\t\t\tmounted: false,\n\t\t\t\tadapter: name,\n\t\t\t\tattributes: {\n\t\t\t\t\tvisibility: \"global\",\n\t\t\t\t\tlocal: true,\n\t\t\t\t\tsearchable: true,\n\t\t\t\t\treadOnly: false,\n\t\t\t\t},\n\t\t\t},\n\t\t\tprops\n\t\t);\n\n\t\treturn {\n\t\t\t_adapter: adapter,\n\t\t\tlabel: name,\n\t\t\troot: `${result.name || name}:/`,\n\t\t\t...result,\n\t\t};\n\t}\n\n\t/**\n\t * Gets mountpoint from given path\n\t * @param {String|VFSFile} file The file\n\t * @returns {FilesystemMountpoint|null}\n\t */\n\tgetMountpointFromPath(file) {\n\t\tif (!file) return null;\n\n\t\tconst path = typeof file === \"string\" ? file : file.path;\n\t\tconst prefix = parseMountpointPrefix(path);\n\n\t\tif (!prefix) {\n\t\t\tthrow new Error(`Given path '${path}' does not match 'name:/path'`);\n\t\t}\n\n\t\tconst found = this.mounts.find((m) => m.name === prefix);\n\n\t\tif (!found) {\n\t\t\tthrow new Error(`Filesystem not found for '${prefix}':`);\n\t\t}\n\n\t\treturn found;\n\t}\n\n\t/**\n\t * Gets all mountpoints\n\t * @param {Boolean} [all=false] If true, also returns unmounted mountpoints\n\t * @returns {FilesystemMountpoint[]}\n\t */\n\tgetMounts(all = false) {\n\t\tconst user = this.core.getUser();\n\t\tconst theme = this.core.make(\"meeseOS/theme\");\n\t\tconst icon = (str) =>\n\t\t\tstr\n\t\t\t\t? typeof str === \"string\"\n\t\t\t\t\t? str\n\t\t\t\t\t: theme.icon(str.name)\n\t\t\t\t: theme.icon(\"drive-harddisk\");\n\n\t\treturn this.mounts\n\t\t\t.filter((mount) => all || mount.mounted)\n\t\t\t.filter((mount) => mount.enabled !== false)\n\t\t\t.filter((mount) => {\n\t\t\t\tconst mg = mount.attributes ? mount.attributes.groups : [];\n\t\t\t\tconst ms = mount.attributes ? mount.attributes.strictGroups !== false : true;\n\t\t\t\treturn filterMountByGroups(user.groups)(mg, ms);\n\t\t\t})\n\t\t\t.map((mount) => ({\n\t\t\t\tattributes: { ...mount.attributes },\n\t\t\t\ticon: icon(mount.icon),\n\t\t\t\tname: mount.name,\n\t\t\t\tlabel: mount.label,\n\t\t\t\troot: mount.root,\n\t\t\t}));\n\t}\n\n\t/**\n\t * Gets configured mountpoints\n\t * @returns {FilesystemMountpoint[]}\n\t */\n\t_getConfiguredMountpoints() {\n\t\tconst list = [\n\t\t\t...this.core.config(\"vfs.mountpoints\", []),\n\t\t\t...(this.options.mounts || []),\n\t\t];\n\n\t\treturn list\n\t\t\t.map((mount) => {\n\t\t\t\ttry {\n\t\t\t\t\treturn this.createMountpoint(mount);\n\t\t\t\t} catch (e) {\n\t\t\t\t\tlogger.warn(\"Error while creating mountpoint\", e);\n\t\t\t\t}\n\n\t\t\t\treturn null;\n\t\t\t})\n\t\t\t.filter((mount, pos, arr) => {\n\t\t\t\tconst index = arr.findIndex(\n\t\t\t\t\t(item) => item.label === mount.label || item.root === mount.label\n\t\t\t\t);\n\t\t\t\tif (index === pos) {\n\t\t\t\t\treturn true;\n\t\t\t\t}\n\n\t\t\t\tlogger.warn(\"Removed duplicate mountpoint\", mount);\n\t\t\t\treturn false;\n\t\t\t})\n\t\t\t.filter((mount) => mount !== null);\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/filesystem.js",
     "access": "public",
@@ -6859,7 +6859,7 @@
     "static": true,
     "longname": "src/filesystem.js~FilesystemAdapterMethods",
     "access": "public",
-    "description": "Filesystem Adapter Methods\nTODO: typedef",
+    "description": "Filesystem Adapter Methods\n@todo: typedef",
     "properties": [
       {
         "nullable": null,
@@ -7721,11 +7721,25 @@
     "longname": "src/filesystem.js~Filesystem#getMounts",
     "access": "public",
     "description": "Gets all mountpoints",
-    "lineNumber": 411,
+    "lineNumber": 412,
     "unknown": [
       {
         "tagName": "@returns",
         "tagValue": "{FilesystemMountpoint[]}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "false",
+        "defaultRaw": false,
+        "name": "all",
+        "description": "If true, also returns unmounted mountpoints"
       }
     ],
     "return": {
@@ -7735,18 +7749,7 @@
       ],
       "spread": false,
       "description": ""
-    },
-    "params": [
-      {
-        "name": "all",
-        "optional": true,
-        "types": [
-          "boolean"
-        ],
-        "defaultRaw": false,
-        "defaultValue": "false"
-      }
-    ]
+    }
   },
   {
     "__docId__": 318,
@@ -7759,7 +7762,7 @@
     "longname": "src/filesystem.js~Filesystem#_getConfiguredMountpoints",
     "access": "private",
     "description": "Gets configured mountpoints",
-    "lineNumber": 442,
+    "lineNumber": 443,
     "unknown": [
       {
         "tagName": "@returns",
@@ -18682,7 +18685,7 @@
     "__docId__": 695,
     "kind": "file",
     "name": "src/vfs.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateFileIter,\n\ttransformArrayBuffer,\n\ttransformReaddir,\n} from \"./utils/vfs\";\n\n/**\n * VFS Method Options\n *\n * TODO: typedef\n * @typedef {Object} VFSMethodOptions\n */\n\n/**\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {Boolean} [readfile] Set to false to force backend fetch\n */\n\n/**\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {String} path\n * @property {String} [filename]\n * @property {Boolean} [isDirectory]\n * @property {Boolean} [isFile]\n * @property {String} [mime]\n * @property {Object} [stat]\n */\n\n// Makes sure our input paths are object(s)\nconst pathToObject = (path) => ({\n\tid: null,\n\t...(typeof path === \"string\" ? { path } : path),\n});\n\n// Handles directory listing result(s)\nconst handleDirectoryList = (path, options) => (result) =>\n\tPromise.resolve(result.map((stat) => createFileIter(stat))).then((result) =>\n\t\ttransformReaddir(pathToObject(path), result, {\n\t\t\tshowHiddenFiles: options.showHiddenFiles !== false,\n\t\t\tfilter: options.filter,\n\t\t})\n\t);\n\n/**\n * Read a directory\n * @param {String|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n */\nexport const readdir = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter\n\t\t\t.readdir(pathToObject(path), options, mount)\n\t\t\t.then(handleDirectoryList(path, options));\n\n/**\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n */\nexport const readfile = (adapter, mount) =>\n\t(path, type = \"string\", options = {}) =>\n\t\tadapter\n\t\t\t.readfile(pathToObject(path), type, options, mount)\n\t\t\t.then((response) =>\n\t\t\t\ttransformArrayBuffer(response.body, response.mime, type)\n\t\t\t);\n\n/**\n * Writes a file\n *\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n */\nexport const writefile = (adapter, mount) =>\n\t(path, data, options = {}) => {\n\t\tconst binary = data instanceof ArrayBuffer || data instanceof Blob\n\t\t\t? data\n\t\t\t: new Blob([data], { type: \"application/octet-stream\" });\n\n\t\treturn adapter.writefile(pathToObject(path), binary, options, mount);\n\t};\n\n/**\n * Copies a file or directory (move)\n *\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const copy = (adapter, mount) =>\n\t(from, to, options = {}) =>\n\t\tadapter.copy(pathToObject(from), pathToObject(to), options, mount);\n\n/**\n * Renames a file or directory (move)\n *\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const rename = (adapter, mount) =>\n\t(from, to, options = {}) =>\n\t\tadapter.rename(pathToObject(from), pathToObject(to), options, mount);\n\n/**\n * Alias of 'readme'\n *\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const move = rename;\n\n/**\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const mkdir = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.mkdir(pathToObject(path), options, mount);\n\n/**\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const unlink = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.unlink(pathToObject(path), options, mount);\n\n/**\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const exists = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.exists(pathToObject(path), options, mount);\n\n/**\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n */\nexport const stat = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter\n\t\t\t.stat(pathToObject(path), options, mount)\n\t\t\t.then((stat) => createFileIter(stat));\n\n/**\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n */\nexport const url = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.url(pathToObject(path), options, mount);\n\n/**\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n */\nexport const download = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\ttypeof adapter.download === \"function\" && options.readfile !== true\n\t\t\t? adapter.download(pathToObject(path), options, mount)\n\t\t\t: readfile(adapter)(path, \"blob\").then((body) => {\n\t\t\t\tconst filename = pathToObject(path).path.split(\"/\").splice(-1)[0];\n\t\t\t\tconst url = window.URL.createObjectURL(body);\n\n\t\t\t\tconst a = document.createElement(\"a\");\n\t\t\t\ta.style.display = \"none\";\n\t\t\t\ta.href = url;\n\t\t\t\ta.download = filename;\n\t\t\t\tdocument.body.appendChild(a);\n\n\t\t\t\ta.click();\n\n\t\t\t\tsetTimeout(() => {\n\t\t\t\t\twindow.URL.revokeObjectURL(url);\n\t\t\t\t\ta.remove();\n\t\t\t\t}, 1);\n\t\t\t});\n\n/**\n * Searches for files and folders\n *\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n */\nexport const search = (adapter, mount) =>\n\t(root, pattern, options = {}) => {\n\t\tif (mount.attributes && mount.attributes.searchable === false) {\n\t\t\treturn Promise.resolve([]);\n\t\t}\n\n\t\treturn adapter\n\t\t\t.search(pathToObject(root), pattern, options, mount)\n\t\t\t.then(handleDirectoryList(root, options));\n\t};\n\n/**\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n */\nexport const touch = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.touch(pathToObject(path), options, mount);\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateFileIter,\n\ttransformArrayBuffer,\n\ttransformReaddir,\n} from \"./utils/vfs\";\n\n/**\n * VFS Method Options\n *\n * TODO: typedef\n * @typedef {Object} VFSMethodOptions\n */\n\n/**\n * VFS Download Options\n *\n * @typedef {Object} VFSDownloadOptions\n * @property {Boolean} [readfile] Set to false to force backend fetch\n */\n\n/**\n * VFS File Object\n *\n * @typedef {Object} VFSFile\n * @property {String} path\n * @property {String} [filename]\n * @property {Boolean} [isDirectory]\n * @property {Boolean} [isFile]\n * @property {String} [mime]\n * @property {Object} [stat]\n */\n\n/**\n * Makes sure our input paths are object(s)\n * @param {String|Object} path\n * @returns {Object}\n */\nconst pathToObject = (path) => ({\n\tid: null,\n\t...(typeof path === \"string\" ? { path } : path),\n});\n\n/**\n * Handles directory listing result(s)\n * @param {String|Object} path\n * @param {Object} options\n * @returns {Promise<any[]>}\n */\nconst handleDirectoryList = (path, options) =>\n\t(result) =>\n\t\tPromise.resolve(result.map((stat) => createFileIter(stat))).then((result) =>\n\t\t\ttransformReaddir(pathToObject(path), result, {\n\t\t\t\tshowHiddenFiles: options.showHiddenFiles !== false,\n\t\t\t\tfilter: options.filter,\n\t\t\t})\n\t\t);\n\n/**\n * Read a directory\n * @param {String|VFSFile} path The path to read\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n */\nexport const readdir = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter\n\t\t\t.readdir(pathToObject(path), options, mount)\n\t\t\t.then(handleDirectoryList(path, options));\n\n/**\n * Reads a file\n *\n * Available types are 'arraybuffer', 'blob', 'uri' and 'string'\n *\n * @param {String|VFSFile} path The path to read\n * @param {String} [type=string] Return this content type\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<ArrayBuffer>}\n */\nexport const readfile = (adapter, mount) =>\n\t(path, type = \"string\", options = {}) =>\n\t\tadapter\n\t\t\t.readfile(pathToObject(path), type, options, mount)\n\t\t\t.then((response) =>\n\t\t\t\ttransformArrayBuffer(response.body, response.mime, type)\n\t\t\t);\n\n/**\n * Writes a file\n *\n * @param {String|VFSFile} path The path to write\n * @param {ArrayBuffer|Blob|string} data The data\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<number>} File size\n */\nexport const writefile = (adapter, mount) =>\n\t(path, data, options = {}) => {\n\t\tconst binary = data instanceof ArrayBuffer || data instanceof Blob\n\t\t\t? data\n\t\t\t: new Blob([data], { type: \"application/octet-stream\" });\n\n\t\treturn adapter.writefile(pathToObject(path), binary, options, mount);\n\t};\n\n/**\n * Copies a file or directory (move)\n *\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const copy = (adapter, mount) =>\n\t(from, to, options = {}) =>\n\t\tadapter.copy(pathToObject(from), pathToObject(to), options, mount);\n\n/**\n * Renames a file or directory (move)\n *\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const rename = (adapter, mount) =>\n\t(from, to, options = {}) =>\n\t\tadapter.rename(pathToObject(from), pathToObject(to), options, mount);\n\n/**\n * Alias of 'readme'\n *\n * @param {String|VFSFile} from The source (from)\n * @param {String|VFSFile} to The destination (to)\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const move = rename;\n\n/**\n * Creates a directory\n * @param {String|VFSFile} path The path to new directory\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const mkdir = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.mkdir(pathToObject(path), options, mount);\n\n/**\n * Removes a file or directory\n * @param {String|VFSFile} path The path to remove\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const unlink = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.unlink(pathToObject(path), options, mount);\n\n/**\n * Checks if path exists\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<boolean>}\n */\nexport const exists = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.exists(pathToObject(path), options, mount);\n\n/**\n * Gets the stats of the file or directory\n * @param {String|VFSFile} path The path to check\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object>}\n */\nexport const stat = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter\n\t\t\t.stat(pathToObject(path), options, mount)\n\t\t\t.then((stat) => createFileIter(stat));\n\n/**\n * Gets an URL to a resource defined by file\n * @param {String|VFSFile} path The file\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<string>}\n */\nexport const url = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.url(pathToObject(path), options, mount);\n\n/**\n * Initiates a native browser download of the file\n * @param {String|VFSFile} path The file\n * @param {VFSDownloadOptions} [options] Options\n * @returns {Promise<any>}\n */\nexport const download = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\ttypeof adapter.download === \"function\" && options.readfile !== true\n\t\t\t? adapter.download(pathToObject(path), options, mount)\n\t\t\t: readfile(adapter)(path, \"blob\").then((body) => {\n\t\t\t\tconst filename = pathToObject(path).path.split(\"/\").splice(-1)[0];\n\t\t\t\tconst url = window.URL.createObjectURL(body);\n\n\t\t\t\tconst a = document.createElement(\"a\");\n\t\t\t\ta.style.display = \"none\";\n\t\t\t\ta.href = url;\n\t\t\t\ta.download = filename;\n\t\t\t\tdocument.body.appendChild(a);\n\n\t\t\t\ta.click();\n\n\t\t\t\tsetTimeout(() => {\n\t\t\t\t\twindow.URL.revokeObjectURL(url);\n\t\t\t\t\ta.remove();\n\t\t\t\t}, 1);\n\t\t\t});\n\n/**\n * Searches for files and folders\n *\n * @param {String|VFSFile} root The root\n * @param {String} pattern Search pattern\n * @param {VFSMethodOptions} [options] Options\n * @returns {Promise<object[]>} A list of files\n */\nexport const search = (adapter, mount) =>\n\t(root, pattern, options = {}) => {\n\t\tif (mount.attributes && mount.attributes.searchable === false) {\n\t\t\treturn Promise.resolve([]);\n\t\t}\n\n\t\treturn adapter\n\t\t\t.search(pathToObject(root), pattern, options, mount)\n\t\t\t.then(handleDirectoryList(root, options));\n\t};\n\n/**\n * Touches a file\n * @param {String|VFSFile} path File path\n * @returns {Promise<boolean>}\n */\nexport const touch = (adapter, mount) =>\n\t(path, options = {}) =>\n\t\tadapter.touch(pathToObject(path), options, mount);\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/vfs.js",
     "access": "public",
@@ -18744,7 +18747,6 @@
     "longname": "src/vfs.js~VFSFile",
     "access": "public",
     "description": "VFS File Object",
-    "lineNumber": 64,
     "properties": [
       {
         "nullable": null,
@@ -18818,6 +18820,50 @@
   {
     "__docId__": 699,
     "kind": "function",
+    "name": "pathToObject",
+    "memberof": "src/vfs.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/vfs.js~pathToObject",
+    "access": "public",
+    "export": false,
+    "importPath": "@meeseOS/client/src/vfs.js",
+    "importStyle": null,
+    "description": "Makes sure our input paths are object(s)",
+    "lineNumber": 68,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Object}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String",
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "path",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 700,
+    "kind": "function",
     "name": "handleDirectoryList",
     "memberof": "src/vfs.js",
     "generator": false,
@@ -18828,28 +18874,49 @@
     "export": false,
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 70,
-    "undocument": true,
-    "params": [
+    "description": "Handles directory listing result(s)",
+    "lineNumber": 79,
+    "unknown": [
       {
-        "name": "path",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "options",
-        "types": [
-          "*"
-        ]
+        "tagName": "@returns",
+        "tagValue": "{Promise<any[]>}"
       }
     ],
-    "return": null,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String",
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "path",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<any[]>"
+      ],
+      "spread": false,
+      "description": ""
+    },
     "ignore": true
   },
   {
-    "__docId__": 700,
+    "__docId__": 701,
     "kind": "function",
     "name": "readdir",
     "memberof": "src/vfs.js",
@@ -18862,7 +18929,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{readdir}",
     "description": "Read a directory",
-    "lineNumber": 84,
+    "lineNumber": 94,
     "unknown": [
       {
         "tagName": "@returns",
@@ -18902,7 +18969,7 @@
     }
   },
   {
-    "__docId__": 701,
+    "__docId__": 702,
     "kind": "function",
     "name": "readfile",
     "memberof": "src/vfs.js",
@@ -18915,7 +18982,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{readfile}",
     "description": "Reads a file\n\nAvailable types are 'arraybuffer', 'blob', 'uri' and 'string'",
-    "lineNumber": 100,
+    "lineNumber": 110,
     "unknown": [
       {
         "tagName": "@returns",
@@ -18967,7 +19034,7 @@
     }
   },
   {
-    "__docId__": 702,
+    "__docId__": 703,
     "kind": "function",
     "name": "writefile",
     "memberof": "src/vfs.js",
@@ -18980,7 +19047,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{writefile}",
     "description": "Writes a file",
-    "lineNumber": 116,
+    "lineNumber": 126,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19032,7 +19099,7 @@
     }
   },
   {
-    "__docId__": 703,
+    "__docId__": 704,
     "kind": "function",
     "name": "copy",
     "memberof": "src/vfs.js",
@@ -19045,71 +19112,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{copy}",
     "description": "Copies a file or directory (move)",
-    "lineNumber": 133,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<boolean>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "String",
-          "VFSFile"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "from",
-        "description": "The source (from)"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String",
-          "VFSFile"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "to",
-        "description": "The destination (to)"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "VFSMethodOptions"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "options",
-        "description": "Options"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<boolean>"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 704,
-    "kind": "function",
-    "name": "rename",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~rename",
-    "access": "public",
-    "export": true,
-    "importPath": "@meeseOS/client/src/vfs.js",
-    "importStyle": "{rename}",
-    "description": "Renames a file or directory (move)",
-    "lineNumber": 145,
+    "lineNumber": 143,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19161,6 +19164,70 @@
   },
   {
     "__docId__": 705,
+    "kind": "function",
+    "name": "rename",
+    "memberof": "src/vfs.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/vfs.js~rename",
+    "access": "public",
+    "export": true,
+    "importPath": "@meeseOS/client/src/vfs.js",
+    "importStyle": "{rename}",
+    "description": "Renames a file or directory (move)",
+    "lineNumber": 155,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<boolean>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String",
+          "VFSFile"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "from",
+        "description": "The source (from)"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String",
+          "VFSFile"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "to",
+        "description": "The destination (to)"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "VFSMethodOptions"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "options",
+        "description": "Options"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<boolean>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 706,
     "kind": "variable",
     "name": "move",
     "memberof": "src/vfs.js",
@@ -19171,7 +19238,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{move}",
     "description": "Alias of 'readme'",
-    "lineNumber": 157,
+    "lineNumber": 167,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19227,7 +19294,7 @@
     }
   },
   {
-    "__docId__": 706,
+    "__docId__": 707,
     "kind": "function",
     "name": "mkdir",
     "memberof": "src/vfs.js",
@@ -19240,7 +19307,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{mkdir}",
     "description": "Creates a directory",
-    "lineNumber": 165,
+    "lineNumber": 175,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19280,7 +19347,7 @@
     }
   },
   {
-    "__docId__": 707,
+    "__docId__": 708,
     "kind": "function",
     "name": "unlink",
     "memberof": "src/vfs.js",
@@ -19293,7 +19360,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{unlink}",
     "description": "Removes a file or directory",
-    "lineNumber": 175,
+    "lineNumber": 185,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19333,7 +19400,7 @@
     }
   },
   {
-    "__docId__": 708,
+    "__docId__": 709,
     "kind": "function",
     "name": "exists",
     "memberof": "src/vfs.js",
@@ -19346,7 +19413,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{exists}",
     "description": "Checks if path exists",
-    "lineNumber": 185,
+    "lineNumber": 195,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19386,7 +19453,7 @@
     }
   },
   {
-    "__docId__": 709,
+    "__docId__": 710,
     "kind": "function",
     "name": "stat",
     "memberof": "src/vfs.js",
@@ -19399,7 +19466,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{stat}",
     "description": "Gets the stats of the file or directory",
-    "lineNumber": 195,
+    "lineNumber": 205,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19439,7 +19506,7 @@
     }
   },
   {
-    "__docId__": 710,
+    "__docId__": 711,
     "kind": "function",
     "name": "url",
     "memberof": "src/vfs.js",
@@ -19452,7 +19519,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{url}",
     "description": "Gets an URL to a resource defined by file",
-    "lineNumber": 207,
+    "lineNumber": 217,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19492,7 +19559,7 @@
     }
   },
   {
-    "__docId__": 711,
+    "__docId__": 712,
     "kind": "function",
     "name": "download",
     "memberof": "src/vfs.js",
@@ -19505,7 +19572,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{download}",
     "description": "Initiates a native browser download of the file",
-    "lineNumber": 217,
+    "lineNumber": 227,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19545,7 +19612,7 @@
     }
   },
   {
-    "__docId__": 712,
+    "__docId__": 713,
     "kind": "function",
     "name": "search",
     "memberof": "src/vfs.js",
@@ -19558,7 +19625,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{search}",
     "description": "Searches for files and folders",
-    "lineNumber": 247,
+    "lineNumber": 257,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19608,7 +19675,7 @@
     }
   },
   {
-    "__docId__": 713,
+    "__docId__": 714,
     "kind": "function",
     "name": "touch",
     "memberof": "src/vfs.js",
@@ -19621,7 +19688,7 @@
     "importPath": "@meeseOS/client/src/vfs.js",
     "importStyle": "{touch}",
     "description": "Touches a file",
-    "lineNumber": 263,
+    "lineNumber": 273,
     "unknown": [
       {
         "tagName": "@returns",
@@ -19651,7 +19718,7 @@
     }
   },
   {
-    "__docId__": 714,
+    "__docId__": 715,
     "kind": "file",
     "name": "src/websocket.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport logger from \"./logger\";\n\nconst eventNames = [\"open\", \"close\", \"message\", \"error\"];\n\n/**\n * Websocket options\n * @typedef {Object} WebsocketOptions\n * @property {Boolean} [reconnect=true] Enable reconnection\n * @property {Number} [interval=1000] Reconnect interval\n * @property {Boolean} [open=true] Immediately open socket after creation\n */\n\n/**\n * Application Socket\n *\n * This is just an abstraction above the standard browser provided `WebSocket` class.\n * Since this class implements the EventHandler, use the `.on('event')` pattern instead of `.onevent`.\n */\nexport default class Websocket extends EventEmitter {\n\t/**\n\t * Create a new Websocket\n\t * @param {String} name Instance name\n\t * @param {String} uri Connection URI\n\t * @param {WebsocketOptions} [options={}] Websocket options\n\t */\n\tconstructor(name, uri, options = {}) {\n\t\tlogger.debug(\"Websocket::constructor()\", name, uri);\n\t\tsuper(\"Websocket@\" + name);\n\n\t\t/**\n\t\t * Socket URI\n\t\t * @type {String}\n\t\t * @readonly\n\t\t */\n\t\tthis.uri = uri;\n\n\t\t/**\n\t\t * If socket is closed\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.closed = false;\n\n\t\t/**\n\t\t * If socket is connected\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.connected = false;\n\n\t\t/**\n\t\t * If socket is connecting\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.connecting = false;\n\n\t\t/**\n\t\t * If socket is reconnecting\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.reconnecting = false;\n\n\t\t/**\n\t\t * If socket failed to connect\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.connectfailed = false;\n\n\t\t/**\n\t\t * Options\n\t\t * @type {WebsocketOptions}\n\t\t * @readonly\n\t\t */\n\t\tthis.options = {\n\t\t\treconnect: true,\n\t\t\tinterval: 1000,\n\t\t\topen: true,\n\t\t\t...options,\n\t\t};\n\n\t\t/**\n\t\t * The Websocket\n\t\t * @type {WebSocket}\n\t\t */\n\t\tthis.connection = null;\n\n\t\tthis._attachEvents();\n\n\t\tif (this.options.open) {\n\t\t\tthis.open();\n\t\t}\n\t}\n\n\t/**\n\t * Destroys the current connection\n\t * @returns {void}\n\t * @private\n\t */\n\t_destroyConnection() {\n\t\tif (!this.connection) return;\n\n\t\teventNames.forEach((name) => {\n\t\t\tthis.connection[`on${name}`] = () => {};\n\t\t});\n\n\t\tthis.reconnecting = clearInterval(this.reconnecting);\n\t\tthis.connection = null;\n\t}\n\n\t/**\n\t * Attaches internal events\n\t * @private\n\t */\n\t_attachEvents() {\n\t\tthis.on(\"open\", (ev) => {\n\t\t\tconst reconnected = Boolean(this.reconnecting);\n\n\t\t\tthis.connected = true;\n\t\t\tthis.reconnecting = false;\n\t\t\tthis.connectfailed = false;\n\t\t\tthis.reconnecting = clearInterval(this.reconnecting);\n\n\t\t\tthis.emit(\"connected\", ev, reconnected);\n\t\t});\n\n\t\tthis.on(\"close\", (ev) => {\n\t\t\tif (!this.connected && !this.connectfailed) {\n\t\t\t\tthis.emit(\"failed\", ev);\n\n\t\t\t\tthis.connectfailed = true;\n\t\t\t}\n\n\t\t\tclearInterval(this.reconnecting);\n\n\t\t\tthis._destroyConnection();\n\t\t\tthis.connected = false;\n\n\t\t\tif (this.options.reconnect) {\n\t\t\t\tthis.reconnecting = setInterval(() => {\n\t\t\t\t\tif (!this.closed) {\n\t\t\t\t\t\tthis.open();\n\t\t\t\t\t}\n\t\t\t\t}, this.options.interval);\n\t\t\t}\n\n\t\t\tthis.emit(\"disconnected\", ev, this.closed);\n\t\t});\n\t}\n\n\t/**\n\t * Opens the connection\n\t * @param {Boolean} [reconnect=false] Force reconnection\n\t */\n\topen(reconnect = false) {\n\t\tif (this.connection && !reconnect) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis._destroyConnection();\n\n\t\tthis.reconnecting = clearInterval(this.reconnecting);\n\t\tthis.connection = new WebSocket(this.uri);\n\t\tthis.closed = false;\n\n\t\teventNames.forEach((name) => {\n\t\t\tthis.connection[`on${name}`] = (...args) => this.emit(name, ...args);\n\t\t});\n\t}\n\n\t/**\n\t * Wrapper for sending data\n\t */\n\tsend(...args) {\n\t\t// TODO: Fix problem here after closing terminal window;\n\t\t// `WebSocket is already in CLOSING or CLOSED state.`\n\t\t// TODO: Open an issue for the problem mentioned above\n\t\treturn this.connection.send(...args);\n\t}\n\n\t/**\n\t * Wrapper for closing\n\t */\n\tclose(...args) {\n\t\tthis.closed = true;\n\n\t\treturn this.connection.close(...args);\n\t}\n}\n",
@@ -19662,7 +19729,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 715,
+    "__docId__": 716,
     "kind": "variable",
     "name": "eventNames",
     "memberof": "src/websocket.js",
@@ -19683,7 +19750,7 @@
     "ignore": true
   },
   {
-    "__docId__": 716,
+    "__docId__": 717,
     "kind": "typedef",
     "name": "WebsocketOptions",
     "memberof": "src/websocket.js",
@@ -19738,7 +19805,7 @@
     }
   },
   {
-    "__docId__": 717,
+    "__docId__": 718,
     "kind": "class",
     "name": "Websocket",
     "memberof": "src/websocket.js",
@@ -19756,7 +19823,7 @@
     ]
   },
   {
-    "__docId__": 718,
+    "__docId__": 719,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/websocket.js~Websocket",
@@ -19803,7 +19870,7 @@
     ]
   },
   {
-    "__docId__": 719,
+    "__docId__": 720,
     "kind": "member",
     "name": "uri",
     "memberof": "src/websocket.js~Websocket",
@@ -19828,7 +19895,7 @@
     }
   },
   {
-    "__docId__": 720,
+    "__docId__": 721,
     "kind": "member",
     "name": "closed",
     "memberof": "src/websocket.js~Websocket",
@@ -19847,7 +19914,7 @@
     }
   },
   {
-    "__docId__": 721,
+    "__docId__": 722,
     "kind": "member",
     "name": "connected",
     "memberof": "src/websocket.js~Websocket",
@@ -19866,7 +19933,7 @@
     }
   },
   {
-    "__docId__": 722,
+    "__docId__": 723,
     "kind": "member",
     "name": "connecting",
     "memberof": "src/websocket.js~Websocket",
@@ -19885,7 +19952,7 @@
     }
   },
   {
-    "__docId__": 723,
+    "__docId__": 724,
     "kind": "member",
     "name": "reconnecting",
     "memberof": "src/websocket.js~Websocket",
@@ -19904,7 +19971,7 @@
     }
   },
   {
-    "__docId__": 724,
+    "__docId__": 725,
     "kind": "member",
     "name": "connectfailed",
     "memberof": "src/websocket.js~Websocket",
@@ -19923,7 +19990,7 @@
     }
   },
   {
-    "__docId__": 725,
+    "__docId__": 726,
     "kind": "member",
     "name": "options",
     "memberof": "src/websocket.js~Websocket",
@@ -19948,7 +20015,7 @@
     }
   },
   {
-    "__docId__": 726,
+    "__docId__": 727,
     "kind": "member",
     "name": "connection",
     "memberof": "src/websocket.js~Websocket",
@@ -19967,7 +20034,7 @@
     }
   },
   {
-    "__docId__": 727,
+    "__docId__": 728,
     "kind": "method",
     "name": "_destroyConnection",
     "memberof": "src/websocket.js~Websocket",
@@ -19995,7 +20062,7 @@
     "params": []
   },
   {
-    "__docId__": 730,
+    "__docId__": 731,
     "kind": "method",
     "name": "_attachEvents",
     "memberof": "src/websocket.js~Websocket",
@@ -20010,7 +20077,7 @@
     "return": null
   },
   {
-    "__docId__": 738,
+    "__docId__": 739,
     "kind": "method",
     "name": "open",
     "memberof": "src/websocket.js~Websocket",
@@ -20038,7 +20105,7 @@
     "return": null
   },
   {
-    "__docId__": 742,
+    "__docId__": 743,
     "kind": "method",
     "name": "send",
     "memberof": "src/websocket.js~Websocket",
@@ -20065,7 +20132,7 @@
     }
   },
   {
-    "__docId__": 743,
+    "__docId__": 744,
     "kind": "method",
     "name": "close",
     "memberof": "src/websocket.js~Websocket",
@@ -20092,7 +20159,7 @@
     }
   },
   {
-    "__docId__": 745,
+    "__docId__": 746,
     "kind": "file",
     "name": "src/window-behavior.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tgetMediaQueryName,\n\tgetCascadePosition,\n\tmover,\n\tresizer,\n} from \"./utils/windows\";\nimport { getEvent, matchKeyCombo } from \"./utils/input\";\nimport { supportsPassive } from \"./utils/dom\";\n\nconst isPassive = supportsPassive();\nconst touchArg = isPassive ? { passive: true } : false;\n\n/*\n * Map of available \"actions\"\n */\nconst actionMap = {\n\tmaximize: (win) => (win.maximize() ? null : win.restore()),\n\tminimize: (win) => win.minimize(),\n\tclose: (win) => win.close(),\n};\n\n/**\n * Default Window Behavior\n *\n * Controls certain events and their interaction with a window\n */\nexport default class WindowBehavior {\n\t/**\n\t * Create window behavior\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Last action\n\t\t * @type {String}\n\t\t */\n\t\tthis.lastAction = null;\n\n\t\t/**\n\t\t * LoFi DOM Element\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$lofi = document.createElement(\"div\");\n\t\tthis.$lofi.className = \"meeseOS-window-behavior-lofi\";\n\t}\n\n\t/**\n\t * Initializes window behavior\n\t * @param {Window} win Window reference\n\t */\n\tinit(win) {\n\t\tconst ontouchstart = (ev) => this.mousedown(ev, win);\n\t\tconst onmousedown = (ev) => this.mousedown(ev, win);\n\t\tconst onclick = (ev) => this.click(ev, win);\n\t\tconst ondblclick = (ev) => this.dblclick(ev, win);\n\n\t\tconst onicondblclick = (ev) => {\n\t\t\tev.stopPropagation();\n\t\t\tev.preventDefault();\n\t\t\tthis.iconDblclick(ev, win);\n\t\t};\n\n\t\tconst oniconclick = (ev) => {\n\t\t\tev.stopPropagation();\n\t\t\tev.preventDefault();\n\n\t\t\tthis.iconClick(ev, win);\n\t\t};\n\n\t\tconst ontrasitionend = (ev) => {\n\t\t\tif (win) {\n\t\t\t\twin.emit(\"transitionend\");\n\t\t\t}\n\n\t\t\tthis.core.emit(\"meeseOS/window:transitionend\", ev, win);\n\t\t};\n\n\t\twin.$element.addEventListener(\"touchstart\", ontouchstart, touchArg);\n\t\twin.$element.addEventListener(\"mousedown\", onmousedown);\n\t\twin.$element.addEventListener(\"click\", onclick);\n\t\twin.$element.addEventListener(\"dblclick\", ondblclick);\n\t\twin.$element.addEventListener(\"transitionend\", ontrasitionend);\n\n\t\tif (win.$icon) {\n\t\t\twin.$icon.addEventListener(\"dblclick\", onicondblclick);\n\t\t\twin.$icon.addEventListener(\"click\", oniconclick);\n\t\t}\n\n\t\twin.on(\"resized,rendered\", () => {\n\t\t\twin.setState(\"media\", getMediaQueryName(win));\n\t\t});\n\n\t\twin.on(\"destroy\", () => {\n\t\t\tif (win.$element) {\n\t\t\t\twin.$element.removeEventListener(\"touchstart\", ontouchstart, touchArg);\n\t\t\t\twin.$element.removeEventListener(\"mousedown\", onmousedown);\n\t\t\t\twin.$element.removeEventListener(\"click\", onclick);\n\t\t\t\twin.$element.removeEventListener(\"dblclick\", ondblclick);\n\t\t\t\twin.$element.removeEventListener(\"transitionend\", ontrasitionend);\n\t\t\t}\n\n\t\t\tif (win.$icon) {\n\t\t\t\twin.$icon.removeEventListener(\"dblclick\", onicondblclick);\n\t\t\t\twin.$icon.removeEventListener(\"click\", oniconclick);\n\t\t\t}\n\t\t});\n\n\t\tconst rect = { top: 0, left: 0 };\n\t\tconst { top, left } = getCascadePosition(win, rect, win.state.position);\n\t\twin.state.position.top = top;\n\t\twin.state.position.left = left;\n\t\twin.state.media = getMediaQueryName(win);\n\t}\n\n\t/**\n\t * Handles Mouse Click Event\n\t * @param {Event} ev Browser Event\n\t * @param {Window} win Window reference\n\t */\n\tclick(ev, win) {\n\t\tif (this.lastAction) {\n\t\t\treturn;\n\t\t}\n\n\t\tconst target = ev.target;\n\t\tconst hitButton = target.classList.contains(\"meeseOS-window-button\");\n\n\t\tif (hitButton) {\n\t\t\tconst action = ev.target.getAttribute(\"data-action\");\n\t\t\tactionMap[action](win);\n\t\t}\n\t}\n\n\t/**\n\t * Handles Mouse Double Click Event\n\t * @param {Event} ev Browser Event\n\t * @param {Window} win Window reference\n\t */\n\tdblclick(ev, win) {\n\t\tif (this.lastAction) {\n\t\t\treturn;\n\t\t}\n\n\t\tconst target = ev.target;\n\t\tconst hitTitle = target.classList.contains(\"meeseOS-window-header\");\n\n\t\tif (hitTitle) {\n\t\t\tif (win.state.maximized) {\n\t\t\t\twin.restore();\n\t\t\t} else if (win.state.minimized) {\n\t\t\t\twin.raise();\n\t\t\t} else {\n\t\t\t\twin.maximize();\n\t\t\t}\n\t\t}\n\t}\n\n\t/**\n\t * Handles Mouse Down Event\n\t * @param {Event} ev Browser Event\n\t * @param {Window} win Window reference\n\t */\n\tmousedown(ev, win) {\n\t\tlet attributeSet = false;\n\n\t\tconst { moveable, resizable } = win.attributes;\n\t\tconst { maximized } = win.state;\n\t\tconst { lofi, moveKeybinding } = this.core.config(\"windows\");\n\t\tconst { clientX, clientY, touch, target } = getEvent(ev);\n\n\t\tconst checkMove = matchKeyCombo(moveKeybinding, ev)\n\t\t\t? win.$element.contains(target)\n\t\t\t: target.classList.contains(\"meeseOS-window-header\");\n\n\t\tconst rect = this.core.has(\"meeseOS/desktop\")\n\t\t\t? this.core.make(\"meeseOS/desktop\").getRect()\n\t\t\t: { top: 0, left: 0 };\n\n\t\tconst resize = target.classList.contains(\"meeseOS-window-resize\")\n\t\t\t? resizer(win, target)\n\t\t\t: null;\n\n\t\tconst move = checkMove ? mover(win, { top: 0, left: 0 }) : null;\n\n\t\tlet actionCallback;\n\n\t\tconst mousemove = (ev) => {\n\t\t\tif (!isPassive) {\n\t\t\t\tev.preventDefault();\n\t\t\t}\n\n\t\t\tif (maximized || (!moveable && move) || (!resizable && resize)) {\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\tconst transformedEvent = getEvent(ev);\n\t\t\tconst posX = resize\n\t\t\t\t? Math.max(rect.left, transformedEvent.clientX)\n\t\t\t\t: transformedEvent.clientX;\n\t\t\tconst posY = resize\n\t\t\t\t? Math.max(rect.top, transformedEvent.clientY)\n\t\t\t\t: transformedEvent.clientY;\n\t\t\tconst diffX = posX - clientX;\n\t\t\tconst diffY = posY - clientY;\n\n\t\t\tif (resize) {\n\t\t\t\tconst { width, height, top, left } = resize(diffX, diffY);\n\n\t\t\t\tactionCallback = () => {\n\t\t\t\t\twin._setState(\"dimension\", { width, height }, false);\n\t\t\t\t\twin._setState(\"position\", { top, left }, false);\n\t\t\t\t};\n\n\t\t\t\tif (lofi) {\n\t\t\t\t\tthis.$lofi.style.top = `${top}px`;\n\t\t\t\t\tthis.$lofi.style.left = `${left}px`;\n\t\t\t\t\tthis.$lofi.style.width = `${width}px`;\n\t\t\t\t\tthis.$lofi.style.height = `${height}px`;\n\t\t\t\t} else {\n\t\t\t\t\tactionCallback();\n\t\t\t\t}\n\n\t\t\t\tthis.lastAction = \"resize\";\n\t\t\t} else if (move) {\n\t\t\t\tconst position = move(diffX, diffY);\n\n\t\t\t\tactionCallback = () => {\n\t\t\t\t\twin._setState(\"position\", position, false);\n\t\t\t\t};\n\n\t\t\t\tif (lofi) {\n\t\t\t\t\tthis.$lofi.style.top = `${position.top}px`;\n\t\t\t\t\tthis.$lofi.style.left = `${position.left}px`;\n\t\t\t\t} else {\n\t\t\t\t\tactionCallback();\n\t\t\t\t}\n\n\t\t\t\tthis.lastAction = \"move\";\n\t\t\t}\n\n\t\t\tif (this.lastAction) {\n\t\t\t\twin._setState(this.lastAction === \"move\" ? \"moving\" : \"resizing\", true);\n\n\t\t\t\tif (!attributeSet) {\n\t\t\t\t\tthis.core.$root.setAttribute(\"data-window-action\", String(true));\n\t\t\t\t\tattributeSet = true;\n\t\t\t\t}\n\t\t\t}\n\t\t};\n\n\t\tconst mouseup = () => {\n\t\t\tif (touch) {\n\t\t\t\tdocument.removeEventListener(\"touchmove\", mousemove, touchArg);\n\t\t\t\tdocument.removeEventListener(\"touchend\", mouseup, touchArg);\n\t\t\t} else {\n\t\t\t\tdocument.removeEventListener(\"mousemove\", mousemove);\n\t\t\t\tdocument.removeEventListener(\"mouseup\", mouseup);\n\t\t\t}\n\n\t\t\tif (lofi) {\n\t\t\t\tthis.$lofi.remove();\n\n\t\t\t\tif (actionCallback) {\n\t\t\t\t\tactionCallback();\n\t\t\t\t}\n\n\t\t\t\tactionCallback = undefined;\n\t\t\t}\n\n\t\t\tif (this.lastAction === \"move\") {\n\t\t\t\twin.emit(\"moved\", { ...win.state.position }, win);\n\t\t\t\twin._setState(\"moving\", false);\n\t\t\t} else if (this.lastAction === \"resize\") {\n\t\t\t\twin.emit(\"resized\", { ...win.state.dimension }, win);\n\t\t\t\twin._setState(\"resizing\", false);\n\t\t\t}\n\n\t\t\tthis.core.$root.setAttribute(\"data-window-action\", String(false));\n\t\t};\n\n\t\tif (!win.focus()) {\n\t\t\twin.setNextZindex();\n\t\t}\n\n\t\tif (move || resize) {\n\t\t\tif (touch) {\n\t\t\t\tdocument.addEventListener(\"touchmove\", mousemove, touchArg);\n\t\t\t\tdocument.addEventListener(\"touchend\", mouseup, touchArg);\n\t\t\t} else {\n\t\t\t\tdocument.addEventListener(\"mousemove\", mousemove);\n\t\t\t\tdocument.addEventListener(\"mouseup\", mouseup);\n\t\t\t}\n\t\t}\n\n\t\tthis.lastAction = null;\n\n\t\tif (this.core.has(\"meeseOS/contextmenu\")) {\n\t\t\tthis.core.make(\"meeseOS/contextmenu\").hide();\n\t\t}\n\n\t\tif (lofi) {\n\t\t\tthis.$lofi.style.zIndex = win.state.zIndex + 1;\n\t\t\tthis.$lofi.style.top = `${win.state.position.top}px`;\n\t\t\tthis.$lofi.style.left = `${win.state.position.left}px`;\n\t\t\tthis.$lofi.style.width = `${win.state.dimension.width}px`;\n\t\t\tthis.$lofi.style.height = `${win.state.dimension.height}px`;\n\n\t\t\tif (!this.$lofi.parentNode) {\n\t\t\t\tdocument.body.appendChild(this.$lofi);\n\t\t\t}\n\t\t}\n\t}\n\n\t/**\n\t * Handles Icon Double Click Event\n\t * @param {Event} ev Browser Event\n\t * @param {Window} win Window reference\n\t */\n\ticonDblclick(ev, win) {\n\t\twin.close();\n\t}\n\n\t/**\n\t * Handles Icon Click Event\n\t * @param {Event} ev Browser Event\n\t * @param {Window} win Window reference\n\t */\n\ticonClick(ev, win) {\n\t\tconst { minimized, maximized } = win.state;\n\t\tconst { minimizable, maximizable, closeable } = win.attributes;\n\n\t\tthis.core.make(\"meeseOS/contextmenu\", {\n\t\t\tposition: ev,\n\t\t\tmenu: [\n\t\t\t\t{\n\t\t\t\t\tlabel: minimized ? \"Raise\" : \"Minimize\",\n\t\t\t\t\tdisabled: !minimizable,\n\t\t\t\t\tonclick: () => (minimized ? win.raise() : win.minimize()),\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\tlabel: maximized ? \"Restore\" : \"Maximize\",\n\t\t\t\t\tdisabled: !maximizable,\n\t\t\t\t\tonclick: () => (maximized ? win.restore() : win.maximize()),\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\tlabel: \"Close\",\n\t\t\t\t\tdisabled: !closeable,\n\t\t\t\t\tonclick: () => win.close(),\n\t\t\t\t},\n\t\t\t],\n\t\t});\n\t}\n}\n",
@@ -20103,7 +20170,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 746,
+    "__docId__": 747,
     "kind": "variable",
     "name": "isPassive",
     "memberof": "src/window-behavior.js",
@@ -20124,7 +20191,7 @@
     "ignore": true
   },
   {
-    "__docId__": 747,
+    "__docId__": 748,
     "kind": "variable",
     "name": "touchArg",
     "memberof": "src/window-behavior.js",
@@ -20145,7 +20212,7 @@
     "ignore": true
   },
   {
-    "__docId__": 748,
+    "__docId__": 749,
     "kind": "variable",
     "name": "actionMap",
     "memberof": "src/window-behavior.js",
@@ -20166,7 +20233,7 @@
     "ignore": true
   },
   {
-    "__docId__": 749,
+    "__docId__": 750,
     "kind": "class",
     "name": "WindowBehavior",
     "memberof": "src/window-behavior.js",
@@ -20181,7 +20248,7 @@
     "interface": false
   },
   {
-    "__docId__": 750,
+    "__docId__": 751,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20206,7 +20273,7 @@
     ]
   },
   {
-    "__docId__": 751,
+    "__docId__": 752,
     "kind": "member",
     "name": "core",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20231,7 +20298,7 @@
     }
   },
   {
-    "__docId__": 752,
+    "__docId__": 753,
     "kind": "member",
     "name": "lastAction",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20250,7 +20317,7 @@
     }
   },
   {
-    "__docId__": 753,
+    "__docId__": 754,
     "kind": "member",
     "name": "$lofi",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20275,7 +20342,7 @@
     }
   },
   {
-    "__docId__": 754,
+    "__docId__": 755,
     "kind": "method",
     "name": "init",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20301,7 +20368,7 @@
     "return": null
   },
   {
-    "__docId__": 755,
+    "__docId__": 756,
     "kind": "method",
     "name": "click",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20337,7 +20404,7 @@
     "return": null
   },
   {
-    "__docId__": 756,
+    "__docId__": 757,
     "kind": "method",
     "name": "dblclick",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20373,7 +20440,7 @@
     "return": null
   },
   {
-    "__docId__": 757,
+    "__docId__": 758,
     "kind": "method",
     "name": "mousedown",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20409,7 +20476,7 @@
     "return": null
   },
   {
-    "__docId__": 761,
+    "__docId__": 762,
     "kind": "method",
     "name": "iconDblclick",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20445,7 +20512,7 @@
     "return": null
   },
   {
-    "__docId__": 762,
+    "__docId__": 763,
     "kind": "method",
     "name": "iconClick",
     "memberof": "src/window-behavior.js~WindowBehavior",
@@ -20481,7 +20548,7 @@
     "return": null
   },
   {
-    "__docId__": 763,
+    "__docId__": 764,
     "kind": "file",
     "name": "src/window.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateAttributes,\n\tcreateDOMAttributes,\n\tcreateDOMStyles,\n\tclampPosition,\n\tcreateState,\n\tdimensionFromElement,\n\tpositionFromGravity,\n\trenderCallback,\n\ttransformVectors,\n} from \"./utils/windows\";\nimport {\n\tcreateCssText,\n\tescapeHtml,\n\tgetActiveElement,\n\tsupportsTransition,\n} from \"./utils/dom\";\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport { droppable } from \"./utils/dnd\";\nimport logger from \"./logger\";\n\n/**\n * Window dimension definition\n * @typedef {Object} WindowDimension\n * @property {Number} width Width in pixels (or float for percentage in setters)\n * @property {Number} height Height in pixels (or float for percentage in setters)\n */\n\n/**\n * Window position definition\n * @typedef {Object} WindowPosition\n * @property {Number} left Left in pixels (or float for percentage in setters)\n * @property {Number} top Top in pixels (or float for percentage in setters)\n */\n\n/**\n * Window session\n * @typedef {Object} WindowSession\n * @property {Number} id\n * @property {Boolean} maximized\n * @property {Boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n */\n\n/**\n * Window attributes definition\n *\n * @typedef {Object} WindowAttributes\n * @property {String[]} [classNames=[]] A list of class names\n * @property {Boolean} [ontop=false] If always on top\n * @property {String} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {Boolean} [resizable=true] If resizable\n * @property {Boolean} [focusable=true] If focusable\n * @property {Boolean} [maximizable=true] If window if maximizable\n * @property {Boolean} [minimizable=true] If minimizable\n * @property {Boolean} [moveable=true] If moveable\n * @property {Boolean} [closeable=true] If closeable\n * @property {Boolean} [header=true] Show header\n * @property {Boolean} [controls=true] Show controls\n * @property {String} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {Boolean} [clamp=true] Clamp the window position upon creation\n * @property {Boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n */\n\n/**\n * Window state definition\n *\n * @typedef {Object} WindowState\n * @property {String} title Title\n * @property {String} icon Icon\n * @property {Boolean} [moving=false] If moving\n * @property {Boolean} [resizing=false] If resizing\n * @property {Boolean} [loading=false] If loading\n * @property {Boolean} [focused=false] If focused\n * @property {Boolean} [maximized=false] If maximized\n * @property {Boolean} [mimimized=false] If mimimized\n * @property {Boolean} [modal=false] If modal to the parent\n * @property {Number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n */\n\n/**\n * Window options definition\n *\n * @typedef {Object} WindowOptions\n * @property {String} id Window Id (not globaly unique)\n * @property {String} [title] Window Title\n * @property {String} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {String|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n */\n\nconst windows = [];\nlet windowCount = 0;\nlet nextZindex = 1;\nlet lastWindow = null;\n\n/**\n * Default window template\n */\nconst TEMPLATE = `<div class=\"meeseOS-window-inner\">\n  <div class=\"meeseOS-window-header\">\n    <div class=\"meeseOS-window-icon\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-title\"></div>\n    <div class=\"meeseOS-window-button\" data-action=\"minimize\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-button\" data-action=\"maximize\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-button\" data-action=\"close\">\n      <div></div>\n    </div>\n  </div>\n  <div class=\"meeseOS-window-content\">\n  </div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"n\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"nw\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"w\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"sw\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"s\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"se\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"e\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"ne\"></div>\n</div>`\n\t.replace(/\\n\\s+/g, \"\")\n\t.trim();\n\n/**\n * Window Implementation\n */\nexport default class Window extends EventEmitter {\n\t/**\n\t * Create window\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {WindowOptions} [options={}] Options\n\t */\n\tconstructor(core, options = {}) {\n\t\toptions = {\n\t\t\tid: null,\n\t\t\ttitle: null,\n\t\t\tparent: null,\n\t\t\ttemplate: null,\n\t\t\tondestroy: null,\n\t\t\tattributes: {},\n\t\t\tposition: {},\n\t\t\tdimension: {},\n\t\t\tstate: {},\n\t\t\t...options,\n\t\t};\n\n\t\tlogger.debug(\"Window::constructor()\", options);\n\n\t\tsuper(\"Window@\" + options.id);\n\n\t\tif (typeof options.position === \"string\") {\n\t\t\toptions.attributes.gravity = options.position;\n\t\t\toptions.position = {};\n\t\t}\n\n\t\t/**\n\t\t * The Window ID\n\t\t * @type {String}\n\t\t * @readonly\n\t\t */\n\t\tthis.id = options.id;\n\n\t\t/**\n\t\t * The Window ID\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.wid = ++windowCount;\n\n\t\t/**\n\t\t * Parent Window reference\n\t\t * @type {Window}\n\t\t * @readonly\n\t\t */\n\t\tthis.parent = options.parent;\n\n\t\t/**\n\t\t * Child windows (via 'parent')\n\t\t * @type {Window[]}\n\t\t */\n\t\tthis.children = [];\n\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * The window destruction state\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.destroyed = false;\n\n\t\t/**\n\t\t * The window rendered state\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.rendered = false;\n\n\t\t/**\n\t\t * The window was inited\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.inited = false;\n\n\t\t/**\n\t\t * The window attributes\n\t\t * @type {WindowAttributes}\n\t\t */\n\t\tthis.attributes = createAttributes(options.attributes);\n\n\t\t/**\n\t\t * The window state\n\t\t * @type {WindowState}\n\t\t */\n\t\tthis.state = createState(options.state, options, this.attributes);\n\n\t\t/**\n\t\t * The window container\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$element = document.createElement(\"div\");\n\n\t\t/**\n\t\t * The content container\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$content = null;\n\n\t\t/**\n\t\t * The header container\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$header = null;\n\n\t\t/**\n\t\t * The icon container\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$icon = null;\n\n\t\t/**\n\t\t * The title container\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$title = null;\n\n\t\t/**\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore)\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis._preventDefaultPosition = false;\n\n\t\t/**\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis._loadingDebounce = null;\n\n\t\t/**\n\t\t * The window template\n\t\t * @private\n\t\t * @type {String|Function}\n\t\t */\n\t\tthis._template = options.template;\n\n\t\t/**\n\t\t * Custom destructor callback\n\t\t * @private\n\t\t * @type {Function}\n\t\t * @readonly\n\t\t */\n\t\tthis._ondestroy = options.ondestroy || (() => true);\n\n\t\t// For whatever reason, these need to be included up here to be\n\t\t// bound to the window instance.\n\t\tthis.setState = this.setState.bind(this);\n\t\tthis.focus = this.focus.bind(this);\n\n\t\t/**\n\t\t * Last DOM update CSS text\n\t\t * @private\n\t\t * @type {String}\n\t\t */\n\t\tthis._lastCssText = \"\";\n\n\t\t/**\n\t\t * Last DOM update data attributes\n\t\t * @private\n\t\t * @type {WindowAttributes}\n\t\t */\n\t\tthis._lastAttributes = {};\n\n\t\twindows.push(this);\n\t}\n\n\t/**\n\t * Destroy window\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) return;\n\n\t\tif (typeof this._ondestroy === \"function\" && this._ondestroy() === false) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.destroyed = true;\n\t\tlogger.debug(\"Window::destroy()\");\n\n\t\tthis.emit(\"destroy\", this);\n\t\tthis.core.emit(\"meeseOS/window:destroy\", this);\n\n\t\tthis.children.forEach((w) => w.destroy());\n\n\t\tif (this.$element) {\n\t\t\tthis.$element.remove();\n\t\t}\n\n\t\tif (lastWindow === this) {\n\t\t\tlastWindow = null;\n\t\t}\n\n\t\tconst foundIndex = windows.findIndex((w) => w === this);\n\t\tif (foundIndex !== -1) {\n\t\t\twindows.splice(foundIndex, 1);\n\t\t}\n\n\t\tthis.children = [];\n\t\tthis.parent = null;\n\t\tthis.$element = null;\n\t\tthis.$content = null;\n\t\tthis.$header = null;\n\t\tthis.$icon = null;\n\t\tthis.$title = null;\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initialize window\n\t */\n\tinit() {\n\t\tif (this.inited) return this;\n\n\t\tif (this.parent) {\n\t\t\t// Assign the window if it is a child\n\t\t\tthis.on(\"destroy\", () => {\n\t\t\t\tconst foundIndex = this.parent.children.findIndex((w) => w === this);\n\t\t\t\tif (foundIndex !== -1) {\n\t\t\t\t\tthis.parent.children.splice(foundIndex, 1);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tthis.parent.children.push(this);\n\t\t}\n\n\t\tthis._initTemplate();\n\t\tthis._initBehavior();\n\n\t\tthis.inited = true;\n\t\tthis.emit(\"init\", this);\n\t\tthis.core.emit(\"meeseOS/window:create\", this);\n\n\t\treturn this;\n\t}\n\n\t/**\n\t * Initializes window template\n\t * @private\n\t */\n\t_initTemplate() {\n\t\tconst tpl = this.core.config(\"windows.template\") || TEMPLATE;\n\t\tif (this._template) {\n\t\t\tthis.$element.innerHTML = typeof this._template === \"function\"\n\t\t\t\t? this._template(this, tpl)\n\t\t\t\t: this._template;\n\t\t} else {\n\t\t\tthis.$element.innerHTML = tpl;\n\t\t}\n\n\t\tthis.$content = this.$element.querySelector(\".meeseOS-window-content\");\n\t\tthis.$header = this.$element.querySelector(\".meeseOS-window-header\");\n\t\tthis.$icon = this.$element.querySelector(\".meeseOS-window-icon > div\");\n\t\tthis.$title = this.$element.querySelector(\".meeseOS-window-title\");\n\t}\n\n\t/**\n\t * Initializes window behavior\n\t * @private\n\t */\n\t_initBehavior() {\n\t\t// Transform percentages in dimension to pixels\n\t\tif (this.core.has(\"meeseOS/desktop\")) {\n\t\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\t\t\tconst { dimension, position } = transformVectors(\n\t\t\t\trect,\n\t\t\t\tthis.state.dimension,\n\t\t\t\tthis.state.position\n\t\t\t);\n\t\t\tthis.state.dimension = dimension;\n\t\t\tthis.state.position = position;\n\t\t}\n\n\t\t// Behavior\n\t\tconst behavior = this.core.make(\"meeseOS/window-behavior\");\n\t\tif (behavior) {\n\t\t\tbehavior.init(this);\n\t\t}\n\n\t\t// DnD functionality\n\t\tif (this.attributes.droppable) {\n\t\t\tconst d = droppable(this.$element, {\n\t\t\t\tondragenter: (...args) => this.emit(\"dragenter\", ...args, this),\n\t\t\t\tondragover: (...args) => this.emit(\"dragover\", ...args, this),\n\t\t\t\tondragleave: (...args) => this.emit(\"dragleave\", ...args, this),\n\t\t\t\tondrop: (...args) => this.emit(\"drop\", ...args, this),\n\t\t\t});\n\n\t\t\tthis.on(\"destroy\", () => d.destroy());\n\t\t}\n\t}\n\n\t/**\n\t * Checks the modal state of the window upon render\n\t * @private\n\t */\n\t_checkModal() {\n\t\tif (!this.parent) return;\n\t\tif (this.attributes.modal) {\n\t\t\tthis.on(\"render\", () => this.parent.setState(\"loading\", true));\n\t\t\tthis.on(\"destroy\", () => this.parent.setState(\"loading\", false));\n\t\t}\n\n\t\tthis.on(\"destroy\", () => this.parent.focus());\n\t}\n\n\t/**\n\t * Sets the initial class names\n\t * @private\n\t */\n\t_setClassNames() {\n\t\tconst classNames = [\"meeseOS-window\", ...this.attributes.classNames];\n\t\tif (this.id) {\n\t\t\tclassNames.push(`Window_${this.id}`);\n\t\t}\n\n\t\tclassNames\n\t\t\t.filter((val) => Boolean(val))\n\t\t\t.forEach((val) => this.$element.classList.add(val));\n\t}\n\n\t/**\n\t * Render window\n\t * @param {Function} [callback] Callback when window DOM has been constructed\n\t * @returns {Window} this instance\n\t */\n\trender(callback = function() {}) {\n\t\tif (this.rendered) {\n\t\t\treturn this;\n\t\t} else if (!this.inited) {\n\t\t\tthis.init();\n\t\t}\n\n\t\tthis._setClassNames();\n\t\tthis._updateButtons();\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t\tthis._updateTitle();\n\t\tthis._updateIconStyles();\n\t\tthis._updateHeaderStyles();\n\t\tthis._checkModal();\n\n\t\tif (!this._preventDefaultPosition) {\n\t\t\tthis.gravitate(this.attributes.gravity);\n\t\t}\n\n\t\t// Clamp the initial window position to viewport\n\t\tif (this.attributes.clamp) {\n\t\t\tthis.clampToViewport(false);\n\t\t}\n\n\t\tthis.setNextZindex(true);\n\n\t\tthis.core.$contents.appendChild(this.$element);\n\n\t\trenderCallback(this, callback);\n\n\t\tthis.rendered = true;\n\n\t\tsetTimeout(() => {\n\t\t\tthis.emit(\"render\", this);\n\t\t\tthis.core.emit(\"meeseOS/window:render\", this);\n\t\t}, 1);\n\n\t\treturn this;\n\t}\n\n\t/**\n\t * Close the window\n\t * @returns {Boolean}\n\t */\n\tclose() {\n\t\tif (this.destroyed) return false;\n\n\t\tthis.emit(\"close\", this);\n\t\tthis.destroy();\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Focus the window\n\t * @returns {Boolean}\n\t */\n\tfocus() {\n\t\tif (!this.state.minimized && this._toggleState(\"focused\", true, \"focus\")) {\n\t\t\tthis._focus();\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Internal for focus\n\t * @private\n\t */\n\t_focus() {\n\t\tif (lastWindow && lastWindow !== this) {\n\t\t\tlastWindow.blur();\n\t\t}\n\n\t\tlastWindow = this;\n\n\t\tthis.setNextZindex();\n\t}\n\n\t/**\n\t * Blur (un-focus) the window\n\t * @returns {Boolean}\n\t */\n\tblur() {\n\t\t// Forces blur-ing of browser input element belonging to this window\n\t\tconst activeElement = getActiveElement(this.$element);\n\t\tif (activeElement) activeElement.blur();\n\n\t\treturn this._toggleState(\"focused\", false, \"blur\");\n\t}\n\n\t/**\n\t * Minimize (hide) the window\n\t * @returns {Boolean}\n\t */\n\tminimize() {\n\t\tif (this.attributes.minimizable) {\n\t\t\tif (this._toggleState(\"minimized\", true, \"minimize\")) {\n\t\t\t\tthis.blur();\n\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Raise (un-minimize) the window\n\t * @returns {Boolean}\n\t */\n\traise() {\n\t\treturn this._toggleState(\"minimized\", false, \"raise\");\n\t}\n\n\t/**\n\t * Maximize the window\n\t * @returns {Boolean}\n\t */\n\tmaximize() {\n\t\tif (this.attributes.maximizable) {\n\t\t\treturn this._maximize(true);\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Restore (un-maximize) the window\n\t * @returns {Boolean}\n\t */\n\trestore() {\n\t\treturn this._maximize(false);\n\t}\n\n\t/**\n\t * Internal for Maximize or restore\n\t * @private\n\t * @param {Boolean} toggle Maximize or restore\n\t * @returns {Boolean}\n\t */\n\t_maximize(toggle) {\n\t\tif (\n\t\t\tthis._toggleState(\"maximized\", toggle, toggle ? \"maximize\" : \"restore\")\n\t\t) {\n\t\t\tconst emit = () =>\n\t\t\t\tthis.emit(\n\t\t\t\t\t\"resized\",\n\t\t\t\t\t{\n\t\t\t\t\t\twidth: this.$element ? this.$element.offsetWidth : -1,\n\t\t\t\t\t\theight: this.$element ? this.$element.offsetHeight : -1,\n\t\t\t\t\t},\n\t\t\t\t\tthis\n\t\t\t\t);\n\n\t\t\tif (supportsTransition()) {\n\t\t\t\tthis.once(\"transitionend\", emit);\n\t\t\t} else {\n\t\t\t\temit();\n\t\t\t}\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Resize to fit to current container\n\t * @param {Element} [container] The DOM element to use\n\t */\n\tresizeFit(container) {\n\t\tcontainer = container || this.$content.firstChild;\n\n\t\tif (container) {\n\t\t\tconst rect = this.core.has(\"meeseOS/desktop\")\n\t\t\t\t? this.core.make(\"meeseOS/desktop\").getRect(/* n00b */)\n\t\t\t\t: null;\n\n\t\t\tconst { width, height } = dimensionFromElement(this, rect, container);\n\t\t\tif (!isNaN(width) && !isNaN(height)) {\n\t\t\t\tthis.setDimension({ width, height });\n\t\t\t}\n\t\t}\n\t}\n\n\t/**\n\t * Clamps the position to viewport\n\t * @param {Boolean} [update=true] Update DOM\n\t */\n\tclampToViewport(update = true) {\n\t\tif (!this.core.has(\"meeseOS/desktop\")) return;\n\n\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\n\t\tthis.state.position = {\n\t\t\t...this.state.position,\n\t\t\t...clampPosition(rect, this.state),\n\t\t};\n\n\t\tif (update) {\n\t\t\tthis._updateStyles();\n\t\t}\n\t}\n\n\t/**\n\t * Set the Window icon\n\t * @param {String} uri Icon URI\n\t */\n\tsetIcon(uri) {\n\t\tthis.state.icon = uri;\n\n\t\tthis._updateIconStyles();\n\t}\n\n\t/**\n\t * Set the Window title\n\t * @param {String} title Title\n\t */\n\tsetTitle(title) {\n\t\tthis.state.title = title || \"\";\n\t\tthis._updateTitle();\n\n\t\tthis.core.emit(\"meeseOS/window:change\", this, \"title\", title);\n\t}\n\n\t/**\n\t * Set the Window dimension\n\t * @param {WindowDimension} dimension The dimension\n\t */\n\tsetDimension(dimension) {\n\t\tconst { width, height } = { ...this.state.dimension, ...(dimension || {}) };\n\n\t\tthis.state.dimension.width = width;\n\t\tthis.state.dimension.height = height;\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Set the Window position\n\t * @param {WindowPosition} position The position\n\t * @param {Boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t */\n\tsetPosition(position, preventDefault = false) {\n\t\tconst { left, top } = { ...this.state.position, ...(position || {}) };\n\n\t\tthis.state.position.top = top;\n\t\tthis.state.position.left = left;\n\n\t\tif (preventDefault) {\n\t\t\tthis._preventDefaultPosition = true;\n\t\t}\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Set the Window z index\n\t * @param {Number} zIndex the index\n\t */\n\tsetZindex(zIndex) {\n\t\tthis.state.zIndex = zIndex;\n\t\tlogger.debug(\"Window::setZindex()\", zIndex);\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Sets the Window to next z index\n\t * @param {Boolean} [force] Force next index\n\t */\n\tsetNextZindex(force) {\n\t\tconst setNext = force || this._checkNextZindex();\n\n\t\tif (setNext) {\n\t\t\tthis.setZindex(nextZindex);\n\t\t\tnextZindex++;\n\t\t}\n\t}\n\n\t/**\n\t * Set a state by value\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t */\n\tsetState(name, value, update = true) {\n\t\tconst set = () => this._setState(name, value, update);\n\n\t\t// Allows for some \"grace time\" so the overlay does not\n\t\t// \"blink\"\n\t\tif (name === \"loading\" && update) {\n\t\t\tclearTimeout(this._loadingDebounce);\n\n\t\t\tif (value === true) {\n\t\t\t\tthis._loadingDebounce = setTimeout(() => set(), 250);\n\t\t\t\treturn;\n\t\t\t}\n\t\t}\n\n\t\tset();\n\t}\n\n\t/**\n\t * Gravitates window towards a certain area\n\t * @param {String} gravity Gravity\n\t */\n\tgravitate(gravity) {\n\t\tif (!this.core.has(\"meeseOS/desktop\")) return;\n\n\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\t\tconst position = positionFromGravity(this, rect, gravity);\n\n\t\tthis.setPosition(position);\n\t}\n\n\t/**\n\t * Gets a astate\n\t * @returns {*}\n\t */\n\tgetState(n) {\n\t\tconst value = this.state[n];\n\n\t\treturn [\"position\", \"dimension\", \"styles\"].indexOf(n) !== -1\n\t\t\t? { ...value }\n\t\t\t: value;\n\t}\n\n\t/**\n\t * Get a snapshot of the Window session\n\t * @returns {WindowSession}\n\t */\n\tgetSession() {\n\t\treturn this.attributes.sessionable === false\n\t\t\t? null\n\t\t\t: {\n\t\t\t\tid: this.id,\n\t\t\t\tmaximized: this.state.maximized,\n\t\t\t\tminimized: this.state.minimized,\n\t\t\t\tposition: { ...this.state.position },\n\t\t\t\tdimension: { ...this.state.dimension },\n\t\t\t};\n\t}\n\n\t/**\n\t * Get a list of all windows\n\t * @returns {Window[]}\n\t */\n\tstatic getWindows() {\n\t\treturn windows;\n\t}\n\n\t/**\n\t * Gets the lastly focused Window\n\t * @returns {Window}\n\t */\n\tstatic lastWindow() {\n\t\treturn lastWindow;\n\t}\n\n\t/**\n\t * Internal method for setting state\n\t * @private\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @param {Boolean} [updateAll=true] Update the entire DOM\n\t */\n\t_setState(name, value, update = true) {\n\t\tconst oldValue = this.state[name];\n\t\tthis.state[name] = value;\n\t\tif (!update) return;\n\n\t\tif (oldValue !== value) {\n\t\t\tlogger.debug(\"Window::_setState()\", name, value);\n\t\t}\n\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Internal method for toggling state\n\t * @private\n\t * @param {String} name State name\n\t * @param {any} value State value\n\t * @param {String} eventName Name of event to emit\n\t * @param {Boolean} [update=true] Update the DOM\n\t */\n\t_toggleState(name, value, eventName, update = true) {\n\t\tif (this.state[name] === value) {\n\t\t\treturn false;\n\t\t}\n\n\t\tlogger.debug(\"Window::_toggleState()\", name, value, eventName, update);\n\n\t\tthis.state[name] = value;\n\t\tthis.emit(eventName, this);\n\t\tthis.core.emit(\"meeseOS/window:change\", this, name, value);\n\n\t\tif (update) {\n\t\t\tthis._updateAttributes();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Check if we have to set next zindex\n\t * @private\n\t * @returns {Boolean}\n\t */\n\t_checkNextZindex() {\n\t\tconst { ontop } = this.attributes;\n\t\tconst { zIndex } = this.state;\n\n\t\tconst windexes = windows\n\t\t\t.filter((w) => w.attributes.ontop === ontop)\n\t\t\t.filter((w) => w.wid !== this.wid)\n\t\t\t.map((w) => w.state.zIndex);\n\n\t\tconst max = windexes.length > 0 ? Math.max.apply(null, windexes) : 0;\n\n\t\treturn zIndex < max;\n\t}\n\n\t/*\n\t * Updates window styles and attributes\n\t * FIXME: Backward compability with themes\n\t * @deprecated\n\t */\n\t_updateDOM() {\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Updates the window buttons in DOM\n\t * @private\n\t */\n\t_updateButtons() {\n\t\tconst hideButton = (action) =>\n\t\t\t(this.$header.querySelector(\n\t\t\t\t`.meeseOS-window-button[data-action=${action}]`\n\t\t\t).style.display = \"none\");\n\n\t\tconst buttonmap = {\n\t\t\tmaximizable: \"maximize\",\n\t\t\tminimizable: \"minimize\",\n\t\t\tcloseable: \"close\",\n\t\t};\n\n\t\tif (this.attributes.controls) {\n\t\t\tObject.keys(buttonmap).forEach((key) => {\n\t\t\t\tif (!this.attributes[key]) {\n\t\t\t\t\thideButton(buttonmap[key]);\n\t\t\t\t}\n\t\t\t});\n\t\t} else {\n\t\t\tArray.from(\n\t\t\t\tthis.$header.querySelectorAll(\".meeseOS-window-button\")\n\t\t\t).forEach((el) => (el.style.display = \"none\"));\n\t\t}\n\t}\n\n\t/**\n\t * Updates window title in DOM\n\t * @private\n\t */\n\t_updateTitle() {\n\t\tif (!this.$title) return;\n\n\t\tconst escapedTitle = escapeHtml(this.state.title);\n\t\tif (this.$title.innerHTML !== escapedTitle) {\n\t\t\tthis.$title.innerHTML = escapedTitle;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window icon decoration in DOM\n\t * @private\n\t */\n\t_updateIconStyles() {\n\t\tif (!this.$icon) return;\n\n\t\tconst iconSource = `url(${this.state.icon})`;\n\t\tif (this.$icon.style.backgroundImage !== iconSource) {\n\t\t\tthis.$icon.style.backgroundImage = iconSource;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window header decoration in DOM\n\t * @private\n\t */\n\t_updateHeaderStyles() {\n\t\tif (!this.$header) return;\n\n\t\tconst headerDisplay = this.attributes.header ? undefined : \"none\";\n\t\tif (this.$header.style.display !== headerDisplay) {\n\t\t\tthis.$header.style.display = headerDisplay;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window data in DOM\n\t * @private\n\t */\n\t_updateAttributes() {\n\t\tif (!this.$element) return;\n\n\t\tconst attrs = createDOMAttributes(this.id, this.state, this.attributes);\n\t\tconst applyAttrs = Object.keys(attrs).filter(\n\t\t\t(k) => attrs[k] !== this._lastAttributes[k]\n\t\t);\n\n\t\tif (applyAttrs.length > 0) {\n\t\t\tapplyAttrs.forEach((a) =>\n\t\t\t\tthis.$element.setAttribute(`data-${a}`, String(attrs[a]))\n\t\t\t);\n\t\t\tthis._lastAttributes = attrs;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window style in DOM\n\t * @private\n\t */\n\t_updateStyles() {\n\t\tif (!this.$element) return;\n\n\t\tconst cssText = createCssText(createDOMStyles(this.state, this.attributes));\n\t\tif (cssText !== this._lastCssText) {\n\t\t\tthis.$element.style.cssText = cssText;\n\t\t\tthis._lastCssText = cssText;\n\t\t}\n\t}\n}\n",
@@ -20492,7 +20559,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 764,
+    "__docId__": 765,
     "kind": "typedef",
     "name": "WindowDimension",
     "memberof": "src/window.js",
@@ -20531,7 +20598,7 @@
     }
   },
   {
-    "__docId__": 765,
+    "__docId__": 766,
     "kind": "typedef",
     "name": "WindowPosition",
     "memberof": "src/window.js",
@@ -20570,7 +20637,7 @@
     }
   },
   {
-    "__docId__": 766,
+    "__docId__": 767,
     "kind": "typedef",
     "name": "WindowSession",
     "memberof": "src/window.js",
@@ -20639,7 +20706,7 @@
     }
   },
   {
-    "__docId__": 767,
+    "__docId__": 768,
     "kind": "typedef",
     "name": "WindowAttributes",
     "memberof": "src/window.js",
@@ -20854,7 +20921,7 @@
     }
   },
   {
-    "__docId__": 768,
+    "__docId__": 769,
     "kind": "typedef",
     "name": "WindowState",
     "memberof": "src/window.js",
@@ -21009,7 +21076,7 @@
     }
   },
   {
-    "__docId__": 769,
+    "__docId__": 770,
     "kind": "typedef",
     "name": "WindowOptions",
     "memberof": "src/window.js",
@@ -21131,7 +21198,7 @@
     }
   },
   {
-    "__docId__": 770,
+    "__docId__": 771,
     "kind": "variable",
     "name": "windowCount",
     "memberof": "src/window.js",
@@ -21152,7 +21219,7 @@
     "ignore": true
   },
   {
-    "__docId__": 771,
+    "__docId__": 772,
     "kind": "variable",
     "name": "nextZindex",
     "memberof": "src/window.js",
@@ -21173,7 +21240,7 @@
     "ignore": true
   },
   {
-    "__docId__": 772,
+    "__docId__": 773,
     "kind": "variable",
     "name": "lastWindow",
     "memberof": "src/window.js",
@@ -21194,7 +21261,7 @@
     "ignore": true
   },
   {
-    "__docId__": 773,
+    "__docId__": 774,
     "kind": "variable",
     "name": "TEMPLATE",
     "memberof": "src/window.js",
@@ -21214,7 +21281,7 @@
     "ignore": true
   },
   {
-    "__docId__": 774,
+    "__docId__": 775,
     "kind": "class",
     "name": "Window",
     "memberof": "src/window.js",
@@ -21232,7 +21299,7 @@
     ]
   },
   {
-    "__docId__": 775,
+    "__docId__": 776,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/window.js~Window",
@@ -21269,7 +21336,7 @@
     ]
   },
   {
-    "__docId__": 776,
+    "__docId__": 777,
     "kind": "member",
     "name": "id",
     "memberof": "src/window.js~Window",
@@ -21294,7 +21361,7 @@
     }
   },
   {
-    "__docId__": 777,
+    "__docId__": 778,
     "kind": "member",
     "name": "wid",
     "memberof": "src/window.js~Window",
@@ -21319,7 +21386,7 @@
     }
   },
   {
-    "__docId__": 778,
+    "__docId__": 779,
     "kind": "member",
     "name": "parent",
     "memberof": "src/window.js~Window",
@@ -21344,7 +21411,7 @@
     }
   },
   {
-    "__docId__": 779,
+    "__docId__": 780,
     "kind": "member",
     "name": "children",
     "memberof": "src/window.js~Window",
@@ -21363,7 +21430,7 @@
     }
   },
   {
-    "__docId__": 780,
+    "__docId__": 781,
     "kind": "member",
     "name": "core",
     "memberof": "src/window.js~Window",
@@ -21388,7 +21455,7 @@
     }
   },
   {
-    "__docId__": 781,
+    "__docId__": 782,
     "kind": "member",
     "name": "destroyed",
     "memberof": "src/window.js~Window",
@@ -21407,7 +21474,7 @@
     }
   },
   {
-    "__docId__": 782,
+    "__docId__": 783,
     "kind": "member",
     "name": "rendered",
     "memberof": "src/window.js~Window",
@@ -21426,7 +21493,7 @@
     }
   },
   {
-    "__docId__": 783,
+    "__docId__": 784,
     "kind": "member",
     "name": "inited",
     "memberof": "src/window.js~Window",
@@ -21445,7 +21512,7 @@
     }
   },
   {
-    "__docId__": 784,
+    "__docId__": 785,
     "kind": "member",
     "name": "attributes",
     "memberof": "src/window.js~Window",
@@ -21464,7 +21531,7 @@
     }
   },
   {
-    "__docId__": 785,
+    "__docId__": 786,
     "kind": "member",
     "name": "state",
     "memberof": "src/window.js~Window",
@@ -21483,7 +21550,7 @@
     }
   },
   {
-    "__docId__": 786,
+    "__docId__": 787,
     "kind": "member",
     "name": "$element",
     "memberof": "src/window.js~Window",
@@ -21508,7 +21575,7 @@
     }
   },
   {
-    "__docId__": 787,
+    "__docId__": 788,
     "kind": "member",
     "name": "$content",
     "memberof": "src/window.js~Window",
@@ -21527,7 +21594,7 @@
     }
   },
   {
-    "__docId__": 788,
+    "__docId__": 789,
     "kind": "member",
     "name": "$header",
     "memberof": "src/window.js~Window",
@@ -21546,7 +21613,7 @@
     }
   },
   {
-    "__docId__": 789,
+    "__docId__": 790,
     "kind": "member",
     "name": "$icon",
     "memberof": "src/window.js~Window",
@@ -21565,7 +21632,7 @@
     }
   },
   {
-    "__docId__": 790,
+    "__docId__": 791,
     "kind": "member",
     "name": "$title",
     "memberof": "src/window.js~Window",
@@ -21584,7 +21651,7 @@
     }
   },
   {
-    "__docId__": 791,
+    "__docId__": 792,
     "kind": "member",
     "name": "_preventDefaultPosition",
     "memberof": "src/window.js~Window",
@@ -21603,7 +21670,7 @@
     }
   },
   {
-    "__docId__": 792,
+    "__docId__": 793,
     "kind": "member",
     "name": "_loadingDebounce",
     "memberof": "src/window.js~Window",
@@ -21622,7 +21689,7 @@
     }
   },
   {
-    "__docId__": 793,
+    "__docId__": 794,
     "kind": "member",
     "name": "_template",
     "memberof": "src/window.js~Window",
@@ -21642,7 +21709,7 @@
     }
   },
   {
-    "__docId__": 794,
+    "__docId__": 795,
     "kind": "member",
     "name": "_ondestroy",
     "memberof": "src/window.js~Window",
@@ -21667,7 +21734,7 @@
     }
   },
   {
-    "__docId__": 797,
+    "__docId__": 798,
     "kind": "member",
     "name": "_lastCssText",
     "memberof": "src/window.js~Window",
@@ -21686,7 +21753,7 @@
     }
   },
   {
-    "__docId__": 798,
+    "__docId__": 799,
     "kind": "member",
     "name": "_lastAttributes",
     "memberof": "src/window.js~Window",
@@ -21705,7 +21772,7 @@
     }
   },
   {
-    "__docId__": 799,
+    "__docId__": 800,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/window.js~Window",
@@ -21720,7 +21787,7 @@
     "return": null
   },
   {
-    "__docId__": 808,
+    "__docId__": 809,
     "kind": "method",
     "name": "init",
     "memberof": "src/window.js~Window",
@@ -21739,7 +21806,7 @@
     }
   },
   {
-    "__docId__": 810,
+    "__docId__": 811,
     "kind": "method",
     "name": "_initTemplate",
     "memberof": "src/window.js~Window",
@@ -21754,7 +21821,7 @@
     "return": null
   },
   {
-    "__docId__": 815,
+    "__docId__": 816,
     "kind": "method",
     "name": "_initBehavior",
     "memberof": "src/window.js~Window",
@@ -21769,7 +21836,7 @@
     "return": null
   },
   {
-    "__docId__": 816,
+    "__docId__": 817,
     "kind": "method",
     "name": "_checkModal",
     "memberof": "src/window.js~Window",
@@ -21784,7 +21851,7 @@
     "return": null
   },
   {
-    "__docId__": 817,
+    "__docId__": 818,
     "kind": "method",
     "name": "_setClassNames",
     "memberof": "src/window.js~Window",
@@ -21799,7 +21866,7 @@
     "return": null
   },
   {
-    "__docId__": 818,
+    "__docId__": 819,
     "kind": "method",
     "name": "render",
     "memberof": "src/window.js~Window",
@@ -21838,7 +21905,7 @@
     }
   },
   {
-    "__docId__": 820,
+    "__docId__": 821,
     "kind": "method",
     "name": "close",
     "memberof": "src/window.js~Window",
@@ -21866,7 +21933,7 @@
     "params": []
   },
   {
-    "__docId__": 821,
+    "__docId__": 822,
     "kind": "method",
     "name": "focus",
     "memberof": "src/window.js~Window",
@@ -21894,7 +21961,7 @@
     "params": []
   },
   {
-    "__docId__": 822,
+    "__docId__": 823,
     "kind": "method",
     "name": "_focus",
     "memberof": "src/window.js~Window",
@@ -21909,7 +21976,7 @@
     "return": null
   },
   {
-    "__docId__": 823,
+    "__docId__": 824,
     "kind": "method",
     "name": "blur",
     "memberof": "src/window.js~Window",
@@ -21937,7 +22004,7 @@
     "params": []
   },
   {
-    "__docId__": 824,
+    "__docId__": 825,
     "kind": "method",
     "name": "minimize",
     "memberof": "src/window.js~Window",
@@ -21965,7 +22032,7 @@
     "params": []
   },
   {
-    "__docId__": 825,
+    "__docId__": 826,
     "kind": "method",
     "name": "raise",
     "memberof": "src/window.js~Window",
@@ -21993,7 +22060,7 @@
     "params": []
   },
   {
-    "__docId__": 826,
+    "__docId__": 827,
     "kind": "method",
     "name": "maximize",
     "memberof": "src/window.js~Window",
@@ -22021,7 +22088,7 @@
     "params": []
   },
   {
-    "__docId__": 827,
+    "__docId__": 828,
     "kind": "method",
     "name": "restore",
     "memberof": "src/window.js~Window",
@@ -22049,7 +22116,7 @@
     "params": []
   },
   {
-    "__docId__": 828,
+    "__docId__": 829,
     "kind": "method",
     "name": "_maximize",
     "memberof": "src/window.js~Window",
@@ -22088,7 +22155,7 @@
     }
   },
   {
-    "__docId__": 829,
+    "__docId__": 830,
     "kind": "method",
     "name": "resizeFit",
     "memberof": "src/window.js~Window",
@@ -22114,7 +22181,7 @@
     "return": null
   },
   {
-    "__docId__": 830,
+    "__docId__": 831,
     "kind": "method",
     "name": "clampToViewport",
     "memberof": "src/window.js~Window",
@@ -22142,7 +22209,7 @@
     "return": null
   },
   {
-    "__docId__": 831,
+    "__docId__": 832,
     "kind": "method",
     "name": "setIcon",
     "memberof": "src/window.js~Window",
@@ -22168,7 +22235,7 @@
     "return": null
   },
   {
-    "__docId__": 832,
+    "__docId__": 833,
     "kind": "method",
     "name": "setTitle",
     "memberof": "src/window.js~Window",
@@ -22194,7 +22261,7 @@
     "return": null
   },
   {
-    "__docId__": 833,
+    "__docId__": 834,
     "kind": "method",
     "name": "setDimension",
     "memberof": "src/window.js~Window",
@@ -22220,7 +22287,7 @@
     "return": null
   },
   {
-    "__docId__": 834,
+    "__docId__": 835,
     "kind": "method",
     "name": "setPosition",
     "memberof": "src/window.js~Window",
@@ -22258,7 +22325,7 @@
     "return": null
   },
   {
-    "__docId__": 836,
+    "__docId__": 837,
     "kind": "method",
     "name": "setZindex",
     "memberof": "src/window.js~Window",
@@ -22284,7 +22351,7 @@
     "return": null
   },
   {
-    "__docId__": 837,
+    "__docId__": 838,
     "kind": "method",
     "name": "setNextZindex",
     "memberof": "src/window.js~Window",
@@ -22310,7 +22377,7 @@
     "return": null
   },
   {
-    "__docId__": 838,
+    "__docId__": 839,
     "kind": "method",
     "name": "setState",
     "memberof": "src/window.js~Window",
@@ -22361,7 +22428,7 @@
     "return": null
   },
   {
-    "__docId__": 840,
+    "__docId__": 841,
     "kind": "method",
     "name": "gravitate",
     "memberof": "src/window.js~Window",
@@ -22387,7 +22454,7 @@
     "return": null
   },
   {
-    "__docId__": 841,
+    "__docId__": 842,
     "kind": "method",
     "name": "getState",
     "memberof": "src/window.js~Window",
@@ -22422,7 +22489,7 @@
     ]
   },
   {
-    "__docId__": 842,
+    "__docId__": 843,
     "kind": "method",
     "name": "getSession",
     "memberof": "src/window.js~Window",
@@ -22450,7 +22517,7 @@
     "params": []
   },
   {
-    "__docId__": 843,
+    "__docId__": 844,
     "kind": "method",
     "name": "getWindows",
     "memberof": "src/window.js~Window",
@@ -22478,7 +22545,7 @@
     "params": []
   },
   {
-    "__docId__": 844,
+    "__docId__": 845,
     "kind": "method",
     "name": "lastWindow",
     "memberof": "src/window.js~Window",
@@ -22506,7 +22573,7 @@
     "params": []
   },
   {
-    "__docId__": 845,
+    "__docId__": 846,
     "kind": "method",
     "name": "_setState",
     "memberof": "src/window.js~Window",
@@ -22566,7 +22633,7 @@
     "return": null
   },
   {
-    "__docId__": 846,
+    "__docId__": 847,
     "kind": "method",
     "name": "_toggleState",
     "memberof": "src/window.js~Window",
@@ -22628,7 +22695,7 @@
     }
   },
   {
-    "__docId__": 847,
+    "__docId__": 848,
     "kind": "method",
     "name": "_checkNextZindex",
     "memberof": "src/window.js~Window",
@@ -22656,7 +22723,7 @@
     "params": []
   },
   {
-    "__docId__": 848,
+    "__docId__": 849,
     "kind": "method",
     "name": "_updateDOM",
     "memberof": "src/window.js~Window",
@@ -22673,7 +22740,7 @@
     "ignore": true
   },
   {
-    "__docId__": 849,
+    "__docId__": 850,
     "kind": "method",
     "name": "_updateButtons",
     "memberof": "src/window.js~Window",
@@ -22688,7 +22755,7 @@
     "return": null
   },
   {
-    "__docId__": 850,
+    "__docId__": 851,
     "kind": "method",
     "name": "_updateTitle",
     "memberof": "src/window.js~Window",
@@ -22703,7 +22770,7 @@
     "return": null
   },
   {
-    "__docId__": 851,
+    "__docId__": 852,
     "kind": "method",
     "name": "_updateIconStyles",
     "memberof": "src/window.js~Window",
@@ -22718,7 +22785,7 @@
     "return": null
   },
   {
-    "__docId__": 852,
+    "__docId__": 853,
     "kind": "method",
     "name": "_updateHeaderStyles",
     "memberof": "src/window.js~Window",
@@ -22733,7 +22800,7 @@
     "return": null
   },
   {
-    "__docId__": 853,
+    "__docId__": 854,
     "kind": "method",
     "name": "_updateAttributes",
     "memberof": "src/window.js~Window",
@@ -22748,7 +22815,7 @@
     "return": null
   },
   {
-    "__docId__": 855,
+    "__docId__": 856,
     "kind": "method",
     "name": "_updateStyles",
     "memberof": "src/window.js~Window",
