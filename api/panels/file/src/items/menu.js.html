@@ -154,16 +154,16 @@ const makeTree = (core, icon) =&gt; {
 		},
 		{
 			icon,
-			label: &quot;Save Session &amp; Log Out&quot;,
+			label: &quot;Log Out&quot;,
 			data: {
-				action: &quot;saveAndLogOut&quot;,
+				action: &quot;logOut&quot;,
 			},
 		},
 		{
 			icon,
-			label: &quot;Log Out&quot;,
+			label: &quot;Shut Down&quot;,
 			data: {
-				action: &quot;logOut&quot;,
+				action: &quot;shutDown&quot;,
 			},
 		},
 	];
@@ -185,7 +185,7 @@ export default class MenuPanelItem extends PanelItem {
 	render(state, actions) {
 		const icon = this.options.icon || defaultIcon;
 
-		const logout = async (save) =&gt; {
+		const logout = async (save = false) =&gt; {
 			if (save) {
 				await this.core.make(&quot;meeseOS/session&quot;).save();
 			}
@@ -208,9 +208,9 @@ export default class MenuPanelItem extends PanelItem {
 
 					if (name) {
 						this.core.run(name);
-					} else if (action === &quot;saveAndLogOut&quot;) {
-						logout(true);
 					} else if (action === &quot;logOut&quot;) {
+						logout(true);
+					} else if (action === &quot;shutDown&quot;) {
 						logout(false);
 					}
 				},

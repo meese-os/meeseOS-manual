@@ -259,12 +259,19 @@ export default class Session {
 	}
 
 	/**
-	 * Destroys instance
+	 * Destroys the session
+	 * @returns {Promise&lt;boolean&gt;}
 	 */
-	destroy() {}
+	destroy() {
+		Application.destroyAll();
+		return this.core
+			.make(&quot;meeseOS/settings&quot;)
+			.set(&quot;meeseOS/session&quot;, null, [])
+			.save();
+	}
 
 	/**
-	 * Saves session
+	 * Saves the session
 	 * @returns {Promise&lt;boolean&gt;}
 	 */
 	save() {
