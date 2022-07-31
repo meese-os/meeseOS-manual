@@ -3678,6 +3678,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/window.js~window#_updatedom",
+    "class/src/window.js~Window.html#instance-method-_updateDOM",
+    "src/window.js~Window#_updateDOM",
+    "method"
+  ],
+  [
     "src/window.js~window#_updateheaderstyles",
     "class/src/window.js~Window.html#instance-method-_updateHeaderStyles",
     "src/window.js~Window#_updateHeaderStyles",
