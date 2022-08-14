@@ -207,9 +207,7 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/loading-screen/lettercrap.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">const charWidth = 6;
-const charHeight = 10;
-const updateInterval = 150;
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">const updateInterval = 150;
 const likelihoodOfReplacingWord = 0.05;
 const likelihoodOfChangingExistingText = 0.1;
 const randomChoice = (x) =&gt; x[Math.floor(Math.random() * x.length)];
@@ -294,6 +292,22 @@ function getTextContentWithImageAtSize(
 	existingText = existingText ? existingText.replace(/\r?\n|\r/g, &quot;&quot;) : null;
 	const shouldReplaceExisting = () =&gt;
 		!existingText || Math.random() &lt; likelihoodOfChangingExistingText;
+
+	// This code is for scaling the canvas size appropriately for smaller screens
+	let charWidth = 6, charHeight = 10;
+	if (window.innerWidth &lt; 800 &amp;&amp; window.innerWidth &gt; 600) {
+		charWidth *= 0.8;
+		charHeight *= 0.8;
+	} else if (window.innerWidth &lt;= 600 &amp;&amp; window.innerWidth &gt; 500) {
+		charWidth *= 0.5;
+		charHeight *= 0.5;
+	} else if (window.innerWidth &lt;= 500 &amp;&amp; window.innerWidth &gt; 400) {
+		charWidth *= 0.55;
+		charHeight *= 0.55;
+	} else if (window.innerWidth &lt;= 400) {
+		charWidth *= 0.6;
+		charHeight *= 0.6;
+	}
 
 	const canvas = document.createElement(&quot;canvas&quot;);
 	canvas.width = parseInt(width / charWidth);
