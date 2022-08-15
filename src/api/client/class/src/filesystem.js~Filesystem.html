@@ -49,6 +49,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window.js~Window.html">Window</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-archive">archive</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-capabilities">capabilities</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-download">download</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
@@ -96,6 +98,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsOptions">SettingsOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntry">TrayEntry</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntryData">TrayEntryData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSArchiveOptions">VFSArchiveOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSDownloadOptions">VFSDownloadOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span></span></li>
@@ -207,13 +210,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Filesystem from &apos;<span><a href="file/src/filesystem.js.html#lineNumber105">@meeseOS/client/src/filesystem.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Filesystem from &apos;<span><a href="file/src/filesystem.js.html#lineNumber107">@meeseOS/client/src/filesystem.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/filesystem.js.html#lineNumber105">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/filesystem.js.html#lineNumber107">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -272,7 +275,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Create filesystem manager</p>
+        <div data-ice="description"><p>Create filesystem manager.</p>
 </div>
       </div>
     </td>
@@ -424,7 +427,7 @@
       <div>
         
         
-        <div data-ice="description"><p>A wrapper for VFS method requests</p>
+        <div data-ice="description"><p>A wrapper for VFS method requests.</p>
 </div>
       </div>
     </td>
@@ -460,7 +463,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Adds a new mountpoint</p>
+        <div data-ice="description"><p>Adds a new mountpoint.</p>
 </div>
       </div>
     </td>
@@ -489,7 +492,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Creates a new mountpoint based on given properties</p>
+        <div data-ice="description"><p>Creates a new mountpoint based on given properties.</p>
 </div>
       </div>
     </td>
@@ -518,7 +521,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Gets mountpoint from given path</p>
+        <div data-ice="description"><p>Gets mountpoint from given path.</p>
 </div>
       </div>
     </td>
@@ -547,7 +550,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Gets all mountpoints</p>
+        <div data-ice="description"><p>Gets all mountpoints.</p>
 </div>
       </div>
     </td>
@@ -576,7 +579,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Mount given mountpoint</p>
+        <div data-ice="description"><p>Mount given mountpoint.</p>
 </div>
       </div>
     </td>
@@ -605,7 +608,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Mounts all configured mountpoints</p>
+        <div data-ice="description"><p>Mounts all configured mountpoints.</p>
 </div>
       </div>
     </td>
@@ -634,8 +637,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Gets the proxy for VFS methods
-FIXME: Not correct type, but works for documentation atm</p>
+        <div data-ice="description"><p>Gets the proxy for VFS methods.</p>
 </div>
       </div>
     </td>
@@ -664,7 +666,7 @@ FIXME: Not correct type, but works for documentation atm</p>
       <div>
         
         
-        <div data-ice="description"><p>Unmount given filesystem</p>
+        <div data-ice="description"><p>Unmount given filesystem.</p>
 </div>
       </div>
     </td>
@@ -699,7 +701,7 @@ FIXME: Not correct type, but works for documentation atm</p>
       <div>
         
         
-        <div data-ice="description"><p>Gets configured mountpoints</p>
+        <div data-ice="description"><p>Gets configured mountpoints.</p>
 </div>
       </div>
     </td>
@@ -728,7 +730,7 @@ FIXME: Not correct type, but works for documentation atm</p>
       <div>
         
         
-        <div data-ice="description"><p>Internal wrapper for mounting/unmounting by name</p>
+        <div data-ice="description"><p>Internal wrapper for mounting/unmounting by name.</p>
 </div>
       </div>
     </td>
@@ -757,7 +759,7 @@ FIXME: Not correct type, but works for documentation atm</p>
       <div>
         
         
-        <div data-ice="description"><p>Internal wrapper for mounting/unmounting</p>
+        <div data-ice="description"><p>Internal wrapper for mounting/unmounting.</p>
 </div>
       </div>
     </td>
@@ -786,7 +788,7 @@ FIXME: Not correct type, but works for documentation atm</p>
       <div>
         
         
-        <div data-ice="description"><p>Perform a VFS method request</p>
+        <div data-ice="description"><p>Perform a VFS method request.</p>
 </div>
       </div>
     </td>
@@ -815,7 +817,7 @@ FIXME: Not correct type, but works for documentation atm</p>
       <div>
         
         
-        <div data-ice="description"><p>Request action wrapper</p>
+        <div data-ice="description"><p>Request action wrapper.</p>
 </div>
       </div>
     </td>
@@ -846,14 +848,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber112">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber114">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Create filesystem manager</p>
+  <div data-ice="description"><p>Create filesystem manager.</p>
 </div>
 
   
@@ -917,7 +919,7 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber133">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber135">source</a></span></span>
     </span>
   </h3>
 
@@ -961,7 +963,7 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber126">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber128">source</a></span></span>
     </span>
   </h3>
 
@@ -1005,7 +1007,7 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber144">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber146">source</a></span></span>
     </span>
   </h3>
 
@@ -1049,7 +1051,7 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber150">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber152">source</a></span></span>
     </span>
   </h3>
 
@@ -1093,14 +1095,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber157">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber159">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>A wrapper for VFS method requests</p>
+  <div data-ice="description"><p>A wrapper for VFS method requests.</p>
 </div>
 
   
@@ -1140,14 +1142,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber189">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber191">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Adds a new mountpoint</p>
+  <div data-ice="description"><p>Adds a new mountpoint.</p>
 </div>
 
   
@@ -1221,14 +1223,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber356">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber365">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Creates a new mountpoint based on given properties</p>
+  <div data-ice="description"><p>Creates a new mountpoint based on given properties.</p>
 </div>
 
   
@@ -1294,14 +1296,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber388">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber397">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Gets mountpoint from given path</p>
+  <div data-ice="description"><p>Gets mountpoint from given path.</p>
 </div>
 
   
@@ -1367,14 +1369,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber412">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber421">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Gets all mountpoints</p>
+  <div data-ice="description"><p>Gets all mountpoints.</p>
 </div>
 
   
@@ -1441,14 +1443,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber206">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber208">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Mount given mountpoint</p>
+  <div data-ice="description"><p>Mount given mountpoint.</p>
 </div>
 
   
@@ -1526,14 +1528,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber170">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber172">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Mounts all configured mountpoints</p>
+  <div data-ice="description"><p>Mounts all configured mountpoints.</p>
 </div>
 
   
@@ -1600,15 +1602,15 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber278">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber280">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Gets the proxy for VFS methods
-FIXME: Not correct type, but works for documentation atm</p>
+  <div data-ice="description"><p>Gets the proxy for VFS methods.
+@todo: Not the correct type</p>
 </div>
 
   
@@ -1658,14 +1660,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber220">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber222">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Unmount given filesystem</p>
+  <div data-ice="description"><p>Unmount given filesystem.</p>
 </div>
 
   
@@ -1745,14 +1747,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber443">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber452">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Gets configured mountpoints</p>
+  <div data-ice="description"><p>Gets configured mountpoints.</p>
 </div>
 
   
@@ -1801,14 +1803,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber256">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber258">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Internal wrapper for mounting/unmounting by name</p>
+  <div data-ice="description"><p>Internal wrapper for mounting/unmounting by name.</p>
 </div>
 
   
@@ -1882,14 +1884,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber232">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber234">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Internal wrapper for mounting/unmounting</p>
+  <div data-ice="description"><p>Internal wrapper for mounting/unmounting.</p>
 </div>
 
   
@@ -1963,14 +1965,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber290">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber292">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Perform a VFS method request</p>
+  <div data-ice="description"><p>Perform a VFS method request.</p>
 </div>
 
   
@@ -2043,14 +2045,14 @@ FIXME: Not correct type, but works for documentation atm</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber323">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/filesystem.js.html#lineNumber325">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Request action wrapper</p>
+  <div data-ice="description"><p>Request action wrapper.</p>
 </div>
 
   

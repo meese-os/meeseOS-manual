@@ -49,6 +49,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window.js~Window.html">Window</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-archive">archive</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-capabilities">capabilities</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-download">download</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
@@ -96,6 +98,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsOptions">SettingsOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntry">TrayEntry</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntryData">TrayEntryData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSArchiveOptions">VFSArchiveOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSDownloadOptions">VFSDownloadOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span></span></li>
@@ -236,6 +239,7 @@
  * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * @license Simplified BSD License
  */
+
 import Cookies from &quot;js-cookie&quot;;
 import localStorageAuth from &quot;./adapters/auth/localstorage&quot;;
 import logger from &quot;./logger&quot;;
@@ -373,9 +377,6 @@ export default class Auth {
 	 * @param {Boolean} [reload=false] Reload afterwards
 	 */
 	async shutdown(reload = false) {
-		// Destroys the current session
-		await this.core.make(&quot;meeseOS/session&quot;).destroy();
-
 		try {
 			this.core.destroy();
 		} catch (e) {
@@ -413,11 +414,9 @@ export default class Auth {
 			return this.login(login);
 		} else if (settings.enabled) {
 			const cookie = Cookies.get(settings.name);
-			// IDEA: Transition to a password hash in the cookie, not the actual password
-
 			if (cookie) {
 				if (this.core.config(&quot;development&quot;)) {
-					logger.warn(&quot;Authentication cookie:&quot;, cookie);
+					logger.debug(&quot;Authentication cookie:&quot;, cookie);
 				}
 
 				return this.login(JSON.parse(cookie));

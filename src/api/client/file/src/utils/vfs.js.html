@@ -49,6 +49,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window.js~Window.html">Window</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-archive">archive</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-capabilities">capabilities</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-download">download</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
@@ -96,6 +98,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsOptions">SettingsOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntry">TrayEntry</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntryData">TrayEntryData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSArchiveOptions">VFSArchiveOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSDownloadOptions">VFSDownloadOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span></span></li>
@@ -238,7 +241,7 @@
  */
 
 /**
- * Get parent directory
+ * Get parent directory.
  * @param {String} path Directory
  * @returns {String} Parent directory
  */
@@ -251,7 +254,7 @@ export const parentDirectory = (path) =&gt;
 		.replace(/(\/+)?$/, &quot;/&quot;);
 
 /**
- * Joins paths
+ * Joins paths.
  * @param {String[]} args paths
  * @returns {String}
  */
@@ -266,7 +269,7 @@ export const pathJoin = (...args) =&gt;
 		.join(&quot;/&quot;);
 
 /**
- * Sort by locale string
+ * Sort by locale string.
  */
 const sortString = (k, d) =&gt; (a, b) =&gt;
 	d === &quot;asc&quot;
@@ -274,7 +277,7 @@ const sortString = (k, d) =&gt; (a, b) =&gt;
 		: String(b[k]).localeCompare(a[k]);
 
 /**
- * Sort by date
+ * Sort by date.
  */
 const sortDate = (k, d) =&gt; (a, b) =&gt;
 	d === &quot;asc&quot;
@@ -282,13 +285,13 @@ const sortDate = (k, d) =&gt; (a, b) =&gt;
 		: new Date(b[k]) &gt; new Date(a[k]);
 
 /**
- * Sort by educated guess
+ * Sort by educated guess.
  */
 const sortDefault = (k, d) =&gt; (a, b) =&gt;
 	a[k] &lt; b[k] ? -1 : a[k] &gt; b[k] ? (d === &quot;asc&quot; ? 1 : 0) : d === &quot;asc&quot; ? 0 : 1;
 
 /**
- * Sorts an array of files
+ * Sorts an array of files.
  */
 const sortFn = (t) =&gt; {
 	if (t === &quot;string&quot;) {
@@ -301,7 +304,7 @@ const sortFn = (t) =&gt; {
 };
 
 /**
- * Map of sorters from readdir attributes
+ * Map of sorters from readdir attributes.
  */
 const sortMap = {
 	size: sortFn(&quot;number&quot;),
@@ -311,7 +314,7 @@ const sortMap = {
 };
 
 /**
- * Creates &quot;special&quot; directory entries
+ * Creates &quot;special&quot; directory entries.
  * @param {String} path The path to the readdir root
  * @returns {Object[]}
  */
@@ -337,6 +340,7 @@ const createSpecials = (path) =&gt; {
 
 /**
  * Creates a FileReader (promisified)
+ *
  * @param {String} method The method to call
  * @param {ArrayBuffer} ab The ArrayBuffer
  * @param {String} mime The MIME type
@@ -352,10 +356,10 @@ const createFileReader = (method, ab, mime) =&gt;
 	});
 
 /**
- * Converts a number (bytez) into human-readable string
+ * Converts a number (bytes) into human-readable string.
  * @param {Number} bytes Input
  * @param {Boolean} [si=false] Use SI units
- * @returns {String}
+ * @returns {String} The human-readable file size
  */
 export const humanFileSize = (bytes, si = false) =&gt; {
 	if (isNaN(bytes) || typeof bytes !== &quot;number&quot;) {
@@ -371,17 +375,18 @@ export const humanFileSize = (bytes, si = false) =&gt; {
 		return bytes + &quot; B&quot;;
 	}
 
-	let u = -1;
+	let unitIndex = -1;
 	do {
 		bytes /= thresh;
-		++u;
+		++unitIndex;
 	} while (bytes &gt;= thresh);
 
-	return `${bytes.toFixed(1)} ${units[u]}`;
+	return `${bytes.toFixed(1)} ${units[unitIndex]}`;
 };
 
 /**
- * Transforms a readdir result
+ * Transforms a readdir result.
+ *
  * @param {Object} root The path to the readdir root
  * @param Object[] files An array of readdir results
  * @param {Object} options Options
@@ -443,11 +448,12 @@ export const transformReaddir = ({ path }, files, options = {}) =&gt; {
 };
 
 /**
- * Transform an ArrayBuffer
+ * Transform an ArrayBuffer into a specified type.
+ *
  * @param {ArrayBuffer} ab The ArrayBuffer
  * @param {String} mime The MIME type
  * @param {String} type Transform to this type
- * @returns {DOMString|string|Blob|ArrayBuffer}
+ * @returns {DOMString|String|Blob|ArrayBuffer}
  */
 export const transformArrayBuffer = (ab, mime, type) =&gt; {
 	if (type === &quot;string&quot;) {
@@ -462,9 +468,9 @@ export const transformArrayBuffer = (ab, mime, type) =&gt; {
 };
 
 /**
- * Gets an icon from file stat
+ * Gets an icon from file stat.
  * @param {Object} file The file stat object
- * @returns {String|object}
+ * @returns {String|Object}
  */
 export const getFileIcon = (map) =&gt; {
 	const find = (file) =&gt; {
@@ -480,7 +486,7 @@ export const getFileIcon = (map) =&gt; {
 };
 
 /**
- * Creates a file iter for scandir
+ * Creates a file iter for scandir.
  * @param {Object} stat file stat
  * @returns {Object}
  */
@@ -500,14 +506,14 @@ export const createFileIter = (stat) =&gt; ({
 });
 
 /**
- * Get basename of a file
+ * Get basename of a file.
  * @param {String} path The path
  * @returns {String}
  */
 export const basename = (path) =&gt; path.split(&quot;/&quot;).reverse()[0];
 
 /**
- * Get path of a file
+ * Get path of a file.
  * @param {String} path The path
  * @returns {String}
  */
@@ -523,7 +529,7 @@ export const pathname = (path) =&gt; {
 };
 
 /**
- * Gets prefix from a VFS path
+ * Gets prefix from a VFS path.
  * @param {String} str Input
  * @returns {String}
  */
@@ -538,7 +544,7 @@ export const parseMountpointPrefix = (str) =&gt; {
 };
 
 /**
- * Filters a mountpoint by user groups
+ * Filters a mountpoint by user groups.
  * @returns {Boolean}
  */
 export const filterMountByGroups =
@@ -552,14 +558,14 @@ export const filterMountByGroups =
 
 /**
  * Creates a list of VFS events to simulate server-side
- * file watching
+ * file watching.
  * @returns {Object[]}
  */
 export const createWatchEvents = (method, args) =&gt; {
 	const events = [];
 	const options = args[args.length - 1] || {};
-
 	const movement = [&quot;move&quot;, &quot;rename&quot;, &quot;copy&quot;].indexOf(method) !== -1;
+	const path = (i) =&gt; (typeof i === &quot;string&quot; ? i : i.path);
 	const invalid =
 		[
 			&quot;readdir&quot;,
@@ -570,7 +576,6 @@ export const createWatchEvents = (method, args) =&gt; {
 			&quot;search&quot;,
 			&quot;stat&quot;,
 		].indexOf(method) !== -1;
-	const path = (i) =&gt; (typeof i === &quot;string&quot; ? i : i.path);
 
 	if (!invalid) {
 		const obj = {
@@ -579,11 +584,14 @@ export const createWatchEvents = (method, args) =&gt; {
 			pid: options.pid,
 		};
 
+		let target = args[0];
+		if (Array.isArray(args[0])) target = target[0];
+
 		events.push([
 			&quot;meeseOS/vfs:directoryChanged&quot;,
 			{
 				...obj,
-				path: pathname(path(args[0])),
+				path: pathname(path(target)),
 			},
 		]);
 

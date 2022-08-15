@@ -112,7 +112,7 @@ const formidable = require(&quot;formidable&quot;);
 const { Stream } = require(&quot;stream&quot;);
 
 /**
- * A map of error codes
+ * A map of error codes.
  */
 const errorCodes = {
 	ENOENT: 404,
@@ -120,14 +120,14 @@ const errorCodes = {
 };
 
 /**
- * Gets prefix of a VFS path
+ * Gets prefix of a VFS path.
  * @param {String} path
  * @returns {String}
  */
 const getPrefix = (path) =&gt; String(path).split(&quot;:&quot;)[0];
 
 /**
- * Sanitizes a path
+ * Sanitizes a path.
  * @param {String} path
  * @returns {String}
  */
@@ -146,20 +146,32 @@ const sanitize = (path) =&gt; {
 };
 
 /**
- * Gets the stream from a HTTP request
+ * Gets the stream from an HTTP request.
+ * @param {Request} req
  */
 const streamFromRequest = (req) =&gt; {
 	const isStream = req.files.upload instanceof Stream;
 	return isStream
 		? req.files.upload
-		: fs.createReadStream(req.files.upload.path);
+		: fs.createReadStream(req.files.upload.filepath);
 };
 
+/**
+ * @param {Array} arr
+ * @param {Array} compare
+ * @param {Boolean} strict
+ * @returns {Boolean}
+ */
 const validateAll = (arr, compare, strict = true) =&gt;
 	arr[strict ? &quot;every&quot; : &quot;some&quot;]((g) =&gt; compare.indexOf(g) !== -1);
 
 /**
- * Validates array groups
+ * Validates array groups.
+ *
+ * @param {Array} groups
+ * @param {Array} userGroups
+ * @param {Boolean} strict
+ * @returns {Boolean}
  */
 const validateNamedGroups = (groups, userGroups, strict) =&gt; {
 	const namedGroups = groups.filter((g) =&gt; typeof g === &quot;string&quot;);
@@ -170,7 +182,13 @@ const validateNamedGroups = (groups, userGroups, strict) =&gt; {
 };
 
 /**
- * Validates matp of groups based on method:[group,...]
+ * Validates map of groups based on method:[group,...]
+ *
+ * @param {Array} groups
+ * @param {Array} userGroups
+ * @param {String} method
+ * @param {Boolean} strict
+ * @returns {Boolean}
  */
 const validateMethodGroups = (groups, userGroups, method, strict) =&gt; {
 	const methodGroups = groups.find((g) =&gt;
@@ -183,7 +201,13 @@ const validateMethodGroups = (groups, userGroups, method, strict) =&gt; {
 };
 
 /**
- * Validates groups
+ * Validates groups.
+ *
+ * @param {Array} userGroups
+ * @param {String} method
+ * @param {Object} mountpoint
+ * @param {Boolean} strict
+ * @returns {Boolean}
  */
 const validateGroups = (userGroups, method, mountpoint, strict) =&gt; {
 	const groups = mountpoint.attributes.groups || [];
@@ -203,7 +227,13 @@ const validateGroups = (userGroups, method, mountpoint, strict) =&gt; {
 };
 
 /**
- * Checks permissions for given mountpoint
+ * Checks permissions for given mountpoint.
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @param {String} method
+ * @param {Boolean} readOnly
+ * @param {Boolean} strict
  */
 const checkMountpointPermission = (req, res, method, readOnly, strict) =&gt; {
 	const userGroups = req.session.user.groups;
@@ -239,7 +269,7 @@ const checkMountpointPermission = (req, res, method, readOnly, strict) =&gt; {
 };
 
 /**
- * Creates a new custom Error
+ * Creates a new custom Error.
  * @param {Number} code
  * @param {String} message
  * @return {Error}
@@ -251,7 +281,7 @@ const createError = (code, message) =&gt; {
 };
 
 /**
- * Resolves a mountpoint
+ * Resolves a mountpoint.
  * @param {Core} core MeeseOS Core instance reference
  * @returns {Object}
  */
@@ -273,7 +303,9 @@ const mountpointResolver = (core) =&gt;
 	};
 
 /**
- * Parses URL body
+ * Parses URL body.
+ * @param {Request} req
+ * @returns {Promise&lt;Object&gt;}
  */
 const parseGet = (req) =&gt; {
 	// skipcq: JS-0272
@@ -283,8 +315,8 @@ const parseGet = (req) =&gt; {
 };
 
 /**
- * Parses JSON body
- * @param {Object} req
+ * Parses JSON body.
+ * @param {Request} req
  * @returns {Object|Boolean}
  */
 const parseJson = (req) =&gt; {
@@ -299,17 +331,19 @@ const parseJson = (req) =&gt; {
 };
 
 /**
- * Parses form body
+ * Parses form body.
  *
- * @param {Object} req
+ * @param {Request} req
  * @param {Number} config.maxFieldsSize
  * @param {Number} config.maxFileSize
  * @returns {Promise&lt;any&gt;}
  */
 const parseFormData = (req, { maxFieldsSize, maxFileSize }) =&gt; {
-	const form = new formidable.IncomingForm();
-	form.maxFieldsSize = maxFieldsSize;
-	form.maxFileSize = maxFileSize;
+	const form = formidable({
+		multiples: true,
+		maxFieldsSize,
+		maxFileSize,
+	});
 
 	return new Promise((resolve, reject) =&gt; {
 		form.parse(req, (err, fields, files) =&gt; {
@@ -319,7 +353,7 @@ const parseFormData = (req, { maxFieldsSize, maxFileSize }) =&gt; {
 };
 
 /**
- * Middleware for handling HTTP requests
+ * Middleware for handling HTTP requests.
  * @param {Object} config
  * @returns {Promise&lt;any&gt;}
  */
@@ -337,7 +371,7 @@ const parseFields = (config) =&gt;
 
 /**
  * A map of methods and their arguments.
- * Used for direct access via API
+ * Used for direct access via API.
  */
 const methodArguments = {
 	realpath: [&quot;path&quot;],
@@ -352,6 +386,7 @@ const methodArguments = {
 	search: [&quot;root&quot;, &quot;pattern&quot;],
 	copy: [&quot;from&quot;, &quot;to&quot;],
 	rename: [&quot;from&quot;, &quot;to&quot;],
+	archive: [&quot;selection&quot;],
 };
 
 module.exports = {

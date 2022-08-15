@@ -198,9 +198,21 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "@meeseos/client/src/vfs.js~archive",
+    "function/index.html#static-function-archive",
+    "<span>archive</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/utils/vfs.js~basename",
     "function/index.html#static-function-basename",
     "<span>basename</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "function"
+  ],
+  [
+    "@meeseos/client/src/vfs.js~capabilities",
+    "function/index.html#static-function-capabilities",
+    "<span>capabilities</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
     "function"
   ],
   [
@@ -3358,6 +3370,12 @@ window.esdocSearchIndex = [
     "file/src/vfs.js.html",
     "src/vfs.js",
     "file"
+  ],
+  [
+    "src/vfs.js~vfsarchiveoptions",
+    "typedef/index.html#static-typedef-VFSArchiveOptions",
+    "src/vfs.js~VFSArchiveOptions",
+    "typedef"
   ],
   [
     "src/vfs.js~vfsdownloadoptions",

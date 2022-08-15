@@ -49,6 +49,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window.js~Window.html">Window</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-archive">archive</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-capabilities">capabilities</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-download">download</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
@@ -96,6 +98,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsOptions">SettingsOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntry">TrayEntry</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntryData">TrayEntryData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSArchiveOptions">VFSArchiveOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSDownloadOptions">VFSDownloadOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span></span></li>
@@ -811,7 +814,65 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span><span class="code" data-ice="signature">(from: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, to: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-archive">archive</a></span></span><span class="code" data-ice="signature">(selection: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span><span>[]</span></span> | <span><span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span><span>[]</span></span>, options: <span><a href="typedef/index.html#static-typedef-VFSArchiveOptions">VFSArchiveOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Compresses or decompresses a selection of files.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-function">F</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-capabilities">capabilities</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span><span>[]</span></span>&gt;</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Get VFS capabilities.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-function">F</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span><span class="code" data-ice="signature">(from: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, to: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
@@ -846,7 +907,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initiates a native browser download of the file</p>
+        <div data-ice="description"><p>Initiates a native browser download of the file.</p>
 </div>
       </div>
     </td>
@@ -869,13 +930,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Checks if path exists</p>
+        <div data-ice="description"><p>Checks if path exists.</p>
 </div>
       </div>
     </td>
@@ -898,13 +959,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-mkdir">mkdir</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-mkdir">mkdir</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Creates a directory</p>
+        <div data-ice="description"><p>Creates a directory.</p>
 </div>
       </div>
     </td>
@@ -927,13 +988,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-readdir">readdir</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span><span>[]</span></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-readdir">readdir</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span><span>[]</span></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Read a directory</p>
+        <div data-ice="description"><p>Read a directory.</p>
 </div>
       </div>
     </td>
@@ -962,7 +1023,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Reads a file</p>
+        <div data-ice="description"><p>Reads a file.</p>
 </div>
       </div>
     </td>
@@ -985,7 +1046,7 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-rename">rename</a></span></span><span class="code" data-ice="signature">(from: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, to: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-rename">rename</a></span></span><span class="code" data-ice="signature">(from: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, to: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
@@ -1014,13 +1075,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-search">search</a></span></span><span class="code" data-ice="signature">(root: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, pattern: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span><span>[]</span></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-search">search</a></span></span><span class="code" data-ice="signature">(root: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, pattern: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span><span>[]</span></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Searches for files and folders</p>
+        <div data-ice="description"><p>Searches for files and folders.</p>
 </div>
       </div>
     </td>
@@ -1043,13 +1104,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-stat">stat</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-stat">stat</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Gets the stats of the file or directory</p>
+        <div data-ice="description"><p>Gets the stats of the file or directory.</p>
 </div>
       </div>
     </td>
@@ -1072,13 +1133,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-touch">touch</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-touch">touch</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Touches a file</p>
+        <div data-ice="description"><p>Touches a file.</p>
 </div>
       </div>
     </td>
@@ -1101,13 +1162,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-unlink">unlink</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-unlink">unlink</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Removes a file or directory</p>
+        <div data-ice="description"><p>Removes a file or directory.</p>
 </div>
       </div>
     </td>
@@ -1130,13 +1191,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-url">url</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-url">url</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Gets an URL to a resource defined by file</p>
+        <div data-ice="description"><p>Gets an URL to a resource defined by file.</p>
 </div>
       </div>
     </td>
@@ -1159,13 +1220,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-writefile">writefile</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></span> | <span>Blob</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-writefile">writefile</a></span></span><span class="code" data-ice="signature">(path: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></span> | <span>Blob</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Writes a file</p>
+        <div data-ice="description"><p>Writes a file.</p>
 </div>
       </div>
     </td>
@@ -1188,13 +1249,13 @@
           <span data-ice="kind-icon" class="kind-variable">V</span>
           
           
-          <span class="code" data-ice="name"><span><a href="variable/index.html#static-variable-move">move</a></span></span><span class="code" data-ice="signature">(from: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, to: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;: <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="variable/index.html#static-variable-move">move</a></span></span><span class="code" data-ice="signature">(from: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, to: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span>, options: <span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;: <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Alias of &apos;readme&apos;</p>
+        <div data-ice="description"><p>Alias of &apos;rename&apos;</p>
 </div>
       </div>
     </td>
@@ -2172,6 +2233,35 @@
           <span data-ice="kind-icon" class="kind-typedef">T</span>
           
           
+          <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSArchiveOptions">VFSArchiveOptions</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>VFS Archive Options</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-typedef">T</span>
+          
+          
           <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSDownloadOptions">VFSDownloadOptions</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
@@ -2734,13 +2824,13 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>System VFS adapter</p>
+        <div data-ice="description"><p>System VFS adapter.</p>
 </div>
       </div>
     </td>
@@ -2763,7 +2853,7 @@
           <span data-ice="kind-icon" class="kind-variable">V</span>
           
           
-          <span class="code" data-ice="name"><span><a href="variable/index.html#static-variable-nullAdapter">nullAdapter</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): {&quot;readdir&quot;: <span>*</span>, &quot;readfile&quot;: <span>*</span>, &quot;writefile&quot;: <span>*</span>, &quot;copy&quot;: <span>*</span>, &quot;rename&quot;: <span>*</span>, &quot;mkdir&quot;: <span>*</span>, &quot;unlink&quot;: <span>*</span>, &quot;exists&quot;: <span>*</span>, &quot;stat&quot;: <span>*</span>, &quot;url&quot;: <span>*</span>, &quot;mount&quot;: <span>*</span>, &quot;unmount&quot;: <span>*</span>, &quot;search&quot;: <span>*</span>, &quot;touch&quot;: <span>*</span>}</span>
+          <span class="code" data-ice="name"><span><a href="variable/index.html#static-variable-nullAdapter">nullAdapter</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): {&quot;capabilities&quot;: <span>*</span>, &quot;readdir&quot;: <span>*</span>, &quot;readfile&quot;: <span>*</span>, &quot;writefile&quot;: <span>*</span>, &quot;copy&quot;: <span>*</span>, &quot;rename&quot;: <span>*</span>, &quot;mkdir&quot;: <span>*</span>, &quot;unlink&quot;: <span>*</span>, &quot;exists&quot;: <span>*</span>, &quot;stat&quot;: <span>*</span>, &quot;url&quot;: <span>*</span>, &quot;mount&quot;: <span>*</span>, &quot;unmount&quot;: <span>*</span>, &quot;search&quot;: <span>*</span>, &quot;touch&quot;: <span>*</span>, &quot;archive&quot;: <span>*</span>}</span>
         </p>
       </div>
       <div>
@@ -4082,7 +4172,7 @@ TODO: typedef</p>
       <div>
         
         
-        <div data-ice="description"><p>Make a HTTP request</p>
+        <div data-ice="description"><p>Make an HTTP request.</p>
 </div>
       </div>
     </td>
@@ -4256,7 +4346,7 @@ TODO: typedef</p>
       <div>
         
         
-        <div data-ice="description"><p>Get basename of a file</p>
+        <div data-ice="description"><p>Get basename of a file.</p>
 </div>
       </div>
     </td>
@@ -4285,7 +4375,7 @@ TODO: typedef</p>
       <div>
         
         
-        <div data-ice="description"><p>Creates a file iter for scandir</p>
+        <div data-ice="description"><p>Creates a file iter for scandir.</p>
 </div>
       </div>
     </td>
@@ -4315,7 +4405,7 @@ TODO: typedef</p>
         
         
         <div data-ice="description"><p>Creates a list of VFS events to simulate server-side
-file watching</p>
+file watching.</p>
 </div>
       </div>
     </td>
@@ -4344,7 +4434,7 @@ file watching</p>
       <div>
         
         
-        <div data-ice="description"><p>Filters a mountpoint by user groups</p>
+        <div data-ice="description"><p>Filters a mountpoint by user groups.</p>
 </div>
       </div>
     </td>
@@ -4367,13 +4457,13 @@ file watching</p>
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-getFileIcon">getFileIcon</a></span></span><span class="code" data-ice="signature">(file: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span></span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-getFileIcon">getFileIcon</a></span></span><span class="code" data-ice="signature">(file: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Gets an icon from file stat</p>
+        <div data-ice="description"><p>Gets an icon from file stat.</p>
 </div>
       </div>
     </td>
@@ -4402,7 +4492,7 @@ file watching</p>
       <div>
         
         
-        <div data-ice="description"><p>Converts a number (bytez) into human-readable string</p>
+        <div data-ice="description"><p>Converts a number (bytes) into human-readable string.</p>
 </div>
       </div>
     </td>
@@ -4431,7 +4521,7 @@ file watching</p>
       <div>
         
         
-        <div data-ice="description"><p>Get parent directory</p>
+        <div data-ice="description"><p>Get parent directory.</p>
 </div>
       </div>
     </td>
@@ -4460,7 +4550,7 @@ file watching</p>
       <div>
         
         
-        <div data-ice="description"><p>Gets prefix from a VFS path</p>
+        <div data-ice="description"><p>Gets prefix from a VFS path.</p>
 </div>
       </div>
     </td>
@@ -4489,7 +4579,7 @@ file watching</p>
       <div>
         
         
-        <div data-ice="description"><p>Joins paths</p>
+        <div data-ice="description"><p>Joins paths.</p>
 </div>
       </div>
     </td>
@@ -4518,7 +4608,7 @@ file watching</p>
       <div>
         
         
-        <div data-ice="description"><p>Get path of a file</p>
+        <div data-ice="description"><p>Get path of a file.</p>
 </div>
       </div>
     </td>
@@ -4541,13 +4631,13 @@ file watching</p>
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-transformArrayBuffer">transformArrayBuffer</a></span></span><span class="code" data-ice="signature">(ab: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></span>, mime: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, type: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span>DOMString</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span>Blob</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></span></span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-transformArrayBuffer">transformArrayBuffer</a></span></span><span class="code" data-ice="signature">(ab: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></span>, mime: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, type: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span>DOMString</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span> | <span>Blob</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Transform an ArrayBuffer</p>
+        <div data-ice="description"><p>Transform an ArrayBuffer into a specified type.</p>
 </div>
       </div>
     </td>
@@ -4576,7 +4666,7 @@ file watching</p>
       <div>
         
         
-        <div data-ice="description"><p>Transforms a readdir result</p>
+        <div data-ice="description"><p>Transforms a readdir result.</p>
 </div>
       </div>
     </td>

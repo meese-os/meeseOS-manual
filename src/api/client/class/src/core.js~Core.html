@@ -49,6 +49,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window.js~Window.html">Window</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-archive">archive</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-capabilities">capabilities</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-copy">copy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-download">download</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
@@ -96,6 +98,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SettingsOptions">SettingsOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntry">TrayEntry</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TrayEntryData">TrayEntryData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSArchiveOptions">VFSArchiveOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSDownloadOptions">VFSDownloadOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSFile">VFSFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VFSMethodOptions">VFSMethodOptions</a></span></span></li>
@@ -207,13 +210,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Core from &apos;<span><a href="file/src/core.js.html#lineNumber77">@meeseOS/client/src/core.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Core from &apos;<span><a href="file/src/core.js.html#lineNumber78">@meeseOS/client/src/core.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/core.js.html#lineNumber77">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/core.js.html#lineNumber78">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -810,7 +813,7 @@ to all applications matching given filter</p>
       <div>
         
         
-        <div data-ice="description"><p>Make a HTTP request</p>
+        <div data-ice="description"><p>Make an HTTP request</p>
 </div>
       </div>
     </td>
@@ -1108,7 +1111,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber83">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber84">source</a></span></span>
     </span>
   </h3>
 
@@ -1181,7 +1184,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber125">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber126">source</a></span></span>
     </span>
   </h3>
 
@@ -1225,7 +1228,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber132">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber133">source</a></span></span>
     </span>
   </h3>
 
@@ -1269,7 +1272,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber118">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber119">source</a></span></span>
     </span>
   </h3>
 
@@ -1313,7 +1316,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber111">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber112">source</a></span></span>
     </span>
   </h3>
 
@@ -1357,7 +1360,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber138">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber139">source</a></span></span>
     </span>
   </h3>
 
@@ -1401,7 +1404,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber175">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber176">source</a></span></span>
     </span>
   </h3>
 
@@ -1445,7 +1448,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber146">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber147">source</a></span></span>
     </span>
   </h3>
 
@@ -1490,7 +1493,7 @@ TODO: typedef</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber153">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber154">source</a></span></span>
     </span>
   </h3>
 
@@ -1534,7 +1537,7 @@ TODO: typedef</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber105">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber106">source</a></span></span>
     </span>
   </h3>
 
@@ -1581,7 +1584,7 @@ TODO: typedef</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber215">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber216">source</a></span></span>
     </span>
   </h3>
 
@@ -1637,7 +1640,7 @@ TODO: typedef</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber625">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber631">source</a></span></span>
     </span>
   </h3>
 
@@ -1726,7 +1729,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber184">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber185">source</a></span></span>
     </span>
   </h3>
 
@@ -1782,7 +1785,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber665">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber671">source</a></span></span>
     </span>
   </h3>
 
@@ -1839,7 +1842,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber682">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber688">source</a></span></span>
     </span>
   </h3>
 
@@ -1900,7 +1903,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber674">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber680">source</a></span></span>
     </span>
   </h3>
 
@@ -1980,7 +1983,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber608">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber614">source</a></span></span>
     </span>
   </h3>
 
@@ -2067,7 +2070,7 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber525">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber531">source</a></span></span>
     </span>
   </h3>
 
@@ -2147,14 +2150,14 @@ to all applications matching given filter</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber484">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber485">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Make a HTTP request</p>
+  <div data-ice="description"><p>Make an HTTP request</p>
 <p>This is a wrapper for making a &apos;fetch&apos; request with some helpers
 and integration with MeeseOS</p>
 </div>
@@ -2244,7 +2247,7 @@ and integration with MeeseOS</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber512">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber518">source</a></span></span>
     </span>
   </h3>
 
@@ -2331,7 +2334,7 @@ and integration with MeeseOS</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber644">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber650">source</a></span></span>
     </span>
   </h3>
 
@@ -2412,7 +2415,7 @@ This will be interpreted as an event in the server core.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber657">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber663">source</a></span></span>
     </span>
   </h3>
 
@@ -2473,7 +2476,7 @@ This will be interpreted as an event in the server core.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber272">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber273">source</a></span></span>
     </span>
   </h3>
 
@@ -2529,7 +2532,7 @@ This will be interpreted as an event in the server core.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber468">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber469">source</a></span></span>
     </span>
   </h3>
 
@@ -2636,7 +2639,7 @@ to the correct resource.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber327">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber328">source</a></span></span>
     </span>
   </h3>
 
@@ -2680,7 +2683,7 @@ to the correct resource.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber381">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber382">source</a></span></span>
     </span>
   </h3>
 
@@ -2753,7 +2756,7 @@ to the correct resource.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber434">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber435">source</a></span></span>
     </span>
   </h3>
 
@@ -2797,7 +2800,7 @@ to the correct resource.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber558">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core.js.html#lineNumber564">source</a></span></span>
     </span>
   </h3>
 
