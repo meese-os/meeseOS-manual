@@ -721,7 +721,7 @@
     "__docId__": 54,
     "kind": "file",
     "name": "src/adapters/vfs/system.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst path = require(\"path\");\nconst fh = require(\"filehound\");\nconst chokidar = require(\"chokidar\");\n\n/**\n * Creates an object readable by client\n * @param {Core} core MeeseOS Core instance reference\n * @param {String} realRoot\n * @param {String} file\n * @returns {Object}\n */\nconst createFileIter = (core, realRoot, file) => {\n\tconst filename = path.basename(file);\n\tconst realPath = path.join(realRoot, filename);\n\tconst { mime } = core.make(\"meeseOS/vfs\");\n\n\tconst createStat = (stat) => ({\n\t\tisDirectory: stat.isDirectory(),\n\t\tisFile: stat.isFile(),\n\t\tmime: stat.isFile() ? mime(realPath) : null,\n\t\tsize: stat.size,\n\t\tpath: file,\n\t\tfilename,\n\t\tstat,\n\t});\n\n\treturn fs\n\t\t.stat(realPath)\n\t\t.then(createStat)\n\t\t.catch((error) => {\n\t\t\tcore.logger.warn(error);\n\n\t\t\treturn createStat({\n\t\t\t\tisDirectory: () => false,\n\t\t\t\tisFile: () => true,\n\t\t\t\tsize: 0,\n\t\t\t});\n\t\t});\n};\n\n/**\n * Segment value map\n */\nconst segments = {\n\troot: {\n\t\tdynamic: false,\n\t\tfn: () => process.cwd(),\n\t},\n\n\tvfs: {\n\t\tdynamic: false,\n\t\tfn: (core) => core.config(\"vfs.root\", process.cwd()),\n\t},\n\n\tusername: {\n\t\tdynamic: true,\n\t\tfn: (core, session) => session.user.username,\n\t},\n};\n\n/**\n * Gets a segment value\n * @param {Core} core MeeseOS Core instance reference\n */\nconst getSegment = (core, session, seg) =>\n\tsegments[seg] ? segments[seg].fn(core, session) : \"\";\n\n/**\n * Matches a string for segments\n * @param {String} str\n * @returns {Array}\n */\nconst matchSegments = (str) => str.match(/(\\{\\w+\\})/g) || [];\n\n/**\n * Resolves a string with segments\n * @param {Core} core MeeseOS Core instance reference\n */\nconst resolveSegments = (core, session, str) =>\n\tmatchSegments(str).reduce(\n\t\t(result, current) =>\n\t\t\tresult.replace(\n\t\t\t\tcurrent,\n\t\t\t\tgetSegment(core, session, current.replace(/(\\{|\\})/g, \"\"))\n\t\t\t),\n\t\tstr\n\t);\n\n/**\n * Resolves a given file path based on a request\n * Will take out segments from the resulting string\n * and replace them with a list of defined variables.\n *\n * @param {Core} core MeeseOS Core instance reference\n * @param {*} session\n * @param {Object} mount\n * @param {String} file\n * @returns {String}\n */\nconst getRealPath = (core, session, mount, file) => {\n\tconst root = resolveSegments(core, session, mount.attributes.root);\n\tconst str = file.substr(mount.root.length - 1);\n\treturn path.join(root, str);\n};\n\n/**\n * System VFS adapter\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} [options] Adapter options\n */\nmodule.exports = (core) => {\n\tconst wrapper = (method, cb, ...args) =>\n\t\t(vfs) =>\n\t\t\t(file, options = {}) => {\n\t\t\t\tconst promise = Promise.resolve(\n\t\t\t\t\tgetRealPath(core, options.session, vfs.mount, file)\n\t\t\t\t).then((realPath) => fs[method](realPath, ...args));\n\n\t\t\t\treturn typeof cb === \"function\"\n\t\t\t\t\t? cb(promise, options)\n\t\t\t\t\t: promise.then(() => true);\n\t\t\t};\n\n\tconst crossWrapper = (method) =>\n\t\t(srcVfs, destVfs) =>\n\t\t\t(src, dest, options = {}) =>\n\t\t\t\tPromise.resolve({\n\t\t\t\t\trealSource: getRealPath(core, options.session, srcVfs.mount, src),\n\t\t\t\t\trealDest: getRealPath(core, options.session, destVfs.mount, dest),\n\t\t\t\t})\n\t\t\t\t\t.then(({ realSource, realDest }) => fs[method](realSource, realDest))\n\t\t\t\t\t.then(() => true);\n\n\treturn {\n\t\twatch: (mount, callback) => {\n\t\t\tconst dest = resolveSegments(\n\t\t\t\tcore,\n\t\t\t\t{\n\t\t\t\t\tuser: {\n\t\t\t\t\t\tusername: \"**\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tmount.attributes.root\n\t\t\t);\n\n\t\t\tconst watch = chokidar.watch(dest, mount.attributes.chokidar || {});\n\t\t\tconst restr = dest.replace(/\\*\\*/g, \"([^/]*)\");\n\t\t\tconst re = new RegExp(restr + \"/(.*)\");\n\t\t\tconst seg = matchSegments(mount.attributes.root)\n\t\t\t\t.map((s) => s.replace(/\\{|\\}/g, \"\"))\n\t\t\t\t.filter((s) => segments[s].dynamic);\n\n\t\t\tconst handle = (name) => (file) => {\n\t\t\t\tconst test = re.exec(file);\n\n\t\t\t\tif (test && test.length > 0) {\n\t\t\t\t\tconst args = seg.reduce((res, k, i) => ({ [k]: test[i + 1] }), {});\n\t\t\t\t\tcallback(args, test[test.length - 1], name);\n\t\t\t\t}\n\t\t\t};\n\n\t\t\tconst events = [\"add\", \"addDir\", \"unlinkDir\", \"unlink\"];\n\t\t\tevents.forEach((name) => watch.on(name, handle(name)));\n\n\t\t\treturn watch;\n\t\t},\n\n\t\t/**\n\t\t * Checks if file exists\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Promise<boolean, Error>}\n\t\t */\n\t\texists: wrapper(\n\t\t\t\"access\",\n\t\t\t(promise) => {\n\t\t\t\treturn promise.then(() => true).catch(() => false);\n\t\t\t},\n\t\t\tfs.F_OK\n\t\t),\n\n\t\t/**\n\t\t * Get file statistics\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Object}\n\t\t */\n\t\tstat: (vfs) =>\n\t\t\t(file, options = {}) =>\n\t\t\t\tPromise.resolve(\n\t\t\t\t\tgetRealPath(core, options.session, vfs.mount, file)\n\t\t\t\t).then((realPath) => {\n\t\t\t\t\treturn fs\n\t\t\t\t\t\t.access(realPath, fs.F_OK)\n\t\t\t\t\t\t.then(() => createFileIter(core, path.dirname(realPath), realPath));\n\t\t\t\t}),\n\n\t\t/**\n\t\t * Reads directory\n\t\t * @param {String} root The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Object[]}\n\t\t */\n\t\treaddir: (vfs) =>\n\t\t\t(root, options) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, root))\n\t\t\t\t\t.then((realPath) =>\n\t\t\t\t\t\tfs.readdir(realPath).then((files) => ({ realPath, files }))\n\t\t\t\t\t)\n\t\t\t\t\t.then(({ realPath, files }) => {\n\t\t\t\t\t\tconst promises = files.map((file) =>\n\t\t\t\t\t\t\tcreateFileIter(core, realPath, root.replace(/\\/?$/, \"/\") + file)\n\t\t\t\t\t\t);\n\t\t\t\t\t\treturn Promise.all(promises);\n\t\t\t\t\t}),\n\n\t\t/**\n\t\t * Reads file stream\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {stream.Readable}\n\t\t */\n\t\treadfile: (vfs) =>\n\t\t\t(file, options = {}) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, file))\n\t\t\t\t\t.then((realPath) =>\n\t\t\t\t\t\tfs.stat(realPath).then((stat) => ({ realPath, stat }))\n\t\t\t\t\t)\n\t\t\t\t\t.then(({ realPath, stat }) => {\n\t\t\t\t\t\tif (!stat.isFile()) {\n\t\t\t\t\t\t\treturn false;\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tconst range = options.range || [];\n\t\t\t\t\t\treturn fs.createReadStream(realPath, {\n\t\t\t\t\t\t\tflags: \"r\",\n\t\t\t\t\t\t\tstart: range[0],\n\t\t\t\t\t\t\tend: range[1],\n\t\t\t\t\t\t});\n\t\t\t\t\t}),\n\n\t\t/**\n\t\t * Creates directory\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tmkdir: wrapper(\"mkdir\", (promise, options = {}) => {\n\t\t\treturn promise\n\t\t\t\t.then(() => true)\n\t\t\t\t.catch((e) => {\n\t\t\t\t\tif (options.ensure && e.code === \"EEXIST\") {\n\t\t\t\t\t\treturn true;\n\t\t\t\t\t}\n\n\t\t\t\t\treturn Promise.reject(e);\n\t\t\t\t});\n\t\t}),\n\n\t\t/**\n\t\t * Writes file stream\n\t\t * @param {String} file The file path from client\n\t\t * @param {stream.Readable} data The stream\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Promise<boolean, Error>}\n\t\t */\n\t\twritefile: (vfs) =>\n\t\t\t(file, data, options = {}) =>\n\t\t\t\tnew Promise((resolve, reject) => {\n\t\t\t\t\t// FIXME: Currently this actually copies the file because\n\t\t\t\t\t// formidable will put this in a temporary directory.\n\t\t\t\t\t// It would probably be better to do a \"rename()\" on local filesystems\n\t\t\t\t\tconst realPath = getRealPath(core, options.session, vfs.mount, file);\n\n\t\t\t\t\tconst write = () => {\n\t\t\t\t\t\tconst stream = fs.createWriteStream(realPath);\n\t\t\t\t\t\tdata.on(\"error\", (err) => reject(err));\n\t\t\t\t\t\tdata.on(\"end\", () => resolve(true));\n\t\t\t\t\t\tdata.pipe(stream);\n\t\t\t\t\t};\n\n\t\t\t\t\tfs.stat(realPath)\n\t\t\t\t\t\t.then((stat) => {\n\t\t\t\t\t\t\tif (stat.isDirectory()) {\n\t\t\t\t\t\t\t\tresolve(false);\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\twrite();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t})\n\t\t\t\t\t\t.catch((err) => (err.code === \"ENOENT\" ? write() : reject(err)));\n\t\t\t\t}),\n\n\t\t/**\n\t\t * Renames given file or directory\n\t\t * @param {String} src The source file path from client\n\t\t * @param {String} dest The destination file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\trename: crossWrapper(\"rename\"),\n\n\t\t/**\n\t\t * Copies given file or directory\n\t\t * @param {String} src The source file path from client\n\t\t * @param {String} dest The destination file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tcopy: crossWrapper(\"copy\"),\n\n\t\t/**\n\t\t * Removes given file or directory\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tunlink: wrapper(\"remove\"),\n\n\t\t/**\n\t\t * Searches for files and folders\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tsearch: (vfs) =>\n\t\t\t(root, pattern, options = {}) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, root))\n\t\t\t\t\t.then((realPath) => {\n\t\t\t\t\t\treturn fh\n\t\t\t\t\t\t\t.create()\n\t\t\t\t\t\t\t.paths(realPath)\n\t\t\t\t\t\t\t.match(pattern)\n\t\t\t\t\t\t\t.find()\n\t\t\t\t\t\t\t.then((files) => ({ realPath, files }))\n\t\t\t\t\t\t\t.catch((err) => {\n\t\t\t\t\t\t\t\tcore.logger.warn(err);\n\n\t\t\t\t\t\t\t\treturn { realPath, files: [] };\n\t\t\t\t\t\t\t});\n\t\t\t\t\t})\n\t\t\t\t\t.then(({ realPath, files }) => {\n\t\t\t\t\t\tconst promises = files.map((file) => {\n\t\t\t\t\t\t\tconst rf = file.substr(realPath.length);\n\t\t\t\t\t\t\treturn createFileIter(\n\t\t\t\t\t\t\t\tcore,\n\t\t\t\t\t\t\t\tpath.dirname(realPath.replace(/\\/?$/, \"/\") + rf),\n\t\t\t\t\t\t\t\troot.replace(/\\/?$/, \"/\") + rf\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t});\n\t\t\t\t\t\treturn Promise.all(promises);\n\t\t\t\t\t}),\n\n\t\t/**\n\t\t * Touches a file\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\ttouch: wrapper(\"ensureFile\"),\n\n\t\t/**\n\t\t * Gets the real filesystem path (internal only)\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {String}\n\t\t */\n\t\trealpath: (vfs) =>\n\t\t\t(file, options = {}) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, file)),\n\t};\n};\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst path = require(\"path\");\nconst fh = require(\"filehound\");\nconst chokidar = require(\"chokidar\");\nconst extract = require(\"extract-zip\");\nconst yazl = require(\"yazl\");\n\n/**\n * Creates an object readable by the client.\n *\n * @param {Core} core MeeseOS Core instance reference\n * @param {String} realRoot Real root path\n * @param {String} file File path\n * @returns {Object} Information about the file\n */\nconst createFileIter = (core, realRoot, file) => {\n\tconst filename = path.basename(file);\n\tconst realPath = path.join(realRoot, filename);\n\tconst { mime } = core.make(\"meeseOS/vfs\");\n\n\tconst createStat = (stat) => ({\n\t\tisDirectory: stat.isDirectory(),\n\t\tisFile: stat.isFile(),\n\t\tmime: stat.isFile() ? mime(realPath) : null,\n\t\tsize: stat.size,\n\t\tpath: file,\n\t\tfilename,\n\t\tstat,\n\t});\n\n\treturn fs\n\t\t.stat(realPath)\n\t\t.then(createStat)\n\t\t.catch((error) => {\n\t\t\tcore.logger.warn(error);\n\n\t\t\treturn createStat({\n\t\t\t\tisDirectory: () => false,\n\t\t\t\tisFile: () => true,\n\t\t\t\tsize: 0,\n\t\t\t});\n\t\t});\n};\n\n/**\n * Segment value map.\n */\nconst segments = {\n\troot: {\n\t\tdynamic: false,\n\t\tfn: () => process.cwd(),\n\t},\n\n\tvfs: {\n\t\tdynamic: false,\n\t\tfn: (core) => core.config(\"vfs.root\", process.cwd()),\n\t},\n\n\tusername: {\n\t\tdynamic: true,\n\t\tfn: (core, session) => session.user.username,\n\t},\n};\n\n/**\n * Gets a segment value.\n *\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} session\n * @param {String} segment\n * @returns {String}\n */\nconst getSegment = (core, session, seg) =>\n\tsegments[seg] ? segments[seg].fn(core, session) : \"\";\n\n/**\n * Matches a string for segments.\n * @param {String} str\n * @returns {Array}\n */\nconst matchSegments = (str) => str.match(/(\\{\\w+\\})/g) || [];\n\n/**\n * Resolves a string with segments.\n *\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} session\n * @param {String} str\n * @returns {String}\n */\nconst resolveSegments = (core, session, str) =>\n\tmatchSegments(str).reduce(\n\t\t(result, current) =>\n\t\t\tresult.replace(\n\t\t\t\tcurrent,\n\t\t\t\tgetSegment(core, session, current.replace(/(\\{|\\})/g, \"\"))\n\t\t\t),\n\t\tstr\n\t);\n\n/**\n * Resolves a given file path based on a request.\n * Will take out segments from the resulting string\n * and replace them with a list of defined variables.\n *\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} session\n * @param {Object} mount\n * @param {String} file\n * @returns {String}\n */\nconst getRealPath = (core, session, mount, file) => {\n\tconst root = resolveSegments(core, session, mount.attributes.root);\n\tconst str = file.substring(mount.root.length - 1);\n\treturn path.join(root, str);\n};\n\n/**\n * System VFS adapter\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} [options] Adapter options\n */\nmodule.exports = (core) => {\n\tconst wrapper = (method, cb, ...args) =>\n\t\t(vfs) =>\n\t\t\t(file, options = {}) => {\n\t\t\t\tconst promise = Promise.resolve(\n\t\t\t\t\tgetRealPath(core, options.session, vfs.mount, file)\n\t\t\t\t).then((realPath) => fs[method](realPath, ...args));\n\n\t\t\t\treturn typeof cb === \"function\"\n\t\t\t\t\t? cb(promise, options)\n\t\t\t\t\t: promise.then(() => true);\n\t\t\t};\n\n\tconst crossWrapper = (method) =>\n\t\t(srcVfs, destVfs) =>\n\t\t\t(src, dest, options = {}) =>\n\t\t\t\tPromise.resolve({\n\t\t\t\t\trealSource: getRealPath(core, options.session, srcVfs.mount, src),\n\t\t\t\t\trealDest: getRealPath(core, options.session, destVfs.mount, dest),\n\t\t\t\t})\n\t\t\t\t\t.then(({ realSource, realDest }) => fs[method](realSource, realDest))\n\t\t\t\t\t.then(() => true);\n\n\tconst addFileToArchive = (zipfile, realPath) => {\n\t\tconst zipfileLocation = zipfile.outputStream._readableState.pipes[0].path;\n\t\tconst archiveRoot = path.parse(zipfileLocation).dir + path.sep;\n\n\t\tconst readStream = fs.createReadStream(realPath);\n\t\tconst destination = realPath.replace(archiveRoot, \"\");\n\t\tzipfile.addReadStream(readStream, destination);\n\t};\n\n\tconst addDirToArchive = async (zipfile, realPath) => {\n\t\tconst files = await fs.readdir(realPath)\n\t\t\t.then((files) => ({ realPath, files }))\n\t\t\t.then(({ realPath, files }) => {\n\t\t\t\tconst promises = files.map((fileName) => {\n\t\t\t\t\tconst filePath = realPath.replace(/\\/?$/, \"/\") + fileName;\n\t\t\t\t\treturn createFileIter(\n\t\t\t\t\t\tcore,\n\t\t\t\t\t\tpath.dirname(filePath),\n\t\t\t\t\t\tfilePath\n\t\t\t\t\t);\n\t\t\t\t});\n\t\t\t\treturn Promise.all(promises);\n\t\t\t});\n\n\t\tfor (const file of files) {\n\t\t\tif (file.isDirectory) {\n\t\t\t\tawait addToArchive(zipfile, file.path);\n\t\t\t} else {\n\t\t\t\taddFileToArchive(zipfile, file.path);\n\t\t\t}\n\t\t}\n\t};\n\n\t/**\n\t * Adds everything in the given directory to the VFS archive.\n\t * @param {yazl.ZipFile} zipfile The ZIP file to add to\n\t * @param {String} realPath The real path to the file/directory\n\t */\n\tconst addToArchive = async (zipfile, realPath) => {\n\t\tconst isDirectory = await fs.stat(realPath).then((stat) => stat.isDirectory());\n\t\tif (isDirectory) {\n\t\t\tawait addDirToArchive(zipfile, realPath);\n\t\t} else {\n\t\t\tawait addFileToArchive(zipfile, realPath);\n\t\t}\n\t};\n\n\treturn {\n\t\twatch: (mount, callback) => {\n\t\t\tconst dest = resolveSegments(\n\t\t\t\tcore,\n\t\t\t\t{\n\t\t\t\t\tuser: {\n\t\t\t\t\t\tusername: \"**\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tmount.attributes.root\n\t\t\t);\n\n\t\t\tconst watch = chokidar.watch(dest, mount.attributes.chokidar || {});\n\t\t\tconst restr = dest.replace(/\\*\\*/g, \"([^/]*)\");\n\t\t\tconst re = new RegExp(restr + \"/(.*)\");\n\t\t\tconst seg = matchSegments(mount.attributes.root)\n\t\t\t\t.map((s) => s.replace(/\\{|\\}/g, \"\"))\n\t\t\t\t.filter((s) => segments[s].dynamic);\n\n\t\t\tconst handle = (name) => (file) => {\n\t\t\t\tconst test = re.exec(file);\n\n\t\t\t\tif (test && test.length > 0) {\n\t\t\t\t\tconst args = seg.reduce((res, k, i) => ({ [k]: test[i + 1] }), {});\n\t\t\t\t\tcallback(args, test[test.length - 1], name);\n\t\t\t\t}\n\t\t\t};\n\n\t\t\tconst events = [\"add\", \"addDir\", \"unlinkDir\", \"unlink\"];\n\t\t\tevents.forEach((name) => watch.on(name, handle(name)));\n\n\t\t\treturn watch;\n\t\t},\n\n\t\t/**\n\t\t * Get filesystem capabilities.\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @return {Object[]}\n\t\t */\n\t\tcapabilities: (vfs) =>\n\t\t\t(file, options = {}) =>\n\t\t\t\tPromise.resolve({\n\t\t\t\t\tsort: false,\n\t\t\t\t\tpagination: false\n\t\t\t\t}),\n\n\t\t/**\n\t\t * Gets the real filesystem path (internal only)\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {String}\n\t\t */\n\t\trealpath: (vfs) =>\n\t\t\t(file, options = {}) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, file)),\n\n\t\t/**\n\t\t * Checks if file exists.\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Promise<Boolean, Error>}\n\t\t */\n\t\texists: wrapper(\n\t\t\t\"access\",\n\t\t\t(promise) => {\n\t\t\t\treturn promise.then(() => true).catch(() => false);\n\t\t\t},\n\t\t\tfs.F_OK\n\t\t),\n\n\t\t/**\n\t\t * Get file statistics.\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Object}\n\t\t */\n\t\tstat: (vfs) =>\n\t\t\t(file, options = {}) =>\n\t\t\t\tPromise.resolve(\n\t\t\t\t\tgetRealPath(core, options.session, vfs.mount, file)\n\t\t\t\t).then((realPath) => {\n\t\t\t\t\treturn fs\n\t\t\t\t\t\t.access(realPath, fs.F_OK)\n\t\t\t\t\t\t.then(() => createFileIter(core, path.dirname(realPath), realPath));\n\t\t\t\t}),\n\n\t\t/**\n\t\t * Reads directory.\n\t\t * @param {String} root The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Object[]}\n\t\t */\n\t\treaddir: (vfs) =>\n\t\t\t(root, options) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, root))\n\t\t\t\t\t.then((realPath) =>\n\t\t\t\t\t\tfs.readdir(realPath).then((files) => ({ realPath, files }))\n\t\t\t\t\t)\n\t\t\t\t\t.then(({ realPath, files }) => {\n\t\t\t\t\t\tconst promises = files.map((file) =>\n\t\t\t\t\t\t\tcreateFileIter(core, realPath, root.replace(/\\/?$/, \"/\") + file)\n\t\t\t\t\t\t);\n\t\t\t\t\t\treturn Promise.all(promises);\n\t\t\t\t\t}),\n\n\t\t/**\n\t\t * Reads file stream.\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Stream.Readable}\n\t\t */\n\t\treadfile: (vfs) =>\n\t\t\t(file, options = {}) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, file))\n\t\t\t\t\t.then((realPath) =>\n\t\t\t\t\t\tfs.stat(realPath).then((stat) => ({ realPath, stat }))\n\t\t\t\t\t)\n\t\t\t\t\t.then(({ realPath, stat }) => {\n\t\t\t\t\t\tif (!stat.isFile()) {\n\t\t\t\t\t\t\treturn false;\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tconst range = options.range || [];\n\t\t\t\t\t\treturn fs.createReadStream(realPath, {\n\t\t\t\t\t\t\tflags: \"r\",\n\t\t\t\t\t\t\tstart: range[0],\n\t\t\t\t\t\t\tend: range[1],\n\t\t\t\t\t\t});\n\t\t\t\t\t}),\n\n\t\t/**\n\t\t * Creates directory.\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tmkdir: wrapper(\"mkdir\", (promise, options = {}) => {\n\t\t\treturn promise\n\t\t\t\t.then(() => true)\n\t\t\t\t.catch((e) => {\n\t\t\t\t\tif (options.ensure && e.code === \"EEXIST\") {\n\t\t\t\t\t\treturn true;\n\t\t\t\t\t}\n\n\t\t\t\t\treturn Promise.reject(e);\n\t\t\t\t});\n\t\t}),\n\n\t\t/**\n\t\t * Writes file stream.\n\t\t *\n\t\t * @param {String} file The file path from client\n\t\t * @param {Stream.Readable} data The stream\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Promise<Boolean, Error>}\n\t\t */\n\t\twritefile: (vfs) =>\n\t\t\t(file, data, options = {}) =>\n\t\t\t\tnew Promise((resolve, reject) => {\n\t\t\t\t\t// FIXME: Currently this actually copies the file because\n\t\t\t\t\t// formidable will put this in a temporary directory.\n\t\t\t\t\t// It would probably be better to do a \"rename()\" on local filesystems\n\t\t\t\t\tconst realPath = getRealPath(core, options.session, vfs.mount, file);\n\n\t\t\t\t\tconst write = () => {\n\t\t\t\t\t\tconst stream = fs.createWriteStream(realPath);\n\t\t\t\t\t\tdata.on(\"error\", (err) => reject(err));\n\t\t\t\t\t\tdata.on(\"end\", () => resolve(true));\n\t\t\t\t\t\tdata.pipe(stream);\n\t\t\t\t\t};\n\n\t\t\t\t\tfs.stat(realPath)\n\t\t\t\t\t\t.then((stat) => {\n\t\t\t\t\t\t\tif (stat.isDirectory()) {\n\t\t\t\t\t\t\t\tresolve(false);\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\twrite();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t})\n\t\t\t\t\t\t// We are not worried about the file not existing, so if that is\n\t\t\t\t\t\t// the error message, we can just go ahead and write to create it.\n\t\t\t\t\t\t.catch((err) => (err.code === \"ENOENT\" ? write() : reject(err)));\n\t\t\t\t}),\n\n\t\t/**\n\t\t * Renames given file or directory.\n\t\t *\n\t\t * @param {String} src The source file path from client\n\t\t * @param {String} dest The destination file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\trename: crossWrapper(\"rename\"),\n\n\t\t/**\n\t\t * Copies given file or directory.\n\t\t *\n\t\t * @param {String} src The source file path from client\n\t\t * @param {String} dest The destination file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tcopy: crossWrapper(\"copy\"),\n\n\t\t/**\n\t\t * Removes given file or directory\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tunlink: wrapper(\"remove\"),\n\n\t\t/**\n\t\t * Searches for files and folders.\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\tsearch: (vfs) =>\n\t\t\t(root, pattern, options = {}) =>\n\t\t\t\tPromise.resolve(getRealPath(core, options.session, vfs.mount, root))\n\t\t\t\t\t.then((realPath) => {\n\t\t\t\t\t\treturn fh\n\t\t\t\t\t\t\t.create()\n\t\t\t\t\t\t\t.paths(realPath)\n\t\t\t\t\t\t\t.match(pattern)\n\t\t\t\t\t\t\t.find()\n\t\t\t\t\t\t\t.then((files) => ({ realPath, files }))\n\t\t\t\t\t\t\t.catch((err) => {\n\t\t\t\t\t\t\t\tcore.logger.warn(err);\n\n\t\t\t\t\t\t\t\treturn { realPath, files: [] };\n\t\t\t\t\t\t\t});\n\t\t\t\t\t})\n\t\t\t\t\t.then(({ realPath, files }) => {\n\t\t\t\t\t\tconst promises = files.map((file) => {\n\t\t\t\t\t\t\tconst rf = file.substr(realPath.length);\n\t\t\t\t\t\t\treturn createFileIter(\n\t\t\t\t\t\t\t\tcore,\n\t\t\t\t\t\t\t\tpath.dirname(realPath.replace(/\\/?$/, \"/\") + rf),\n\t\t\t\t\t\t\t\troot.replace(/\\/?$/, \"/\") + rf\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t});\n\t\t\t\t\t\treturn Promise.all(promises);\n\t\t\t\t\t}),\n\n\t\t/**\n\t\t * Touches a file.\n\t\t * @param {String} file The file path from client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Boolean}\n\t\t */\n\t\ttouch: wrapper(\"ensureFile\"),\n\n\t\t/**\n\t\t * Compresses or decompresses a given selection.\n\t\t * @param {Array} selection The selection from the client\n\t\t * @param {Object} [options={}] Options\n\t\t * @returns {Promise<Boolean, Error>}\n\t\t */\n\t\tarchive: (vfs) =>\n\t\t\tasync (selection, options = {}) => {\n\t\t\t\tconst realPaths = selection.map(\n\t\t\t\t\t(file) => getRealPath(core, options.session, vfs.mount, file)\n\t\t\t\t);\n\n\t\t\t\tconst action = options.action || \"compress\";\n\t\t\t\tswitch (action) {\n\t\t\t\t\tcase \"compress\": {\n\t\t\t\t\t\t// Define the archive instance\n\t\t\t\t\t\tconst zipfile = new yazl.ZipFile();\n\n\t\t\t\t\t\t// Create a stream for the archive output\n\t\t\t\t\t\t// IDEA: Dialog for the archive name on the client side?\n\t\t\t\t\t\tconst output = fs.createWriteStream(realPaths[0] + \".zip\");\n\t\t\t\t\t\tzipfile.outputStream.pipe(output);\n\n\t\t\t\t\t\t// Add the files to the archive\n\t\t\t\t\t\tfor (const realPath of realPaths) {\n\t\t\t\t\t\t\tawait addToArchive(zipfile, realPath);\n\n\t\t\t\t\t\t\t// Delete the original file\n\t\t\t\t\t\t\t// fs.unlink(realPath);\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tzipfile.end();\n\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t\tcase \"extract\":\n\t\t\t\t\t\tfor (const realPath of realPaths) {\n\t\t\t\t\t\t\t// Remove the `.zip` extension from the path\n\t\t\t\t\t\t\t// IDEA: Dialog for the target name on the client side?\n\t\t\t\t\t\t\tconst target = realPath.split(\".\").slice(0, -1).join(\".\");\n\n\t\t\t\t\t\t\t// Extract the archive\n\t\t\t\t\t\t\tawait extract(realPath, { dir: target });\n\n\t\t\t\t\t\t\t// Delete the archive file\n\t\t\t\t\t\t\t// fs.unlink(realPath);\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tbreak;\n\t\t\t\t\tdefault:\n\t\t\t\t\t\treturn Promise.reject(\n\t\t\t\t\t\t\tnew Error(`Unknown archive action: '${action}'`)\n\t\t\t\t\t\t);\n\t\t\t\t}\n\n\t\t\t\treturn Promise.resolve(true);\n\t\t\t}\n\t};\n};\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/adapters/vfs/system.js",
     "access": "public",
@@ -741,12 +741,12 @@
     "export": false,
     "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
     "importStyle": null,
-    "description": "Creates an object readable by client",
-    "lineNumber": 43,
+    "description": "Creates an object readable by the client.",
+    "lineNumber": 46,
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{Object}"
+        "tagValue": "{Object} Information about the file"
       }
     ],
     "params": [
@@ -768,7 +768,7 @@
         "spread": false,
         "optional": false,
         "name": "realRoot",
-        "description": ""
+        "description": "Real root path"
       },
       {
         "nullable": null,
@@ -778,7 +778,7 @@
         "spread": false,
         "optional": false,
         "name": "file",
-        "description": ""
+        "description": "File path"
       }
     ],
     "return": {
@@ -787,7 +787,7 @@
         "Object"
       ],
       "spread": false,
-      "description": ""
+      "description": "Information about the file"
     },
     "ignore": true
   },
@@ -802,8 +802,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
     "importStyle": null,
-    "description": "Segment value map",
-    "lineNumber": 75,
+    "description": "Segment value map.",
+    "lineNumber": 78,
     "type": {
       "types": [
         "{\"root\": *, \"vfs\": *, \"username\": *}"
@@ -824,8 +824,14 @@
     "export": false,
     "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
     "importStyle": null,
-    "description": "Gets a segment value",
-    "lineNumber": 96,
+    "description": "Gets a segment value.",
+    "lineNumber": 103,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{String}"
+      }
+    ],
     "params": [
       {
         "nullable": null,
@@ -836,9 +842,36 @@
         "optional": false,
         "name": "core",
         "description": "MeeseOS Core instance reference"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "session",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "segment",
+        "description": ""
       }
     ],
-    "return": null,
+    "return": {
+      "nullable": null,
+      "types": [
+        "String"
+      ],
+      "spread": false,
+      "description": ""
+    },
     "ignore": true
   },
   {
@@ -854,8 +887,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
     "importStyle": null,
-    "description": "Matches a string for segments",
-    "lineNumber": 104,
+    "description": "Matches a string for segments.",
+    "lineNumber": 111,
     "unknown": [
       {
         "tagName": "@returns",
@@ -897,38 +930,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
     "importStyle": null,
-    "description": "Resolves a string with segments",
-    "lineNumber": 110,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Core"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "core",
-        "description": "MeeseOS Core instance reference"
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 60,
-    "kind": "function",
-    "name": "getRealPath",
-    "memberof": "src/adapters/vfs/system.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/adapters/vfs/system.js~getRealPath",
-    "access": "public",
-    "export": false,
-    "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
-    "importStyle": null,
-    "description": "Resolves a given file path based on a request\nWill take out segments from the resulting string\nand replace them with a list of defined variables.",
-    "lineNumber": 131,
+    "description": "Resolves a string with segments.",
+    "lineNumber": 121,
     "unknown": [
       {
         "tagName": "@returns",
@@ -949,7 +952,70 @@
       {
         "nullable": null,
         "types": [
-          "*"
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "session",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "str",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "String"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 60,
+    "kind": "function",
+    "name": "getRealPath",
+    "memberof": "src/adapters/vfs/system.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/adapters/vfs/system.js~getRealPath",
+    "access": "public",
+    "export": false,
+    "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
+    "importStyle": null,
+    "description": "Resolves a given file path based on a request.\nWill take out segments from the resulting string\nand replace them with a list of defined variables.",
+    "lineNumber": 142,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{String}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
         ],
         "spread": false,
         "optional": false,
@@ -1001,7 +1067,7 @@
     "importPath": "@meeseOS/server/src/adapters/vfs/system.js",
     "importStyle": "system",
     "description": "System VFS adapter",
-    "lineNumber": 142,
+    "lineNumber": 153,
     "params": [
       {
         "nullable": null,
@@ -1026,7 +1092,7 @@
     ],
     "return": {
       "types": [
-        "{\"watch\": *, \"exists\": *, \"stat\": *, \"readdir\": *, \"readfile\": *, \"mkdir\": *, \"writefile\": *, \"rename\": *, \"copy\": *, \"unlink\": *, \"search\": *, \"touch\": *, \"realpath\": *}"
+        "{\"watch\": *, \"capabilities\": *, \"realpath\": *, \"exists\": *, \"stat\": *, \"readdir\": *, \"readfile\": *, \"mkdir\": *, \"writefile\": *, \"rename\": *, \"copy\": *, \"unlink\": *, \"search\": *, \"touch\": *, \"archive\": *}"
       ]
     }
   },
@@ -2274,7 +2340,7 @@
     "__docId__": 107,
     "kind": "file",
     "name": "src/filesystem.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { methodArguments } = require(\"./utils/vfs\");\nconst systemAdapter = require(\"./adapters/vfs/system\");\nconst { v1: uuid } = require(\"uuid\");\nconst mime = require(\"mime\");\nconst path = require(\"path\");\nconst vfs = require(\"./vfs\");\nconst { closeWatches } = require(\"./utils/core.js\");\nconst consola = require(\"consola\");\nconst logger = consola.withTag(\"Filesystem\");\n\n/**\n * @typedef {Object} Mountpoint\n * @property {String} [uuid]\n * @property {String} [root]\n * @property {Object} [attributes]\n */\n\n/**\n * TODO: typedef\n * @typedef {Object} FilesystemAdapter\n */\n\n/**\n * Filesystem Service Adapter Option Map\n * @typedef {{name: FilesystemAdapter}} FilesystemAdapterMap\n */\n\n/**\n * Filesystem Service Options\n * @typedef {Object} FilesystemOptions\n * @property {FilesystemAdapterMap} [adapters]\n */\n\n/**\n * Filesystem Internal Call Options\n * @typedef {Object} FilesystemCallOptions\n * @property {String} method VFS Method name\n * @property {Object} [user] User session data\n * @property {Object} [session] Session data\n */\n\n/**\n * MeeseOS Virtual Filesystem\n */\nclass Filesystem {\n\t/**\n\t * Creates a new instance\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {FilesystemOptions} [options] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {Mountpoint[]}\n\t\t */\n\t\tthis.mountpoints = [];\n\n\t\t/**\n\t\t * @type {FilesystemAdapterMap}\n\t\t */\n\t\tthis.adapters = {};\n\n\t\tthis.watches = [];\n\n\t\tthis.router = null;\n\n\t\tthis.methods = {};\n\n\t\t/**\n\t\t * @type {FilesystemOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tadapters: {},\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Destroys the instance\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy() {\n\t\tconst watches = this.watches\n\t\t\t.filter(({ watch }) => {\n\t\t\t\treturn watch && typeof watch.close === \"function\";\n\t\t\t})\n\t\t\t.map(({ watch }) => watch);\n\n\t\tawait closeWatches(watches);\n\n\t\tthis.watches = [];\n\t}\n\n\t/**\n\t * Initializes the Filesystem\n\t * @returns {Promise<boolean>}\n\t */\n\tasync init() {\n\t\tconst adapters = {\n\t\t\tsystem: systemAdapter,\n\t\t\t...this.options.adapters,\n\t\t};\n\n\t\tthis.adapters = Object.keys(adapters).reduce((result, iter) => {\n\t\t\treturn {\n\t\t\t\t[iter]: adapters[iter](this.core),\n\t\t\t\t...result,\n\t\t\t};\n\t\t}, {});\n\n\t\t// Routes\n\t\tconst { router, methods } = vfs(this.core);\n\t\tthis.router = router;\n\t\tthis.methods = methods;\n\n\t\t// Mimes\n\t\tconst { define } = this.core.config(\"mime\", { define: {}, filenames: {} });\n\t\tmime.define(define, { force: true });\n\n\t\t// Mountpoints\n\t\tawait Promise.all(\n\t\t\tthis.core.config(\"vfs.mountpoints\").map((mount) => this.mount(mount))\n\t\t);\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Gets the MIME type of a file\n\t * @param {String} filename Input filename or path\n\t * @returns {String}\n\t */\n\tmime(filename) {\n\t\tconst { filenames } = this.core.config(\"mime\", {\n\t\t\tdefine: {},\n\t\t\tfilenames: {},\n\t\t});\n\n\t\treturn filenames[path.basename(filename)]\n\t\t\t? filenames[path.basename(filename)]\n\t\t\t: mime.getType(filename) || \"application/octet-stream\";\n\t}\n\n\t/**\n\t * Crates a VFS request\n\t * @param {Request|object} req HTTP Request object\n\t * @param {Response|object} [res] HTTP Response object\n\t * @returns {Promise<*>}\n\t */\n\trequest(name, req, res = {}) {\n\t\treturn this.methods[name](req, res);\n\t}\n\n\t/**\n\t * Performs a VFS request with simulated HTTP request\n\t * @param {FilesystemCallOptions} options Request options\n\t * @param {*} ...args Arguments to pass to VFS method\n\t * @returns {Promise<*>}\n\t */\n\tcall(options, ...args) {\n\t\tconst { method, user, session } = {\n\t\t\tuser: {},\n\t\t\tsession: null,\n\t\t\t...options,\n\t\t};\n\n\t\tconst req = methodArguments[method].reduce(\n\t\t\t({ fields, files }, key, index) => {\n\t\t\t\tconst arg = args[index];\n\t\t\t\tif (typeof key === \"function\") {\n\t\t\t\t\tfiles = Object.assign(key(arg), files);\n\t\t\t\t} else {\n\t\t\t\t\tfields = {\n\t\t\t\t\t\t[key]: arg,\n\t\t\t\t\t\t...fields,\n\t\t\t\t\t};\n\t\t\t\t}\n\n\t\t\t\treturn { fields, files };\n\t\t\t},\n\t\t\t{ fields: {}, files: {} }\n\t\t);\n\n\t\treq.session = session || { user };\n\n\t\treturn this.request(method, req);\n\t}\n\n\t/**\n\t * Creates realpath VFS request\n\t * @param {String} filename The path\n\t * @param {AuthUserProfile} [user] User session object\n\t * @returns {Promise<string>}\n\t */\n\trealpath(filename, user = {}) {\n\t\treturn this.methods.realpath({\n\t\t\tsession: {\n\t\t\t\tuser: {\n\t\t\t\t\tgroups: [],\n\t\t\t\t\t...user,\n\t\t\t\t},\n\t\t\t},\n\t\t\tfields: {\n\t\t\t\tpath: filename,\n\t\t\t},\n\t\t});\n\t}\n\n\t/**\n\t * Mounts given mountpoint\n\t * @param {Mountpoint} mount Mountpoint\n\t * @returns {Mountpoint} the mountpoint\n\t */\n\tasync mount(mount) {\n\t\tconst mountpoint = {\n\t\t\tid: uuid(),\n\t\t\troot: `${mount.name}:/`,\n\t\t\tattributes: {},\n\t\t\t...mount,\n\t\t};\n\n\t\tthis.mountpoints.push(mountpoint);\n\n\t\tlogger.success(\"Mounted\", mountpoint.name);\n\n\t\tawait this.watch(mountpoint);\n\n\t\treturn mountpoint;\n\t}\n\n\t/**\n\t * Unmounts given mountpoint\n\t * @param {Mountpoint} mount Mountpoint\n\t * @returns {Promise<boolean>}\n\t */\n\tasync unmount(mountpoint) {\n\t\tconst found = this.watches.find((w) => w.id === mountpoint.id);\n\n\t\tif (found && found.watch) {\n\t\t\tawait found.watch.close();\n\t\t}\n\n\t\tconst index = this.mountpoints.indexOf(mountpoint);\n\n\t\tif (index !== -1) {\n\t\t\tthis.mountpoints.splice(index, 1);\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Set up a watch for given mountpoint\n\t * @param {Mountpoint} mountpoint The mountpoint\n\t * @returns {Promise<undefined>}\n\t */\n\tasync watch(mountpoint) {\n\t\tif (\n\t\t\t!mountpoint.attributes.watch ||\n\t\t\tthis.core.config(\"vfs.watch\") === false ||\n\t\t\t!mountpoint.attributes.root\n\t\t) {\n\t\t\treturn;\n\t\t}\n\n\t\tconst adapter = await (mountpoint.adapter\n\t\t\t? this.adapters[mountpoint.adapter]\n\t\t\t: this.adapters.system);\n\n\t\tif (typeof adapter.watch === \"function\") {\n\t\t\tawait this._watch(mountpoint, adapter);\n\t\t}\n\t}\n\n\t/**\n\t * Internal method for setting up watch for given mountpoint adapter\n\t * @param {Mountpoint} mountpoint The mountpoint\n\t * @param {FilesystemAdapter} adapter The adapter\n\t * @returns {Promise<undefined>}\n\t */\n\tasync _watch(mountpoint, adapter) {\n\t\tconst watch = await adapter.watch(mountpoint, (args, dir, type) => {\n\t\t\tconst target = mountpoint.name + \":/\" + dir;\n\t\t\tconst keys = Object.keys(args);\n\t\t\tconst filter = keys.length === 0\n\t\t\t\t? () => true\n\t\t\t\t: (ws) => keys.every((k) => ws._meeseOS_client[k] === args[k]);\n\n\t\t\tthis.core.emit(\"meeseOS/vfs:watch:change\", {\n\t\t\t\tmountpoint,\n\t\t\t\ttarget,\n\t\t\t\ttype,\n\t\t\t});\n\n\t\t\tthis.core.broadcast(\n\t\t\t\t\"meeseOS/vfs:watch:change\",\n\t\t\t\t[\n\t\t\t\t\t{\n\t\t\t\t\t\tpath: target,\n\t\t\t\t\t\ttype,\n\t\t\t\t\t},\n\t\t\t\t\targs,\n\t\t\t\t],\n\t\t\t\tfilter\n\t\t\t);\n\t\t});\n\n\t\twatch.on(\"error\", (error) => logger.warn(\"Mountpoint watch error\", error));\n\n\t\tthis.watches.push({\n\t\t\tid: mountpoint.id,\n\t\t\twatch,\n\t\t});\n\n\t\tlogger.info(\"Watching mountpoint\", mountpoint.name);\n\t}\n}\n\nmodule.exports = Filesystem;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { methodArguments } = require(\"./utils/vfs\");\nconst systemAdapter = require(\"./adapters/vfs/system\");\nconst { v1: uuid } = require(\"uuid\");\nconst mime = require(\"mime\");\nconst path = require(\"path\");\nconst vfs = require(\"./vfs\");\nconst { closeWatches } = require(\"./utils/core.js\");\nconst consola = require(\"consola\");\nconst logger = consola.withTag(\"Filesystem\");\n\n/**\n * @typedef {Object} Mountpoint\n * @property {String} [uuid]\n * @property {String} [root]\n * @property {Object} [attributes]\n */\n\n/**\n * TODO: typedef\n * @typedef {Object} FilesystemAdapter\n */\n\n/**\n * Filesystem Service Adapter Option Map\n * @typedef {{name: FilesystemAdapter}} FilesystemAdapterMap\n */\n\n/**\n * Filesystem Service Options\n * @typedef {Object} FilesystemOptions\n * @property {FilesystemAdapterMap} [adapters]\n */\n\n/**\n * Filesystem Internal Call Options\n * @typedef {Object} FilesystemCallOptions\n * @property {String} method VFS Method name\n * @property {Object} [user] User session data\n * @property {Object} [session] Session data\n */\n\n/**\n * MeeseOS Virtual Filesystem\n */\nclass Filesystem {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {FilesystemOptions} [options] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {Mountpoint[]}\n\t\t */\n\t\tthis.mountpoints = [];\n\n\t\t/**\n\t\t * @type {FilesystemAdapterMap}\n\t\t */\n\t\tthis.adapters = {};\n\n\t\tthis.watches = [];\n\n\t\tthis.router = null;\n\n\t\tthis.methods = {};\n\n\t\t/**\n\t\t * @type {FilesystemOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tadapters: {},\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy() {\n\t\tconst watches = this.watches\n\t\t\t.filter(({ watch }) => {\n\t\t\t\treturn watch && typeof watch.close === \"function\";\n\t\t\t})\n\t\t\t.map(({ watch }) => watch);\n\n\t\tawait closeWatches(watches);\n\n\t\tthis.watches = [];\n\t}\n\n\t/**\n\t * Initializes the Filesystem.\n\t * @returns {Promise<boolean>}\n\t */\n\tasync init() {\n\t\tconst adapters = {\n\t\t\tsystem: systemAdapter,\n\t\t\t...this.options.adapters,\n\t\t};\n\n\t\tthis.adapters = Object.keys(adapters).reduce((result, iter) => ({\n\t\t\t[iter]: adapters[iter](this.core),\n\t\t\t...result,\n\t\t}), {});\n\n\t\t// Routes\n\t\tconst { router, methods } = vfs(this.core);\n\t\tthis.router = router;\n\t\tthis.methods = methods;\n\n\t\t// Mimes\n\t\tconst { define } = this.core.config(\"mime\", { define: {}, filenames: {} });\n\t\tmime.define(define, { force: true });\n\n\t\t// Mountpoints\n\t\tawait Promise.all(\n\t\t\tthis.core.config(\"vfs.mountpoints\").map((mount) => this.mount(mount))\n\t\t);\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Gets the MIME type of a file.\n\t * @param {String} filename Input filename or path\n\t * @returns {String}\n\t */\n\tmime(filename) {\n\t\tconst { filenames } = this.core.config(\"mime\", {\n\t\t\tdefine: {},\n\t\t\tfilenames: {},\n\t\t});\n\n\t\treturn filenames[path.basename(filename)]\n\t\t\t? filenames[path.basename(filename)]\n\t\t\t: mime.getType(filename) || \"application/octet-stream\";\n\t}\n\n\t/**\n\t * Crates a VFS request.\n\t * @param {Request|Object} req HTTP Request object\n\t * @param {Response|Object} [res] HTTP Response object\n\t * @returns {Promise<*>}\n\t */\n\trequest(name, req, res = {}) {\n\t\treturn this.methods[name](req, res);\n\t}\n\n\t/**\n\t * Performs a VFS request with simulated HTTP request.\n\t * @param {FilesystemCallOptions} options Request options\n\t * @param {*} ...args Arguments to pass to VFS method\n\t * @returns {Promise<*>}\n\t */\n\tcall(options, ...args) {\n\t\tconst { method, user, session } = {\n\t\t\tuser: {},\n\t\t\tsession: null,\n\t\t\t...options,\n\t\t};\n\n\t\tconst req = methodArguments[method].reduce(\n\t\t\t({ fields, files }, key, index) => {\n\t\t\t\tconst arg = args[index];\n\t\t\t\tif (typeof key === \"function\") {\n\t\t\t\t\tfiles = Object.assign(key(arg), files);\n\t\t\t\t} else {\n\t\t\t\t\tfields = {\n\t\t\t\t\t\t[key]: arg,\n\t\t\t\t\t\t...fields,\n\t\t\t\t\t};\n\t\t\t\t}\n\n\t\t\t\treturn { fields, files };\n\t\t\t},\n\t\t\t{ fields: {}, files: {} }\n\t\t);\n\n\t\treq.session = session || { user };\n\n\t\treturn this.request(method, req);\n\t}\n\n\t/**\n\t * Creates realpath VFS request.\n\t * @param {String} filename The path\n\t * @param {AuthUserProfile} [user] User session object\n\t * @returns {Promise<string>}\n\t */\n\trealpath(filename, user = {}) {\n\t\treturn this.methods.realpath({\n\t\t\tsession: {\n\t\t\t\tuser: {\n\t\t\t\t\tgroups: [],\n\t\t\t\t\t...user,\n\t\t\t\t},\n\t\t\t},\n\t\t\tfields: {\n\t\t\t\tpath: filename,\n\t\t\t},\n\t\t});\n\t}\n\n\t/**\n\t * Mounts given mountpoint.\n\t * @param {Mountpoint} mount Mountpoint\n\t * @returns {Mountpoint} the mountpoint\n\t */\n\tasync mount(mount) {\n\t\tconst mountpoint = {\n\t\t\tid: uuid(),\n\t\t\troot: `${mount.name}:/`,\n\t\t\tattributes: {},\n\t\t\t...mount,\n\t\t};\n\n\t\tthis.mountpoints.push(mountpoint);\n\n\t\tlogger.success(\"Mounted\", mountpoint.name);\n\n\t\tawait this.watch(mountpoint);\n\n\t\treturn mountpoint;\n\t}\n\n\t/**\n\t * Unmounts given mountpoint.\n\t * @param {Mountpoint} mount Mountpoint\n\t * @returns {Promise<boolean>}\n\t */\n\tasync unmount(mountpoint) {\n\t\tconst found = this.watches.find((w) => w.id === mountpoint.id);\n\n\t\tif (found && found.watch) {\n\t\t\tawait found.watch.close();\n\t\t}\n\n\t\tconst index = this.mountpoints.indexOf(mountpoint);\n\n\t\tif (index !== -1) {\n\t\t\tthis.mountpoints.splice(index, 1);\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Set up a watch for given mountpoint.\n\t * @param {Mountpoint} mountpoint The mountpoint\n\t * @returns {Promise<undefined>}\n\t */\n\tasync watch(mountpoint) {\n\t\tif (\n\t\t\t!mountpoint.attributes.watch ||\n\t\t\tthis.core.config(\"vfs.watch\") === false ||\n\t\t\t!mountpoint.attributes.root\n\t\t) {\n\t\t\treturn;\n\t\t}\n\n\t\tconst adapter = await (mountpoint.adapter\n\t\t\t? this.adapters[mountpoint.adapter]\n\t\t\t: this.adapters.system);\n\n\t\tif (typeof adapter.watch === \"function\") {\n\t\t\tawait this._watch(mountpoint, adapter);\n\t\t}\n\t}\n\n\t/**\n\t * Internal method for setting up watch for given mountpoint adapter.\n\t * @param {Mountpoint} mountpoint The mountpoint\n\t * @param {FilesystemAdapter} adapter The adapter\n\t * @returns {Promise<undefined>}\n\t */\n\tasync _watch(mountpoint, adapter) {\n\t\tconst watch = await adapter.watch(mountpoint, (args, dir, type) => {\n\t\t\tconst target = mountpoint.name + \":/\" + dir;\n\t\t\tconst keys = Object.keys(args);\n\t\t\tconst filter = keys.length === 0\n\t\t\t\t? () => true\n\t\t\t\t: (ws) => keys.every((k) => ws._meeseOS_client[k] === args[k]);\n\n\t\t\tthis.core.emit(\"meeseOS/vfs:watch:change\", {\n\t\t\t\tmountpoint,\n\t\t\t\ttarget,\n\t\t\t\ttype,\n\t\t\t});\n\n\t\t\tthis.core.broadcast(\n\t\t\t\t\"meeseOS/vfs:watch:change\",\n\t\t\t\t[\n\t\t\t\t\t{\n\t\t\t\t\t\tpath: target,\n\t\t\t\t\t\ttype,\n\t\t\t\t\t},\n\t\t\t\t\targs,\n\t\t\t\t],\n\t\t\t\tfilter\n\t\t\t);\n\t\t});\n\n\t\twatch.on(\"error\", (error) => logger.warn(\"Mountpoint watch error\", error));\n\n\t\tthis.watches.push({\n\t\t\tid: mountpoint.id,\n\t\t\twatch,\n\t\t});\n\n\t\tlogger.info(\"Watching mountpoint\", mountpoint.name);\n\t}\n}\n\nmodule.exports = Filesystem;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/filesystem.js",
     "access": "public",
@@ -2530,7 +2596,7 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#constructor",
     "access": "public",
-    "description": "Creates a new instance",
+    "description": "Creates a new instance.",
     "lineNumber": 83,
     "params": [
       {
@@ -2695,7 +2761,7 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#destroy",
     "access": "public",
-    "description": "Destroys the instance",
+    "description": "Destroys the instance.",
     "lineNumber": 118,
     "unknown": [
       {
@@ -2723,7 +2789,7 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#init",
     "access": "public",
-    "description": "Initializes the Filesystem",
+    "description": "Initializes the Filesystem.",
     "lineNumber": 134,
     "unknown": [
       {
@@ -2751,8 +2817,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#mime",
     "access": "public",
-    "description": "Gets the MIME type of a file",
-    "lineNumber": 169,
+    "description": "Gets the MIME type of a file.",
+    "lineNumber": 167,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2790,8 +2856,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#request",
     "access": "public",
-    "description": "Crates a VFS request",
-    "lineNumber": 186,
+    "description": "Crates a VFS request.",
+    "lineNumber": 184,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2803,7 +2869,7 @@
         "nullable": null,
         "types": [
           "Request",
-          "object"
+          "Object"
         ],
         "spread": false,
         "optional": false,
@@ -2814,7 +2880,7 @@
         "nullable": null,
         "types": [
           "Response",
-          "object"
+          "Object"
         ],
         "spread": false,
         "optional": true,
@@ -2841,8 +2907,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#call",
     "access": "public",
-    "description": "Performs a VFS request with simulated HTTP request",
-    "lineNumber": 196,
+    "description": "Performs a VFS request with simulated HTTP request.",
+    "lineNumber": 194,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2890,8 +2956,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#realpath",
     "access": "public",
-    "description": "Creates realpath VFS request",
-    "lineNumber": 231,
+    "description": "Creates realpath VFS request.",
+    "lineNumber": 229,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2939,8 +3005,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#mount",
     "access": "public",
-    "description": "Mounts given mountpoint",
-    "lineNumber": 250,
+    "description": "Mounts given mountpoint.",
+    "lineNumber": 248,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2978,8 +3044,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#unmount",
     "access": "public",
-    "description": "Unmounts given mountpoint",
-    "lineNumber": 272,
+    "description": "Unmounts given mountpoint.",
+    "lineNumber": 270,
     "unknown": [
       {
         "tagName": "@returns",
@@ -3017,8 +3083,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#watch",
     "access": "public",
-    "description": "Set up a watch for given mountpoint",
-    "lineNumber": 295,
+    "description": "Set up a watch for given mountpoint.",
+    "lineNumber": 293,
     "unknown": [
       {
         "tagName": "@returns",
@@ -3056,8 +3122,8 @@
     "static": false,
     "longname": "src/filesystem.js~Filesystem#_watch",
     "access": "private",
-    "description": "Internal method for setting up watch for given mountpoint adapter",
-    "lineNumber": 319,
+    "description": "Internal method for setting up watch for given mountpoint adapter.",
+    "lineNumber": 317,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5293,7 +5359,7 @@
     "__docId__": 246,
     "kind": "file",
     "name": "src/utils/vfs.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst url = require(\"url\");\nconst sanitizeFilename = require(\"sanitize-filename\");\nconst formidable = require(\"formidable\");\nconst { Stream } = require(\"stream\");\n\n/**\n * A map of error codes\n */\nconst errorCodes = {\n\tENOENT: 404,\n\tEACCES: 401,\n};\n\n/**\n * Gets prefix of a VFS path\n * @param {String} path\n * @returns {String}\n */\nconst getPrefix = (path) => String(path).split(\":\")[0];\n\n/**\n * Sanitizes a path\n * @param {String} path\n * @returns {String}\n */\nconst sanitize = (path) => {\n\tconst [name, str] = (\n\t\tpath.replace(/\\/+/g, \"/\").match(/^([\\w-_]+):+(.*)/) || []\n\t).slice(1);\n\n\tconst sane = str\n\t\t.split(\"/\")\n\t\t.map((s) => sanitizeFilename(s))\n\t\t.join(\"/\")\n\t\t.replace(/\\/+/g, \"/\");\n\n\treturn name + \":\" + sane;\n};\n\n/**\n * Gets the stream from a HTTP request\n */\nconst streamFromRequest = (req) => {\n\tconst isStream = req.files.upload instanceof Stream;\n\treturn isStream\n\t\t? req.files.upload\n\t\t: fs.createReadStream(req.files.upload.path);\n};\n\nconst validateAll = (arr, compare, strict = true) =>\n\tarr[strict ? \"every\" : \"some\"]((g) => compare.indexOf(g) !== -1);\n\n/**\n * Validates array groups\n */\nconst validateNamedGroups = (groups, userGroups, strict) => {\n\tconst namedGroups = groups.filter((g) => typeof g === \"string\");\n\n\treturn namedGroups.length\n\t\t? validateAll(namedGroups, userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates matp of groups based on method:[group,...]\n */\nconst validateMethodGroups = (groups, userGroups, method, strict) => {\n\tconst methodGroups = groups.find((g) =>\n\t\ttypeof g === \"string\" ? false : method in g\n\t);\n\n\treturn methodGroups\n\t\t? validateAll(methodGroups[method], userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates groups\n */\nconst validateGroups = (userGroups, method, mountpoint, strict) => {\n\tconst groups = mountpoint.attributes.groups || [];\n\tif (groups.length) {\n\t\tconst namedValid = validateNamedGroups(groups, userGroups, strict);\n\t\tconst methodValid = validateMethodGroups(\n\t\t\tgroups,\n\t\t\tuserGroups,\n\t\t\tmethod,\n\t\t\tstrict\n\t\t);\n\n\t\treturn namedValid && methodValid;\n\t}\n\n\treturn true;\n};\n\n/**\n * Checks permissions for given mountpoint\n */\nconst checkMountpointPermission = (req, res, method, readOnly, strict) => {\n\tconst userGroups = req.session.user.groups;\n\n\treturn ({ mount }) => {\n\t\tif (readOnly) {\n\t\t\tconst { attributes, name } = mount;\n\n\t\t\tif (attributes.readOnly) {\n\t\t\t\tconst failed = typeof readOnly === \"function\"\n\t\t\t\t\t? getPrefix(readOnly(req, res)) === name\n\t\t\t\t\t: readOnly;\n\n\t\t\t\tif (failed) {\n\t\t\t\t\treturn Promise.reject(\n\t\t\t\t\t\tcreateError(403, `Mountpoint '${name}' is read-only`)\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\tif (validateGroups(userGroups, method, mount, strict)) {\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.reject(\n\t\t\tcreateError(\n\t\t\t\t403,\n\t\t\t\t`Permission was denied for '${method}' in '${mount.name}'`\n\t\t\t)\n\t\t);\n\t};\n};\n\n/**\n * Creates a new custom Error\n * @param {Number} code\n * @param {String} message\n * @return {Error}\n */\nconst createError = (code, message) => {\n\tconst error = new Error(message);\n\terror.code = code;\n\treturn error;\n};\n\n/**\n * Resolves a mountpoint\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst mountpointResolver = (core) =>\n\tasync (path) => {\n\t\tconst { adapters, mountpoints } = core.make(\"meeseOS/vfs\");\n\t\tconst prefix = getPrefix(path);\n\t\tconst mount = mountpoints.find((m) => m.name === prefix);\n\n\t\tif (!mount) {\n\t\t\tthrow createError(403, `Mountpoint not found for '${prefix}'`);\n\t\t}\n\n\t\tconst adapter = await (mount.adapter\n\t\t\t? adapters[mount.adapter]\n\t\t\t: adapters.system);\n\n\t\treturn Object.freeze({ mount, adapter });\n\t};\n\n/**\n * Parses URL body\n */\nconst parseGet = (req) => {\n\t// skipcq: JS-0272\n\tconst { query } = url.parse(req.url, true);\n\n\treturn Promise.resolve({ fields: query, files: {} });\n};\n\n/**\n * Parses JSON body\n * @param {Object} req\n * @returns {Object|Boolean}\n */\nconst parseJson = (req) => {\n\tconst isJson = req.headers[\"content-type\"] &&\n\t\treq.headers[\"content-type\"].indexOf(\"application/json\") !== -1;\n\n\tif (isJson) {\n\t\treturn { fields: req.body, files: {} };\n\t}\n\n\treturn false;\n};\n\n/**\n * Parses form body\n *\n * @param {Object} req\n * @param {Number} config.maxFieldsSize\n * @param {Number} config.maxFileSize\n * @returns {Promise<any>}\n */\nconst parseFormData = (req, { maxFieldsSize, maxFileSize }) => {\n\tconst form = new formidable.IncomingForm();\n\tform.maxFieldsSize = maxFieldsSize;\n\tform.maxFileSize = maxFileSize;\n\n\treturn new Promise((resolve, reject) => {\n\t\tform.parse(req, (err, fields, files) => {\n\t\t\treturn err ? reject(err) : resolve({ fields, files });\n\t\t});\n\t});\n};\n\n/**\n * Middleware for handling HTTP requests\n * @param {Object} config\n * @returns {Promise<any>}\n */\nconst parseFields = (config) =>\n\t(req, res) => {\n\t\tif ([\"get\", \"head\"].indexOf(req.method.toLowerCase()) !== -1) {\n\t\t\treturn Promise.resolve(parseGet(req));\n\t\t}\n\n\t\tconst json = parseJson(req);\n\t\tif (json) return Promise.resolve(json);\n\n\t\treturn parseFormData(req, config);\n\t};\n\n/**\n * A map of methods and their arguments.\n * Used for direct access via API\n */\nconst methodArguments = {\n\trealpath: [\"path\"],\n\texists: [\"path\"],\n\tstat: [\"path\"],\n\treaddir: [\"path\"],\n\treadfile: [\"path\"],\n\twritefile: [\"path\", (upload) => ({ upload })],\n\tmkdir: [\"path\"],\n\tunlink: [\"path\"],\n\ttouch: [\"path\"],\n\tsearch: [\"root\", \"pattern\"],\n\tcopy: [\"from\", \"to\"],\n\trename: [\"from\", \"to\"],\n};\n\nmodule.exports = {\n\tmountpointResolver,\n\tcreateError,\n\tcheckMountpointPermission,\n\tvalidateGroups,\n\tstreamFromRequest,\n\tsanitize,\n\tgetPrefix,\n\tparseFields,\n\terrorCodes,\n\tmethodArguments,\n};\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst url = require(\"url\");\nconst sanitizeFilename = require(\"sanitize-filename\");\nconst formidable = require(\"formidable\");\nconst { Stream } = require(\"stream\");\n\n/**\n * A map of error codes.\n */\nconst errorCodes = {\n\tENOENT: 404,\n\tEACCES: 401,\n};\n\n/**\n * Gets prefix of a VFS path.\n * @param {String} path\n * @returns {String}\n */\nconst getPrefix = (path) => String(path).split(\":\")[0];\n\n/**\n * Sanitizes a path.\n * @param {String} path\n * @returns {String}\n */\nconst sanitize = (path) => {\n\tconst [name, str] = (\n\t\tpath.replace(/\\/+/g, \"/\").match(/^([\\w-_]+):+(.*)/) || []\n\t).slice(1);\n\n\tconst sane = str\n\t\t.split(\"/\")\n\t\t.map((s) => sanitizeFilename(s))\n\t\t.join(\"/\")\n\t\t.replace(/\\/+/g, \"/\");\n\n\treturn name + \":\" + sane;\n};\n\n/**\n * Gets the stream from an HTTP request.\n * @param {Request} req\n */\nconst streamFromRequest = (req) => {\n\tconst isStream = req.files.upload instanceof Stream;\n\treturn isStream\n\t\t? req.files.upload\n\t\t: fs.createReadStream(req.files.upload.filepath);\n};\n\n/**\n * @param {Array} arr\n * @param {Array} compare\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateAll = (arr, compare, strict = true) =>\n\tarr[strict ? \"every\" : \"some\"]((g) => compare.indexOf(g) !== -1);\n\n/**\n * Validates array groups.\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateNamedGroups = (groups, userGroups, strict) => {\n\tconst namedGroups = groups.filter((g) => typeof g === \"string\");\n\n\treturn namedGroups.length\n\t\t? validateAll(namedGroups, userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates map of groups based on method:[group,...]\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {String} method\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateMethodGroups = (groups, userGroups, method, strict) => {\n\tconst methodGroups = groups.find((g) =>\n\t\ttypeof g === \"string\" ? false : method in g\n\t);\n\n\treturn methodGroups\n\t\t? validateAll(methodGroups[method], userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates groups.\n *\n * @param {Array} userGroups\n * @param {String} method\n * @param {Object} mountpoint\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateGroups = (userGroups, method, mountpoint, strict) => {\n\tconst groups = mountpoint.attributes.groups || [];\n\tif (groups.length) {\n\t\tconst namedValid = validateNamedGroups(groups, userGroups, strict);\n\t\tconst methodValid = validateMethodGroups(\n\t\t\tgroups,\n\t\t\tuserGroups,\n\t\t\tmethod,\n\t\t\tstrict\n\t\t);\n\n\t\treturn namedValid && methodValid;\n\t}\n\n\treturn true;\n};\n\n/**\n * Checks permissions for given mountpoint.\n *\n * @param {Request} req\n * @param {Response} res\n * @param {String} method\n * @param {Boolean} readOnly\n * @param {Boolean} strict\n */\nconst checkMountpointPermission = (req, res, method, readOnly, strict) => {\n\tconst userGroups = req.session.user.groups;\n\n\treturn ({ mount }) => {\n\t\tif (readOnly) {\n\t\t\tconst { attributes, name } = mount;\n\n\t\t\tif (attributes.readOnly) {\n\t\t\t\tconst failed = typeof readOnly === \"function\"\n\t\t\t\t\t? getPrefix(readOnly(req, res)) === name\n\t\t\t\t\t: readOnly;\n\n\t\t\t\tif (failed) {\n\t\t\t\t\treturn Promise.reject(\n\t\t\t\t\t\tcreateError(403, `Mountpoint '${name}' is read-only`)\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\tif (validateGroups(userGroups, method, mount, strict)) {\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.reject(\n\t\t\tcreateError(\n\t\t\t\t403,\n\t\t\t\t`Permission was denied for '${method}' in '${mount.name}'`\n\t\t\t)\n\t\t);\n\t};\n};\n\n/**\n * Creates a new custom Error.\n * @param {Number} code\n * @param {String} message\n * @return {Error}\n */\nconst createError = (code, message) => {\n\tconst error = new Error(message);\n\terror.code = code;\n\treturn error;\n};\n\n/**\n * Resolves a mountpoint.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst mountpointResolver = (core) =>\n\tasync (path) => {\n\t\tconst { adapters, mountpoints } = core.make(\"meeseOS/vfs\");\n\t\tconst prefix = getPrefix(path);\n\t\tconst mount = mountpoints.find((m) => m.name === prefix);\n\n\t\tif (!mount) {\n\t\t\tthrow createError(403, `Mountpoint not found for '${prefix}'`);\n\t\t}\n\n\t\tconst adapter = await (mount.adapter\n\t\t\t? adapters[mount.adapter]\n\t\t\t: adapters.system);\n\n\t\treturn Object.freeze({ mount, adapter });\n\t};\n\n/**\n * Parses URL body.\n * @param {Request} req\n * @returns {Promise<Object>}\n */\nconst parseGet = (req) => {\n\t// skipcq: JS-0272\n\tconst { query } = url.parse(req.url, true);\n\n\treturn Promise.resolve({ fields: query, files: {} });\n};\n\n/**\n * Parses JSON body.\n * @param {Request} req\n * @returns {Object|Boolean}\n */\nconst parseJson = (req) => {\n\tconst isJson = req.headers[\"content-type\"] &&\n\t\treq.headers[\"content-type\"].indexOf(\"application/json\") !== -1;\n\n\tif (isJson) {\n\t\treturn { fields: req.body, files: {} };\n\t}\n\n\treturn false;\n};\n\n/**\n * Parses form body.\n *\n * @param {Request} req\n * @param {Number} config.maxFieldsSize\n * @param {Number} config.maxFileSize\n * @returns {Promise<any>}\n */\nconst parseFormData = (req, { maxFieldsSize, maxFileSize }) => {\n\tconst form = formidable({\n\t\tmultiples: true,\n\t\tmaxFieldsSize,\n\t\tmaxFileSize,\n\t});\n\n\treturn new Promise((resolve, reject) => {\n\t\tform.parse(req, (err, fields, files) => {\n\t\t\treturn err ? reject(err) : resolve({ fields, files });\n\t\t});\n\t});\n};\n\n/**\n * Middleware for handling HTTP requests.\n * @param {Object} config\n * @returns {Promise<any>}\n */\nconst parseFields = (config) =>\n\t(req, res) => {\n\t\tif ([\"get\", \"head\"].indexOf(req.method.toLowerCase()) !== -1) {\n\t\t\treturn Promise.resolve(parseGet(req));\n\t\t}\n\n\t\tconst json = parseJson(req);\n\t\tif (json) return Promise.resolve(json);\n\n\t\treturn parseFormData(req, config);\n\t};\n\n/**\n * A map of methods and their arguments.\n * Used for direct access via API.\n */\nconst methodArguments = {\n\trealpath: [\"path\"],\n\texists: [\"path\"],\n\tstat: [\"path\"],\n\treaddir: [\"path\"],\n\treadfile: [\"path\"],\n\twritefile: [\"path\", (upload) => ({ upload })],\n\tmkdir: [\"path\"],\n\tunlink: [\"path\"],\n\ttouch: [\"path\"],\n\tsearch: [\"root\", \"pattern\"],\n\tcopy: [\"from\", \"to\"],\n\trename: [\"from\", \"to\"],\n\tarchive: [\"selection\"],\n};\n\nmodule.exports = {\n\tmountpointResolver,\n\tcreateError,\n\tcheckMountpointPermission,\n\tvalidateGroups,\n\tstreamFromRequest,\n\tsanitize,\n\tgetPrefix,\n\tparseFields,\n\terrorCodes,\n\tmethodArguments,\n};\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/utils/vfs.js",
     "access": "public",
@@ -5334,33 +5400,54 @@
     "export": false,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 82,
-    "undocument": true,
-    "params": [
+    "description": "",
+    "lineNumber": 89,
+    "unknown": [
       {
-        "name": "arr",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "compare",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "strict",
-        "optional": true,
-        "types": [
-          "boolean"
-        ],
-        "defaultRaw": true,
-        "defaultValue": "true"
+        "tagName": "@returns",
+        "tagValue": "{Boolean}"
       }
     ],
-    "return": null,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "arr",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "compare",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "strict",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Boolean"
+      ],
+      "spread": false,
+      "description": ""
+    },
     "ignore": true
   },
   {
@@ -5376,32 +5463,53 @@
     "export": false,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": null,
-    "description": "Validates array groups",
-    "lineNumber": 88,
+    "description": "Validates array groups.",
+    "lineNumber": 100,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Boolean}"
+      }
+    ],
     "params": [
       {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "groups",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "userGroups",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
-        "name": "strict",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "strict",
+        "description": ""
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Boolean"
+      ],
+      "spread": false,
+      "description": ""
     },
     "ignore": true
   },
@@ -5418,38 +5526,63 @@
     "export": false,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": null,
-    "description": "Validates matp of groups based on method:[group,...]",
-    "lineNumber": 99,
+    "description": "Validates map of groups based on method:[group,...]",
+    "lineNumber": 117,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Boolean}"
+      }
+    ],
     "params": [
       {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "groups",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "userGroups",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "method",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
-        "name": "strict",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "strict",
+        "description": ""
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Boolean"
+      ],
+      "spread": false,
+      "description": ""
     },
     "ignore": true
   },
@@ -5466,20 +5599,33 @@
     "export": false,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": null,
-    "description": "Parses URL body",
-    "lineNumber": 202,
+    "description": "Parses URL body.",
+    "lineNumber": 234,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<Object>}"
+      }
+    ],
     "params": [
       {
-        "name": "req",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": ""
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Promise<Object>"
+      ],
+      "spread": false,
+      "description": ""
     },
     "ignore": true
   },
@@ -5496,8 +5642,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": null,
-    "description": "Parses JSON body",
-    "lineNumber": 214,
+    "description": "Parses JSON body.",
+    "lineNumber": 246,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5508,7 +5654,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "Request"
         ],
         "spread": false,
         "optional": false,
@@ -5540,8 +5686,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": null,
-    "description": "Parses form body",
-    "lineNumber": 233,
+    "description": "Parses form body.",
+    "lineNumber": 265,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5552,7 +5698,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "Request"
         ],
         "spread": false,
         "optional": false,
@@ -5603,8 +5749,8 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{mountpointResolver}",
-    "description": "Resolves a mountpoint",
-    "lineNumber": 182,
+    "description": "Resolves a mountpoint.",
+    "lineNumber": 212,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5645,8 +5791,8 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{createError}",
-    "description": "Creates a new custom Error",
-    "lineNumber": 171,
+    "description": "Creates a new custom Error.",
+    "lineNumber": 201,
     "params": [
       {
         "nullable": null,
@@ -5691,38 +5837,58 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{checkMountpointPermission}",
-    "description": "Checks permissions for given mountpoint",
-    "lineNumber": 132,
+    "description": "Checks permissions for given mountpoint.",
+    "lineNumber": 162,
     "params": [
       {
+        "nullable": null,
+        "types": [
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "req",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "Response"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "res",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "method",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "readOnly",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
-        "name": "strict",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "strict",
+        "description": ""
       }
     ],
     "return": {
@@ -5744,38 +5910,63 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{validateGroups}",
-    "description": "Validates groups",
-    "lineNumber": 112,
+    "description": "Validates groups.",
+    "lineNumber": 136,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Boolean}"
+      }
+    ],
     "params": [
       {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "userGroups",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "method",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "mountpoint",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
-        "name": "strict",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "strict",
+        "description": ""
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "boolean"
-      ]
+        "Boolean"
+      ],
+      "spread": false,
+      "description": ""
     }
   },
   {
@@ -5791,14 +5982,18 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{streamFromRequest}",
-    "description": "Gets the stream from a HTTP request",
-    "lineNumber": 75,
+    "description": "Gets the stream from an HTTP request.",
+    "lineNumber": 76,
     "params": [
       {
-        "name": "req",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": ""
       }
     ],
     "return": {
@@ -5820,7 +6015,7 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{sanitize}",
-    "description": "Sanitizes a path",
+    "description": "Sanitizes a path.",
     "lineNumber": 58,
     "unknown": [
       {
@@ -5862,7 +6057,7 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{getPrefix}",
-    "description": "Gets prefix of a VFS path",
+    "description": "Gets prefix of a VFS path.",
     "lineNumber": 51,
     "unknown": [
       {
@@ -5904,8 +6099,8 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{parseFields}",
-    "description": "Middleware for handling HTTP requests",
-    "lineNumber": 250,
+    "description": "Middleware for handling HTTP requests.",
+    "lineNumber": 284,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5944,7 +6139,7 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{errorCodes}",
-    "description": "A map of error codes",
+    "description": "A map of error codes.",
     "lineNumber": 41,
     "type": {
       "types": [
@@ -5963,11 +6158,11 @@
     "export": true,
     "importPath": "@meeseOS/server/src/utils/vfs.js",
     "importStyle": "{methodArguments}",
-    "description": "A map of methods and their arguments.\nUsed for direct access via API",
-    "lineNumber": 266,
+    "description": "A map of methods and their arguments.\nUsed for direct access via API.",
+    "lineNumber": 300,
     "type": {
       "types": [
-        "{\"realpath\": *, \"exists\": *, \"stat\": *, \"readdir\": *, \"readfile\": *, \"writefile\": *, \"mkdir\": *, \"unlink\": *, \"touch\": *, \"search\": *, \"copy\": *, \"rename\": *}"
+        "{\"realpath\": *, \"exists\": *, \"stat\": *, \"readdir\": *, \"readfile\": *, \"writefile\": *, \"mkdir\": *, \"unlink\": *, \"touch\": *, \"search\": *, \"copy\": *, \"rename\": *, \"archive\": *}"
       ]
     }
   },
@@ -5975,7 +6170,7 @@
     "__docId__": 264,
     "kind": "file",
     "name": "src/vfs.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst path = require(\"path\");\nconst express = require(\"express\");\nconst { Stream } = require(\"stream\");\nconst {\n\tmountpointResolver,\n\tcheckMountpointPermission,\n\tstreamFromRequest,\n\tsanitize,\n\tparseFields,\n\terrorCodes,\n} = require(\"./utils/vfs\");\n\nconst respondNumber = (result) => (typeof result === \"number\" ? result : -1);\nconst respondBoolean = (result) =>\n\ttypeof result === \"boolean\" ? result : Boolean(result);\nconst requestPath = (req) => [sanitize(req.fields.path)];\nconst requestSearch = (req) => [sanitize(req.fields.root), req.fields.pattern];\nconst requestCross = (req) => [\n\tsanitize(req.fields.from),\n\tsanitize(req.fields.to),\n];\nconst requestFile = (req) => [\n\tsanitize(req.fields.path),\n\tstreamFromRequest(req),\n];\n\n/**\n * Parses the range request headers\n * @param {String} range\n * @returns {Array}\n */\nconst parseRangeHeader = (range) => {\n\tconst [pstart, pend] = range.replace(/bytes=/, \"\").split(\"-\");\n\tconst start = parseInt(pstart, 10);\n\tconst end = pend ? parseInt(pend, 10) : undefined;\n\treturn [start, end];\n};\n\n/**\n * A \"finally\" for our chain\n */\nconst onDone = (req, res) => {\n\tif (req.files) {\n\t\tfor (const fieldname in req.files) {\n\t\t\tfs.unlink(req.files[fieldname].path, () => ({}));\n\t\t}\n\t}\n};\n\n/**\n * Wraps a VFS adapter request\n * @param {Function} fn The wrapper function to apply\n */\nconst wrapper = (fn) =>\n\t(req, res, next) =>\n\t\tfn(req, res)\n\t\t\t.then((result) => {\n\t\t\t\tif (result instanceof Stream) {\n\t\t\t\t\tresult.pipe(res);\n\t\t\t\t} else {\n\t\t\t\t\tres.json(result);\n\t\t\t\t}\n\n\t\t\t\tonDone(req, res);\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tonDone(req, res);\n\t\t\t\tnext(error);\n\t\t\t});\n\n/**\n * Creates the middleware\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Function}\n */\nconst createMiddleware = (core) => {\n\tconst parse = parseFields(core.config(\"express\"));\n\n\treturn (req, res, next) =>\n\t\tparse(req, res)\n\t\t\t.then(({ fields, files }) => {\n\t\t\t\treq.fields = fields;\n\t\t\t\treq.files = files;\n\n\t\t\t\tnext();\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tcore.logger.warn(error);\n\t\t\t\treq.fields = {};\n\t\t\t\treq.files = {};\n\n\t\t\t\tnext(error);\n\t\t\t});\n};\n\nconst createOptions = (req) => {\n\tconst options = req.fields.options;\n\tconst range = req.headers && req.headers.range;\n\tconst session = { ...(req.session || {}) };\n\tlet result = options || {};\n\n\tif (typeof options === \"string\") {\n\t\ttry {\n\t\t\tresult = JSON.parse(req.fields.options) || {};\n\t\t} catch (e) {\n\t\t\t// Allow to fall through\n\t\t}\n\t}\n\n\tif (range) {\n\t\tresult.range = parseRangeHeader(req.headers.range);\n\t}\n\n\treturn {\n\t\t...result,\n\t\tsession,\n\t};\n};\n\n/**\n * Standard request with only a target\n * @param {Function} findMountpoint\n * @returns {Function}\n */\nconst createRequestFactory = (findMountpoint) =>\n\t(getter, method, readOnly, respond) =>\n\t\tasync (req, res) => {\n\t\t\tconst options = createOptions(req);\n\t\t\tconst args = [...getter(req, res), options];\n\n\t\t\tconst found = await findMountpoint(args[0]);\n\t\t\tif (method === \"search\") {\n\t\t\t\tif (\n\t\t\t\t\tfound.mount.attributes &&\n\t\t\t\t\tfound.mount.attributes.searchable === false\n\t\t\t\t) {\n\t\t\t\t\treturn [];\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tconst { attributes } = found.mount;\n\t\t\tconst strict = attributes.strictGroups !== false;\n\t\t\tconst ranges = !attributes.adapter ||\n\t\t\t\tattributes.adapter === \"system\" ||\n\t\t\t\tattributes.ranges === true;\n\t\t\tconst vfsMethodWrapper = (m) =>\n\t\t\t\tfound.adapter[m]\n\t\t\t\t\t? found.adapter[m](found)(...args)\n\t\t\t\t\t: Promise.reject(new Error(`Adapter does not support ${m}`));\n\t\t\tconst readstat = () => vfsMethodWrapper(\"stat\").catch(() => ({}));\n\t\t\tawait checkMountpointPermission(req, res, method, readOnly, strict)(found);\n\n\t\t\tconst result = await vfsMethodWrapper(method);\n\t\t\tif (method === \"readfile\") {\n\t\t\t\tconst stat = await readstat();\n\n\t\t\t\tif (ranges && options.range) {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tif (stat.size) {\n\t\t\t\t\t\t\tconst size = stat.size;\n\t\t\t\t\t\t\tconst [start, end] = options.range;\n\t\t\t\t\t\t\tconst realEnd = end || size - 1;\n\t\t\t\t\t\t\tconst chunksize = realEnd - start + 1;\n\n\t\t\t\t\t\t\tres.writeHead(206, {\n\t\t\t\t\t\t\t\t\"Content-Range\": `bytes ${start}-${realEnd}/${size}`,\n\t\t\t\t\t\t\t\t\"Accept-Ranges\": \"bytes\",\n\t\t\t\t\t\t\t\t\"Content-Length\": chunksize,\n\t\t\t\t\t\t\t\t\"Content-Type\": stat.mime,\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\tconsole.warn(\"Failed to send a ranged response\", e);\n\t\t\t\t\t}\n\t\t\t\t} else if (stat.mime) {\n\t\t\t\t\tres.append(\"Content-Type\", stat.mime);\n\t\t\t\t}\n\n\t\t\t\tif (options.download) {\n\t\t\t\t\tconst filename = encodeURIComponent(path.basename(args[0]));\n\t\t\t\t\tres.append(\n\t\t\t\t\t\t\"Content-Disposition\",\n\t\t\t\t\t\t`attachment; filename*=utf-8''${filename}`\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn respond ? respond(result) : result;\n\t\t};\n\n/**\n * Request that has a source and target\n * @param {Function} findMountpoint\n * @returns {Boolean}\n */\nconst createCrossRequestFactory = (findMountpoint) =>\n\t(getter, method, respond) =>\n\t\tasync (req, res) => {\n\t\t\tconst [from, to, options] = [...getter(req, res), createOptions(req)];\n\n\t\t\tconst srcMount = await findMountpoint(from);\n\t\t\tconst destMount = await findMountpoint(to);\n\t\t\tconst sameAdapter = srcMount.adapter === destMount.adapter;\n\n\t\t\tconst srcStrict = srcMount.mount.attributes.strictGroups !== false;\n\t\t\tconst destStrict = destMount.mount.attributes.strictGroups !== false;\n\t\t\tawait checkMountpointPermission(\n\t\t\t\treq,\n\t\t\t\tres,\n\t\t\t\t\"readfile\",\n\t\t\t\tfalse,\n\t\t\t\tsrcStrict\n\t\t\t)(srcMount);\n\t\t\tawait checkMountpointPermission(\n\t\t\t\treq,\n\t\t\t\tres,\n\t\t\t\t\"writefile\",\n\t\t\t\ttrue,\n\t\t\t\tdestStrict\n\t\t\t)(destMount);\n\n\t\t\tif (sameAdapter) {\n\t\t\t\tconst result = await srcMount.adapter[method](srcMount, destMount)(\n\t\t\t\t\tfrom,\n\t\t\t\t\tto,\n\t\t\t\t\toptions\n\t\t\t\t);\n\n\t\t\t\treturn Boolean(result);\n\t\t\t}\n\n\t\t\t// Simulates a copy/move\n\t\t\tconst stream = await srcMount.adapter.readfile(srcMount)(from, options);\n\n\t\t\tconst result = await destMount.adapter.writefile(destMount)(\n\t\t\t\tto,\n\t\t\t\tstream,\n\t\t\t\toptions\n\t\t\t);\n\n\t\t\tif (method === \"rename\") {\n\t\t\t\tawait srcMount.adapter.unlink(srcMount)(from, options);\n\t\t\t}\n\n\t\t\treturn Boolean(result);\n\t\t};\n\n/**\n * VFS Methods\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst vfs = (core) => {\n\tconst findMountpoint = mountpointResolver(core);\n\tconst createRequest = createRequestFactory(findMountpoint);\n\tconst createCrossRequest = createCrossRequestFactory(findMountpoint);\n\n\t// Wire up all available VFS events\n\treturn {\n\t\trealpath: createRequest(requestPath, \"realpath\", false),\n\t\texists: createRequest(requestPath, \"exists\", false, respondBoolean),\n\t\tstat: createRequest(requestPath, \"stat\", false),\n\t\treaddir: createRequest(requestPath, \"readdir\", false),\n\t\treadfile: createRequest(requestPath, \"readfile\", false),\n\t\twritefile: createRequest(requestFile, \"writefile\", true, respondNumber),\n\t\tmkdir: createRequest(requestPath, \"mkdir\", true, respondBoolean),\n\t\tunlink: createRequest(requestPath, \"unlink\", true, respondBoolean),\n\t\ttouch: createRequest(requestPath, \"touch\", true, respondBoolean),\n\t\tsearch: createRequest(requestSearch, \"search\", false),\n\t\tcopy: createCrossRequest(requestCross, \"copy\"),\n\t\trename: createCrossRequest(requestCross, \"rename\"),\n\t};\n};\n\n/**\n * Creates a new VFS Express router\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nmodule.exports = (core) => {\n\tconst router = express.Router();\n\tconst methods = vfs(core);\n\tconst middleware = createMiddleware(core);\n\tconst { isAuthenticated } = core.make(\"meeseOS/express\");\n\tconst vfsGroups = core.config(\"auth.vfsGroups\", []);\n\tconst logEnabled = core.config(\"development\");\n\n\t// Middleware first\n\trouter.use(isAuthenticated(vfsGroups));\n\trouter.use(middleware);\n\n\t// Then all VFS routes (needs implementation above)\n\trouter.get(\"/exists\", wrapper(methods.exists));\n\trouter.get(\"/stat\", wrapper(methods.stat));\n\trouter.get(\"/readdir\", wrapper(methods.readdir));\n\trouter.get(\"/readfile\", wrapper(methods.readfile));\n\trouter.post(\"/writefile\", wrapper(methods.writefile));\n\trouter.post(\"/rename\", wrapper(methods.rename));\n\trouter.post(\"/copy\", wrapper(methods.copy));\n\trouter.post(\"/mkdir\", wrapper(methods.mkdir));\n\trouter.post(\"/unlink\", wrapper(methods.unlink));\n\trouter.post(\"/touch\", wrapper(methods.touch));\n\trouter.post(\"/search\", wrapper(methods.search));\n\n\t// Finally catch promise exceptions\n\trouter.use((error, req, res, next) => {\n\t\t// TODO: Better error messages\n\t\tconst code = typeof error.code === \"number\"\n\t\t\t? error.code\n\t\t\t: errorCodes[error.code] || 400;\n\n\t\tif (logEnabled) {\n\t\t\tconsole.error(error);\n\t\t}\n\n\t\tres.status(code).json({\n\t\t\terror: error.toString(),\n\t\t\tstack: logEnabled ? error.stack : undefined,\n\t\t});\n\t});\n\n\treturn { router, methods };\n};\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst path = require(\"path\");\nconst express = require(\"express\");\nconst { Stream } = require(\"stream\");\nconst {\n\tmountpointResolver,\n\tcheckMountpointPermission,\n\tstreamFromRequest,\n\tsanitize,\n\tparseFields,\n\terrorCodes,\n} = require(\"./utils/vfs\");\n\nconst respondNumber = (result) => (typeof result === \"number\" ? result : -1);\nconst respondBoolean = (result) =>\n\ttypeof result === \"boolean\" ? result : Boolean(result);\nconst requestPath = (req) => [sanitize(req.fields.path)];\nconst requestSelection = (req) => [req.fields.selection];\nconst requestSearch = (req) => [sanitize(req.fields.root), req.fields.pattern];\nconst requestCross = (req) => [\n\tsanitize(req.fields.from),\n\tsanitize(req.fields.to),\n];\nconst requestFile = (req) => [\n\tsanitize(req.fields.path),\n\tstreamFromRequest(req),\n];\n\n/**\n * Parses the range request headers.\n * @param {String} range\n * @returns {Array}\n */\nconst parseRangeHeader = (range) => {\n\tconst [pstart, pend] = range.replace(/bytes=/, \"\").split(\"-\");\n\tconst start = parseInt(pstart, 10);\n\tconst end = pend ? parseInt(pend, 10) : undefined;\n\treturn [start, end];\n};\n\n/**\n * A \"finally\" for our chain.\n * @param {Request} req\n * @param {Response} res\n */\nconst onDone = (req, res) => {\n\tif (req.files) {\n\t\tfor (const fieldname in req.files) {\n\t\t\tfs.unlink(req.files[fieldname].filepath, () => ({}));\n\t\t}\n\t}\n};\n\n/**\n * Wraps a VFS adapter request.\n * @param {Function} fn The wrapper function to apply\n */\nconst wrapper = (fn) =>\n\t(req, res, next) =>\n\t\tfn(req, res)\n\t\t\t.then((result) => {\n\t\t\t\tif (result instanceof Stream) {\n\t\t\t\t\tresult.pipe(res);\n\t\t\t\t} else {\n\t\t\t\t\tres.json(result);\n\t\t\t\t}\n\n\t\t\t\tonDone(req, res);\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tonDone(req, res);\n\t\t\t\tnext(error);\n\t\t\t});\n\n/**\n * Creates the middleware.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Function}\n */\nconst createMiddleware = (core) => {\n\tconst parse = parseFields(core.config(\"express\"));\n\n\treturn (req, res, next) =>\n\t\tparse(req, res)\n\t\t\t.then(({ fields, files }) => {\n\t\t\t\treq.fields = fields;\n\t\t\t\treq.files = files;\n\n\t\t\t\tnext();\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tcore.logger.warn(error);\n\t\t\t\treq.fields = {};\n\t\t\t\treq.files = {};\n\n\t\t\t\tnext(error);\n\t\t\t});\n};\n\nconst createOptions = (req) => {\n\tconst options = req.fields.options;\n\tconst range = req.headers && req.headers.range;\n\tconst session = { ...(req.session || {}) };\n\tlet result = options || {};\n\n\tif (typeof options === \"string\") {\n\t\ttry {\n\t\t\tresult = JSON.parse(options) || {};\n\t\t} catch (e) {\n\t\t\t// Allow to fall through\n\t\t}\n\t}\n\n\tif (range) {\n\t\tresult.range = parseRangeHeader(req.headers.range);\n\t}\n\n\treturn {\n\t\t...result,\n\t\tsession,\n\t};\n};\n\n/**\n * Standard request with only a target.\n * @param {Function} findMountpoint\n * @returns {Function}\n */\nconst createRequestFactory = (findMountpoint) =>\n\t(getter, method, readOnly, respond) =>\n\t\tasync (req, res) => {\n\t\t\tconst options = createOptions(req);\n\t\t\tconst args = [...getter(req, res), options];\n\n\t\t\tconst found = await findMountpoint(args[0]);\n\t\t\tif (method === \"search\") {\n\t\t\t\tif (\n\t\t\t\t\tfound.mount.attributes &&\n\t\t\t\t\tfound.mount.attributes.searchable === false\n\t\t\t\t) {\n\t\t\t\t\treturn [];\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tconst { attributes } = found.mount;\n\t\t\tconst strict = attributes.strictGroups !== false;\n\t\t\tconst ranges = !attributes.adapter ||\n\t\t\t\tattributes.adapter === \"system\" ||\n\t\t\t\tattributes.ranges === true;\n\n\t\t\tconst vfsMethodWrapper = (method) =>\n\t\t\t\tfound.adapter[method]\n\t\t\t\t\t? found.adapter[method](found)(...args)\n\t\t\t\t\t: Promise.reject(new Error(`Adapter does not support ${method}`));\n\n\t\t\tconst readstat = () => vfsMethodWrapper(\"stat\").catch(() => ({}));\n\t\t\tawait checkMountpointPermission(req, res, method, readOnly, strict)(found);\n\n\t\t\tconst result = await vfsMethodWrapper(method);\n\t\t\tif (method === \"readfile\") {\n\t\t\t\tconst stat = await readstat();\n\n\t\t\t\tif (ranges && options.range) {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tif (stat.size) {\n\t\t\t\t\t\t\tconst size = stat.size;\n\t\t\t\t\t\t\tconst [start, end] = options.range;\n\t\t\t\t\t\t\tconst realEnd = end || size - 1;\n\t\t\t\t\t\t\tconst chunksize = realEnd - start + 1;\n\n\t\t\t\t\t\t\tres.writeHead(206, {\n\t\t\t\t\t\t\t\t\"Content-Range\": `bytes ${start}-${realEnd}/${size}`,\n\t\t\t\t\t\t\t\t\"Accept-Ranges\": \"bytes\",\n\t\t\t\t\t\t\t\t\"Content-Length\": chunksize,\n\t\t\t\t\t\t\t\t\"Content-Type\": stat.mime,\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\tconsole.warn(\"Failed to send a ranged response\", e);\n\t\t\t\t\t}\n\t\t\t\t} else if (stat.mime) {\n\t\t\t\t\tres.append(\"Content-Type\", stat.mime);\n\t\t\t\t}\n\n\t\t\t\tif (options.download) {\n\t\t\t\t\tconst filename = encodeURIComponent(path.basename(args[0]));\n\t\t\t\t\tres.append(\n\t\t\t\t\t\t\"Content-Disposition\",\n\t\t\t\t\t\t`attachment; filename*=utf-8''${filename}`\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn respond ? respond(result) : result;\n\t\t};\n\n/**\n * Request that has a source and target.\n * @param {Function} findMountpoint\n * @returns {Boolean}\n */\nconst createCrossRequestFactory = (findMountpoint) =>\n\t(getter, method, respond) =>\n\t\tasync (req, res) => {\n\t\t\tconst [from, to, options] = [...getter(req, res), createOptions(req)];\n\n\t\t\tconst srcMount = await findMountpoint(from);\n\t\t\tconst destMount = await findMountpoint(to);\n\t\t\tconst sameAdapter = srcMount.adapter === destMount.adapter;\n\n\t\t\tconst srcStrict = srcMount.mount.attributes.strictGroups !== false;\n\t\t\tconst destStrict = destMount.mount.attributes.strictGroups !== false;\n\n\t\t\tawait checkMountpointPermission(\n\t\t\t\treq,\n\t\t\t\tres,\n\t\t\t\t\"readfile\",\n\t\t\t\tfalse,\n\t\t\t\tsrcStrict\n\t\t\t)(srcMount);\n\n\t\t\tawait checkMountpointPermission(\n\t\t\t\treq,\n\t\t\t\tres,\n\t\t\t\t\"writefile\",\n\t\t\t\ttrue,\n\t\t\t\tdestStrict\n\t\t\t)(destMount);\n\n\t\t\tif (sameAdapter) {\n\t\t\t\tconst result = await srcMount.adapter[method](srcMount, destMount)(\n\t\t\t\t\tfrom,\n\t\t\t\t\tto,\n\t\t\t\t\toptions\n\t\t\t\t);\n\n\t\t\t\treturn Boolean(result);\n\t\t\t}\n\n\t\t\t// Simulates a copy/move\n\t\t\tconst stream = await srcMount.adapter.readfile(srcMount)(from, options);\n\n\t\t\tconst result = await destMount.adapter.writefile(destMount)(\n\t\t\t\tto,\n\t\t\t\tstream,\n\t\t\t\toptions\n\t\t\t);\n\n\t\t\tif (method === \"rename\") {\n\t\t\t\tawait srcMount.adapter.unlink(srcMount)(from, options);\n\t\t\t}\n\n\t\t\treturn Boolean(result);\n\t\t};\n\n/**\n * VFS Methods\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst vfs = (core) => {\n\tconst findMountpoint = mountpointResolver(core);\n\tconst createRequest = createRequestFactory(findMountpoint);\n\tconst createCrossRequest = createCrossRequestFactory(findMountpoint);\n\n\t// Wire up all available VFS events\n\treturn {\n\t\tcapabilities: createRequest(requestPath, \"capabilities\", false),\n\t\trealpath: createRequest(requestPath, \"realpath\", false),\n\t\texists: createRequest(requestPath, \"exists\", false, respondBoolean),\n\t\tstat: createRequest(requestPath, \"stat\", false),\n\t\treaddir: createRequest(requestPath, \"readdir\", false),\n\t\treadfile: createRequest(requestPath, \"readfile\", false),\n\t\twritefile: createRequest(requestFile, \"writefile\", true, respondNumber),\n\t\tmkdir: createRequest(requestPath, \"mkdir\", true, respondBoolean),\n\t\tunlink: createRequest(requestPath, \"unlink\", true, respondBoolean),\n\t\ttouch: createRequest(requestPath, \"touch\", true, respondBoolean),\n\t\tsearch: createRequest(requestSearch, \"search\", false),\n\t\tcopy: createCrossRequest(requestCross, \"copy\"),\n\t\trename: createCrossRequest(requestCross, \"rename\"),\n\t\tarchive: createRequest(requestSelection, \"archive\", false),\n\t};\n};\n\n/**\n * Creates a new VFS Express router.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nmodule.exports = (core) => {\n\tconst router = express.Router();\n\tconst methods = vfs(core);\n\tconst middleware = createMiddleware(core);\n\tconst { isAuthenticated } = core.make(\"meeseOS/express\");\n\tconst vfsGroups = core.config(\"auth.vfsGroups\", []);\n\tconst logEnabled = core.config(\"development\");\n\n\t// Middleware first\n\trouter.use(isAuthenticated(vfsGroups));\n\trouter.use(middleware);\n\n\t// Then all VFS routes (needs implementation above)\n\trouter.get(\"/capabilities\", wrapper(methods.capabilities));\n\trouter.get(\"/exists\", wrapper(methods.exists));\n\trouter.get(\"/stat\", wrapper(methods.stat));\n\trouter.get(\"/readdir\", wrapper(methods.readdir));\n\trouter.get(\"/readfile\", wrapper(methods.readfile));\n\trouter.post(\"/writefile\", wrapper(methods.writefile));\n\trouter.post(\"/rename\", wrapper(methods.rename));\n\trouter.post(\"/copy\", wrapper(methods.copy));\n\trouter.post(\"/mkdir\", wrapper(methods.mkdir));\n\trouter.post(\"/unlink\", wrapper(methods.unlink));\n\trouter.post(\"/touch\", wrapper(methods.touch));\n\trouter.post(\"/search\", wrapper(methods.search));\n\trouter.post(\"/archive\", wrapper(methods.archive));\n\n\t// Finally catch promise exceptions\n\trouter.use((error, req, res, next) => {\n\t\t// TODO: Better error messages\n\t\tconst code = typeof error.code === \"number\"\n\t\t\t? error.code\n\t\t\t: errorCodes[error.code] || 400;\n\n\t\tif (logEnabled) {\n\t\t\tconsole.error(error);\n\t\t}\n\n\t\tres.status(code).json({\n\t\t\terror: error.toString(),\n\t\t\tstack: logEnabled ? error.stack : undefined,\n\t\t});\n\t});\n\n\treturn { router, methods };\n};\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/vfs.js",
     "access": "public",
@@ -6108,12 +6303,12 @@
   {
     "__docId__": 270,
     "kind": "function",
-    "name": "requestSearch",
+    "name": "requestSelection",
     "memberof": "src/vfs.js",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/vfs.js~requestSearch",
+    "longname": "src/vfs.js~requestSelection",
     "access": "public",
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
@@ -6135,12 +6330,12 @@
   {
     "__docId__": 271,
     "kind": "function",
-    "name": "requestCross",
+    "name": "requestSearch",
     "memberof": "src/vfs.js",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/vfs.js~requestCross",
+    "longname": "src/vfs.js~requestSearch",
     "access": "public",
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
@@ -6162,18 +6357,18 @@
   {
     "__docId__": 272,
     "kind": "function",
-    "name": "requestFile",
+    "name": "requestCross",
     "memberof": "src/vfs.js",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/vfs.js~requestFile",
+    "longname": "src/vfs.js~requestCross",
     "access": "public",
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 55,
+    "lineNumber": 52,
     "undocument": true,
     "params": [
       {
@@ -6189,6 +6384,33 @@
   {
     "__docId__": 273,
     "kind": "function",
+    "name": "requestFile",
+    "memberof": "src/vfs.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/vfs.js~requestFile",
+    "access": "public",
+    "export": false,
+    "importPath": "@meeseOS/server/src/vfs.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 56,
+    "undocument": true,
+    "params": [
+      {
+        "name": "req",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 274,
+    "kind": "function",
     "name": "parseRangeHeader",
     "memberof": "src/vfs.js",
     "generator": false,
@@ -6199,8 +6421,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
-    "description": "Parses the range request headers",
-    "lineNumber": 65,
+    "description": "Parses the range request headers.",
+    "lineNumber": 66,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6230,7 +6452,7 @@
     "ignore": true
   },
   {
-    "__docId__": 274,
+    "__docId__": 275,
     "kind": "function",
     "name": "onDone",
     "memberof": "src/vfs.js",
@@ -6242,27 +6464,35 @@
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
-    "description": "A \"finally\" for our chain",
-    "lineNumber": 75,
+    "description": "A \"finally\" for our chain.",
+    "lineNumber": 78,
     "params": [
       {
-        "name": "req",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": ""
       },
       {
-        "name": "res",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Response"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "res",
+        "description": ""
       }
     ],
     "return": null,
     "ignore": true
   },
   {
-    "__docId__": 275,
+    "__docId__": 276,
     "kind": "function",
     "name": "wrapper",
     "memberof": "src/vfs.js",
@@ -6274,8 +6504,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
-    "description": "Wraps a VFS adapter request",
-    "lineNumber": 87,
+    "description": "Wraps a VFS adapter request.",
+    "lineNumber": 90,
     "params": [
       {
         "nullable": null,
@@ -6292,7 +6522,7 @@
     "ignore": true
   },
   {
-    "__docId__": 276,
+    "__docId__": 277,
     "kind": "function",
     "name": "createMiddleware",
     "memberof": "src/vfs.js",
@@ -6304,8 +6534,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
-    "description": "Creates the middleware",
-    "lineNumber": 109,
+    "description": "Creates the middleware.",
+    "lineNumber": 112,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6335,7 +6565,7 @@
     "ignore": true
   },
   {
-    "__docId__": 277,
+    "__docId__": 278,
     "kind": "function",
     "name": "createOptions",
     "memberof": "src/vfs.js",
@@ -6348,7 +6578,7 @@
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 129,
+    "lineNumber": 132,
     "undocument": true,
     "params": [
       {
@@ -6366,7 +6596,7 @@
     "ignore": true
   },
   {
-    "__docId__": 278,
+    "__docId__": 279,
     "kind": "function",
     "name": "createRequestFactory",
     "memberof": "src/vfs.js",
@@ -6378,8 +6608,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
-    "description": "Standard request with only a target",
-    "lineNumber": 158,
+    "description": "Standard request with only a target.",
+    "lineNumber": 161,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6409,7 +6639,7 @@
     "ignore": true
   },
   {
-    "__docId__": 279,
+    "__docId__": 280,
     "kind": "function",
     "name": "createCrossRequestFactory",
     "memberof": "src/vfs.js",
@@ -6421,8 +6651,8 @@
     "export": false,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
-    "description": "Request that has a source and target",
-    "lineNumber": 229,
+    "description": "Request that has a source and target.",
+    "lineNumber": 234,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6452,7 +6682,7 @@
     "ignore": true
   },
   {
-    "__docId__": 280,
+    "__docId__": 281,
     "kind": "function",
     "name": "vfs",
     "memberof": "src/vfs.js",
@@ -6465,7 +6695,7 @@
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": null,
     "description": "VFS Methods",
-    "lineNumber": 286,
+    "lineNumber": 293,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6495,7 +6725,7 @@
     "ignore": true
   },
   {
-    "__docId__": 281,
+    "__docId__": 282,
     "kind": "function",
     "name": "vfs",
     "memberof": "src/vfs.js",
@@ -6507,8 +6737,8 @@
     "export": true,
     "importPath": "@meeseOS/server/src/vfs.js",
     "importStyle": "vfs",
-    "description": "Creates a new VFS Express router",
-    "lineNumber": 313,
+    "description": "Creates a new VFS Express router.",
+    "lineNumber": 322,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6546,7 +6776,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meeseOS/server\",\n  \"version\": \"1.2.3\",\n  \"description\": \"meeseOS Server\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"build\": \"echo \\\"There is no build command for server\\\" && exit 0\",\n    \"test\": \"npm run eslint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js src\",\n    \"prepublishOnly\": \"npm run test\"\n  },\n  \"files\": [\n    \"src/\",\n    \"index.js\",\n    \"README.md\"\n  ],\n  \"engines\": {\n    \"node\": \">=12.0.0\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"jest-express\": \"^1.12.0\",\n    \"temp\": \"^0.9.4\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"body-parser\": \"^1.19.1\",\n    \"chokidar\": \"^3.5.3\",\n    \"connect-loki\": \"^1.2.0\",\n    \"consola\": \"^2.15.3\",\n    \"deepmerge\": \"^4.2.2\",\n    \"express\": \"^4.17.2\",\n    \"express-http-proxy\": \"^1.6.3\",\n    \"express-session\": \"^1.17.2\",\n    \"express-ws\": \"^5.0.2\",\n    \"fast-glob\": \"^2.2.7\",\n    \"filehound\": \"^1.17.5\",\n    \"formidable\": \"^1.2.2\",\n    \"fs-extra\": \"^10.0.0\",\n    \"mime\": \"^3.0.0\",\n    \"minimist\": \"^1.2.5\",\n    \"morgan\": \"^1.10.0\",\n    \"nocache\": \"^3.0.1\",\n    \"sanitize-filename\": \"^1.6.3\",\n    \"uuid\": \"^8.3.2\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Server API\",\n            \"description\": \"meeseOS Server API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      },\n      {\n        \"name\": \"esdoc-node\"\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/esdoc.js\",\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
+    "content": "{\n  \"name\": \"@meeseOS/server\",\n  \"version\": \"1.2.4\",\n  \"description\": \"meeseOS Server\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"build\": \"echo \\\"There is no build command for server\\\" && exit 0\",\n    \"test\": \"npm run eslint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js src\",\n    \"prepublishOnly\": \"npm run test\"\n  },\n  \"files\": [\n    \"src/\",\n    \"index.js\",\n    \"README.md\"\n  ],\n  \"engines\": {\n    \"node\": \">=12.0.0\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"jest-express\": \"^1.12.0\",\n    \"temp\": \"^0.9.4\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"body-parser\": \"^1.19.1\",\n    \"chokidar\": \"^3.5.3\",\n    \"connect-loki\": \"^1.2.0\",\n    \"consola\": \"^2.15.3\",\n    \"deepmerge\": \"^4.2.2\",\n    \"express\": \"^4.17.2\",\n    \"express-http-proxy\": \"^1.6.3\",\n    \"express-session\": \"^1.17.2\",\n    \"express-ws\": \"^5.0.2\",\n    \"fast-glob\": \"^2.2.7\",\n    \"filehound\": \"^1.17.5\",\n    \"formidable\": \"^2.0.1\",\n    \"fs-extra\": \"^10.0.0\",\n    \"mime\": \"^3.0.0\",\n    \"minimist\": \"^1.2.5\",\n    \"morgan\": \"^1.10.0\",\n    \"nocache\": \"^3.0.1\",\n    \"sanitize-filename\": \"^1.6.3\",\n    \"uuid\": \"^8.3.2\",\n    \"yazl\": \"^2.5.1\",\n    \"extract-zip\": \"^2.0.1\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Server API\",\n            \"description\": \"meeseOS Server API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      },\n      {\n        \"name\": \"esdoc-node\"\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/esdoc.js\",\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/package.json",
     "name": "package.json",
     "static": true,
