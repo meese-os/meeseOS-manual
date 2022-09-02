@@ -31,7 +31,7 @@ You can run a demo using Docker without checking out any source-code:
 docker run -p 8000:8000 meeseOS/meeseOS
 ```
 
-Or check out the [official online demo](https://demo.os-js.org/). *Please note that this might be down for maintenance at times, or running an unstable version.*
+Or check out the [official online demo](https://aaronmeese.com/). *Please note that this might be down for maintenance at times, or running an unstable version.*
 
 ## Setup
 

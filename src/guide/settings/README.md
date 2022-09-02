@@ -77,4 +77,4 @@ meeseOS.register(SettingsServiceProvider, {
 });
 ```
 
-If you have sensitive information in your configuration, consider using [dotenv](https://github.com/motdotla/dotenv).
+If you have sensitive information in your configuration, consider using [complex-dotenv-json](https://github.com/meeseOS/complex-dotenv-json).

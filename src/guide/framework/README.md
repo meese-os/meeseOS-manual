@@ -17,7 +17,7 @@ If you want to run your application completely sandboxed, see
 
 You can use React (or any other) framework for building UI in your applications.
 
-> You can find the full sources to this example [on github](https://github.com/os-js/osjs-example-react-application).
+> You can find the full sources to this example [on GitHub](https://github.com/os-js/osjs-example-react-application).
 
 Install these dependencies (inside the application source folder):
 
@@ -62,7 +62,7 @@ class App extends React.Component {
 
 Another alternative is Vue. This guide sets up single-file-component support as well.
 
-> You can find the full sources to this example [on github](https://github.com/os-js/osjs-example-vue-application).
+> You can find the full sources to this example [on GitHub](https://github.com/os-js/osjs-example-vue-application).
 
 Install these dependencies (inside the application source folder):
 

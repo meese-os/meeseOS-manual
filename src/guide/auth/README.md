@@ -35,7 +35,7 @@ Adapters are listed in the [official resource list](/resource/official/README.md
 
 > See [provider guide](../provider/README.md) for more information about provider setup.
 
-> If you have sensitive information in your configuration, consider using [dotenv](https://github.com/motdotla/dotenv).
+> If you have sensitive information in your configuration, consider using [complex-dotenv-json](https://github.com/meeseOS/complex-dotenv-json).
 
 Modifying the adapter requires changing the `AuthServiceProvider` options:
 

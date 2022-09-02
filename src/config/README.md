@@ -95,9 +95,9 @@ See [filesystem guide](../guide/filesystem/README.md)
 
 ## Dotenv
 
-You can provide configuration via a dotenv (`.env`) file to make make it dynamic.
+You can provide configuration via a JSON dotenv (`.env.json`) file to make make it dynamic.
 
-This applies to both the client and the server
+This applies to both the client and the server:
 
 ```config
 MEESEOS_STANDALONE=true
