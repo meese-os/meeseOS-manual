@@ -72,6 +72,30 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "@meeseos/server/src/utils/token-factory.js~tokenfactory",
+    "class/src/utils/token-factory.js~TokenFactory.html",
+    "<span>TokenFactory</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/token-factory.js</span>",
+    "class"
+  ],
+  [
+    "@meeseos/server/src/providers/token-factory.js~tokenfactoryserviceprovider",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html",
+    "<span>TokenFactoryServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/token-factory.js</span>",
+    "class"
+  ],
+  [
+    "@meeseos/server/src/utils/token-storage.js~tokenstorage",
+    "class/src/utils/token-storage.js~TokenStorage.html",
+    "<span>TokenStorage</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/token-storage.js</span>",
+    "class"
+  ],
+  [
+    "@meeseos/server/src/providers/token-storage.js~tokenstorageserviceprovider",
+    "class/src/providers/token-storage.js~TokenStorageServiceProvider.html",
+    "<span>TokenStorageServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/token-storage.js</span>",
+    "class"
+  ],
+  [
     "@meeseos/server/src/providers/vfs.js~vfsserviceprovider",
     "class/src/providers/vfs.js~VFSServiceProvider.html",
     "<span>VFSServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/vfs.js</span>",
@@ -558,6 +582,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/auth.js~auth#storage",
+    "class/src/auth.js~Auth.html#instance-member-storage",
+    "src/auth.js~Auth#storage",
+    "member"
+  ],
+  [
+    "src/auth.js~auth#tokenfactory",
+    "class/src/auth.js~Auth.html#instance-member-tokenFactory",
+    "src/auth.js~Auth#tokenFactory",
+    "member"
+  ],
+  [
     "src/auth.js~authadapter",
     "typedef/index.html#static-typedef-AuthAdapter",
     "src/auth.js~AuthAdapter",
@@ -978,6 +1014,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/providers/auth.js~authserviceprovider#depends",
+    "class/src/providers/auth.js~AuthServiceProvider.html#instance-method-depends",
+    "src/providers/auth.js~AuthServiceProvider#depends",
+    "method"
+  ],
+  [
     "src/providers/core.js",
     "file/src/providers/core.js.html",
     "src/providers/core.js",
@@ -1050,10 +1092,22 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/providers/core.js~coreserviceprovider#watches",
+    "class/src/providers/core.js~CoreServiceProvider.html#instance-member-watches",
+    "src/providers/core.js~CoreServiceProvider#watches",
+    "member"
+  ],
+  [
     "src/providers/packages.js",
     "file/src/providers/packages.js.html",
     "src/providers/packages.js",
     "file"
+  ],
+  [
+    "src/providers/packages.js~packageserviceprovider#constructor",
+    "class/src/providers/packages.js~PackageServiceProvider.html#instance-constructor-constructor",
+    "src/providers/packages.js~PackageServiceProvider#constructor",
+    "method"
   ],
   [
     "src/providers/packages.js~packageserviceprovider#initdevelopertools",
@@ -1068,10 +1122,106 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/providers/settings.js~settingsserviceprovider#constructor",
+    "class/src/providers/settings.js~SettingsServiceProvider.html#instance-constructor-constructor",
+    "src/providers/settings.js~SettingsServiceProvider#constructor",
+    "method"
+  ],
+  [
+    "src/providers/token-factory.js",
+    "file/src/providers/token-factory.js.html",
+    "src/providers/token-factory.js",
+    "file"
+  ],
+  [
+    "src/providers/token-factory.js~tokenfactoryserviceprovider#constructor",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-constructor-constructor",
+    "src/providers/token-factory.js~TokenFactoryServiceProvider#constructor",
+    "method"
+  ],
+  [
+    "src/providers/token-factory.js~tokenfactoryserviceprovider#core",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-member-core",
+    "src/providers/token-factory.js~TokenFactoryServiceProvider#core",
+    "member"
+  ],
+  [
+    "src/providers/token-factory.js~tokenfactoryserviceprovider#depends",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-method-depends",
+    "src/providers/token-factory.js~TokenFactoryServiceProvider#depends",
+    "method"
+  ],
+  [
+    "src/providers/token-factory.js~tokenfactoryserviceprovider#init",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-method-init",
+    "src/providers/token-factory.js~TokenFactoryServiceProvider#init",
+    "method"
+  ],
+  [
+    "src/providers/token-factory.js~tokenfactoryserviceprovider#provides",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-method-provides",
+    "src/providers/token-factory.js~TokenFactoryServiceProvider#provides",
+    "method"
+  ],
+  [
+    "src/providers/token-factory.js~tokenfactoryserviceprovider#tokenfactory",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-member-tokenFactory",
+    "src/providers/token-factory.js~TokenFactoryServiceProvider#tokenFactory",
+    "member"
+  ],
+  [
+    "src/providers/token-storage.js",
+    "file/src/providers/token-storage.js.html",
+    "src/providers/token-storage.js",
+    "file"
+  ],
+  [
+    "src/providers/token-storage.js~tokenstorageserviceprovider#constructor",
+    "class/src/providers/token-storage.js~TokenStorageServiceProvider.html#instance-constructor-constructor",
+    "src/providers/token-storage.js~TokenStorageServiceProvider#constructor",
+    "method"
+  ],
+  [
+    "src/providers/token-storage.js~tokenstorageserviceprovider#core",
+    "class/src/providers/token-storage.js~TokenStorageServiceProvider.html#instance-member-core",
+    "src/providers/token-storage.js~TokenStorageServiceProvider#core",
+    "member"
+  ],
+  [
+    "src/providers/token-storage.js~tokenstorageserviceprovider#destroy",
+    "class/src/providers/token-storage.js~TokenStorageServiceProvider.html#instance-method-destroy",
+    "src/providers/token-storage.js~TokenStorageServiceProvider#destroy",
+    "method"
+  ],
+  [
+    "src/providers/token-storage.js~tokenstorageserviceprovider#init",
+    "class/src/providers/token-storage.js~TokenStorageServiceProvider.html#instance-method-init",
+    "src/providers/token-storage.js~TokenStorageServiceProvider#init",
+    "method"
+  ],
+  [
+    "src/providers/token-storage.js~tokenstorageserviceprovider#provides",
+    "class/src/providers/token-storage.js~TokenStorageServiceProvider.html#instance-method-provides",
+    "src/providers/token-storage.js~TokenStorageServiceProvider#provides",
+    "method"
+  ],
+  [
+    "src/providers/token-storage.js~tokenstorageserviceprovider#storage",
+    "class/src/providers/token-storage.js~TokenStorageServiceProvider.html#instance-member-storage",
+    "src/providers/token-storage.js~TokenStorageServiceProvider#storage",
+    "member"
+  ],
+  [
     "src/providers/vfs.js",
     "file/src/providers/vfs.js.html",
     "src/providers/vfs.js",
     "file"
+  ],
+  [
+    "src/providers/vfs.js~vfsserviceprovider#constructor",
+    "class/src/providers/vfs.js~VFSServiceProvider.html#instance-constructor-constructor",
+    "src/providers/vfs.js~VFSServiceProvider#constructor",
+    "method"
   ],
   [
     "src/settings.js",
@@ -1125,6 +1275,138 @@ window.esdocSearchIndex = [
     "src/settings.js~settingsoptions",
     "typedef/index.html#static-typedef-SettingsOptions",
     "src/settings.js~SettingsOptions",
+    "typedef"
+  ],
+  [
+    "src/utils/token-factory.js",
+    "file/src/utils/token-factory.js.html",
+    "src/utils/token-factory.js",
+    "file"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#constructor",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-constructor-constructor",
+    "src/utils/token-factory.js~TokenFactory#constructor",
+    "method"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#core",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-member-core",
+    "src/utils/token-factory.js~TokenFactory#core",
+    "member"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#createaccesstoken",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-method-createAccessToken",
+    "src/utils/token-factory.js~TokenFactory#createAccessToken",
+    "method"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#createrefreshtoken",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-method-createRefreshToken",
+    "src/utils/token-factory.js~TokenFactory#createRefreshToken",
+    "method"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#init",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-method-init",
+    "src/utils/token-factory.js~TokenFactory#init",
+    "method"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#options",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-member-options",
+    "src/utils/token-factory.js~TokenFactory#options",
+    "member"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#refreshtoaccesstoken",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-method-refreshToAccessToken",
+    "src/utils/token-factory.js~TokenFactory#refreshToAccessToken",
+    "method"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#storage",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-member-storage",
+    "src/utils/token-factory.js~TokenFactory#storage",
+    "member"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#validateaccesstoken",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-method-validateAccessToken",
+    "src/utils/token-factory.js~TokenFactory#validateAccessToken",
+    "method"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactory#validaterefreshtoken",
+    "class/src/utils/token-factory.js~TokenFactory.html#instance-method-validateRefreshToken",
+    "src/utils/token-factory.js~TokenFactory#validateRefreshToken",
+    "method"
+  ],
+  [
+    "src/utils/token-factory.js~tokenfactoryoptions",
+    "typedef/index.html#static-typedef-TokenFactoryOptions",
+    "src/utils/token-factory.js~TokenFactoryOptions",
+    "typedef"
+  ],
+  [
+    "src/utils/token-storage.js",
+    "file/src/utils/token-storage.js.html",
+    "src/utils/token-storage.js",
+    "file"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#constructor",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-constructor-constructor",
+    "src/utils/token-storage.js~TokenStorage#constructor",
+    "method"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#core",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-member-core",
+    "src/utils/token-storage.js~TokenStorage#core",
+    "member"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#create",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-method-create",
+    "src/utils/token-storage.js~TokenStorage#create",
+    "method"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#destroy",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-method-destroy",
+    "src/utils/token-storage.js~TokenStorage#destroy",
+    "method"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#find",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-method-find",
+    "src/utils/token-storage.js~TokenStorage#find",
+    "method"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#init",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-method-init",
+    "src/utils/token-storage.js~TokenStorage#init",
+    "method"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#options",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-member-options",
+    "src/utils/token-storage.js~TokenStorage#options",
+    "member"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorage#remove",
+    "class/src/utils/token-storage.js~TokenStorage.html#instance-method-remove",
+    "src/utils/token-storage.js~TokenStorage#remove",
+    "method"
+  ],
+  [
+    "src/utils/token-storage.js~tokenstorageoptions",
+    "typedef/index.html#static-typedef-TokenStorageOptions",
+    "src/utils/token-storage.js~TokenStorageOptions",
     "typedef"
   ],
   [

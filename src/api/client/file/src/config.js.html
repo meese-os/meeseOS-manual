@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -479,7 +480,6 @@ export const defaultConfiguration = {
 			},
 		],
 		icons: {
-			&quot;^application/zip&quot;: { name: &quot;package-x-generic&quot; },
 			&quot;^application/javascript&quot;: { name: &quot;text-x-script&quot; },
 			&quot;^application/json&quot;: { name: &quot;text-x-script&quot; },
 			&quot;^application/x-python&quot;: { name: &quot;text-x-script&quot; },
@@ -487,7 +487,7 @@ export const defaultConfiguration = {
 			&quot;^application/pdf&quot;: { name: &quot;x-office-document&quot; },
 			&quot;^application/rtf&quot;: { name: &quot;x-office-document&quot; },
 			&quot;^application/msword&quot;: { name: &quot;x-office-document&quot; },
-			&quot;^application/(xz|tar|gzip)&quot;: { name: &quot;package-x-generic&quot; },
+			&quot;^application/(xz|tar|g?zip)&quot;: { name: &quot;package-x-generic&quot; },
 			&quot;^text/css&quot;: { name: &quot;text-x-script&quot; },
 			&quot;^text/html&quot;: { name: &quot;text-html&quot; },
 			&quot;^(application|text)/xml&quot;: { name: &quot;text-html&quot; },

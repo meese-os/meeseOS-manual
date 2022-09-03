@@ -1248,6 +1248,12 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
+    "src/auth.js~refreshtoken",
+    "typedef/index.html#static-typedef-RefreshToken",
+    "src/auth.js~RefreshToken",
+    "typedef"
+  ],
+  [
     "src/basic-application.js",
     "file/src/basic-application.js.html",
     "src/basic-application.js",

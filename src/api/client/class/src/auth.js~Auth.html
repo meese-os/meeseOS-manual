@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -210,13 +211,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Auth from &apos;<span><a href="file/src/auth.js.html#lineNumber111">@meeseOS/client/src/auth.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Auth from &apos;<span><a href="file/src/auth.js.html#lineNumber116">@meeseOS/client/src/auth.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/auth.js.html#lineNumber111">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/auth.js.html#lineNumber116">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -236,7 +237,7 @@
 
   
   
-  <div class="description" data-ice="description"><p>Handles Authentication</p>
+  <div class="description" data-ice="description"><p>Handles Authentication.</p>
 </div>
   
 
@@ -310,7 +311,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Authentication adapter</p>
+        <div data-ice="description"><p>Authentication adapter.</p>
 </div>
       </div>
     </td>
@@ -339,7 +340,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Core instance reference</p>
+        <div data-ice="description"><p>Core instance reference.</p>
 </div>
       </div>
     </td>
@@ -368,7 +369,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Authentication UI</p>
+        <div data-ice="description"><p>Authentication UI.</p>
 </div>
       </div>
     </td>
@@ -404,7 +405,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Destroy authentication handler</p>
+        <div data-ice="description"><p>Destroy authentication handler.</p>
 </div>
       </div>
     </td>
@@ -433,7 +434,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes the authentication handler</p>
+        <div data-ice="description"><p>Initializes the authentication handler.</p>
 </div>
       </div>
     </td>
@@ -456,13 +457,13 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/auth.js~Auth.html#instance-method-login">login</a></span></span><span class="code" data-ice="signature">(values: <span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="class/src/auth.js~Auth.html#instance-method-login">login</a></span></span><span class="code" data-ice="signature">(values: <span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span> | <span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Performs a login</p>
+        <div data-ice="description"><p>Performs a login.</p>
 </div>
       </div>
     </td>
@@ -485,13 +486,13 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/auth.js~Auth.html#instance-method-logout">logout</a></span></span><span class="code" data-ice="signature">(reload: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="class/src/auth.js~Auth.html#instance-method-logout">logout</a></span></span><span class="code" data-ice="signature">(reload: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Performs a logout</p>
+        <div data-ice="description"><p>Performs a logout.</p>
 </div>
       </div>
     </td>
@@ -520,7 +521,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Performs a register call</p>
+        <div data-ice="description"><p>Performs a register call.</p>
 </div>
       </div>
     </td>
@@ -543,13 +544,13 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/auth.js~Auth.html#instance-method-show">show</a></span></span><span class="code" data-ice="signature">(cb: <span>AuthCallback</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="class/src/auth.js~Auth.html#instance-method-show">show</a></span></span><span class="code" data-ice="signature">(cb: <span>AuthCallback</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Shows Login UI</p>
+        <div data-ice="description"><p>Shows Login UI.</p>
 </div>
       </div>
     </td>
@@ -578,7 +579,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Run the shutdown procedure</p>
+        <div data-ice="description"><p>Run the shutdown procedure.</p>
 </div>
       </div>
     </td>
@@ -609,7 +610,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber116">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber121">source</a></span></span>
     </span>
   </h3>
 
@@ -680,14 +681,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber129">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber134">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Authentication adapter</p>
+  <div data-ice="description"><p>Authentication adapter.</p>
 </div>
 
   
@@ -724,14 +725,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber143">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber148">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Core instance reference</p>
+  <div data-ice="description"><p>Core instance reference.</p>
 </div>
 
   
@@ -768,14 +769,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber122">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber127">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Authentication UI</p>
+  <div data-ice="description"><p>Authentication UI.</p>
 </div>
 
   
@@ -815,14 +816,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber159">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber164">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Destroy authentication handler</p>
+  <div data-ice="description"><p>Destroy authentication handler.</p>
 </div>
 
   
@@ -859,14 +860,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber149">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber154">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes the authentication handler</p>
+  <div data-ice="description"><p>Initializes the authentication handler.</p>
 </div>
 
   
@@ -911,18 +912,18 @@
     
     
     
-    <span class="code" data-ice="name">login</span><span class="code" data-ice="signature">(values: <span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+    <span class="code" data-ice="name">login</span><span class="code" data-ice="signature">(values: <span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span> | <span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber222">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber226">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Performs a login</p>
+  <div data-ice="description"><p>Performs a login.</p>
 </div>
 
   
@@ -937,9 +938,9 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">values</td>
-      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span> | <span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Form values as JSON</p>
+      <td data-ice="description"><p>Form values as JSON or refresh token</p>
 </td>
     </tr>
 </tbody>
@@ -952,7 +953,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</td>
           
         </tr>
       </tbody>
@@ -984,18 +985,18 @@
     
     
     
-    <span class="code" data-ice="name">logout</span><span class="code" data-ice="signature">(reload: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+    <span class="code" data-ice="name">logout</span><span class="code" data-ice="signature">(reload: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber266">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber273">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Performs a logout</p>
+  <div data-ice="description"><p>Performs a logout.</p>
 </div>
 
   
@@ -1026,7 +1027,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</td>
           
         </tr>
       </tbody>
@@ -1062,14 +1063,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber284">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber291">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Performs a register call</p>
+  <div data-ice="description"><p>Performs a register call.</p>
 </div>
 
   
@@ -1131,18 +1132,18 @@
     
     
     
-    <span class="code" data-ice="name">show</span><span class="code" data-ice="signature">(cb: <span>AuthCallback</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</span>
+    <span class="code" data-ice="name">show</span><span class="code" data-ice="signature">(cb: <span>AuthCallback</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber192">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber197">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Shows Login UI</p>
+  <div data-ice="description"><p>Shows Login UI.</p>
 </div>
 
   
@@ -1172,7 +1173,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>&gt;</td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>&gt;</td>
           
         </tr>
       </tbody>
@@ -1208,14 +1209,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber167">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/auth.js.html#lineNumber172">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Run the shutdown procedure</p>
+  <div data-ice="description"><p>Run the shutdown procedure.</p>
 </div>
 
   

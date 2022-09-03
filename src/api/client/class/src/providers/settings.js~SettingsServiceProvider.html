@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -210,13 +211,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import SettingsServiceProvider from &apos;<span><a href="file/src/providers/settings.js.html#lineNumber54">@meeseOS/client/src/providers/settings.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import SettingsServiceProvider from &apos;<span><a href="file/src/providers/settings.js.html#lineNumber53">@meeseOS/client/src/providers/settings.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/providers/settings.js.html#lineNumber54">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/providers/settings.js.html#lineNumber53">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -269,13 +270,14 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="typedef/index.html#static-typedef-SettingsServiceOptions">SettingsServiceOptions</a></span>)</span>
+          <span class="code" data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="typedef/index.html#static-typedef-SettingsProviderContract">SettingsProviderContract</a></span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Create new instance.</p>
+</div>
       </div>
     </td>
     <td>
@@ -373,7 +375,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes settings</p>
+        <div data-ice="description"><p>Initializes settings.</p>
 </div>
       </div>
     </td>
@@ -402,7 +404,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Get a list of services this provider registers</p>
+        <div data-ice="description"><p>Get a list of services this provider registers.</p>
 </div>
       </div>
     </td>
@@ -429,7 +431,7 @@
     
     
     
-    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="typedef/index.html#static-typedef-SettingsServiceOptions">SettingsServiceOptions</a></span>)</span>
+    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="typedef/index.html#static-typedef-SettingsProviderContract">SettingsProviderContract</a></span>)</span>
     <span class="right-info">
       
       
@@ -440,7 +442,8 @@
   
   
   
-  
+  <div data-ice="description"><p>Create new instance.</p>
+</div>
 
   
 
@@ -461,7 +464,7 @@
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">options</td>
-      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-SettingsServiceOptions">SettingsServiceOptions</a></span></td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-SettingsProviderContract">SettingsProviderContract</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li>
 <li>default: {}</li></ul></td>
       <td data-ice="description"></td>
@@ -611,7 +614,7 @@
   
   
   
-  <div data-ice="description"><p>Initializes settings</p>
+  <div data-ice="description"><p>Initializes settings.</p>
 </div>
 
   
@@ -667,7 +670,7 @@
   
   
   
-  <div data-ice="description"><p>Get a list of services this provider registers</p>
+  <div data-ice="description"><p>Get a list of services this provider registers.</p>
 </div>
 
   

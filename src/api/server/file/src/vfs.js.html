@@ -58,9 +58,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/packages.js~PackageServiceProvider.html">PackageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-factory.js~TokenFactoryServiceProvider.html">TokenFactoryServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-storage.js~TokenStorageServiceProvider.html">TokenStorageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ServiceProvider">ServiceProvider</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-factory.js~TokenFactory.html">TokenFactory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-storage.js~TokenStorage.html">TokenStorage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createError">createError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrefix">getPrefix</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mountpointResolver">mountpointResolver</a></span></span></li>
@@ -70,6 +74,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateGroups">validateGroups</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-errorCodes">errorCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-methodArguments">methodArguments</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenFactoryOptions">TokenFactoryOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenStorageOptions">TokenStorageOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -283,7 +289,7 @@ const createRequestFactory = (findMountpoint) =&gt;
 							});
 						}
 					} catch (e) {
-						console.warn(&quot;Failed to send a ranged response&quot;, e);
+						core.logger.warn(&quot;Failed to send a ranged response&quot;, e);
 					}
 				} else if (stat.mime) {
 					res.append(&quot;Content-Type&quot;, stat.mime);
@@ -398,11 +404,12 @@ module.exports = (core) =&gt; {
 	const router = express.Router();
 	const methods = vfs(core);
 	const middleware = createMiddleware(core);
-	const { isAuthenticated } = core.make(&quot;meeseOS/express&quot;);
+	const { useWebTokens, isAuthenticated } = core.make(&quot;meeseOS/express&quot;);
 	const vfsGroups = core.config(&quot;auth.vfsGroups&quot;, []);
 	const logEnabled = core.config(&quot;development&quot;);
 
 	// Middleware first
+	router.use(useWebTokens(core));
 	router.use(isAuthenticated(vfsGroups));
 	router.use(middleware);
 
@@ -423,13 +430,12 @@ module.exports = (core) =&gt; {
 
 	// Finally catch promise exceptions
 	router.use((error, req, res, next) =&gt; {
-		// TODO: Better error messages
 		const code = typeof error.code === &quot;number&quot;
 			? error.code
 			: errorCodes[error.code] || 400;
 
 		if (logEnabled) {
-			console.error(error);
+			core.logger.error(error);
 		}
 
 		res.status(code).json({

@@ -58,9 +58,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/packages.js~PackageServiceProvider.html">PackageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-factory.js~TokenFactoryServiceProvider.html">TokenFactoryServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-storage.js~TokenStorageServiceProvider.html">TokenStorageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ServiceProvider">ServiceProvider</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-factory.js~TokenFactory.html">TokenFactory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-storage.js~TokenStorage.html">TokenStorage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createError">createError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrefix">getPrefix</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mountpointResolver">mountpointResolver</a></span></span></li>
@@ -70,18 +74,20 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateGroups">validateGroups</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-errorCodes">errorCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-methodArguments">methodArguments</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenFactoryOptions">TokenFactoryOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenStorageOptions">TokenStorageOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import CoreServiceProvider from &apos;<span><a href="file/src/providers/core.js.html#lineNumber45">@meeseOS/server/src/providers/core.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import CoreServiceProvider from &apos;<span><a href="file/src/providers/core.js.html#lineNumber49">@meeseOS/server/src/providers/core.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/providers/core.js.html#lineNumber45">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/providers/core.js.html#lineNumber49">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -140,7 +146,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Create new instance</p>
+        <div data-ice="description"><p>Create new instance.</p>
 </div>
       </div>
     </td>
@@ -152,7 +158,41 @@
 </tbody>
 </table>
 </div>
-
+<div data-ice="memberSummary"><h2>Member Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Public Members</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html#instance-member-watches">watches</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
 <div data-ice="methodSummary"><h2>Method Summary</h2><table class="summary" data-ice="summary">
   <thead><tr><td data-ice="title" colspan="3">Public Methods</td></tr></thead>
   <tbody>
@@ -177,7 +217,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Destroys provider</p>
+        <div data-ice="description"><p>Destroys provider.</p>
 </div>
       </div>
     </td>
@@ -206,7 +246,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes provider</p>
+        <div data-ice="description"><p>Initializes provider.</p>
 </div>
       </div>
     </td>
@@ -235,7 +275,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes some developer features</p>
+        <div data-ice="description"><p>Initializes some developer features.</p>
 </div>
       </div>
     </td>
@@ -264,7 +304,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes Express extensions</p>
+        <div data-ice="description"><p>Initializes Express extensions.</p>
 </div>
       </div>
     </td>
@@ -293,7 +333,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes Express proxies</p>
+        <div data-ice="description"><p>Initializes Express proxies.</p>
 </div>
       </div>
     </td>
@@ -322,7 +362,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes Express base routes, etc</p>
+        <div data-ice="description"><p>Initializes Express base routes, etc.</p>
 </div>
       </div>
     </td>
@@ -351,7 +391,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes the service APIs</p>
+        <div data-ice="description"><p>Initializes the service APIs.</p>
 </div>
       </div>
     </td>
@@ -380,7 +420,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes Socket routes</p>
+        <div data-ice="description"><p>Initializes Socket routes.</p>
 </div>
       </div>
     </td>
@@ -409,7 +449,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Get a list of services this provider registers</p>
+        <div data-ice="description"><p>Get a list of services this provider registers.</p>
 </div>
       </div>
     </td>
@@ -438,7 +478,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Starts provider</p>
+        <div data-ice="description"><p>Starts provider.</p>
 </div>
       </div>
     </td>
@@ -469,14 +509,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber51">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber55">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Create new instance</p>
+  <div data-ice="description"><p>Create new instance.</p>
 </div>
 
   
@@ -526,7 +566,52 @@
   
 </div>
 </div>
+<div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-watches">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">watches</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber61">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+</div>
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
@@ -541,14 +626,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber60">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber95">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Destroys provider</p>
+  <div data-ice="description"><p>Destroys provider.</p>
 </div>
 
   
@@ -585,14 +670,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber68">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber67">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes provider</p>
+  <div data-ice="description"><p>Initializes provider.</p>
 </div>
 
   
@@ -629,14 +714,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber293">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber306">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes some developer features</p>
+  <div data-ice="description"><p>Initializes some developer features.</p>
 </div>
 
   
@@ -673,14 +758,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber151">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber164">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes Express extensions</p>
+  <div data-ice="description"><p>Initializes Express extensions.</p>
 </div>
 
   
@@ -717,14 +802,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber273">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber286">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes Express proxies</p>
+  <div data-ice="description"><p>Initializes Express proxies.</p>
 </div>
 
   
@@ -761,14 +846,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber188">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber201">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes Express base routes, etc</p>
+  <div data-ice="description"><p>Initializes Express base routes, etc.</p>
 </div>
 
   
@@ -805,14 +890,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber96">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber103">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes the service APIs</p>
+  <div data-ice="description"><p>Initializes the service APIs.</p>
 </div>
 
   
@@ -849,14 +934,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber212">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber225">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes Socket routes</p>
+  <div data-ice="description"><p>Initializes Socket routes.</p>
 </div>
 
   
@@ -893,14 +978,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber89">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber88">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Get a list of services this provider registers</p>
+  <div data-ice="description"><p>Get a list of services this provider registers.</p>
 </div>
 
   
@@ -949,14 +1034,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber79">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/core.js.html#lineNumber78">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Starts provider</p>
+  <div data-ice="description"><p>Starts provider.</p>
 </div>
 
   

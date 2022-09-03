@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -341,7 +342,7 @@ export default class Settings {
 
 	/**
 	 * Saves settings
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	save() {
 		return new Promise((resolve, reject) =&gt; {
@@ -369,7 +370,7 @@ export default class Settings {
 
 	/**
 	 * Loads settings
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	load() {
 		const defaults = this.core.config(&quot;settings.defaults&quot;, {});
@@ -449,7 +450,7 @@ export default class Settings {
 	/**
 	 * Clears a namespace by root key
 	 * @param {String} ns The namespace
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	clear(ns) {
 		return this.adapter.clear(ns).then((result) =&gt; {

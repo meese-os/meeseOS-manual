@@ -58,9 +58,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/packages.js~PackageServiceProvider.html">PackageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-factory.js~TokenFactoryServiceProvider.html">TokenFactoryServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-storage.js~TokenStorageServiceProvider.html">TokenStorageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ServiceProvider">ServiceProvider</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-factory.js~TokenFactory.html">TokenFactory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-storage.js~TokenStorage.html">TokenStorage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createError">createError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrefix">getPrefix</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mountpointResolver">mountpointResolver</a></span></span></li>
@@ -70,6 +74,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateGroups">validateGroups</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-errorCodes">errorCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-methodArguments">methodArguments</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenFactoryOptions">TokenFactoryOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenStorageOptions">TokenStorageOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -112,33 +118,32 @@ const bodyParser = require(&quot;body-parser&quot;);
 const proxy = require(&quot;express-http-proxy&quot;);
 const nocache = require(&quot;nocache&quot;);
 const { ServiceProvider } = require(&quot;@meeseOS/common&quot;);
-const { isAuthenticated, closeWatches } = require(&quot;../utils/core.js&quot;);
+const {
+	useWebTokens,
+	isAuthenticated,
+	closeWatches
+} = require(&quot;../utils/core.js&quot;);
 
 /**
  * MeeseOS Core Service Provider
  */
 class CoreServiceProvider extends ServiceProvider {
 	/**
-	 * Create new instance
+	 * Create new instance.
 	 * @param {Core} core MeeseOS Core instance reference
 	 * @param {Object} [options] Arguments
 	 */
 	constructor(core, options) {
 		super(core, options);
 
+		/**
+		 * @type {Array}
+		 */
 		this.watches = [];
 	}
 
 	/**
-	 * Destroys provider
-	 */
-	async destroy() {
-		await closeWatches(this.watches);
-		super.destroy();
-	}
-
-	/**
-	 * Initializes provider
+	 * Initializes provider.
 	 */
 	async init() {
 		this.initService();
@@ -149,7 +154,7 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Starts provider
+	 * Starts provider.
 	 */
 	start() {
 		if (this.core.configuration.development) {
@@ -158,7 +163,7 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Get a list of services this provider registers
+	 * Get a list of services this provider registers.
 	 * @returns {String[]}
 	 */
 	provides() {
@@ -166,7 +171,15 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes the service APIs
+	 * Destroys provider.
+	 */
+	async destroy() {
+		await closeWatches(this.watches);
+		super.destroy();
+	}
+
+	/**
+	 * Initializes the service APIs.
 	 */
 	initService() {
 		const { app } = this.core;
@@ -178,6 +191,7 @@ class CoreServiceProvider extends ServiceProvider {
 		};
 
 		this.core.singleton(&quot;meeseOS/express&quot;, () =&gt; ({
+			useWebTokens,
 			isAuthenticated,
 
 			call: (method, ...args) =&gt; app[method](...args),
@@ -201,7 +215,11 @@ class CoreServiceProvider extends ServiceProvider {
 			) =&gt;
 				app[method.toLowerCase()](
 					uri,
-					[...middleware.routeAuthenticated, isAuthenticated(groups, strict)],
+					[
+						...middleware.routeAuthenticated,
+						useWebTokens(app),
+						isAuthenticated(groups, strict)
+					],
 					cb
 				),
 
@@ -214,6 +232,7 @@ class CoreServiceProvider extends ServiceProvider {
 			routerAuthenticated: (groups = [], strict = requireAllGroups) =&gt; {
 				const router = express.Router();
 				router.use(...middleware.routeAuthenticated);
+				router.use(useWebTokens(app));
 				router.use(isAuthenticated(groups, strict));
 				return router;
 			},
@@ -221,7 +240,7 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes Express extensions
+	 * Initializes Express extensions.
 	 */
 	initExtensions() {
 		const { app, session, configuration } = this.core;
@@ -258,7 +277,7 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes Express base routes, etc
+	 * Initializes Express base routes, etc.
 	 */
 	initResourceRoutes() {
 		const { app, configuration } = this.core;
@@ -282,7 +301,7 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes Socket routes
+	 * Initializes Socket routes.
 	 */
 	initSocketRoutes() {
 		const { app } = this.core;
@@ -343,7 +362,7 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes Express proxies
+	 * Initializes Express proxies.
 	 */
 	initProxies() {
 		const { app, configuration } = this.core;
@@ -363,7 +382,7 @@ class CoreServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes some developer features
+	 * Initializes some developer features.
 	 */
 	initDeveloperTools() {
 		try {

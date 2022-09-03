@@ -58,9 +58,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/packages.js~PackageServiceProvider.html">PackageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-factory.js~TokenFactoryServiceProvider.html">TokenFactoryServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-storage.js~TokenStorageServiceProvider.html">TokenStorageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ServiceProvider">ServiceProvider</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-factory.js~TokenFactory.html">TokenFactory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-storage.js~TokenStorage.html">TokenStorage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createError">createError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrefix">getPrefix</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mountpointResolver">mountpointResolver</a></span></span></li>
@@ -70,6 +74,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateGroups">validateGroups</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-errorCodes">errorCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-methodArguments">methodArguments</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenFactoryOptions">TokenFactoryOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenStorageOptions">TokenStorageOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -109,7 +115,9 @@ const fs = require(&quot;fs-extra&quot;);
 const consola = require(&quot;consola&quot;);
 const pathLib = require(&quot;path&quot;);
 const logger = consola.withTag(&quot;Auth&quot;);
-const nullAdapter = require(&quot;./adapters/auth/null.js&quot;);
+const nullAdapter = require(&quot;./adapters/auth/null&quot;);
+const TokenStorage = require(&quot;./utils/token-storage&quot;);
+const TokenFactory = require(&quot;./utils/token-factory&quot;);
 
 /**
  * TODO: typedef
@@ -137,7 +145,7 @@ const nullAdapter = require(&quot;./adapters/auth/null.js&quot;);
  */
 class Auth {
 	/**
-	 * Creates a new instance
+	 * Creates a new instance.
 	 * @param {Core} core MeeseOS Core instance reference
 	 * @param {AuthOptions} [options={}] Service Provider arguments
 	 */
@@ -167,24 +175,29 @@ class Auth {
 		try {
 			this.adapter = this.options.adapter(core, this.options.config);
 		} catch (e) {
-			this.core.logger.warn(e);
+			logger.warn(e);
 		}
 	}
 
 	/**
-	 * Destroys instance
-	 */
-	destroy() {
-		if (this.adapter.destroy) {
-			this.adapter.destroy();
-		}
-	}
-
-	/**
-	 * Initializes adapter
-	 * @returns {Promise&lt;boolean&gt;}
+	 * Initializes adapter.
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	async init() {
+		/**
+		 * @type {TokenFactory}
+		 */
+		this.tokenFactory = this.core.make(&quot;meeseOS/token-factory&quot;);
+
+		await this.tokenFactory.init();
+
+		/**
+		 * @type {TokenStorage}
+		 */
+		this.storage = this.core.make(&quot;meeseOS/token-storage&quot;);
+
+		await this.storage.init();
+
 		if (this.adapter.init) {
 			return this.adapter.init();
 		}
@@ -193,30 +206,67 @@ class Auth {
 	}
 
 	/**
-	 * Performs a login request
+	 * Destroys instance.
+	 */
+	destroy() {
+		if (this.adapter.destroy) {
+			this.adapter.destroy();
+		}
+	}
+
+	/**
+	 * Performs a login request.
 	 * @param {Request} req HTTP request
 	 * @param {Response} res HTTP response
 	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	async login(req, res) {
-		const result = await this.adapter.login(req, res);
+		let result = {};
+		const refreshToken = req.body.refreshToken;
 
-		if (result) {
+		if (refreshToken) {
+			// Decodes the JWT refresh token and returns the user information
+			const refreshTokenUser =
+			  await this.tokenFactory.refreshToAccessToken(refreshToken);
+
+			if (refreshTokenUser &amp;&amp; refreshTokenUser.accessToken) {
+				result.username = refreshTokenUser.username;
+				result.groups = refreshTokenUser.groups;
+				result.accessToken = refreshTokenUser.accessToken;
+			}
+		} else {
+			// Attempts to log the user in using the adapter
+			const standardAuthResult = await this.adapter.login(req, res);
+
+			if (standardAuthResult) {
+				result = standardAuthResult;
+				result.refreshToken = this.tokenFactory.createRefreshToken(
+					standardAuthResult.username,
+					standardAuthResult.groups
+				);
+				result.accessToken = this.tokenFactory.createAccessToken(
+					standardAuthResult.username,
+					standardAuthResult.groups
+				);
+
+				this.storage.create(result.refreshToken);
+			}
+		}
+
+		if (Object.keys(result).length !== 0) {
 			const profile = this.createUserProfile(req.body, result);
-
 			if (profile &amp;&amp; this.checkLoginPermissions(profile)) {
-				await this.createHomeDirectory(profile, req, res);
+				await this.createHomeDirectory(profile);
 				req.session.user = profile;
 				req.session.save(() =&gt; {
 					this.core.emit(
 						&quot;meeseOS/core:logged-in&quot;,
-						Object.freeze({
-							...req.session,
-						})
+						Object.freeze({ ...req.session, })
 					);
 
 					res.status(200).json(profile);
 				});
+
 				return;
 			}
 		}
@@ -225,7 +275,7 @@ class Auth {
 	}
 
 	/**
-	 * Performs a logout request
+	 * Performs a logout request.
 	 * @param {Request} req HTTP request
 	 * @param {Response} res HTTP response
 	 * @returns {Promise&lt;undefined&gt;}
@@ -233,9 +283,7 @@ class Auth {
 	async logout(req, res) {
 		this.core.emit(
 			&quot;meeseOS/core:logging-out&quot;,
-			Object.freeze({
-				...req.session,
-			})
+			Object.freeze({ ...req.session, })
 		);
 
 		await this.adapter.logout(req, res);
@@ -250,7 +298,7 @@ class Auth {
 	}
 
 	/**
-	 * Performs a register request
+	 * Performs a register request.
 	 * @param {Request} req HTTP request
 	 * @param {Response} res HTTP response
 	 * @returns {Promise&lt;undefined&gt;}
@@ -266,7 +314,7 @@ class Auth {
 	}
 
 	/**
-	 * Checks if login is allowed for this user
+	 * Checks if login is allowed for this user.
 	 * @param {AuthUserProfile} profile User profile
 	 * @returns {Boolean}
 	 */
@@ -278,9 +326,9 @@ class Auth {
 		}
 
 		if (requiredGroups.length &gt; 0) {
-			const passes = requiredGroups.every((name) =&gt; {
-				return profile.groups.indexOf(name) !== -1;
-			});
+			const passes = requiredGroups.every((name) =&gt;
+				profile.groups.indexOf(name) !== -1
+			);
 
 			return passes;
 		}
@@ -289,37 +337,38 @@ class Auth {
 	}
 
 	/**
-	 * Creates user profile object
+	 * Creates user profile object.
 	 * @param {Object} fields Input fields
 	 * @param {Object} result Login result
-	 * @returns {AuthUserProfile|boolean}
+	 * @returns {AuthUserProfile|Boolean}
 	 */
 	createUserProfile(fields, result) {
 		const ignores = [&quot;password&quot;];
 		const required = [&quot;username&quot;];
 		const template = {
 			username: fields.username,
+			id: fields.username,
 			name: fields.username,
 			groups: this.core.config(&quot;auth.defaultGroups&quot;, []),
+			refreshToken: fields.refreshToken,
 		};
 
-		const missing = required.filter((k) =&gt; typeof result[k] === &quot;undefined&quot;);
-
+		const mergedArrays = { ...fields, ...result };
+		const missing = required.filter((k) =&gt; typeof mergedArrays[k] === &quot;undefined&quot;);
 		if (missing.length) {
-			logger.warn(&quot;Missing user attributes&quot;, missing);
-		} else {
-			const values = Object.keys(result)
-				.filter((k) =&gt; ignores.indexOf(k) === -1)
-				.reduce((o, k) =&gt; ({ ...o, [k]: result[k] }), {});
-
-			return { ...template, ...values };
+			logger.warn(&quot;Missing user attributes:&quot;, missing);
+			return false;
 		}
 
-		return false;
+		const values = Object.keys(mergedArrays)
+			.filter((key) =&gt; ignores.indexOf(key) === -1)
+			.reduce((obj, key) =&gt; ({ ...obj, [key]: mergedArrays[key] }), {});
+
+		return { ...template, ...values };
 	}
 
 	/**
-	 * Tries to create home directory for a user
+	 * Tries to create home directory for a user.
 	 * @param {AuthUserProfile} profile User profile
 	 * @returns {Promise&lt;undefined&gt;}
 	 */
@@ -340,7 +389,7 @@ class Auth {
 
 	/**
 	 * If the template is an array, it is a list of files that should be copied
-	 * to the user&apos;s home directory
+	 * to the user&apos;s home directory.
 	 * @param {Object[]} template Array of objects with a specified path,
 	 * optionally with specified content but defaulting to an empty string
 	 * @param {VFSServiceProvider} vfs An instance of the virtual file system
@@ -357,8 +406,8 @@ class Auth {
 					await fs.writeFile(shortcutsFile, contents);
 				}
 			} catch (e) {
-				console.warn(`There was a problem writing &apos;${file.path}&apos; to the home directory template`);
-				console.error(&quot;ERROR:&quot;, e);
+				logger.warn(`There was a problem writing &apos;${file.path}&apos; to the home directory template`);
+				logger.error(&quot;ERROR:&quot;, e);
 			}
 		}
 	}

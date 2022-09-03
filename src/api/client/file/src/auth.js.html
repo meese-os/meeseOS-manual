@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -293,6 +294,11 @@ const createAdapter = (core, options) =&gt; {
  */
 
 /**
+ * @typedef {Object} RefreshToken
+ * @property {String} [refreshToken]
+ */
+
+/**
  * @callback AuthAdapterCallback
  * @param {Core} core
  * @returns {AuthAdapter}
@@ -318,7 +324,7 @@ const createAdapter = (core, options) =&gt; {
  */
 
 /**
- * Handles Authentication
+ * Handles Authentication.
  */
 export default class Auth {
 	/**
@@ -327,28 +333,28 @@ export default class Auth {
 	 */
 	constructor(core, options = {}) {
 		/**
-		 * Authentication UI
+		 * Authentication UI.
 		 * @type {Login}
 		 * @readonly
 		 */
 		this.ui = createUi(core, options);
 
 		/**
-		 * Authentication adapter
+		 * Authentication adapter.
 		 * @type {AuthAdapter}
 		 * @readonly
 		 */
 		this.adapter = createAdapter(core, options);
 
 		/**
-		 * Authentication callback function
+		 * Authentication callback function.
 		 * @type {AuthCallback}
 		 * @readonly
 		 */
 		this.callback = function() {};
 
 		/**
-		 * Core instance reference
+		 * Core instance reference.
 		 * @type {Core}
 		 * @readonly
 		 */
@@ -356,7 +362,7 @@ export default class Auth {
 	}
 
 	/**
-	 * Initializes the authentication handler
+	 * Initializes the authentication handler.
 	 */
 	init() {
 		this.ui.on(&quot;login:post&quot;, (values) =&gt; this.login(values));
@@ -366,14 +372,14 @@ export default class Auth {
 	}
 
 	/**
-	 * Destroy authentication handler
+	 * Destroy authentication handler.
 	 */
 	destroy() {
 		this.ui.destroy();
 	}
 
 	/**
-	 * Run the shutdown procedure
+	 * Run the shutdown procedure.
 	 * @param {Boolean} [reload=false] Reload afterwards
 	 */
 	async shutdown(reload = false) {
@@ -397,9 +403,9 @@ export default class Auth {
 	}
 
 	/**
-	 * Shows Login UI
+	 * Shows Login UI.
 	 * @param {AuthCallback} cb Authentication callback
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	show(cb) {
 		const login = this.core.config(&quot;auth.login&quot;, {});
@@ -409,7 +415,6 @@ export default class Auth {
 		this.callback = cb;
 		this.ui.init(autologin);
 
-		// IDEA: Emitting of the events here?
 		if (autologin) {
 			return this.login(login);
 		} else if (settings.enabled) {
@@ -419,7 +424,7 @@ export default class Auth {
 					logger.debug(&quot;Authentication cookie:&quot;, cookie);
 				}
 
-				return this.login(JSON.parse(cookie));
+				return this.login({ refreshToken: cookie });
 			}
 		}
 
@@ -427,11 +432,12 @@ export default class Auth {
 	}
 
 	/**
-	 * Performs a login
-	 * @param {AuthForm} values Form values as JSON
-	 * @returns {Promise&lt;boolean&gt;}
+	 * Performs a login.
+	 * @param {AuthForm|RefreshToken} values Form values as JSON or refresh token
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	login(values) {
+		const settings = this.core.config(&quot;auth.cookie&quot;);
 		this.ui.emit(&quot;login:start&quot;);
 
 		return this.adapter
@@ -439,9 +445,10 @@ export default class Auth {
 			.then((response) =&gt; {
 				if (!response) return false;
 
-				const settings = this.core.config(&quot;auth.cookie&quot;);
 				if (settings.enabled) {
-					Cookies.set(settings.name, JSON.stringify(values), {
+					const refreshToken = response.refreshToken;
+
+					Cookies.set(settings.name, refreshToken, {
 						expires: settings.expires,
 						sameSite: &quot;strict&quot;,
 					});
@@ -460,20 +467,21 @@ export default class Auth {
 			})
 			.catch((e) =&gt; {
 				if (this.core.config(&quot;development&quot;)) {
-					logger.warn(&quot;Exception on login&quot;, e);
+					logger.warn(&quot;Exception on login:&quot;, e);
 				}
 
 				this.ui.emit(&quot;login:error&quot;, &quot;Login failed&quot;);
 				this.ui.emit(&quot;login:stop&quot;);
 
+				Cookies.remove(settings.name);
 				return false;
 			});
 	}
 
 	/**
-	 * Performs a logout
+	 * Performs a logout.
 	 * @param {Boolean} [reload=true] Reload client afterwards
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	logout(reload = true) {
 		return this.adapter.logout(reload).then((response) =&gt; {
@@ -489,7 +497,7 @@ export default class Auth {
 	}
 
 	/**
-	 * Performs a register call
+	 * Performs a register call.
 	 * @param {AuthForm} values Form values as JSON
 	 * @returns {Promise&lt;*&gt;}
 	 */

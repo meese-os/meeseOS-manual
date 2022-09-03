@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -248,6 +249,7 @@ import { ServiceProvider } from &quot;@meeseOS/common&quot;;
  */
 export default class NotificationServiceProvider extends ServiceProvider {
 	/**
+	 * Create new instance.
 	 * @param {Core} core MeeseOS Core instance reference
 	 */
 	constructor(core) {
@@ -261,14 +263,14 @@ export default class NotificationServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Destroys notifications
+	 * Destroys notifications.
 	 */
 	destroy() {
 		this.notifications.destroy();
 	}
 
 	/**
-	 * Get a list of services this provider registers
+	 * Get a list of services this provider registers.
 	 * @returns {String[]}
 	 */
 	provides() {
@@ -276,7 +278,7 @@ export default class NotificationServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes authentication
+	 * Initializes authentication.
 	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	init() {

@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -245,7 +246,6 @@ import Auth from &quot;../auth&quot;;
 
 /**
  * Auth Service Contract
- * TODO: typedef
  * @typedef {Object} AuthProviderContract
  * @property {Function} show
  * @property {Function} login
@@ -279,7 +279,15 @@ export default class AuthServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Initializes authentication
+	 * Get a list of services this provider registers.
+	 * @returns {String[]}
+	 */
+	provides() {
+		return [&quot;meeseOS/auth&quot;];
+	}
+
+	/**
+	 * Initializes authentication.
 	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	init() {
@@ -289,20 +297,12 @@ export default class AuthServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Destroys authentication
+	 * Destroys authentication.
 	 */
 	destroy() {
 		this.auth.destroy();
 
 		return super.destroy();
-	}
-
-	/**
-	 * Get a list of services this provider registers
-	 * @returns {String[]}
-	 */
-	provides() {
-		return [&quot;meeseOS/auth&quot;];
 	}
 
 	/**

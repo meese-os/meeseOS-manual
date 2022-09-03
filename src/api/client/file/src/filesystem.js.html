@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -379,7 +380,7 @@ export default class Filesystem extends EventEmitter {
 	/**
 	 * Mounts all configured mountpoints.
 	 * @param {Boolean} [stopOnError=true] Stop on first error
-	 * @returns {Promise&lt;boolean[]&gt;}
+	 * @returns {Promise&lt;Boolean[]&gt;}
 	 */
 	mountAll(stopOnError = true) {
 		this.mounts = this._getConfiguredMountpoints();
@@ -398,7 +399,7 @@ export default class Filesystem extends EventEmitter {
 	 * Adds a new mountpoint.
 	 * @param {FilesystemMountpoint} props Mountpoint props
 	 * @param {Boolean} [automount=true] Automount after creation
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	addMountpoint(props, automount = true) {
 		const mount = this.createMountpoint(props);
@@ -415,7 +416,7 @@ export default class Filesystem extends EventEmitter {
 	 * Mount given mountpoint.
 	 * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object
 	 * @throws {Error} On invalid name or if already mounted
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	mount(mountpoint) {
 		if (typeof mountpoint === &quot;string&quot;) {
@@ -429,7 +430,7 @@ export default class Filesystem extends EventEmitter {
 	 * Unmount given filesystem.
 	 * @param {String} name Filesystem name
 	 * @throws {Error} On invalid name or if already unmounted
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	unmount(name) {
 		return this._mountAction(name, true);
@@ -441,7 +442,7 @@ export default class Filesystem extends EventEmitter {
 	 * @private
 	 * @param {FilesystemMountpoint} mountpoint The mountpoint
 	 * @param {Boolean} [unmount=false] If action is unmounting
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	_mountpointAction(mountpoint, unmount = false) {
 		const eventName = unmount ? &quot;unmounted&quot; : &quot;mounted&quot;;
@@ -465,7 +466,7 @@ export default class Filesystem extends EventEmitter {
 	 * @private
 	 * @param {String} name Mountpoint name
 	 * @param {Boolean} [unmount=false] If action is unmounting
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	_mountAction(name, unmount) {
 		return Promise.resolve(this.mounts.find((m) =&gt; m.name === name)).then(
