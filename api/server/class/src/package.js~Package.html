@@ -58,9 +58,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/packages.js~PackageServiceProvider.html">PackageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-factory.js~TokenFactoryServiceProvider.html">TokenFactoryServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-storage.js~TokenStorageServiceProvider.html">TokenStorageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ServiceProvider">ServiceProvider</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-factory.js~TokenFactory.html">TokenFactory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-storage.js~TokenStorage.html">TokenStorage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createError">createError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrefix">getPrefix</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mountpointResolver">mountpointResolver</a></span></span></li>
@@ -70,6 +74,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateGroups">validateGroups</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-errorCodes">errorCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-methodArguments">methodArguments</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenFactoryOptions">TokenFactoryOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenStorageOptions">TokenStorageOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -140,7 +146,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Create new instance</p>
+        <div data-ice="description"><p>Create new instance.</p>
 </div>
       </div>
     </td>
@@ -267,7 +273,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Run method on package script</p>
+        <div data-ice="description"><p>Run method on package script.</p>
 </div>
       </div>
     </td>
@@ -296,7 +302,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Destroys instance</p>
+        <div data-ice="description"><p>Destroys instance.</p>
 </div>
       </div>
     </td>
@@ -325,7 +331,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes this package</p>
+        <div data-ice="description"><p>Initializes this package.</p>
 </div>
       </div>
     </td>
@@ -354,7 +360,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Resolve an URL for resource</p>
+        <div data-ice="description"><p>Resolve an URL for resource.</p>
 </div>
       </div>
     </td>
@@ -383,7 +389,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Starts server scripts</p>
+        <div data-ice="description"><p>Starts server scripts.</p>
 </div>
       </div>
     </td>
@@ -412,7 +418,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Validates this package</p>
+        <div data-ice="description"><p>Validates this package.</p>
 </div>
       </div>
     </td>
@@ -441,7 +447,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Creates a watch in package dist</p>
+        <div data-ice="description"><p>Creates a watch in package dist.</p>
 </div>
       </div>
     </td>
@@ -479,7 +485,7 @@
   
   
   
-  <div data-ice="description"><p>Create new instance</p>
+  <div data-ice="description"><p>Create new instance.</p>
 </div>
 
   
@@ -502,7 +508,8 @@
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">options</td>
       <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-PackageOptions">PackageOptions</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: {}</li></ul></td>
       <td data-ice="description"><p>Instance options</p>
 </td>
     </tr>
@@ -682,7 +689,7 @@
   
   
   
-  <div data-ice="description"><p>Run method on package script</p>
+  <div data-ice="description"><p>Run method on package script.</p>
 </div>
 
   
@@ -762,7 +769,7 @@
   
   
   
-  <div data-ice="description"><p>Destroys instance</p>
+  <div data-ice="description"><p>Destroys instance.</p>
 </div>
 
   
@@ -806,7 +813,7 @@
   
   
   
-  <div data-ice="description"><p>Initializes this package</p>
+  <div data-ice="description"><p>Initializes this package.</p>
 </div>
 
   
@@ -862,7 +869,7 @@
   
   
   
-  <div data-ice="description"><p>Resolve an URL for resource</p>
+  <div data-ice="description"><p>Resolve an URL for resource.</p>
 </div>
 
   
@@ -935,7 +942,7 @@
   
   
   
-  <div data-ice="description"><p>Starts server scripts</p>
+  <div data-ice="description"><p>Starts server scripts.</p>
 </div>
 
   
@@ -991,7 +998,7 @@
   
   
   
-  <div data-ice="description"><p>Validates this package</p>
+  <div data-ice="description"><p>Validates this package.</p>
 </div>
 
   
@@ -1064,7 +1071,7 @@
   
   
   
-  <div data-ice="description"><p>Creates a watch in package dist</p>
+  <div data-ice="description"><p>Creates a watch in package dist.</p>
 </div>
 
   

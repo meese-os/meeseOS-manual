@@ -58,9 +58,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/packages.js~PackageServiceProvider.html">PackageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-factory.js~TokenFactoryServiceProvider.html">TokenFactoryServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-storage.js~TokenStorageServiceProvider.html">TokenStorageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ServiceProvider">ServiceProvider</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-factory.js~TokenFactory.html">TokenFactory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-storage.js~TokenStorage.html">TokenStorage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createError">createError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrefix">getPrefix</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mountpointResolver">mountpointResolver</a></span></span></li>
@@ -70,6 +74,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateGroups">validateGroups</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-errorCodes">errorCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-methodArguments">methodArguments</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenFactoryOptions">TokenFactoryOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenStorageOptions">TokenStorageOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -129,9 +135,9 @@ const readOrDefault = (filename) =&gt;
  */
 class Packages {
 	/**
-	 * Create new instance
+	 * Create new instance.
 	 * @param {Core} core MeeseOS Core instance reference
-	 * @param {PackagesOptions} [options] Instance options
+	 * @param {PackagesOptions} [options={}] Instance options
 	 */
 	constructor(core, options = {}) {
 		/**
@@ -157,7 +163,7 @@ class Packages {
 	}
 
 	/**
-	 * Initializes packages
+	 * Initializes packages.
 	 */
 	init() {
 		this.core.on(&quot;meeseOS/application:socket:message&quot;, (ws, ...params) =&gt; {
@@ -168,8 +174,8 @@ class Packages {
 	}
 
 	/**
-	 * Loads package manager
-	 * @returns {Promise&lt;boolean&gt;}
+	 * Loads package manager.
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	load() {
 		return this.createLoader().then((packages) =&gt; {
@@ -180,7 +186,7 @@ class Packages {
 	}
 
 	/**
-	 * Loads all packages
+	 * Loads all packages.
 	 * @returns {Promise&lt;Package[]&gt;}
 	 */
 	createLoader() {
@@ -216,7 +222,7 @@ class Packages {
 	}
 
 	/**
-	 * When a package dist has changed
+	 * When a package dist has changed.
 	 * @param {Package} pkg Package instance
 	 */
 	onPackageChanged(pkg) {
@@ -231,7 +237,7 @@ class Packages {
 	}
 
 	/**
-	 * Loads package data
+	 * Loads package data.
 	 * @param {String} filename Filename
 	 * @param {PackageMetadata} manifest Manifest
 	 * @returns {Promise&lt;Package&gt;}
@@ -256,7 +262,7 @@ class Packages {
 	}
 
 	/**
-	 * Initializes a package
+	 * Initializes a package.
 	 * @returns {Promise&lt;Package&gt;}
 	 */
 	initializePackage(pkg, manifest, done) {
@@ -283,14 +289,14 @@ class Packages {
 	}
 
 	/**
-	 * Starts packages
+	 * Starts packages.
 	 */
 	start() {
 		this.packages.forEach((pkg) =&gt; pkg.start());
 	}
 
 	/**
-	 * Destroys packages
+	 * Destroys packages.
 	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	async destroy() {
@@ -300,9 +306,9 @@ class Packages {
 	}
 
 	/**
-	 * Handles an incoming message and signals an application
+	 * Handles an incoming message and signals an application.
 	 *
-	 * This will call the &apos;onmessage&apos; event in your application server script
+	 * This will call the &apos;onmessage&apos; event in your application server script.
 	 *
 	 * @param {WebSocket} ws Websocket Connection client
 	 * @param {Array} params A list of incoming parameters

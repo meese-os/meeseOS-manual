@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -210,13 +211,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import DesktopServiceProvider from &apos;<span><a href="file/src/providers/desktop.js.html#lineNumber49">@meeseOS/client/src/providers/desktop.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import DesktopServiceProvider from &apos;<span><a href="file/src/providers/desktop.js.html#lineNumber48">@meeseOS/client/src/providers/desktop.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/providers/desktop.js.html#lineNumber49">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/providers/desktop.js.html#lineNumber48">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -269,13 +270,14 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/providers/desktop.js~DesktopServiceProvider.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>)</span>
+          <span class="code" data-ice="name"><span><a href="class/src/providers/desktop.js~DesktopServiceProvider.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Create new instance.</p>
+</div>
       </div>
     </td>
     <td>
@@ -373,7 +375,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Destroys instance</p>
+        <div data-ice="description"><p>Destroys instance.</p>
 </div>
       </div>
     </td>
@@ -402,7 +404,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes desktop</p>
+        <div data-ice="description"><p>Initializes desktop.</p>
 </div>
       </div>
     </td>
@@ -431,7 +433,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Get a list of services this provider registers</p>
+        <div data-ice="description"><p>Get a list of services this provider registers.</p>
 </div>
       </div>
     </td>
@@ -460,7 +462,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Starts desktop</p>
+        <div data-ice="description"><p>Starts desktop.</p>
 </div>
       </div>
     </td>
@@ -487,18 +489,19 @@
     
     
     
-    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>)</span>
+    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber53">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber54">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Create new instance.</p>
+</div>
 
   
 
@@ -515,6 +518,14 @@
       <td data-ice="type" class="code"><span><a href="class/src/core.js~Core.html">Core</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>MeeseOS Core instance reference</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">options</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: {}</li></ul></td>
+      <td data-ice="description"><p>Arguments</p>
 </td>
     </tr>
 </tbody>
@@ -554,7 +565,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber60">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber61">source</a></span></span>
     </span>
   </h3>
 
@@ -600,7 +611,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber103">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber104">source</a></span></span>
     </span>
   </h3>
 
@@ -655,14 +666,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber66">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber67">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Destroys instance</p>
+  <div data-ice="description"><p>Destroys instance.</p>
 </div>
 
   
@@ -699,14 +710,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber82">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber83">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes desktop</p>
+  <div data-ice="description"><p>Initializes desktop.</p>
 </div>
 
   
@@ -755,14 +766,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber74">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber75">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Get a list of services this provider registers</p>
+  <div data-ice="description"><p>Get a list of services this provider registers.</p>
 </div>
 
   
@@ -811,14 +822,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber96">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/providers/desktop.js.html#lineNumber97">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Starts desktop</p>
+  <div data-ice="description"><p>Starts desktop.</p>
 </div>
 
   

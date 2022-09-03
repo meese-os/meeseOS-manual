@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -249,7 +250,6 @@ import logger from &quot;./logger&quot;;
 export default class Session {
 	/**
 	 * Creates the Session Handler
-	 *
 	 * @param {Core} core MeeseOS Core instance reference
 	 */
 	constructor(core) {
@@ -262,8 +262,8 @@ export default class Session {
 	}
 
 	/**
-	 * Destroys the session
-	 * @returns {Promise&lt;boolean&gt;}
+	 * Destroys the session, logging out the user
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	destroy() {
 		Application.destroyAll();
@@ -275,7 +275,7 @@ export default class Session {
 
 	/**
 	 * Saves the session
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	save() {
 		const apps = Application.getApplications().filter(
@@ -293,7 +293,7 @@ export default class Session {
 	/**
 	 * Loads session
 	 * @param {Boolean} [fresh=false] Kill all current applications first
-	 * @returns {Promise&lt;boolean&gt;}
+	 * @returns {Promise&lt;Boolean&gt;}
 	 */
 	load(fresh = false) {
 		if (fresh) {

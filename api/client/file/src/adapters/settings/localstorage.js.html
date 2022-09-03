@@ -72,6 +72,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthAdapterConfig">AuthAdapterConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthForm">AuthForm</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AuthSettings">AuthSettings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RefreshToken">RefreshToken</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BasicApplicationOptions">BasicApplicationOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClipboardData">ClipboardData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-CoreConfig">CoreConfig</a></span></span></li>
@@ -256,7 +257,7 @@ const localStorageSettings = (core) =&gt; {
 		/**
 		 * Clears the localStorage for the specified namespace
 		 * @param {String} [ns] The namespace
-		 * @returns {Promise&lt;boolean&gt;}
+		 * @returns {Promise&lt;Boolean&gt;}
 		 */
 		clear(ns) {
 			if (ns) {
@@ -271,7 +272,7 @@ const localStorageSettings = (core) =&gt; {
 		/**
 		 * Saves settings to localStorage
 		 * @param {Object} settings The settings to save
-		 * @returns {Promise&lt;boolean&gt;}
+		 * @returns {Promise&lt;Boolean&gt;}
 		 */
 		save(settings) {
 			Object.keys(settings).forEach((key) =&gt; {
@@ -283,7 +284,7 @@ const localStorageSettings = (core) =&gt; {
 
 		/**
 		 * Loads settings from localStorage
-		 * @returns {Promise&lt;boolean&gt;}
+		 * @returns {Promise&lt;Boolean&gt;}
 		 */
 		load() {
 			const entries = Object

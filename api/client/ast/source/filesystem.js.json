@@ -2815,7 +2815,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+                    "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<Boolean[]>}\n\t ",
                     "start": 4812,
                     "end": 4953,
                     "loc": {
@@ -3775,7 +3775,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+                    "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<Boolean[]>}\n\t ",
                     "start": 4812,
                     "end": 4953,
                     "loc": {
@@ -3793,7 +3793,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 5256,
                     "end": 5443,
                     "loc": {
@@ -4478,7 +4478,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 5256,
                     "end": 5443,
                     "loc": {
@@ -4496,7 +4496,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 5655,
                     "end": 5859,
                     "loc": {
@@ -4909,7 +4909,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 5655,
                     "end": 5859,
                     "loc": {
@@ -4927,7 +4927,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 6020,
                     "end": 6191,
                     "loc": {
@@ -5136,7 +5136,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 6020,
                     "end": 6191,
                     "loc": {
@@ -5154,7 +5154,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 6254,
                     "end": 6478,
                     "loc": {
@@ -6300,7 +6300,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 6254,
                     "end": 6478,
                     "loc": {
@@ -6318,7 +6318,7 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 6896,
                     "end": 7109,
                     "loc": {
@@ -7690,7 +7690,7 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+                    "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
                     "start": 6896,
                     "end": 7109,
                     "loc": {
@@ -20671,7 +20671,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+      "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<Boolean[]>}\n\t ",
       "start": 4812,
       "end": 4953,
       "loc": {
@@ -20687,7 +20687,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 5256,
       "end": 5443,
       "loc": {
@@ -20703,7 +20703,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 5655,
       "end": 5859,
       "loc": {
@@ -20719,7 +20719,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 6020,
       "end": 6191,
       "loc": {
@@ -20735,7 +20735,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 6254,
       "end": 6478,
       "loc": {
@@ -20751,7 +20751,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 6896,
       "end": 7109,
       "loc": {
@@ -26278,7 +26278,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<boolean[]>}\n\t ",
+      "value": "*\n\t * Mounts all configured mountpoints.\n\t * @param {Boolean} [stopOnError=true] Stop on first error\n\t * @returns {Promise<Boolean[]>}\n\t ",
       "start": 4812,
       "end": 4953,
       "loc": {
@@ -28218,7 +28218,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Adds a new mountpoint.\n\t * @param {FilesystemMountpoint} props Mountpoint props\n\t * @param {Boolean} [automount=true] Automount after creation\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 5256,
       "end": 5443,
       "loc": {
@@ -29616,7 +29616,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Mount given mountpoint.\n\t * @param {String|FilesystemMountpoint} mountpoint Mountpoint name or object\n\t * @throws {Error} On invalid name or if already mounted\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 5655,
       "end": 5859,
       "loc": {
@@ -30494,7 +30494,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Unmount given filesystem.\n\t * @param {String} name Filesystem name\n\t * @throws {Error} On invalid name or if already unmounted\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 6020,
       "end": 6191,
       "loc": {
@@ -30926,7 +30926,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting.\n\t *\n\t * @private\n\t * @param {FilesystemMountpoint} mountpoint The mountpoint\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 6254,
       "end": 6478,
       "loc": {
@@ -33335,7 +33335,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<boolean>}\n\t ",
+      "value": "*\n\t * Internal wrapper for mounting/unmounting by name.\n\t *\n\t * @private\n\t * @param {String} name Mountpoint name\n\t * @param {Boolean} [unmount=false] If action is unmounting\n\t * @returns {Promise<Boolean>}\n\t ",
       "start": 6896,
       "end": 7109,
       "loc": {

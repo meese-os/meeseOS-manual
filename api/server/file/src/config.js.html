@@ -58,9 +58,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/packages.js~PackageServiceProvider.html">PackageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/settings.js~SettingsServiceProvider.html">SettingsServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-factory.js~TokenFactoryServiceProvider.html">TokenFactoryServiceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/token-storage.js~TokenStorageServiceProvider.html">TokenStorageServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/vfs.js~VFSServiceProvider.html">VFSServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ServiceProvider">ServiceProvider</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-factory.js~TokenFactory.html">TokenFactory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/token-storage.js~TokenStorage.html">TokenStorage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-checkMountpointPermission">checkMountpointPermission</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createError">createError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrefix">getPrefix</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-mountpointResolver">mountpointResolver</a></span></span></li>
@@ -70,6 +74,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateGroups">validateGroups</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-errorCodes">errorCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-methodArguments">methodArguments</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenFactoryOptions">TokenFactoryOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-TokenStorageOptions">TokenStorageOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -166,15 +172,20 @@ const defaultConfiguration = {
 	session: {
 		store: {
 			module: require.resolve(&quot;connect-loki&quot;),
-			options: {
+			databaseName: &quot;meeseOS.db&quot;,
+			collectionName: &quot;tokens&quot;,
+			databaseOptions: {
 				autosave: true,
-				// ttl: maxAge
 			},
+		},
+		jwt: {
+			accessTokenSecret: &quot;meeseOS&quot;,
+			refreshTokenSecret: &quot;meeseOSrefresh&quot;,
+			accessTokenDuration: &quot;10m&quot;,
 		},
 		options: {
 			name: &quot;meeseOS.sid&quot;,
-			// NOTE: You should DEFINITELY override this in production
-			secret: &quot;meeseOS&quot;,
+			secret: &quot;meeseOSSession&quot;,
 			rolling: true,
 			resave: false,
 			saveUninitialized: false,
