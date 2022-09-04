@@ -248,7 +248,7 @@
  */
 
 /**
- * Resolves a URL
+ * Resolves a URL.
  * @param {CoreConfig} configuration
  * @returns {Function(): String}
  */
@@ -256,8 +256,8 @@ export const urlResolver = (configuration) =&gt; {
 	const { http, ws } = configuration;
 
 	/**
-	 * @param {String} [endpoint=&apos;/&apos;]
-	 * @param {URLResolverOptions} [options={}]
+	 * @param {String} [endpoint=&quot;/&quot;] Endpoint to resolve
+	 * @param {URLResolverOptions} [options={}] URL resolver options
 	 * @param {PackageMetadata} [metadata={}] Metadata for package resolving
 	 */
 	return (endpoint = &quot;/&quot;, options = {}, metadata = {}) =&gt; {

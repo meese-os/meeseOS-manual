@@ -247,7 +247,13 @@ import cursorEffects from &quot;@meeseOS/cursor-effects&quot;;
 import dynamicWallpapers from &quot;@meeseOS/dynamic-wallpapers&quot;;
 import Core from &quot;../core&quot;;
 
-const imageDropMimes = [&quot;image/png&quot;, &quot;image/jpe?g&quot;, &quot;image/webp&quot;, &quot;image/gif&quot;];
+const imageDropMimes = [
+	&quot;image/png&quot;,
+	&quot;image/jpe?g&quot;,
+	&quot;image/webp&quot;,
+	&quot;image/gif&quot;,
+	&quot;image/svg&quot;,
+];
 
 /**
  * Check if droppable data is a VFS type
@@ -446,6 +452,20 @@ export const createPanelSubtraction = (panel, panels) =&gt; {
 export const isVisible = (w) =&gt;
 	w &amp;&amp; !w.getState(&quot;minimized&quot;) &amp;&amp; w.getState(&quot;focused&quot;);
 
+/**
+ * Allows for requesting whether a file exists without `async`.
+ * @todo Move to MeeseOS VFS, so the 404 error doesn&apos;t log to console
+ * @param {String} urlToFile
+ * @returns {Boolean}
+ */
+const syncRequest = (urlToFile) =&gt; {
+	const xhr = new XMLHttpRequest();
+	xhr.open(&quot;HEAD&quot;, urlToFile, false);
+	xhr.send();
+
+	return xhr.status &gt; 199 &amp;&amp; xhr.status &lt; 300;
+};
+
 /*
  * Resolves various resources
  * TODO: Move all of this (and related) stuff to a Theme class
@@ -487,7 +507,32 @@ export const resourceResolver = (core) =&gt; {
 
 	const icon = (path) =&gt; {
 		const theme = getThemeName(&quot;icons&quot;);
-		return core.url(`icons/${theme}/icons/${path}`); // FIXME: Use metadata ?
+		const urlBase = `icons/${theme}/icons`;
+
+		if (!path.match(/\.([a-z]+)$/)) {
+			const defaultExtension = &quot;png&quot;;
+			const defaultImage = core.url(`${urlBase}/${path}.${defaultExtension}`);
+			const defaultImageExists = syncRequest(defaultImage);
+			if (defaultImageExists) {
+				path += &quot;.&quot; + defaultExtension;
+			} else {
+				const checkExtensions = [&quot;svg&quot;, &quot;gif&quot;];
+				for (const ext of checkExtensions) {
+					const url = core.url(`${urlBase}/${path}.${ext}`);
+					const urlExists = syncRequest(url);
+					if (urlExists) {
+						path += &quot;.&quot; + ext;
+						break;
+					}
+				}
+
+				if (!path.match(/\.([a-z]+)$/)) {
+					path += &quot;.&quot; + defaultExtension;
+				}
+			}
+		}
+
+		return core.url(`${urlBase}/${path}`);
 	};
 
 	return { themeResource, soundResource, soundsEnabled, icon };

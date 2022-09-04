@@ -550,13 +550,13 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span><span class="code" data-ice="signature">(core: <span>*</span>, $element: <span>*</span>): <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, $element: <span>HTMLElement</span>): <span>EventEmitter</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Search UI Adapter</p>
+        <div data-ice="description"><p>Search UI Adapter.</p>
 </div>
       </div>
     </td>
@@ -2239,7 +2239,7 @@ file watching.</p>
       <div>
         
         
-        <div data-ice="description"><p>Resolves a URL</p>
+        <div data-ice="description"><p>Resolves a URL.</p>
 </div>
       </div>
     </td>
@@ -2541,11 +2541,11 @@ file watching.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber187">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber193">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {applyBackgroundStyles} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber187">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {applyBackgroundStyles} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber193">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Applies a set of styles based on background settings</p>
@@ -2608,11 +2608,11 @@ file watching.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber200">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber206">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {applyCursorEffect} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber200">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {applyCursorEffect} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber206">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Applies a cursor effect based on the specified settings</p>
@@ -3149,18 +3149,18 @@ file watching.</p>
     
     
     
-    <span class="code" data-ice="name">create</span><span class="code" data-ice="signature">(core: <span>*</span>, $element: <span>*</span>): <span>*</span></span>
+    <span class="code" data-ice="name">create</span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, $element: <span>HTMLElement</span>): <span>EventEmitter</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/adapters/ui/search.js.html#lineNumber135">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/adapters/ui/search.js.html#lineNumber138">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import create from &apos;<span><a href="file/src/adapters/ui/search.js.html#lineNumber135">@meeseOS/client/src/adapters/ui/search.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import create from &apos;<span><a href="file/src/adapters/ui/search.js.html#lineNumber138">@meeseOS/client/src/adapters/ui/search.js</a></span>&apos;</code></pre></div>
   
   
-  <div data-ice="description"><p>Search UI Adapter</p>
+  <div data-ice="description"><p>Search UI Adapter.</p>
 </div>
 
   
@@ -3175,15 +3175,17 @@ file watching.</p>
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">core</td>
-      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="type" class="code"><span><a href="class/src/core.js~Core.html">Core</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>MeeseOS Core instance reference</p>
+</td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">$element</td>
-      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="type" class="code"><span>HTMLElement</span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>Element to mount to</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -3195,8 +3197,9 @@ file watching.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span>*</span></td>
-          
+          <td class="return-type code" data-ice="returnType"><span>EventEmitter</span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>The SearchUI event emitter</p>
+</td>
         </tr>
       </tbody>
     </table>
@@ -3773,11 +3776,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber218">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber224">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {createPanelSubtraction} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber218">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {createPanelSubtraction} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber224">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Creates a rectangle with the realestate panels takes up</p>
@@ -5233,11 +5236,11 @@ file watching.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber51">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber57">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {isDroppingImage} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber51">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {isDroppingImage} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber57">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Check if droppable data contains image</p>
@@ -7690,7 +7693,7 @@ file watching.</p>
   <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {urlResolver} from &apos;<span><a href="file/src/utils/url.js.html#lineNumber42">@meeseOS/client/src/utils/url.js</a></span>&apos;</code></pre></div>
   
   
-  <div data-ice="description"><p>Resolves a URL</p>
+  <div data-ice="description"><p>Resolves a URL.</p>
 </div>
 
   
@@ -7755,11 +7758,11 @@ file watching.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber44">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/utils/desktop.js.html#lineNumber50">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {validVfsDrop} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber44">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {validVfsDrop} from &apos;<span><a href="file/src/utils/desktop.js.html#lineNumber50">@meeseOS/client/src/utils/desktop.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Check if droppable data is a VFS type</p>
