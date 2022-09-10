@@ -5,7 +5,7 @@ full_title: Contributed Extensions
 
 # Contributed Extensions
 
-If you want to submit your contribution, contact me by [email](mailto:contrib@os-js.org), join the [Gitter chatroom](https://gitter.im/os-js/OS.js) or create a [pull-request](https://github.com/meese-enterprises/meeseOS-manual/pulls).
+If you want to submit your contribution, contact me by [email](mailto:contrib@os-js.org), join the [Gitter chatroom](https://gitter.im/os-js/OS.js) or create a [pull-request](https://github.com/meeseOS/meeseOS-manual/pulls).
 
 > [info] These packages are provided by community members, so if you have any issues with these, make sure to create an issue in the appropriate Github project(s).
 

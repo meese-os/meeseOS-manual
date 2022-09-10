@@ -15,7 +15,7 @@ Dialogs are [Window](../window/README.md)s with pre-defined templates and action
 
 To create a dialog use the provided service:
 
-> [info] See the [official API documentation](https://meese-enterprises.github.io/meeseOS-manual/api/dialogs/)
+> [info] See the [official API documentation](https://meeseOS.github.io/meeseOS-manual/api/dialogs/)
 > for available dialogs and their arguments.
 
 ```javascript

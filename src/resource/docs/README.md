@@ -11,13 +11,13 @@ You can find the majority of documentation in this manual.
 
 You can find auto-generated documentation for the common core modules here:
 
-* [common](https://meese-enterprises.github.io/meeseOS-manual/api/common/)
-* [client](https://meese-enterprises.github.io/meeseOS-manual/api/client/)
-* [gui](https://meese-enterprises.github.io/meeseOS-manual/api/gui/)
-* [dialogs](https://meese-enterprises.github.io/meeseOS-manual/api/dialogs/)
-* [panels](https://meese-enterprises.github.io/meeseOS-manual/api/panels/)
-* [server](https://meese-enterprises.github.io/meeseOS-manual/api/server/)
-* [event-emitter](https://meese-enterprises.github.io/meeseOS-manual/api/event-emitter/)
+* [common](https://meeseOS.github.io/meeseOS-manual/api/common/)
+* [client](https://meeseOS.github.io/meeseOS-manual/api/client/)
+* [gui](https://meeseOS.github.io/meeseOS-manual/api/gui/)
+* [dialogs](https://meeseOS.github.io/meeseOS-manual/api/dialogs/)
+* [panels](https://meeseOS.github.io/meeseOS-manual/api/panels/)
+* [server](https://meeseOS.github.io/meeseOS-manual/api/server/)
+* [event-emitter](https://meeseOS.github.io/meeseOS-manual/api/event-emitter/)
 
 ## Example Packages
 

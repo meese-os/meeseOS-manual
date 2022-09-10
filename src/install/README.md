@@ -35,12 +35,12 @@ Or check out the [official online demo](https://aaronmeese.com/). *Please note t
 
 ## Setup
 
-Clone the official boilerplate [repository](https://github.com/meese-enterprises/meeseOS) (or download and extract a [compressed version](https://github.com/os-js/OS.js/releases) of latest release).
+Clone the official boilerplate [repository](https://github.com/meeseOS/meeseOS) (or download and extract a [compressed version](https://github.com/os-js/OS.js/releases) of latest release).
 
 > **[info] The official repository is intended for you to use as a boilerplate to create your own installations/distributions of MeeseOS. You can safely remove the `.git` directory afterwards if you used git, as well as modify the structure and included files as you see fit.**
 
 ```bash
-git clone -b master --single-branch https://github.com/meese-enterprises/meeseOS.git
+git clone -b master --single-branch https://github.com/meeseOS/meeseOS.git
 cd meeseOS
 ```
 

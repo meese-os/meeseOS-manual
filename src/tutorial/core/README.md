@@ -116,10 +116,10 @@ meeseOS.url();
 
 These are the default provided services and their signatures:
 
-* `meeseOS/application => (data)` - Creates a new [Application](../application/README.md) [instance](https://meese-enterprises.github.io/meeseOS-manual/api/meeseOS-client/class/src/application.js~Application.html)
-* `meeseOS/window => (options)` - Creates a new [Window](../window/README.md) [instance](https://meese-enterprises.github.io/meeseOS-manual/api/meeseOS-client/class/src/window.js~Window.html)
-* `meeseOS/event-handler => (name)` - Creates a new [EventEmitter](../bus/README.md) [instance](https://meese-enterprises.github.io/meeseOS-manual/api/meeseOS-common/class/src/event-handler.js~EventHandler.html)
-* `meeseOS/websocket => (...args)` - Creates a new [WebSocket](../application/README.md#websockets) [instance](https://meese-enterprises.github.io/meeseOS-manual/api/meeseOS-client/class/src/websocket.js~Websocket.html)
+* `meeseOS/application => (data)` - Creates a new [Application](../application/README.md) [instance](https://meeseOS.github.io/meeseOS-manual/api/meeseOS-client/class/src/application.js~Application.html)
+* `meeseOS/window => (options)` - Creates a new [Window](../window/README.md) [instance](https://meeseOS.github.io/meeseOS-manual/api/meeseOS-client/class/src/window.js~Window.html)
+* `meeseOS/event-handler => (name)` - Creates a new [EventEmitter](../bus/README.md) [instance](https://meeseOS.github.io/meeseOS-manual/api/meeseOS-common/class/src/event-handler.js~EventHandler.html)
+* `meeseOS/websocket => (...args)` - Creates a new [WebSocket](../application/README.md#websockets) [instance](https://meeseOS.github.io/meeseOS-manual/api/meeseOS-client/class/src/websocket.js~Websocket.html)
 * `meeseOS/notification => (options?)` - Creates a new [Notification](../notification/README.md) entry
 * `meeseOS/tray => (options?)` - Creates a new [Tray](../tray/README.md) entry
 * `meeseOS/clipboard => ()` - APIs for performing [Clipboard](../clipboard/README.md)
@@ -131,8 +131,8 @@ These are the default provided services and their signatures:
 * `meeseOS/dialogs => ()` - APIs for [Custom Dialogs](../dialog/README.md#custom-dialog)
 * `meeseOS/dnd => ()` - APIs for performing [Drag-and-Drop](../tutorial/dnd/README.md) operations
 * `meeseOS/theme => ()` - APIs for [Themes](../tutorial/theme/README.md#usage)
-* `meeseOS/packages => ()` - APIs for [Package Management](https://meese-enterprises.github.io/meeseOS-manual/api/meeseOS-client/class/src/packages.js~Packages.html)
-* `meeseOS/session => ()` - APIs for [Session](https://meese-enterprises.github.io/meeseOS-manual/api/meeseOS-client/class/src/session.js~Session.html)
+* `meeseOS/packages => ()` - APIs for [Package Management](https://meeseOS.github.io/meeseOS-manual/api/meeseOS-client/class/src/packages.js~Packages.html)
+* `meeseOS/session => ()` - APIs for [Session](https://meeseOS.github.io/meeseOS-manual/api/meeseOS-client/class/src/session.js~Session.html)
 * `meeseOS/desktop => ()` - APIs for desktop
 * `meeseOS/panels => ()`- APIs for panels
 

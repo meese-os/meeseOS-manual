@@ -37,7 +37,7 @@ const middlewareCallbacks = core.make("meeseOS/middleware")
 
 ## Example
 
-The [File Manager application](https://github.com/meese-enterprises/meeseOS/tree/master/apps/filemanager) uses middleware to construct the edit (context) menu.
+The [File Manager application](https://github.com/meeseOS/meeseOS/tree/master/apps/filemanager) uses middleware to construct the edit (context) menu.
 
 You can add your own callbacks to this middleware if you need to for example launch your own application from this menu with the selected file as an argument. The middleware group name the File Manager exposes for this is `meeseOS/filemanager:menu:edit`.
 

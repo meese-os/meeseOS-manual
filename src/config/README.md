@@ -7,7 +7,7 @@ full_title: Configuration
 
 You can find the configuration files (by default) in `src/client/config.js` and `src/server/config.js`.
 
-> [info] This list is not complete. See [`src/config.js`](https://github.com/meese-enterprises/meeseOS/blob/master/frontend/client/src/config.js) in `@meeseOS/client` and [`src/config.js`](https://github.com/meese-enterprises/meeseOS/blob/master/backend/server/src/config.js) in `@meeseOS/server` for advanced settings.
+> [info] This list is not complete. See [`src/config.js`](https://github.com/meeseOS/meeseOS/blob/master/frontend/client/src/config.js) in `@meeseOS/client` and [`src/config.js`](https://github.com/meeseOS/meeseOS/blob/master/backend/server/src/config.js) in `@meeseOS/server` for advanced settings.
 
 <!-- -->
 

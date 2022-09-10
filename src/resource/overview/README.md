@@ -34,22 +34,22 @@ Features are implemented via [service providers](../../guide/provider/README.md)
 
 These are the standard used core libraries:
 
-* https://github.com/meese-enterprises/meeseOS/tree/master/backend/common - Base (used in both client & server)
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/client - Client Core & Services
-* https://github.com/meese-enterprises/meeseOS/tree/master/backend/server - Server Core & Services
-* https://github.com/meese-enterprises/meeseOS/tree/master/development/cli - CLI utilities
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/gui - GUI components
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/dialogs - GUI Dialogs
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/panels - GUI Panels
-* https://github.com/meese-enterprises/meeseOS/tree/master/backend/event-emitter - EventEmitter implementation
-* https://github.com/meese-enterprises/meeseOS/tree/master/development/eslint - ESLint configuration
-* https://github.com/meese-enterprises/meeseOS/tree/master/development/stylelint - Stylelint configuration
+* https://github.com/meeseOS/meeseOS/tree/master/backend/common - Base (used in both client & server)
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/client - Client Core & Services
+* https://github.com/meeseOS/meeseOS/tree/master/backend/server - Server Core & Services
+* https://github.com/meeseOS/meeseOS/tree/master/development/cli - CLI utilities
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/gui - GUI components
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/dialogs - GUI Dialogs
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/panels - GUI Panels
+* https://github.com/meeseOS/meeseOS/tree/master/backend/event-emitter - EventEmitter implementation
+* https://github.com/meeseOS/meeseOS/tree/master/development/eslint - ESLint configuration
+* https://github.com/meeseOS/meeseOS/tree/master/development/stylelint - Stylelint configuration
 
 All source-code follows the [semantic versioning spesification](https://semver.org/).
 
 ## Installation (Distribution)
 
-The [MeeseOS repository](https://github.com/meese-enterprises/meeseOS) contains a boilerplate you can use to build and bundle your own installations and distributions.
+The [MeeseOS repository](https://github.com/meeseOS/meeseOS) contains a boilerplate you can use to build and bundle your own installations and distributions.
 
 It comes with the following structure, that you can modify as you see fit:
 

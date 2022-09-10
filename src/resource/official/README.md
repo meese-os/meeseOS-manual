@@ -9,21 +9,21 @@ full_title: Official Extensions
 
 ## Modules
 
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/widgets - Widgets
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/widgets - Widgets
 
 ## Applications
 
 These are the "default" applications:
 
-* https://github.com/meese-enterprises/meeseOS/tree/master/apps/textpad - Edit text files (`*`)
+* https://github.com/meeseOS/meeseOS/tree/master/apps/textpad - Edit text files (`*`)
 * https://github.com/os-js/osjs-draw-application - Simple draw application (`*`)
-* https://github.com/meese-enterprises/meeseOS/tree/master/apps/filemanager - Manage and organize files (`*`)
-* https://github.com/meese-enterprises/meeseOS/tree/master/apps/preview - View image and video files (`*`)
-* https://github.com/meese-enterprises/meeseOS/tree/master/apps/settings - Manage OS.js settings (`*`)
+* https://github.com/meeseOS/meeseOS/tree/master/apps/filemanager - Manage and organize files (`*`)
+* https://github.com/meeseOS/meeseOS/tree/master/apps/preview - View image and video files (`*`)
+* https://github.com/meeseOS/meeseOS/tree/master/apps/settings - Manage OS.js settings (`*`)
 * https://github.com/os-js/osjs-musicplayer-application - Play music files (`*`)
 * https://github.com/os-js/osjs-htmlviewer-application - View HTML files (`*`)
 * https://github.com/os-js/osjs-writer-application - Read and Write rich documents (`*`)
-* https://github.com/meese-enterprises/meeseOS/tree/master/apps/terminal - Connect to a remote SSH session with Xterm
+* https://github.com/meeseOS/meeseOS/tree/master/apps/terminal - Connect to a remote SSH session with Xterm
 * https://github.com/os-js/osjs-ace-application - Edit text and source code with Ace
 * https://github.com/os-js/osjs-strophejs-application - Chat via XMPP
 * https://github.com/os-js/osjs-pdfreader-application - View PDF files
@@ -39,9 +39,9 @@ These are the "default" applications:
 
 ## Themes
 
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/standard-theme - The standard MeeseOS theme (`*`)
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/gnome-icons - The standard MeeseOS icon set (Gnome) (`*`)
-* https://github.com/meese-enterprises/meeseOS/tree/master/frontend/sounds - The standard MeeseOS sound set (Freedesktop) (`*`)
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/standard-theme - The standard MeeseOS theme (`*`)
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/gnome-icons - The standard MeeseOS icon set (Gnome) (`*`)
+* https://github.com/meeseOS/meeseOS/tree/master/frontend/sounds - The standard MeeseOS sound set (Freedesktop) (`*`)
 
 ## Authentication
 

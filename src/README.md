@@ -14,7 +14,7 @@ MeeseOS is an open-source web desktop platform with a window manager, applicatio
 
 * [Join the community chatrooms](https://gitter.im/meeseOS/community)
 <!--* [Join the community forums](https://community.os-js.org/)-->
-* [GitHub repository](https://github.com/meese-enterprises/meeseOS/)
+* [GitHub repository](https://github.com/meeseOS/meeseOS/)
 * [GitHub organization](https://github.com/meeseOS)
 
 ## Donate

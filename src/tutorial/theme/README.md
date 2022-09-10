@@ -25,7 +25,7 @@ sounds.play("file"); // Plays a sound
 
 A theme consists of a set of icons, styles and sounds. It is installed as a package (just as applications).
 
-Use the [official standard theme](https://github.com/meese-enterprises/meeseOS/tree/master/frontend/standard-theme), [official standard icons](https://github.com/meese-enterprises/meeseOS/tree/master/frontend/gnome-icons) or [official standard sounds](https://github.com/meese-enterprises/meeseOS/tree/master/frontend/sounds) as a base or as a template.
+Use the [official standard theme](https://github.com/meeseOS/meeseOS/tree/master/frontend/standard-theme), [official standard icons](https://github.com/meeseOS/meeseOS/tree/master/frontend/gnome-icons) or [official standard sounds](https://github.com/meeseOS/meeseOS/tree/master/frontend/sounds) as a base or as a template.
 
 > Please note that if you're making a copy of the standard theme, all the scripts and dependencies must remain intact from the original `package.json` file.
 

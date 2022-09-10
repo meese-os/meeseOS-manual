@@ -13,7 +13,7 @@ This tutorial will show you how to create an [application](../application/README
 
 To create a new application package, run the following command inside your MeeseOS installation: `npm run make:iframe-application`.
 
-The created application will be placed in `src/packages` (by default) and is based on the [official example](https://github.com/meese-enterprises/meeseOS/tree/master/development/cli/src/templates/iframe-application).
+The created application will be placed in `src/packages` (by default) and is based on the [official example](https://github.com/meeseOS/meeseOS/tree/master/development/cli/src/templates/iframe-application).
 
 > Remember to run `npm run package:discover` after you generate a package to make it available.
 
