@@ -516,6 +516,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "@meeseos/client/src/utils/desktop.js~resourceresolver",
+    "function/index.html#static-function-resourceResolver",
+    "<span>resourceResolver</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "function"
+  ],
+  [
     "@meeseos/client/src/utils/dom.js~script",
     "function/index.html#static-function-script",
     "<span>script</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
@@ -2367,6 +2373,12 @@ window.esdocSearchIndex = [
     "src/packages.js~packages#getcompatiblepackages",
     "class/src/packages.js~Packages.html#instance-method-getCompatiblePackages",
     "src/packages.js~Packages#getCompatiblePackages",
+    "method"
+  ],
+  [
+    "src/packages.js~packages#getmetadatafromname",
+    "class/src/packages.js~Packages.html#instance-method-getMetadataFromName",
+    "src/packages.js~Packages#getMetadataFromName",
     "method"
   ],
   [
