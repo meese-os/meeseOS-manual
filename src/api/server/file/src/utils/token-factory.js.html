@@ -236,7 +236,7 @@ class TokenFactory {
 
 			resolve({ ...user, accessToken });
 		}).catch((error) =&gt; {
-			logger.error(error);
+			this.core.logger.error(error);
 			return false;
 		});
 	}
