@@ -339,7 +339,7 @@ export default class Login extends EventEmitter {
 	 */
 	init(startHidden) {
 		this.$container = document.createElement(&quot;div&quot;);
-		this.$container.id = this.options.id;
+		this.$container.id = &quot;meeseOS-login-container&quot;;
 		this.$container.className = &quot;meeseOS-login-base&quot;;
 		this.core.$root.classList.add(&quot;login&quot;);
 		this.core.$root.appendChild(this.$container);

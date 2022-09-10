@@ -4542,7 +4542,7 @@
     "__docId__": 198,
     "kind": "file",
     "name": "src/core.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { CoreBase } from \"@meeseOS/common\";\nimport { defaultConfiguration } from \"./config\";\nimport { fetch } from \"./utils/fetch\";\nimport { urlResolver } from \"./utils/url\";\nimport Application from \"./application\";\nimport logger from \"./logger\";\nimport Splash from \"./splash\";\nimport Websocket from \"./websocket\";\nimport merge from \"deepmerge\";\nimport { isPlainObject } from \"is-plain-object\";\n\n/**\n * @callback SplashCallback\n * @param {Core} core\n * @returns {Splash}\n */\n\n/**\n * User Data\n *\n * @typedef {Object} CoreUserData\n * @property {String} username\n * @property {Number} [id]\n * @property {String[]} [groups=[]]\n */\n\n/**\n * Core Options\n *\n * @typedef {Object} CoreOptions\n * @property {Element} [root] The root DOM element for elements\n * @property {Element} [resourceRoot] The root DOM element for resources\n * @property {String[]} [classNames] List of class names to apply to root dom element\n * @property {SplashCallback|Splash} [splash] Custom callback function for creating splash screen\n */\n\n/**\n * Core Open File Options\n *\n * @typedef {Object} CoreOpenOptions\n * @property {Boolean} [useDefault] Use saved default application preference\n * @property {Boolean} [forceDialog] Force application choice dialog on multiple choices\n */\n\n/**\n * Main Core class for MeeseOS service providers and bootstrapping.\n */\nexport default class Core extends CoreBase {\n\t/**\n\t * Create core instance.\n\t * @param {CoreConfig} [config={}] Configuration tree\n\t * @param {CoreOptions} [options={}] Options\n\t */\n\tconstructor(config = {}, options = {}) {\n\t\toptions = {\n\t\t\tclassNames: [\"meeseOS-root\"],\n\t\t\troot: document.body,\n\t\t\t...(options || {}),\n\t\t};\n\n\t\tsuper(defaultConfiguration, config, options);\n\n\t\tconst $dynamicBackground = document.createElement(\"canvas\");\n\t\t$dynamicBackground.className = \"meeseOS-dynamic-background\";\n\n\t\tconst $contents = document.createElement(\"div\");\n\t\t$contents.className = \"meeseOS-contents\";\n\t\t$contents.appendChild($dynamicBackground);\n\n\t\tthis.logger = logger;\n\n\t\t/**\n\t\t * Websocket connection.\n\t\t * @type {Websocket}\n\t\t */\n\t\tthis.ws = null;\n\n\t\t/**\n\t\t * Ping (stay alive) interval.\n\t\t * @type {Number}\n\t\t */\n\t\tthis.ping = null;\n\n\t\t/**\n\t\t * Main DOM element (typically `<body>`)\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$root = options.root;\n\n\t\t/**\n\t\t * DOM element that contains all windows, the desktop, etc.\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$contents = $contents;\n\n\t\t/**\n\t\t * Resource script container DOM element.\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$resourceRoot = options.resourceRoot || document.querySelector(\"head\");\n\n\t\t/**\n\t\t * Default fetch request options.\n\t\t * @type {Object}\n\t\t */\n\t\tthis.requestOptions = {};\n\n\t\t/**\n\t\t * URL Resolver\n\t\t * TODO: typedef\n\t\t * @type {Function(): String}\n\t\t * @readonly\n\t\t */\n\t\tthis.urlResolver = urlResolver(this.configuration);\n\n\t\t/**\n\t\t * Current user data.\n\t\t * @type {CoreUserData}\n\t\t * @readonly\n\t\t */\n\t\tthis.user = this.config(\"auth.defaultUserData\");\n\n\t\tthis.options.classNames.forEach((n) => this.$root.classList.add(n));\n\n\t\tconst { uri } = this.configuration.ws;\n\t\tif (!uri.match(/^wss?:/)) {\n\t\t\tconst { protocol, host } = window.location;\n\n\t\t\tthis.configuration.ws.uri =\n\t\t\t\tprotocol.replace(/^http/, \"ws\") +\n\t\t\t\t\"//\" +\n\t\t\t\thost +\n\t\t\t\turi.replace(/^\\/+/, \"/\");\n\t\t}\n\n\t\t// Only create the splash in production\n\t\tif (this.configuration.development === false) {\n\t\t\t/**\n\t\t\t * Splash instance\n\t\t\t * @type {Splash}\n\t\t\t * @readonly\n\t\t\t */\n\t\t\tthis.splash = options.splash ? options.splash(this) : new Splash(this);\n\t\t\tthis.splash.init();\n\t\t}\n\t}\n\n\t/**\n\t * Destroy core instance.\n\t * @returns {Boolean}\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) {\n\t\t\treturn Promise.resolve();\n\t\t}\n\n\t\tthis.emit(\"meeseOS/core:destroy\");\n\n\t\tthis.ping = clearInterval(this.ping);\n\n\t\tApplication.destroyAll();\n\n\t\tif (this.ws) {\n\t\t\tthis.ws.close();\n\t\t}\n\n\t\tif (this.$contents) {\n\t\t\tthis.$contents.remove();\n\t\t\tthis.$contents = undefined;\n\t\t}\n\n\t\tthis.user = this.config(\"auth.defaultUserData\");\n\t\tthis.ws = null;\n\t\tthis.ping = null;\n\n\t\treturn super.destroy();\n\t}\n\n\t/**\n\t * Boots up MeeseOS.\n\t * @returns {Promise<Boolean>}\n\t */\n\tboot() {\n\t\tconst done = (e) => {\n\t\t\tif (e) {\n\t\t\t\tlogger.error(\"Error while booting\", e);\n\t\t\t}\n\n\t\t\tconsole.groupEnd();\n\n\t\t\treturn this.start();\n\t\t};\n\n\t\tif (this.booted) {\n\t\t\treturn Promise.resolve(false);\n\t\t}\n\n\t\tconsole.group(\"Core::boot()\");\n\n\t\tthis.$root.appendChild(this.$contents);\n\t\tthis._attachEvents();\n\t\tthis.emit(\"meeseOS/core:boot\");\n\n\t\t// TODO: Prevent flash of login UI if the local cookie is set\n\n\t\treturn super\n\t\t\t.boot()\n\t\t\t.then(() => {\n\t\t\t\tthis.emit(\"meeseOS/core:booted\");\n\n\t\t\t\tif (this.has(\"meeseOS/auth\")) {\n\t\t\t\t\treturn this.make(\"meeseOS/auth\").show((user) => {\n\t\t\t\t\t\tconst defaultData = this.config(\"auth.defaultUserData\");\n\t\t\t\t\t\tthis.user = {\n\t\t\t\t\t\t\t...defaultData,\n\t\t\t\t\t\t\t...user,\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tif (this.has(\"meeseOS/settings\")) {\n\t\t\t\t\t\t\tthis.make(\"meeseOS/settings\")\n\t\t\t\t\t\t\t\t.load()\n\t\t\t\t\t\t\t\t.then(() => done())\n\t\t\t\t\t\t\t\t.catch(() => done());\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tdone();\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\tlogger.debug(\"MeeseOS STARTED WITHOUT ANY AUTHENTICATION\");\n\t\t\t\treturn done();\n\t\t\t})\n\t\t\t.catch(done);\n\t}\n\n\t/**\n\t * Starts all core services.\n\t * @returns {Promise<Boolean>}\n\t */\n\tstart() {\n\t\tconst connect = () =>\n\t\t\tnew Promise((resolve, reject) => {\n\t\t\t\ttry {\n\t\t\t\t\tconst valid = this._createConnection((error) =>\n\t\t\t\t\t\terror ? reject(error) : resolve()\n\t\t\t\t\t);\n\t\t\t\t\tif (valid === false) {\n\t\t\t\t\t\t// We can skip the connection\n\t\t\t\t\t\tresolve();\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {\n\t\t\t\t\treject(e);\n\t\t\t\t}\n\t\t\t});\n\n\t\tconst done = (err) => {\n\t\t\tthis.emit(\"meeseOS/core:started\");\n\n\t\t\tif (err) {\n\t\t\t\tlogger.warn(\"Error while starting\", err);\n\t\t\t}\n\n\t\t\tconsole.groupEnd();\n\t\t\treturn !err;\n\t\t};\n\n\t\tif (this.started) {\n\t\t\treturn Promise.resolve(false);\n\t\t}\n\n\t\tconsole.group(\"Core::start()\");\n\t\tthis.emit(\"meeseOS/core:start\");\n\t\tthis._createListeners();\n\n\t\treturn super\n\t\t\t.start()\n\t\t\t.then((result) => {\n\t\t\t\tconsole.groupEnd();\n\n\t\t\t\tif (result) {\n\t\t\t\t\treturn connect()\n\t\t\t\t\t\t.then(() => done())\n\t\t\t\t\t\t.catch((err) => done(err));\n\t\t\t\t}\n\n\t\t\t\treturn false;\n\t\t\t})\n\t\t\t.catch(done);\n\t}\n\n\t/**\n\t * Attaches some internal events.\n\t * @private\n\t */\n\t_attachEvents() {\n\t\t// Attaches sounds for certain events\n\t\tthis.on(\"meeseOS/core:started\", () => {\n\t\t\tif (this.has(\"meeseOS/sounds\")) {\n\t\t\t\t// TODO: Don't attempt to run this on autologin via cookie; DOMException\n\t\t\t\tthis.make(\"meeseOS/sounds\").play(\"service-login\");\n\t\t\t}\n\t\t});\n\n\t\tthis.on(\"meeseOS/core:destroy\", () => {\n\t\t\tif (this.has(\"meeseOS/sounds\")) {\n\t\t\t\tthis.make(\"meeseOS/sounds\").play(\"service-logout\");\n\t\t\t}\n\t\t});\n\n\t\t// Forwards messages to an application from internal websocket\n\t\tthis.on(\"meeseOS/application:socket:message\", ({ pid, args }) => {\n\t\t\tconst found = Application.getApplications().find(\n\t\t\t\t(proc) => proc && proc.pid === pid\n\t\t\t);\n\n\t\t\tif (found) {\n\t\t\t\tfound.emit(\"ws:message\", ...args);\n\t\t\t}\n\t\t});\n\n\t\t// Sets up a server ping\n\t\tthis.on(\"meeseOS/core:connected\", (config) => {\n\t\t\tconst enabled = this.config(\"http.ping\");\n\n\t\t\tif (enabled) {\n\t\t\t\t// Defaults to every 30 minutes if not specified otherwise\n\t\t\t\tconst pingTime = typeof enabled === \"number\" ? enabled : 30 * 60 * 1000;\n\n\t\t\t\tthis.ping = setInterval(() => {\n\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\tif (this.ws.connected && !this.ws.reconnecting) {\n\t\t\t\t\t\t\tthis.request(\"/ping\").catch((e) =>\n\t\t\t\t\t\t\t\tlogger.warn(\"Error on ping\", e)\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}, pingTime);\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Creates the main connection to server.\n\t *\n\t * @private\n\t * @param {Function} cb Callback function\n\t * @returns {Boolean}\n\t */\n\t_createConnection(cb) {\n\t\tif (this.configuration.standalone || this.configuration.ws.disabled) {\n\t\t\treturn false;\n\t\t}\n\n\t\tconst { uri } = this.config(\"ws\");\n\t\tlet wasConnected = false;\n\n\t\tlogger.debug(\"Creating websocket connection on\", uri);\n\t\tthis.ws = new Websocket(\"CoreSocket\", uri, {\n\t\t\tinterval: this.config(\"ws.connectInterval\", 1000),\n\t\t});\n\n\t\tthis.ws.once(\"connected\", () => {\n\t\t\t// Allow for some grace-time in case we close prematurely\n\t\t\tsetTimeout(() => {\n\t\t\t\twasConnected = true;\n\t\t\t\tcb();\n\t\t\t}, 100);\n\t\t});\n\n\t\tthis.ws.on(\"connected\", (ev, reconnected) => {\n\t\t\tthis.emit(\"meeseOS/core:connect\", ev, reconnected);\n\t\t});\n\n\t\tthis.ws.once(\"failed\", (ev) => {\n\t\t\tif (!wasConnected) {\n\t\t\t\tcb(new Error(\"Connection closed\"));\n\t\t\t\tthis.emit(\"meeseOS/core:connection-failed\", ev);\n\t\t\t}\n\t\t});\n\n\t\tthis.ws.on(\"disconnected\", (ev) => {\n\t\t\tthis.emit(\"meeseOS/core:disconnect\", ev);\n\t\t});\n\n\t\tthis.ws.on(\"message\", (ev) => {\n\t\t\ttry {\n\t\t\t\tconst data = JSON.parse(ev.data);\n\t\t\t\tconst params = data.params || [];\n\t\t\t\tthis.emit(data.name, ...params);\n\t\t\t} catch (e) {\n\t\t\t\tlogger.warn(\"Exception on websocket message\", e);\n\t\t\t}\n\t\t});\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Creates event listeners.\n\t * @private\n\t */\n\t_createListeners() {\n\t\tconst handle = (data) => {\n\t\t\tconst { pid, wid, args } = data;\n\t\t\tconst proc = Application.getApplications().find(\n\t\t\t\t(proc) => proc.pid === pid\n\t\t\t);\n\t\t\tconst win = proc ? proc.windows.find((w) => w.wid === wid) : null;\n\n\t\t\tif (win) {\n\t\t\t\twin.emit(\"iframe:get\", ...(args || []));\n\t\t\t}\n\t\t};\n\n\t\twindow.addEventListener(\"message\", (ev) => {\n\t\t\tconst message = ev.data || {};\n\t\t\tif (message && message.name === \"meeseOS/iframe:message\") {\n\t\t\t\thandle(...(message.params || []));\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Creates an URL based on configured public path.\n\t *\n\t * If you give a options.type, the URL will be resolved\n\t * to the correct resource.\n\t *\n\t * @param {String} [endpoint=/] Endpoint\n\t * @param {Object} [options] Additional options for resolving url\n\t * @param {Boolean} [options.prefix=false] Returns a full URL complete with\n\t * scheme, etc. (will always be true on websocket)\n\t * @param {String} [options.type] Optional URL type (websocket)\n\t * @param {PackageMetadata} [metadata] A package metadata\n\t * @returns {String}\n\t */\n\turl(endpoint = \"/\", options = {}, metadata = {}) {\n\t\treturn this.urlResolver(endpoint, options, metadata);\n\t}\n\n\t/**\n\t * Makes an HTTP request.\n\t *\n\t * This is a wrapper for making a 'fetch' request with some helpers\n\t * and integration with MeeseOS.\n\t *\n\t * @param {String} url The endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type] Request / Response type\n\t * @param {Boolean} [force=false] Force request even when in standalone mode\n\t * @returns {*}\n\t */\n\trequest(url, options = {}, type = null, force = false) {\n\t\tif (this.config(\"standalone\") && !force) {\n\t\t\treturn Promise.reject(\n\t\t\t\tnew Error(\"Cannot make requests in standalone mode.\")\n\t\t\t);\n\t\t}\n\n\t\tif (!url.match(/^((http|ws|ftp)s?:)/i)) {\n\t\t\turl = this.url(url);\n\n\t\t\toptions = merge(\n\t\t\t\toptions,\n\t\t\t\tthis.requestOptions,\n\t\t\t\t{ isMergeableObject: isPlainObject }\n\t\t\t);\n\t\t}\n\n\t\treturn fetch(url, options, type).catch((error) => {\n\t\t\tlogger.warn(error);\n\n\t\t\tthrow new Error(`An error occured while performing a request: ${error}`);\n\t\t});\n\t}\n\n\t/**\n\t * Create an application from a package.\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args] Launch arguments\n\t * @param {PackageLaunchOptions} [options] Launch options\n\t * @see {Packages}\n\t * @returns {Promise<Application>}\n\t */\n\trun(name, args = {}, options = {}) {\n\t\tlogger.debug(\"Core::run()\", name, args, options);\n\n\t\treturn this.make(\"meeseOS/packages\").launch(name, args, options);\n\t}\n\n\t/**\n\t * Spawns an application based on the file given.\n\t *\n\t * @param {VFSFile} file A file object\n\t * @param {CoreOpenOptions} [options] Options\n\t * @returns {Boolean|Application}\n\t */\n\topen(file, options = {}) {\n\t\tif (file.mime === \"meeseOS/application\") {\n\t\t\treturn this.run(file.path.split(\"/\").pop());\n\t\t}\n\n\t\tconst run = (app) => this.run(app, { file }, options);\n\t\tconst compatible = this.make(\"meeseOS/packages\").getCompatiblePackages(\n\t\t\tfile.mime\n\t\t);\n\n\t\tif (compatible.length > 0) {\n\t\t\tif (compatible.length > 1) {\n\t\t\t\ttry {\n\t\t\t\t\tthis._openApplicationDialog(options, compatible, file, run);\n\n\t\t\t\t\treturn true;\n\t\t\t\t} catch (e) {\n\t\t\t\t\tlogger.warn(\"Exception on compability check\", e);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\trun(compatible[0].name);\n\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.resolve(false);\n\t}\n\n\t/**\n\t * Wrapper method to create an application choice dialog.\n\t * @private\n\t */\n\t_openApplicationDialog(options, compatible, file, run) {\n\t\tconst useDefault = options.useDefault && this.has(\"meeseOS/settings\");\n\t\tconst setDefault = (name) =>\n\t\t\tthis.make(\"meeseOS/settings\")\n\t\t\t\t.set(\"meeseOS/default-application\", file.mime, name)\n\t\t\t\t.save();\n\n\t\tconst value = useDefault\n\t\t\t? this.make(\"meeseOS/settings\").get(\n\t\t\t\t\"meeseOS/default-application\",\n\t\t\t\tfile.mime\n\t\t\t)\n\t\t\t: null;\n\n\t\tconst type = useDefault ? \"defaultApplication\" : \"choice\";\n\n\t\tconst args = {\n\t\t\ttitle: \"Select application\",\n\t\t\tmessage: `Select application for '${file.path}'`,\n\t\t\tchoices: compatible.reduce((o, i) => ({ ...o, [i.name]: i.name }), {}),\n\t\t\tvalue,\n\t\t};\n\n\t\tif (value && !options.forceDialog) {\n\t\t\trun(value);\n\t\t} else {\n\t\t\tthis.make(\"meeseOS/dialog\", type, args, (btn, choice) => {\n\t\t\t\tif (btn === \"ok\") {\n\t\t\t\t\tif (type === \"defaultApplication\") {\n\t\t\t\t\t\tif (useDefault) {\n\t\t\t\t\t\t\tsetDefault(choice.checked ? choice.value : null);\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\trun(choice.value);\n\t\t\t\t\t} else if (choice) {\n\t\t\t\t\t\trun(choice);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}\n\n\t/**\n\t * Removes an event handler.\n\t *\n\t * @param {String} name\n\t * @param {Function} [callback=null]\n\t * @param {Boolean} [force=false]\n\t * @returns {Core} this\n\t */\n\toff(name, callback = null, force = false) {\n\t\tif (name.match(/^meeseOS\\//) && typeof callback !== \"function\") {\n\t\t\tthrow new TypeError(\"The callback must be a function\");\n\t\t}\n\n\t\treturn super.off(name, callback, force);\n\t}\n\n\t/**\n\t * Sends a 'broadcast' event with given arguments\n\t * to all applications matching given filter.\n\t *\n\t * @param {String|Function} pkg The filter\n\t * @param {String} name The event name\n\t * @param {*} ...args Arguments to pass to emit\n\t * @returns {String[]} List of application names emitted to\n\t */\n\tbroadcast(pkg, name, ...args) {\n\t\tconst filter =\n\t\t\ttypeof pkg === \"function\" ? pkg : (p) => p.metadata.name === pkg;\n\n\t\tconst apps = Application.getApplications().filter(filter);\n\n\t\treturn apps.map((proc) => {\n\t\t\tproc.emit(name, ...args);\n\n\t\t\treturn proc.name;\n\t\t});\n\t}\n\n\t/**\n\t * Sends a signal to the server over websocket.\n\t * This will be interpreted as an event in the server core.\n\t * @param {String} name Event name\n\t * @param {*} ...params Event callback parameters\n\t */\n\tsend(name, ...params) {\n\t\treturn this.ws.send(\n\t\t\tJSON.stringify({\n\t\t\t\tname,\n\t\t\t\tparams,\n\t\t\t})\n\t\t);\n\t}\n\n\t/**\n\t * Set the internal fetch/request options.\n\t * @param {Object} options Request options\n\t */\n\tsetRequestOptions(options) {\n\t\tthis.requestOptions = { ...options };\n\t}\n\n\t/**\n\t * Gets the current user.\n\t * @returns {CoreUserData} User object\n\t */\n\tgetUser() {\n\t\treturn { ...this.user };\n\t}\n\n\t/**\n\t * Add middleware function to a group.\n\t * @param {String} group Middleware group\n\t * @param {Function} callback Middleware function to add\n\t */\n\tmiddleware(group, callback) {\n\t\treturn this.make(\"meeseOS/middleware\").add(group, callback);\n\t}\n\n\t/**\n\t * Kills the specified application.\n\t * @param {String|Number} match Application name or PID\n\t */\n\tkill(match) {\n\t\tconst apps = Application.getApplications();\n\t\tconst matcher = typeof match === \"number\"\n\t\t\t? app => app.pid === match\n\t\t\t: app => app.metadata.name === match;\n\n\t\tconst found = apps.filter(matcher);\n\t\tfound.forEach(app => app.destroy());\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { CoreBase } from \"@meeseOS/common\";\nimport { defaultConfiguration } from \"./config\";\nimport { fetch } from \"./utils/fetch\";\nimport { urlResolver } from \"./utils/url\";\nimport Application from \"./application\";\nimport logger from \"./logger\";\nimport Splash from \"./splash\";\nimport Websocket from \"./websocket\";\nimport merge from \"deepmerge\";\nimport { isPlainObject } from \"is-plain-object\";\n\n/**\n * @callback SplashCallback\n * @param {Core} core\n * @returns {Splash}\n */\n\n/**\n * User Data\n *\n * @typedef {Object} CoreUserData\n * @property {String} username\n * @property {Number} [id]\n * @property {String[]} [groups=[]]\n */\n\n/**\n * Core Options\n *\n * @typedef {Object} CoreOptions\n * @property {Element} [root] The root DOM element for elements\n * @property {Element} [resourceRoot] The root DOM element for resources\n * @property {String[]} [classNames] List of class names to apply to root dom element\n * @property {SplashCallback|Splash} [splash] Custom callback function for creating splash screen\n */\n\n/**\n * Core Open File Options\n *\n * @typedef {Object} CoreOpenOptions\n * @property {Boolean} [useDefault] Use saved default application preference\n * @property {Boolean} [forceDialog] Force application choice dialog on multiple choices\n */\n\n/**\n * Main Core class for MeeseOS service providers and bootstrapping.\n */\nexport default class Core extends CoreBase {\n\t/**\n\t * Create core instance.\n\t * @param {CoreConfig} [config={}] Configuration tree\n\t * @param {CoreOptions} [options={}] Options\n\t */\n\tconstructor(config = {}, options = {}) {\n\t\toptions = {\n\t\t\tclassNames: [\"meeseOS-root\"],\n\t\t\troot: document.body,\n\t\t\t...(options || {}),\n\t\t};\n\n\t\tsuper(defaultConfiguration, config, options);\n\n\t\tconst $dynamicBackground = document.createElement(\"canvas\");\n\t\t$dynamicBackground.className = \"meeseOS-dynamic-background\";\n\n\t\tconst $contents = document.createElement(\"div\");\n\t\t$contents.className = \"meeseOS-contents\";\n\t\t$contents.appendChild($dynamicBackground);\n\n\t\tthis.logger = logger;\n\n\t\t/**\n\t\t * Websocket connection.\n\t\t * @type {Websocket}\n\t\t */\n\t\tthis.ws = null;\n\n\t\t/**\n\t\t * Ping (stay alive) interval.\n\t\t * @type {Number}\n\t\t */\n\t\tthis.ping = null;\n\n\t\t/**\n\t\t * Main DOM element (typically `<body>`)\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$root = options.root;\n\n\t\t/**\n\t\t * DOM element that contains all windows, the desktop, etc.\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$contents = $contents;\n\n\t\t/**\n\t\t * Resource script container DOM element.\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$resourceRoot = options.resourceRoot || document.querySelector(\"head\");\n\n\t\t/**\n\t\t * Default fetch request options.\n\t\t * @type {Object}\n\t\t */\n\t\tthis.requestOptions = {};\n\n\t\t/**\n\t\t * URL Resolver\n\t\t * TODO: typedef\n\t\t * @type {Function(): String}\n\t\t * @readonly\n\t\t */\n\t\tthis.urlResolver = urlResolver(this.configuration);\n\n\t\t/**\n\t\t * Current user data.\n\t\t * @type {CoreUserData}\n\t\t * @readonly\n\t\t */\n\t\tthis.user = this.config(\"auth.defaultUserData\");\n\n\t\tthis.options.classNames.forEach((n) => this.$root.classList.add(n));\n\n\t\tconst { uri } = this.configuration.ws;\n\t\tif (!uri.match(/^wss?:/)) {\n\t\t\tconst { protocol, host } = window.location;\n\n\t\t\tthis.configuration.ws.uri =\n\t\t\t\tprotocol.replace(/^http/, \"ws\") +\n\t\t\t\t\"//\" +\n\t\t\t\thost +\n\t\t\t\turi.replace(/^\\/+/, \"/\");\n\t\t}\n\n\t\t// Only create the splash in production\n\t\tif (this.configuration.development === false) {\n\t\t\t/**\n\t\t\t * Splash instance\n\t\t\t * @type {Splash}\n\t\t\t * @readonly\n\t\t\t */\n\t\t\tthis.splash = options.splash ? options.splash(this) : new Splash(this);\n\t\t\tthis.splash.init();\n\t\t}\n\t}\n\n\t/**\n\t * Destroy core instance.\n\t * @returns {Boolean}\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) {\n\t\t\treturn Promise.resolve();\n\t\t}\n\n\t\tthis.emit(\"meeseOS/core:destroy\");\n\n\t\tthis.ping = clearInterval(this.ping);\n\n\t\tApplication.destroyAll();\n\n\t\tif (this.ws) {\n\t\t\tthis.ws.close();\n\t\t}\n\n\t\tif (this.$contents) {\n\t\t\tthis.$contents.remove();\n\t\t\tthis.$contents = undefined;\n\t\t}\n\n\t\tthis.user = this.config(\"auth.defaultUserData\");\n\t\tthis.ws = null;\n\t\tthis.ping = null;\n\n\t\treturn super.destroy();\n\t}\n\n\t/**\n\t * Boots up MeeseOS.\n\t * @returns {Promise<Boolean>}\n\t */\n\tboot() {\n\t\tconst done = (e) => {\n\t\t\tif (e) {\n\t\t\t\tlogger.error(\"Error while booting\", e);\n\t\t\t}\n\n\t\t\tconsole.groupEnd();\n\n\t\t\treturn this.start();\n\t\t};\n\n\t\tif (this.booted) {\n\t\t\treturn Promise.resolve(false);\n\t\t}\n\n\t\tconsole.group(\"Core::boot()\");\n\n\t\tthis.$root.appendChild(this.$contents);\n\t\tthis._attachEvents();\n\t\tthis.emit(\"meeseOS/core:boot\");\n\n\t\t// TODO: Start the service providers before auth, not after\n\t\treturn super\n\t\t\t.boot()\n\t\t\t.then(() => {\n\t\t\t\tthis.emit(\"meeseOS/core:booted\");\n\n\t\t\t\tif (this.has(\"meeseOS/auth\")) {\n\t\t\t\t\treturn this.make(\"meeseOS/auth\").show((user) => {\n\t\t\t\t\t\tconst defaultData = this.config(\"auth.defaultUserData\");\n\t\t\t\t\t\tthis.user = {\n\t\t\t\t\t\t\t...defaultData,\n\t\t\t\t\t\t\t...user,\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tif (this.has(\"meeseOS/settings\")) {\n\t\t\t\t\t\t\tthis.make(\"meeseOS/settings\")\n\t\t\t\t\t\t\t\t.load()\n\t\t\t\t\t\t\t\t.then(() => done())\n\t\t\t\t\t\t\t\t.catch(() => done());\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tdone();\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\tlogger.debug(\"MeeseOS STARTED WITHOUT ANY AUTHENTICATION\");\n\t\t\t\treturn done();\n\t\t\t})\n\t\t\t.catch(done);\n\t}\n\n\t/**\n\t * Starts all core services.\n\t * @returns {Promise<Boolean>}\n\t */\n\tstart() {\n\t\tconst connect = () =>\n\t\t\tnew Promise((resolve, reject) => {\n\t\t\t\ttry {\n\t\t\t\t\tconst valid = this._createConnection((error) =>\n\t\t\t\t\t\terror ? reject(error) : resolve()\n\t\t\t\t\t);\n\t\t\t\t\tif (valid === false) {\n\t\t\t\t\t\t// We can skip the connection\n\t\t\t\t\t\tresolve();\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {\n\t\t\t\t\treject(e);\n\t\t\t\t}\n\t\t\t});\n\n\t\tconst done = (err) => {\n\t\t\tthis.emit(\"meeseOS/core:started\");\n\n\t\t\tif (err) {\n\t\t\t\tlogger.warn(\"Error while starting\", err);\n\t\t\t}\n\n\t\t\tconsole.groupEnd();\n\t\t\treturn !err;\n\t\t};\n\n\t\tif (this.started) {\n\t\t\treturn Promise.resolve(false);\n\t\t}\n\n\t\tconsole.group(\"Core::start()\");\n\t\tthis.emit(\"meeseOS/core:start\");\n\t\tthis._createListeners();\n\n\t\treturn super\n\t\t\t.start()\n\t\t\t.then((result) => {\n\t\t\t\tconsole.groupEnd();\n\n\t\t\t\tif (result) {\n\t\t\t\t\treturn connect()\n\t\t\t\t\t\t.then(() => done())\n\t\t\t\t\t\t.catch((err) => done(err));\n\t\t\t\t}\n\n\t\t\t\treturn false;\n\t\t\t})\n\t\t\t.catch(done);\n\t}\n\n\t/**\n\t * Attaches some internal events.\n\t * @private\n\t */\n\t_attachEvents() {\n\t\t// Attaches sounds for certain events\n\t\tthis.on(\"meeseOS/core:started\", () => {\n\t\t\tif (this.has(\"meeseOS/sounds\")) {\n\t\t\t\t// TODO: Don't attempt to run this on autologin via cookie; DOMException\n\t\t\t\tthis.make(\"meeseOS/sounds\").play(\"service-login\");\n\t\t\t}\n\t\t});\n\n\t\tthis.on(\"meeseOS/core:destroy\", () => {\n\t\t\tif (this.has(\"meeseOS/sounds\")) {\n\t\t\t\tthis.make(\"meeseOS/sounds\").play(\"service-logout\");\n\t\t\t}\n\t\t});\n\n\t\t// Forwards messages to an application from internal websocket\n\t\tthis.on(\"meeseOS/application:socket:message\", ({ pid, args }) => {\n\t\t\tconst found = Application.getApplications().find(\n\t\t\t\t(proc) => proc && proc.pid === pid\n\t\t\t);\n\n\t\t\tif (found) {\n\t\t\t\tfound.emit(\"ws:message\", ...args);\n\t\t\t}\n\t\t});\n\n\t\t// Sets up a server ping\n\t\tthis.on(\"meeseOS/core:connected\", (config) => {\n\t\t\tconst enabled = this.config(\"http.ping\");\n\n\t\t\tif (enabled) {\n\t\t\t\t// Defaults to every 30 minutes if not specified otherwise\n\t\t\t\tconst pingTime = typeof enabled === \"number\" ? enabled : 30 * 60 * 1000;\n\n\t\t\t\tthis.ping = setInterval(() => {\n\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\tif (this.ws.connected && !this.ws.reconnecting) {\n\t\t\t\t\t\t\tthis.request(\"/ping\").catch((e) =>\n\t\t\t\t\t\t\t\tlogger.warn(\"Error on ping\", e)\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}, pingTime);\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Creates the main connection to server.\n\t *\n\t * @private\n\t * @param {Function} cb Callback function\n\t * @returns {Boolean}\n\t */\n\t_createConnection(cb) {\n\t\tif (this.configuration.standalone || this.configuration.ws.disabled) {\n\t\t\treturn false;\n\t\t}\n\n\t\tconst { uri } = this.config(\"ws\");\n\t\tlet wasConnected = false;\n\n\t\tlogger.debug(\"Creating websocket connection on\", uri);\n\t\tthis.ws = new Websocket(\"CoreSocket\", uri, {\n\t\t\tinterval: this.config(\"ws.connectInterval\", 1000),\n\t\t});\n\n\t\tthis.ws.once(\"connected\", () => {\n\t\t\t// Allow for some grace-time in case we close prematurely\n\t\t\tsetTimeout(() => {\n\t\t\t\twasConnected = true;\n\t\t\t\tcb();\n\t\t\t}, 100);\n\t\t});\n\n\t\tthis.ws.on(\"connected\", (ev, reconnected) => {\n\t\t\tthis.emit(\"meeseOS/core:connect\", ev, reconnected);\n\t\t});\n\n\t\tthis.ws.once(\"failed\", (ev) => {\n\t\t\tif (!wasConnected) {\n\t\t\t\tcb(new Error(\"Connection closed\"));\n\t\t\t\tthis.emit(\"meeseOS/core:connection-failed\", ev);\n\t\t\t}\n\t\t});\n\n\t\tthis.ws.on(\"disconnected\", (ev) => {\n\t\t\tthis.emit(\"meeseOS/core:disconnect\", ev);\n\t\t});\n\n\t\tthis.ws.on(\"message\", (ev) => {\n\t\t\ttry {\n\t\t\t\tconst data = JSON.parse(ev.data);\n\t\t\t\tconst params = data.params || [];\n\t\t\t\tthis.emit(data.name, ...params);\n\t\t\t} catch (e) {\n\t\t\t\tlogger.warn(\"Exception on websocket message\", e);\n\t\t\t}\n\t\t});\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Creates event listeners.\n\t * @private\n\t */\n\t_createListeners() {\n\t\tconst handle = (data) => {\n\t\t\tconst { pid, wid, args } = data;\n\t\t\tconst proc = Application.getApplications().find(\n\t\t\t\t(proc) => proc.pid === pid\n\t\t\t);\n\t\t\tconst win = proc ? proc.windows.find((w) => w.wid === wid) : null;\n\n\t\t\tif (win) {\n\t\t\t\twin.emit(\"iframe:get\", ...(args || []));\n\t\t\t}\n\t\t};\n\n\t\twindow.addEventListener(\"message\", (ev) => {\n\t\t\tconst message = ev.data || {};\n\t\t\tif (message && message.name === \"meeseOS/iframe:message\") {\n\t\t\t\thandle(...(message.params || []));\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Creates an URL based on configured public path.\n\t *\n\t * If you give a options.type, the URL will be resolved\n\t * to the correct resource.\n\t *\n\t * @param {String} [endpoint=/] Endpoint\n\t * @param {Object} [options] Additional options for resolving url\n\t * @param {Boolean} [options.prefix=false] Returns a full URL complete with\n\t * scheme, etc. (will always be true on websocket)\n\t * @param {String} [options.type] Optional URL type (websocket)\n\t * @param {PackageMetadata} [metadata] A package metadata\n\t * @returns {String}\n\t */\n\turl(endpoint = \"/\", options = {}, metadata = {}) {\n\t\treturn this.urlResolver(endpoint, options, metadata);\n\t}\n\n\t/**\n\t * Makes an HTTP request.\n\t *\n\t * This is a wrapper for making a 'fetch' request with some helpers\n\t * and integration with MeeseOS.\n\t *\n\t * @param {String} url The endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type] Request / Response type\n\t * @param {Boolean} [force=false] Force request even when in standalone mode\n\t * @returns {*}\n\t */\n\trequest(url, options = {}, type = null, force = false) {\n\t\tif (this.config(\"standalone\") && !force) {\n\t\t\treturn Promise.reject(\n\t\t\t\tnew Error(\"Cannot make requests in standalone mode.\")\n\t\t\t);\n\t\t}\n\n\t\tif (!url.match(/^((http|ws|ftp)s?:)/i)) {\n\t\t\turl = this.url(url);\n\n\t\t\toptions = merge(\n\t\t\t\toptions,\n\t\t\t\tthis.requestOptions,\n\t\t\t\t{ isMergeableObject: isPlainObject }\n\t\t\t);\n\t\t}\n\n\t\treturn fetch(url, options, type).catch((error) => {\n\t\t\tlogger.warn(error);\n\n\t\t\tthrow new Error(`An error occured while performing a request: ${error}`);\n\t\t});\n\t}\n\n\t/**\n\t * Create an application from a package.\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args] Launch arguments\n\t * @param {PackageLaunchOptions} [options] Launch options\n\t * @see {Packages}\n\t * @returns {Promise<Application>}\n\t */\n\trun(name, args = {}, options = {}) {\n\t\tlogger.debug(\"Core::run()\", name, args, options);\n\n\t\treturn this.make(\"meeseOS/packages\").launch(name, args, options);\n\t}\n\n\t/**\n\t * Spawns an application based on the file given.\n\t *\n\t * @param {VFSFile} file A file object\n\t * @param {CoreOpenOptions} [options] Options\n\t * @returns {Boolean|Application}\n\t */\n\topen(file, options = {}) {\n\t\tif (file.mime === \"meeseOS/application\") {\n\t\t\treturn this.run(file.path.split(\"/\").pop());\n\t\t}\n\n\t\tconst run = (app) => this.run(app, { file }, options);\n\t\tconst compatible = this.make(\"meeseOS/packages\").getCompatiblePackages(\n\t\t\tfile.mime\n\t\t);\n\n\t\tif (compatible.length > 0) {\n\t\t\tif (compatible.length > 1) {\n\t\t\t\ttry {\n\t\t\t\t\tthis._openApplicationDialog(options, compatible, file, run);\n\n\t\t\t\t\treturn true;\n\t\t\t\t} catch (e) {\n\t\t\t\t\tlogger.warn(\"Exception on compability check\", e);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\trun(compatible[0].name);\n\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.resolve(false);\n\t}\n\n\t/**\n\t * Wrapper method to create an application choice dialog.\n\t * @private\n\t */\n\t_openApplicationDialog(options, compatible, file, run) {\n\t\tconst useDefault = options.useDefault && this.has(\"meeseOS/settings\");\n\t\tconst setDefault = (name) =>\n\t\t\tthis.make(\"meeseOS/settings\")\n\t\t\t\t.set(\"meeseOS/default-application\", file.mime, name)\n\t\t\t\t.save();\n\n\t\tconst value = useDefault\n\t\t\t? this.make(\"meeseOS/settings\").get(\n\t\t\t\t\"meeseOS/default-application\",\n\t\t\t\tfile.mime\n\t\t\t)\n\t\t\t: null;\n\n\t\tconst type = useDefault ? \"defaultApplication\" : \"choice\";\n\n\t\tconst args = {\n\t\t\ttitle: \"Select application\",\n\t\t\tmessage: `Select application for '${file.path}'`,\n\t\t\tchoices: compatible.reduce((o, i) => ({ ...o, [i.name]: i.name }), {}),\n\t\t\tvalue,\n\t\t};\n\n\t\tif (value && !options.forceDialog) {\n\t\t\trun(value);\n\t\t} else {\n\t\t\tthis.make(\"meeseOS/dialog\", type, args, (btn, choice) => {\n\t\t\t\tif (btn === \"ok\") {\n\t\t\t\t\tif (type === \"defaultApplication\") {\n\t\t\t\t\t\tif (useDefault) {\n\t\t\t\t\t\t\tsetDefault(choice.checked ? choice.value : null);\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\trun(choice.value);\n\t\t\t\t\t} else if (choice) {\n\t\t\t\t\t\trun(choice);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}\n\n\t/**\n\t * Removes an event handler.\n\t *\n\t * @param {String} name\n\t * @param {Function} [callback=null]\n\t * @param {Boolean} [force=false]\n\t * @returns {Core} this\n\t */\n\toff(name, callback = null, force = false) {\n\t\tif (name.match(/^meeseOS\\//) && typeof callback !== \"function\") {\n\t\t\tthrow new TypeError(\"The callback must be a function\");\n\t\t}\n\n\t\treturn super.off(name, callback, force);\n\t}\n\n\t/**\n\t * Sends a 'broadcast' event with given arguments\n\t * to all applications matching given filter.\n\t *\n\t * @param {String|Function} pkg The filter\n\t * @param {String} name The event name\n\t * @param {*} ...args Arguments to pass to emit\n\t * @returns {String[]} List of application names emitted to\n\t */\n\tbroadcast(pkg, name, ...args) {\n\t\tconst filter =\n\t\t\ttypeof pkg === \"function\" ? pkg : (p) => p.metadata.name === pkg;\n\n\t\tconst apps = Application.getApplications().filter(filter);\n\n\t\treturn apps.map((proc) => {\n\t\t\tproc.emit(name, ...args);\n\n\t\t\treturn proc.name;\n\t\t});\n\t}\n\n\t/**\n\t * Sends a signal to the server over websocket.\n\t * This will be interpreted as an event in the server core.\n\t * @param {String} name Event name\n\t * @param {*} ...params Event callback parameters\n\t */\n\tsend(name, ...params) {\n\t\treturn this.ws.send(\n\t\t\tJSON.stringify({\n\t\t\t\tname,\n\t\t\t\tparams,\n\t\t\t})\n\t\t);\n\t}\n\n\t/**\n\t * Set the internal fetch/request options.\n\t * @param {Object} options Request options\n\t */\n\tsetRequestOptions(options) {\n\t\tthis.requestOptions = { ...options };\n\t}\n\n\t/**\n\t * Gets the current user.\n\t * @returns {CoreUserData} User object\n\t */\n\tgetUser() {\n\t\treturn { ...this.user };\n\t}\n\n\t/**\n\t * Add middleware function to a group.\n\t * @param {String} group Middleware group\n\t * @param {Function} callback Middleware function to add\n\t */\n\tmiddleware(group, callback) {\n\t\treturn this.make(\"meeseOS/middleware\").add(group, callback);\n\t}\n\n\t/**\n\t * Kills the specified application.\n\t * @param {String|Number} match Application name or PID\n\t */\n\tkill(match) {\n\t\tconst apps = Application.getApplications();\n\t\tconst matcher = typeof match === \"number\"\n\t\t\t? app => app.pid === match\n\t\t\t: app => app.metadata.name === match;\n\n\t\tconst found = apps.filter(matcher);\n\t\tfound.forEach(app => app.destroy());\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/core.js",
     "access": "public",
@@ -5048,7 +5048,7 @@
     "longname": "src/core.js~Core#start",
     "access": "public",
     "description": "Starts all core services.",
-    "lineNumber": 273,
+    "lineNumber": 272,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5076,7 +5076,7 @@
     "longname": "src/core.js~Core#_attachEvents",
     "access": "private",
     "description": "Attaches some internal events.",
-    "lineNumber": 328,
+    "lineNumber": 327,
     "params": [],
     "return": null
   },
@@ -5091,7 +5091,7 @@
     "longname": "src/core.js~Core#_createConnection",
     "access": "private",
     "description": "Creates the main connection to server.",
-    "lineNumber": 382,
+    "lineNumber": 381,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5130,7 +5130,7 @@
     "longname": "src/core.js~Core#_createListeners",
     "access": "private",
     "description": "Creates event listeners.",
-    "lineNumber": 435,
+    "lineNumber": 434,
     "params": [],
     "return": null
   },
@@ -5145,7 +5145,7 @@
     "longname": "src/core.js~Core#url",
     "access": "public",
     "description": "Creates an URL based on configured public path.\n\nIf you give a options.type, the URL will be resolved\nto the correct resource.",
-    "lineNumber": 470,
+    "lineNumber": 469,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5228,7 +5228,7 @@
     "longname": "src/core.js~Core#request",
     "access": "public",
     "description": "Makes an HTTP request.\n\nThis is a wrapper for making a 'fetch' request with some helpers\nand integration with MeeseOS.",
-    "lineNumber": 486,
+    "lineNumber": 485,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5302,7 +5302,7 @@
     "see": [
       "{Packages}"
     ],
-    "lineNumber": 519,
+    "lineNumber": 518,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5361,7 +5361,7 @@
     "longname": "src/core.js~Core#open",
     "access": "public",
     "description": "Spawns an application based on the file given.",
-    "lineNumber": 532,
+    "lineNumber": 531,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5411,7 +5411,7 @@
     "longname": "src/core.js~Core#_openApplicationDialog",
     "access": "private",
     "description": "Wrapper method to create an application choice dialog.",
-    "lineNumber": 565,
+    "lineNumber": 564,
     "params": [
       {
         "name": "options",
@@ -5451,7 +5451,7 @@
     "longname": "src/core.js~Core#off",
     "access": "public",
     "description": "Removes an event handler.",
-    "lineNumber": 615,
+    "lineNumber": 614,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5514,7 +5514,7 @@
     "longname": "src/core.js~Core#broadcast",
     "access": "public",
     "description": "Sends a 'broadcast' event with given arguments\nto all applications matching given filter.",
-    "lineNumber": 632,
+    "lineNumber": 631,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5574,7 +5574,7 @@
     "longname": "src/core.js~Core#send",
     "access": "public",
     "description": "Sends a signal to the server over websocket.\nThis will be interpreted as an event in the server core.",
-    "lineNumber": 651,
+    "lineNumber": 650,
     "params": [
       {
         "nullable": null,
@@ -5614,7 +5614,7 @@
     "longname": "src/core.js~Core#setRequestOptions",
     "access": "public",
     "description": "Set the internal fetch/request options.",
-    "lineNumber": 664,
+    "lineNumber": 663,
     "params": [
       {
         "nullable": null,
@@ -5640,7 +5640,7 @@
     "longname": "src/core.js~Core#getUser",
     "access": "public",
     "description": "Gets the current user.",
-    "lineNumber": 672,
+    "lineNumber": 671,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5668,7 +5668,7 @@
     "longname": "src/core.js~Core#middleware",
     "access": "public",
     "description": "Add middleware function to a group.",
-    "lineNumber": 681,
+    "lineNumber": 680,
     "params": [
       {
         "nullable": null,
@@ -5708,7 +5708,7 @@
     "longname": "src/core.js~Core#kill",
     "access": "public",
     "description": "Kills the specified application.",
-    "lineNumber": 689,
+    "lineNumber": 688,
     "params": [
       {
         "nullable": null,
@@ -8409,7 +8409,7 @@
     "__docId__": 338,
     "kind": "file",
     "name": "src/login.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport createUI from \"./adapters/ui/login\";\n\n/**\n * Login Options\n *\n * @typedef {Object} LoginOptions\n * @property {String} [title] Title\n * @property {Object[]} [fields] Fields\n */\n\n/**\n * MeeseOS Login UI\n */\nexport default class Login extends EventEmitter {\n\t/**\n\t * Create authentication handler\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {LoginOptions} [options] Options\n\t */\n\tconstructor(core, options) {\n\t\tsuper(\"Login\");\n\n\t\t/**\n\t\t * Login root DOM element\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$container = null;\n\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\tconst allowGuestLogin = this.core.config(\"auth.allowGuest\", false);\n\n\t\t/**\n\t\t * Login options\n\t\t * @type {Object}\n\t\t * @readonly\n\t\t */\n\t\tthis.options = {\n\t\t\tid: \"meeseOS-login\",\n\t\t\ttitle: \"Welcome to MeeseOS\",\n\t\t\tstamp: core.config(\"version\"),\n\t\t\tlogo: {\n\t\t\t\tposition: \"top\",\n\t\t\t\tsrc: null,\n\t\t\t},\n\t\t\tfields: [\n\t\t\t\t{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\tname: \"username\",\n\t\t\t\t\t\ttype: \"text\",\n\t\t\t\t\t\tplaceholder: \"Username\",\n\t\t\t\t\t\tautocomplete: false\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\tname: \"password\",\n\t\t\t\t\t\ttype: \"password\",\n\t\t\t\t\t\tplaceholder: \"Password\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\ttype: \"submit\",\n\t\t\t\t\t\tvalue: \"Login\",\n\t\t\t\t\t\tid: \"standard-login\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t// Only show the guest login if the option is enabled\n\t\t\t\t...(allowGuestLogin ? [{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\ttype: \"submit\",\n\t\t\t\t\t\tvalue: \"Login as Guest\",\n\t\t\t\t\t\tid: \"guest-login\",\n\t\t\t\t\t},\n\t\t\t\t}] : []),\n\t\t\t],\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes the UI\n\t */\n\tinit(startHidden) {\n\t\tthis.$container = document.createElement(\"div\");\n\t\tthis.$container.id = this.options.id;\n\t\tthis.$container.className = \"meeseOS-login-base\";\n\t\tthis.core.$root.classList.add(\"login\");\n\t\tthis.core.$root.appendChild(this.$container);\n\n\t\tthis.render(startHidden);\n\t}\n\n\t/**\n\t * Destroys the UI\n\t */\n\tdestroy() {\n\t\tthis.core.$root.classList.remove(\"login\");\n\n\t\tif (this.$container) {\n\t\t\tthis.$container.remove();\n\t\t\tthis.$container = null;\n\t\t}\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Renders the UI\n\t */\n\trender(startHidden) {\n\t\tconst login = this.core.config(\"auth.login\", {});\n\t\tconst ui = createUI(this.options, login, startHidden, this.$container);\n\n\t\tui.on(\"register:post\", (values) => this.emit(\"register:post\", values));\n\t\tui.on(\"login:post\", (values) => this.emit(\"login:post\", values));\n\t\tthis.on(\"login:start\", () => ui.emit(\"login:start\"));\n\t\tthis.on(\"login:stop\", () => ui.emit(\"login:stop\"));\n\t\tthis.on(\"login:error\", (err) => ui.emit(\"login:error\", err));\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport createUI from \"./adapters/ui/login\";\n\n/**\n * Login Options\n *\n * @typedef {Object} LoginOptions\n * @property {String} [title] Title\n * @property {Object[]} [fields] Fields\n */\n\n/**\n * MeeseOS Login UI\n */\nexport default class Login extends EventEmitter {\n\t/**\n\t * Create authentication handler\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {LoginOptions} [options] Options\n\t */\n\tconstructor(core, options) {\n\t\tsuper(\"Login\");\n\n\t\t/**\n\t\t * Login root DOM element\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$container = null;\n\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\tconst allowGuestLogin = this.core.config(\"auth.allowGuest\", false);\n\n\t\t/**\n\t\t * Login options\n\t\t * @type {Object}\n\t\t * @readonly\n\t\t */\n\t\tthis.options = {\n\t\t\tid: \"meeseOS-login\",\n\t\t\ttitle: \"Welcome to MeeseOS\",\n\t\t\tstamp: core.config(\"version\"),\n\t\t\tlogo: {\n\t\t\t\tposition: \"top\",\n\t\t\t\tsrc: null,\n\t\t\t},\n\t\t\tfields: [\n\t\t\t\t{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\tname: \"username\",\n\t\t\t\t\t\ttype: \"text\",\n\t\t\t\t\t\tplaceholder: \"Username\",\n\t\t\t\t\t\tautocomplete: false\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\tname: \"password\",\n\t\t\t\t\t\ttype: \"password\",\n\t\t\t\t\t\tplaceholder: \"Password\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\ttype: \"submit\",\n\t\t\t\t\t\tvalue: \"Login\",\n\t\t\t\t\t\tid: \"standard-login\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t// Only show the guest login if the option is enabled\n\t\t\t\t...(allowGuestLogin ? [{\n\t\t\t\t\ttagName: \"input\",\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\ttype: \"submit\",\n\t\t\t\t\t\tvalue: \"Login as Guest\",\n\t\t\t\t\t\tid: \"guest-login\",\n\t\t\t\t\t},\n\t\t\t\t}] : []),\n\t\t\t],\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes the UI\n\t */\n\tinit(startHidden) {\n\t\tthis.$container = document.createElement(\"div\");\n\t\tthis.$container.id = \"meeseOS-login-container\";\n\t\tthis.$container.className = \"meeseOS-login-base\";\n\t\tthis.core.$root.classList.add(\"login\");\n\t\tthis.core.$root.appendChild(this.$container);\n\n\t\tthis.render(startHidden);\n\t}\n\n\t/**\n\t * Destroys the UI\n\t */\n\tdestroy() {\n\t\tthis.core.$root.classList.remove(\"login\");\n\n\t\tif (this.$container) {\n\t\t\tthis.$container.remove();\n\t\t\tthis.$container = null;\n\t\t}\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Renders the UI\n\t */\n\trender(startHidden) {\n\t\tconst login = this.core.config(\"auth.login\", {});\n\t\tconst ui = createUI(this.options, login, startHidden, this.$container);\n\n\t\tui.on(\"register:post\", (values) => this.emit(\"register:post\", values));\n\t\tui.on(\"login:post\", (values) => this.emit(\"login:post\", values));\n\t\tthis.on(\"login:start\", () => ui.emit(\"login:start\"));\n\t\tthis.on(\"login:stop\", () => ui.emit(\"login:stop\"));\n\t\tthis.on(\"login:error\", (err) => ui.emit(\"login:error\", err));\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/login.js",
     "access": "public",
@@ -12239,7 +12239,7 @@
     "__docId__": 482,
     "kind": "file",
     "name": "src/providers/notifications.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport Notifications from \"../notifications\";\nimport { ServiceProvider } from \"@meeseOS/common\";\n\n/**\n * MeeseOS Notification Service Provider\n */\nexport default class NotificationServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Notifications}\n\t\t * @readonly\n\t\t */\n\t\tthis.notifications = new Notifications(core);\n\t}\n\n\t/**\n\t * Destroys notifications.\n\t */\n\tdestroy() {\n\t\tthis.notifications.destroy();\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/notification\"];\n\t}\n\n\t/**\n\t * Initializes authentication.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.core.instance(\"meeseOS/notification\", (options) => {\n\t\t\treturn this.notifications.create(options);\n\t\t});\n\n\t\treturn this.notifications.init();\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport Notifications from \"../notifications\";\nimport { ServiceProvider } from \"@meeseOS/common\";\n\n/**\n * MeeseOS Notification Service Provider\n */\nexport default class NotificationServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Notifications}\n\t\t * @readonly\n\t\t */\n\t\tthis.notifications = new Notifications(core);\n\t}\n\n\t/**\n\t * Destroys notifications.\n\t */\n\tdestroy() {\n\t\tthis.notifications.destroy();\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/notification\"];\n\t}\n\n\t/**\n\t * Initializes authentication.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.core.instance(\"meeseOS/notification\", (options) =>\n\t\t\tthis.notifications.create(options)\n\t\t);\n\n\t\treturn this.notifications.init();\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/providers/notifications.js",
     "access": "public",
@@ -14115,7 +14115,7 @@
     "__docId__": 553,
     "kind": "file",
     "name": "src/splash.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { createLettercrap } from \"./loading-screen/lettercrap.js\";\nimport loadingScreen from \"./loading-screen/loading.html\";\n\n/**\n * Splash Screen UI\n */\nexport default class Splash {\n\t/**\n\t * Create Splash\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Splash root element\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$loading = document.createElement(\"div\");\n\t\tthis.$loading.className = \"meeseOS-boot-splash\";\n\n\t\t/**\n\t\t * The transition time for `.loadingPage` in `styles/_loading.scss`\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.pageTransitionTime = 1000;\n\n\t\t/**\n\t\t * The time between quips, in milliseconds\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.timePerQuip = 1500;\n\n\t\t/**\n\t\t * The array of quips to display\n\t\t * @type {Array}\n\t\t * @readonly\n\t\t */\n\t\tthis.quips = [\n\t\t\t\"Contracting a wizard...\",\n\t\t\t\"Moving dragon from the mouth of the cave...\",\n\t\t\t\"Collecting all the loot...\",\n\t\t\t\"Divvying up dubloons...\",\n\t\t];\n\n\t\tcore.on(\"meeseOS/core:boot\", () => this.show());\n\t\t// TODO: Replace this with the cookie login event or something\n\t\t// core.on(\"meeseOS/core:logged-in\", () => this.show());\n\t\tcore.on(\"meeseOS/splash:finished\", () => this.destroy());\n\t}\n\n\t/**\n\t * Initializes splash with listener for user interaction\n\t */\n\tinit() {\n\t\tthis.$loading.appendChild(stringToHTML(loadingScreen));\n\t\tthis.$loading.style.transition = \"1s\";\n\t\tthis.core.emit(\"meeseOS/splash:loaded\");\n\n\t\t// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#specifying_this_using_bind\n\t\tthis.start = this.start.bind(this);\n\t\tdocument.body.style.cursor = \"pointer\";\n\t\tdocument.body.addEventListener(\"click\", this.start, false);\n\t}\n\n\t/**\n\t * Starts splash screen functionality after user interaction\n\t */\n\tstart() {\n\t\tthis.core.emit(\"meeseOS/splash:started\");\n\t\tdocument.body.removeEventListener(\"click\", this.start);\n\n\t\tif (this.core.has(\"meeseOS/sounds\")) {\n\t\t\tthis.core.make(\"meeseOS/sounds\").play(\"dial-up-modem\");\n\t\t}\n\n\t\tdocument.getElementById(\"mouseNotMoved\").style.display = \"none\";\n\t\tdocument.getElementById(\"mouseMoved\").style.display = \"block\";\n\t\tdocument.body.style.cursor = \"default\";\n\t\tcreateLettercrap();\n\n\t\tconst loadingBar = document.getElementById(\"loadingBar\");\n\t\tfor (let i = 1; i <= this.quips.length; i++) {\n\t\t\tsetTimeout(() => {\n\t\t\t\tloadingBar.innerText = this.quips[i - 1];\n\t\t\t\tloadingBar.style.width = (i / this.quips.length) * 100 + \"%\";\n\t\t\t}, this.timePerQuip * i);\n\t\t}\n\n\t\t// Fade out the loading screen after all the quips have been displayed\n\t\twindow.setTimeout(() => {\n\t\t\tthis.$loading.style.opacity = 0;\n\t\t\tthis.core.$contents.style.opacity = 1;\n\n\t\t\tsetTimeout(() => {\n\t\t\t\tthis.core.emit(\"meeseOS/splash:finished\");\n\t\t\t}, this.pageTransitionTime);\n\t\t}, this.timePerQuip * (this.quips.length + 1));\n\t}\n\n\t/**\n\t * Shows splash\n\t */\n\tshow() {\n\t\t// Hide the normal MeeseOS content\n\t\tconst content = document.querySelector(\".meeseOS-contents\");\n\t\tcontent.style.transition = \"1s\";\n\t\tcontent.style.opacity = 0;\n\n\t\tif (!this.$loading.parentNode) {\n\t\t\tthis.core.$root.appendChild(this.$loading);\n\t\t}\n\t}\n\n\t/**\n\t * Destroys splash\n\t */\n\tdestroy() {\n\t\tif (this.$loading.parentNode) {\n\t\t\tthis.$loading.remove();\n\t\t}\n\t}\n}\n\n/**\n * Convert a template string into HTML DOM nodes\n * @param  {String} str The template string\n * @returns {Node}       The template HTML\n */\nconst stringToHTML = (str) => {\n\tconst parser = new DOMParser();\n\tconst doc = parser.parseFromString(str, \"text/html\");\n\treturn doc.body;\n};\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { createLettercrap } from \"./loading-screen/lettercrap.js\";\nimport loadingScreen from \"./loading-screen/loading.html\";\n\n/**\n * Convert a template string into HTML DOM nodes\n * @param  {String} str The template string\n * @returns {Node} The template HTML\n */\nconst stringToHTML = (str) => {\n\tconst parser = new DOMParser();\n\tconst doc = parser.parseFromString(str, \"text/html\");\n\treturn doc.body;\n};\n\n/**\n * Splash Screen UI\n */\nexport default class Splash {\n\t/**\n\t * Create Splash.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference.\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Splash root element.\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$loading = document.createElement(\"div\");\n\t\tthis.$loading.className = \"meeseOS-boot-splash\";\n\n\t\t/**\n\t\t * The transition time for `.loadingPage` in `styles/_loading.scss`.\n\t\t * @idea https://stackoverflow.com/q/56523785/6456163\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.pageTransitionTime = 1000;\n\n\t\t/**\n\t\t * The time between quips, in milliseconds.\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.timePerQuip = 1500;\n\n\t\t/**\n\t\t * The array of quips to display.\n\t\t * @type {String[]}\n\t\t * @readonly\n\t\t */\n\t\tthis.quips = [\n\t\t\t\"Contracting a wizard...\",\n\t\t\t\"Moving dragon from the mouth of the cave...\",\n\t\t\t\"Collecting all the loot...\",\n\t\t\t\"Divvying up dubloons...\",\n\t\t];\n\n\t\tcore.on(\"meeseOS/core:boot\", () => this.show());\n\t\tcore.on(\"meeseOS/core:logged-in\", () => this.show());\n\t\tcore.on(\"meeseOS/splash:finished\", () => this.destroy());\n\t}\n\n\t/**\n\t * Initializes splash with listener for user interaction.\n\t */\n\tinit() {\n\t\tthis.$loading.appendChild(stringToHTML(loadingScreen));\n\t\tthis.core.emit(\"meeseOS/splash:loaded\");\n\n\t\t// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#specifying_this_using_bind\n\t\tthis.start = this.start.bind(this);\n\t\tdocument.body.style.cursor = \"pointer\";\n\t\tdocument.body.addEventListener(\"click\", this.start, false);\n\t}\n\n\t/**\n\t * Starts splash screen functionality after user interaction.\n\t */\n\tstart() {\n\t\tthis.core.emit(\"meeseOS/splash:started\");\n\t\tdocument.body.removeEventListener(\"click\", this.start);\n\n\t\tif (this.core.has(\"meeseOS/sounds\")) {\n\t\t\tthis.core.make(\"meeseOS/sounds\").play(\"dial-up-modem\");\n\t\t}\n\n\t\tdocument.getElementById(\"mouseNotMoved\").style.display = \"none\";\n\t\tdocument.getElementById(\"mouseMoved\").style.display = \"block\";\n\t\tdocument.body.style.cursor = \"default\";\n\t\tcreateLettercrap();\n\n\t\tconst loadingBar = document.getElementById(\"loadingBar\");\n\t\tfor (let i = 1; i <= this.quips.length; i++) {\n\t\t\tsetTimeout(() => {\n\t\t\t\tloadingBar.innerText = this.quips[i - 1];\n\t\t\t\t// IDEA: Attempt CSS animation here using the transition time variable\n\t\t\t\tloadingBar.style.width = (i / this.quips.length) * 100 + \"%\";\n\t\t\t}, this.timePerQuip * i);\n\t\t}\n\n\t\t// Fade out the loading screen after all the quips have been displayed\n\t\twindow.setTimeout(() => {\n\t\t\tthis.$loading.style.opacity = 0;\n\n\t\t\tsetTimeout(() => {\n\t\t\t\tthis.core.emit(\"meeseOS/splash:finished\");\n\t\t\t}, this.pageTransitionTime);\n\t\t}, this.timePerQuip * (this.quips.length + 1));\n\t}\n\n\t/**\n\t * Shows splash.\n\t */\n\tshow() {\n\t\tif (!this.$loading.parentNode) {\n\t\t\tthis.core.$root.appendChild(this.$loading);\n\t\t}\n\t}\n\n\t/**\n\t * Destroys splash.\n\t */\n\tdestroy() {\n\t\tif (this.$loading.parentNode) {\n\t\t\tthis.$loading.remove();\n\t\t}\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/splash.js",
     "access": "public",
@@ -14124,231 +14124,6 @@
   },
   {
     "__docId__": 554,
-    "kind": "class",
-    "name": "Splash",
-    "memberof": "src/splash.js",
-    "static": true,
-    "longname": "src/splash.js~Splash",
-    "access": "public",
-    "export": true,
-    "importPath": "@meeseOS/client/src/splash.js",
-    "importStyle": "Splash",
-    "description": "Splash Screen UI",
-    "lineNumber": 37,
-    "interface": false
-  },
-  {
-    "__docId__": 555,
-    "kind": "constructor",
-    "name": "constructor",
-    "memberof": "src/splash.js~Splash",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/splash.js~Splash#constructor",
-    "access": "public",
-    "description": "Create Splash",
-    "lineNumber": 42,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Core"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "core",
-        "description": "MeeseOS Core instance reference"
-      }
-    ]
-  },
-  {
-    "__docId__": 556,
-    "kind": "member",
-    "name": "core",
-    "memberof": "src/splash.js~Splash",
-    "static": false,
-    "longname": "src/splash.js~Splash#core",
-    "access": "public",
-    "description": "Core instance reference",
-    "lineNumber": 48,
-    "unknown": [
-      {
-        "tagName": "@readonly",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "nullable": null,
-      "types": [
-        "Core"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 557,
-    "kind": "member",
-    "name": "$loading",
-    "memberof": "src/splash.js~Splash",
-    "static": false,
-    "longname": "src/splash.js~Splash#$loading",
-    "access": "public",
-    "description": "Splash root element",
-    "lineNumber": 55,
-    "unknown": [
-      {
-        "tagName": "@readonly",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "nullable": null,
-      "types": [
-        "Element"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 558,
-    "kind": "member",
-    "name": "pageTransitionTime",
-    "memberof": "src/splash.js~Splash",
-    "static": false,
-    "longname": "src/splash.js~Splash#pageTransitionTime",
-    "access": "public",
-    "description": "The transition time for `.loadingPage` in `styles/_loading.scss`",
-    "lineNumber": 63,
-    "unknown": [
-      {
-        "tagName": "@readonly",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "nullable": null,
-      "types": [
-        "Number"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 559,
-    "kind": "member",
-    "name": "timePerQuip",
-    "memberof": "src/splash.js~Splash",
-    "static": false,
-    "longname": "src/splash.js~Splash#timePerQuip",
-    "access": "public",
-    "description": "The time between quips, in milliseconds",
-    "lineNumber": 70,
-    "unknown": [
-      {
-        "tagName": "@readonly",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "nullable": null,
-      "types": [
-        "Number"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 560,
-    "kind": "member",
-    "name": "quips",
-    "memberof": "src/splash.js~Splash",
-    "static": false,
-    "longname": "src/splash.js~Splash#quips",
-    "access": "public",
-    "description": "The array of quips to display",
-    "lineNumber": 77,
-    "unknown": [
-      {
-        "tagName": "@readonly",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "nullable": null,
-      "types": [
-        "Array"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 561,
-    "kind": "method",
-    "name": "init",
-    "memberof": "src/splash.js~Splash",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/splash.js~Splash#init",
-    "access": "public",
-    "description": "Initializes splash with listener for user interaction",
-    "lineNumber": 93,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 563,
-    "kind": "method",
-    "name": "start",
-    "memberof": "src/splash.js~Splash",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/splash.js~Splash#start",
-    "access": "public",
-    "description": "Starts splash screen functionality after user interaction",
-    "lineNumber": 107,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 564,
-    "kind": "method",
-    "name": "show",
-    "memberof": "src/splash.js~Splash",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/splash.js~Splash#show",
-    "access": "public",
-    "description": "Shows splash",
-    "lineNumber": 142,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 565,
-    "kind": "method",
-    "name": "destroy",
-    "memberof": "src/splash.js~Splash",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/splash.js~Splash#destroy",
-    "access": "public",
-    "description": "Destroys splash",
-    "lineNumber": 156,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 566,
     "kind": "function",
     "name": "stringToHTML",
     "memberof": "src/splash.js",
@@ -14361,11 +14136,11 @@
     "importPath": "@meeseOS/client/src/splash.js",
     "importStyle": null,
     "description": "Convert a template string into HTML DOM nodes",
-    "lineNumber": 168,
+    "lineNumber": 39,
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{Node}       The template HTML"
+        "tagValue": "{Node} The template HTML"
       }
     ],
     "params": [
@@ -14389,6 +14164,235 @@
       "description": "The template HTML"
     },
     "ignore": true
+  },
+  {
+    "__docId__": 555,
+    "kind": "class",
+    "name": "Splash",
+    "memberof": "src/splash.js",
+    "static": true,
+    "longname": "src/splash.js~Splash",
+    "access": "public",
+    "export": true,
+    "importPath": "@meeseOS/client/src/splash.js",
+    "importStyle": "Splash",
+    "description": "Splash Screen UI",
+    "lineNumber": 48,
+    "interface": false
+  },
+  {
+    "__docId__": 556,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/splash.js~Splash",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/splash.js~Splash#constructor",
+    "access": "public",
+    "description": "Create Splash.",
+    "lineNumber": 53,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
+      }
+    ]
+  },
+  {
+    "__docId__": 557,
+    "kind": "member",
+    "name": "core",
+    "memberof": "src/splash.js~Splash",
+    "static": false,
+    "longname": "src/splash.js~Splash#core",
+    "access": "public",
+    "description": "Core instance reference.",
+    "lineNumber": 59,
+    "unknown": [
+      {
+        "tagName": "@readonly",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "nullable": null,
+      "types": [
+        "Core"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 558,
+    "kind": "member",
+    "name": "$loading",
+    "memberof": "src/splash.js~Splash",
+    "static": false,
+    "longname": "src/splash.js~Splash#$loading",
+    "access": "public",
+    "description": "Splash root element.",
+    "lineNumber": 66,
+    "unknown": [
+      {
+        "tagName": "@readonly",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "nullable": null,
+      "types": [
+        "Element"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 559,
+    "kind": "member",
+    "name": "pageTransitionTime",
+    "memberof": "src/splash.js~Splash",
+    "static": false,
+    "longname": "src/splash.js~Splash#pageTransitionTime",
+    "access": "public",
+    "description": "The transition time for `.loadingPage` in `styles/_loading.scss`.",
+    "lineNumber": 75,
+    "unknown": [
+      {
+        "tagName": "@idea",
+        "tagValue": "https://stackoverflow.com/q/56523785/6456163"
+      },
+      {
+        "tagName": "@readonly",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 560,
+    "kind": "member",
+    "name": "timePerQuip",
+    "memberof": "src/splash.js~Splash",
+    "static": false,
+    "longname": "src/splash.js~Splash#timePerQuip",
+    "access": "public",
+    "description": "The time between quips, in milliseconds.",
+    "lineNumber": 82,
+    "unknown": [
+      {
+        "tagName": "@readonly",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 561,
+    "kind": "member",
+    "name": "quips",
+    "memberof": "src/splash.js~Splash",
+    "static": false,
+    "longname": "src/splash.js~Splash#quips",
+    "access": "public",
+    "description": "The array of quips to display.",
+    "lineNumber": 89,
+    "unknown": [
+      {
+        "tagName": "@readonly",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "nullable": null,
+      "types": [
+        "String[]"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 562,
+    "kind": "method",
+    "name": "init",
+    "memberof": "src/splash.js~Splash",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/splash.js~Splash#init",
+    "access": "public",
+    "description": "Initializes splash with listener for user interaction.",
+    "lineNumber": 104,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 564,
+    "kind": "method",
+    "name": "start",
+    "memberof": "src/splash.js~Splash",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/splash.js~Splash#start",
+    "access": "public",
+    "description": "Starts splash screen functionality after user interaction.",
+    "lineNumber": 117,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 565,
+    "kind": "method",
+    "name": "show",
+    "memberof": "src/splash.js~Splash",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/splash.js~Splash#show",
+    "access": "public",
+    "description": "Shows splash.",
+    "lineNumber": 152,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 566,
+    "kind": "method",
+    "name": "destroy",
+    "memberof": "src/splash.js~Splash",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/splash.js~Splash#destroy",
+    "access": "public",
+    "description": "Destroys splash.",
+    "lineNumber": 161,
+    "params": [],
+    "return": null
   },
   {
     "__docId__": 567,
@@ -23239,7 +23243,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meeseOS/client\",\n  \"version\": \"2.5.3\",\n  \"description\": \"meeseOS client\",\n  \"main\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"typings\": \"index.d.ts\",\n  \"files\": [\n    \"index.d.ts\",\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js 'src/**/*.js'\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss  --fix\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"@meeseOS/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.17.2\",\n    \"@babel/plugin-transform-runtime\": \"^7.17.0\",\n    \"@babel/preset-env\": \"^7.16.11\",\n    \"@babel/runtime\": \"^7.17.2\",\n    \"babel-loader\": \"^8.2.3\",\n    \"copy-webpack-plugin\": \"^10.2.4\",\n    \"css-loader\": \"^6.6.0\",\n    \"css-minimizer-webpack-plugin\": \"^3.4.1\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"html-loader\": \"^3.1.0\",\n    \"html-loader-jest\": \"^0.2.1\",\n    \"mini-css-extract-plugin\": \"^2.5.3\",\n    \"sass\": \"^1.53.0\",\n    \"sass-loader\": \"^13.0.2\",\n    \"stylelint\": \"^14.5.0\",\n    \"stylelint-config-standard\": \"^25.0.0\",\n    \"stylelint-config-standard-scss\": \"^4.0.0\",\n    \"webpack\": \"^5.68.0\",\n    \"webpack-cli\": \"^4.9.2\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"@meeseOS/cursor-effects\": \"workspace:*\",\n    \"@meeseOS/dynamic-wallpapers\": \"workspace:*\",\n    \"@meeseOS/event-emitter\": \"workspace:*\",\n    \"@meeseOS/gui\": \"workspace:*\",\n    \"@meeseOS/sounds\": \"workspace:*\",\n    \"css-mediaquery\": \"^0.1.2\",\n    \"deepmerge\": \"^4.2.2\",\n    \"hyperapp\": \"^1.2.10\",\n    \"js-cookie\": \"^3.0.1\",\n    \"simplejsonconf\": \"^2.0.7\",\n    \"is-plain-object\": \"^5.0.0\",\n    \"express-session\": \"^1.17.3\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meeseOS/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Core API\",\n            \"description\": \"meeseOS Core API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"testEnvironment\": \"jsdom\",\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"setupFilesAfterEnv\": [\n      \"<rootDir>/__mocks__/setup.js\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\",\n      \"^.+\\\\.html?$\": \"html-loader-jest\",\n      \"^.+\\\\.scss$\": \"<rootDir>/__mocks__/null-module.js\",\n      \"^.+\\\\.(png|jpe?g|gif)$\": \"<rootDir>/__mocks__/null-module.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
+    "content": "{\n  \"name\": \"@meeseOS/client\",\n  \"version\": \"2.5.4\",\n  \"description\": \"meeseOS client\",\n  \"main\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"typings\": \"index.d.ts\",\n  \"files\": [\n    \"index.d.ts\",\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js 'src/**/*.js'\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss  --fix\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"@meeseOS/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.17.2\",\n    \"@babel/plugin-transform-runtime\": \"^7.17.0\",\n    \"@babel/preset-env\": \"^7.16.11\",\n    \"@babel/runtime\": \"^7.17.2\",\n    \"babel-loader\": \"^8.2.3\",\n    \"copy-webpack-plugin\": \"^10.2.4\",\n    \"css-loader\": \"^6.6.0\",\n    \"css-minimizer-webpack-plugin\": \"^3.4.1\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"html-loader\": \"^3.1.0\",\n    \"html-loader-jest\": \"^0.2.1\",\n    \"mini-css-extract-plugin\": \"^2.5.3\",\n    \"sass\": \"^1.53.0\",\n    \"sass-loader\": \"^13.0.2\",\n    \"stylelint\": \"^14.5.0\",\n    \"stylelint-config-standard\": \"^25.0.0\",\n    \"stylelint-config-standard-scss\": \"^4.0.0\",\n    \"webpack\": \"^5.68.0\",\n    \"webpack-cli\": \"^4.9.2\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"@meeseOS/cursor-effects\": \"workspace:*\",\n    \"@meeseOS/dynamic-wallpapers\": \"workspace:*\",\n    \"@meeseOS/event-emitter\": \"workspace:*\",\n    \"@meeseOS/gui\": \"workspace:*\",\n    \"@meeseOS/sounds\": \"workspace:*\",\n    \"css-mediaquery\": \"^0.1.2\",\n    \"deepmerge\": \"^4.2.2\",\n    \"hyperapp\": \"^1.2.10\",\n    \"js-cookie\": \"^3.0.1\",\n    \"simplejsonconf\": \"^2.0.7\",\n    \"is-plain-object\": \"^5.0.0\",\n    \"express-session\": \"^1.17.3\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meeseOS/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Core API\",\n            \"description\": \"meeseOS Core API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"testEnvironment\": \"jsdom\",\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"setupFilesAfterEnv\": [\n      \"<rootDir>/__mocks__/setup.js\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\",\n      \"^.+\\\\.html?$\": \"html-loader-jest\",\n      \"^.+\\\\.scss$\": \"<rootDir>/__mocks__/null-module.js\",\n      \"^.+\\\\.(png|jpe?g|gif)$\": \"<rootDir>/__mocks__/null-module.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/package.json",
     "name": "package.json",
     "static": true,

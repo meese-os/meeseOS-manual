@@ -1,7 +1,7 @@
 {
   "type": "File",
   "start": 0,
-  "end": 4273,
+  "end": 4283,
   "loc": {
     "start": {
       "line": 1,
@@ -15,7 +15,7 @@
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 4273,
+    "end": 4283,
     "loc": {
       "start": {
         "line": 1,
@@ -240,7 +240,7 @@
       {
         "type": "ExportDefaultDeclaration",
         "start": 1814,
-        "end": 4272,
+        "end": 4282,
         "loc": {
           "start": {
             "line": 45,
@@ -254,7 +254,7 @@
         "declaration": {
           "type": "ClassDeclaration",
           "start": 1829,
-          "end": 4272,
+          "end": 4282,
           "loc": {
             "start": {
               "line": 45,
@@ -303,7 +303,7 @@
           "body": {
             "type": "ClassBody",
             "start": 1862,
-            "end": 4272,
+            "end": 4282,
             "loc": {
               "start": {
                 "line": 45,
@@ -2887,7 +2887,7 @@
               {
                 "type": "ClassMethod",
                 "start": 3289,
-                "end": 3573,
+                "end": 3583,
                 "loc": {
                   "start": {
                     "line": 126,
@@ -2945,7 +2945,7 @@
                 "body": {
                   "type": "BlockStatement",
                   "start": 3307,
-                  "end": 3573,
+                  "end": 3583,
                   "loc": {
                     "start": {
                       "line": 126,
@@ -3126,7 +3126,7 @@
                     {
                       "type": "ExpressionStatement",
                       "start": 3362,
-                      "end": 3399,
+                      "end": 3409,
                       "loc": {
                         "start": {
                           "line": 128,
@@ -3134,13 +3134,13 @@
                         },
                         "end": {
                           "line": 128,
-                          "column": 39
+                          "column": 49
                         }
                       },
                       "expression": {
                         "type": "AssignmentExpression",
                         "start": 3362,
-                        "end": 3398,
+                        "end": 3408,
                         "loc": {
                           "start": {
                             "line": 128,
@@ -3148,7 +3148,7 @@
                           },
                           "end": {
                             "line": 128,
-                            "column": 38
+                            "column": 48
                           }
                         },
                         "operator": "=",
@@ -3234,9 +3234,9 @@
                           "computed": false
                         },
                         "right": {
-                          "type": "MemberExpression",
+                          "type": "StringLiteral",
                           "start": 3383,
-                          "end": 3398,
+                          "end": 3408,
                           "loc": {
                             "start": {
                               "line": 128,
@@ -3244,82 +3244,21 @@
                             },
                             "end": {
                               "line": 128,
-                              "column": 38
+                              "column": 48
                             }
                           },
-                          "object": {
-                            "type": "MemberExpression",
-                            "start": 3383,
-                            "end": 3395,
-                            "loc": {
-                              "start": {
-                                "line": 128,
-                                "column": 23
-                              },
-                              "end": {
-                                "line": 128,
-                                "column": 35
-                              }
-                            },
-                            "object": {
-                              "type": "ThisExpression",
-                              "start": 3383,
-                              "end": 3387,
-                              "loc": {
-                                "start": {
-                                  "line": 128,
-                                  "column": 23
-                                },
-                                "end": {
-                                  "line": 128,
-                                  "column": 27
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "start": 3388,
-                              "end": 3395,
-                              "loc": {
-                                "start": {
-                                  "line": 128,
-                                  "column": 28
-                                },
-                                "end": {
-                                  "line": 128,
-                                  "column": 35
-                                },
-                                "identifierName": "options"
-                              },
-                              "name": "options"
-                            },
-                            "computed": false
+                          "extra": {
+                            "rawValue": "meeseOS-login-container",
+                            "raw": "\"meeseOS-login-container\""
                           },
-                          "property": {
-                            "type": "Identifier",
-                            "start": 3396,
-                            "end": 3398,
-                            "loc": {
-                              "start": {
-                                "line": 128,
-                                "column": 36
-                              },
-                              "end": {
-                                "line": 128,
-                                "column": 38
-                              },
-                              "identifierName": "id"
-                            },
-                            "name": "id"
-                          },
-                          "computed": false
+                          "value": "meeseOS-login-container"
                         }
                       }
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 3402,
-                      "end": 3451,
+                      "start": 3412,
+                      "end": 3461,
                       "loc": {
                         "start": {
                           "line": 129,
@@ -3332,8 +3271,8 @@
                       },
                       "expression": {
                         "type": "AssignmentExpression",
-                        "start": 3402,
-                        "end": 3450,
+                        "start": 3412,
+                        "end": 3460,
                         "loc": {
                           "start": {
                             "line": 129,
@@ -3347,8 +3286,8 @@
                         "operator": "=",
                         "left": {
                           "type": "MemberExpression",
-                          "start": 3402,
-                          "end": 3427,
+                          "start": 3412,
+                          "end": 3437,
                           "loc": {
                             "start": {
                               "line": 129,
@@ -3361,8 +3300,8 @@
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 3402,
-                            "end": 3417,
+                            "start": 3412,
+                            "end": 3427,
                             "loc": {
                               "start": {
                                 "line": 129,
@@ -3375,8 +3314,8 @@
                             },
                             "object": {
                               "type": "ThisExpression",
-                              "start": 3402,
-                              "end": 3406,
+                              "start": 3412,
+                              "end": 3416,
                               "loc": {
                                 "start": {
                                   "line": 129,
@@ -3390,8 +3329,8 @@
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 3407,
-                              "end": 3417,
+                              "start": 3417,
+                              "end": 3427,
                               "loc": {
                                 "start": {
                                   "line": 129,
@@ -3409,8 +3348,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3418,
-                            "end": 3427,
+                            "start": 3428,
+                            "end": 3437,
                             "loc": {
                               "start": {
                                 "line": 129,
@@ -3428,8 +3367,8 @@
                         },
                         "right": {
                           "type": "StringLiteral",
-                          "start": 3430,
-                          "end": 3450,
+                          "start": 3440,
+                          "end": 3460,
                           "loc": {
                             "start": {
                               "line": 129,
@@ -3450,8 +3389,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 3454,
-                      "end": 3493,
+                      "start": 3464,
+                      "end": 3503,
                       "loc": {
                         "start": {
                           "line": 130,
@@ -3464,8 +3403,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 3454,
-                        "end": 3492,
+                        "start": 3464,
+                        "end": 3502,
                         "loc": {
                           "start": {
                             "line": 130,
@@ -3478,8 +3417,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 3454,
-                          "end": 3483,
+                          "start": 3464,
+                          "end": 3493,
                           "loc": {
                             "start": {
                               "line": 130,
@@ -3492,8 +3431,8 @@
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 3454,
-                            "end": 3479,
+                            "start": 3464,
+                            "end": 3489,
                             "loc": {
                               "start": {
                                 "line": 130,
@@ -3506,8 +3445,8 @@
                             },
                             "object": {
                               "type": "MemberExpression",
-                              "start": 3454,
-                              "end": 3469,
+                              "start": 3464,
+                              "end": 3479,
                               "loc": {
                                 "start": {
                                   "line": 130,
@@ -3520,8 +3459,8 @@
                               },
                               "object": {
                                 "type": "MemberExpression",
-                                "start": 3454,
-                                "end": 3463,
+                                "start": 3464,
+                                "end": 3473,
                                 "loc": {
                                   "start": {
                                     "line": 130,
@@ -3534,8 +3473,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 3454,
-                                  "end": 3458,
+                                  "start": 3464,
+                                  "end": 3468,
                                   "loc": {
                                     "start": {
                                       "line": 130,
@@ -3549,8 +3488,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3459,
-                                  "end": 3463,
+                                  "start": 3469,
+                                  "end": 3473,
                                   "loc": {
                                     "start": {
                                       "line": 130,
@@ -3568,8 +3507,8 @@
                               },
                               "property": {
                                 "type": "Identifier",
-                                "start": 3464,
-                                "end": 3469,
+                                "start": 3474,
+                                "end": 3479,
                                 "loc": {
                                   "start": {
                                     "line": 130,
@@ -3587,8 +3526,8 @@
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 3470,
-                              "end": 3479,
+                              "start": 3480,
+                              "end": 3489,
                               "loc": {
                                 "start": {
                                   "line": 130,
@@ -3606,8 +3545,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3480,
-                            "end": 3483,
+                            "start": 3490,
+                            "end": 3493,
                             "loc": {
                               "start": {
                                 "line": 130,
@@ -3626,8 +3565,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 3484,
-                            "end": 3491,
+                            "start": 3494,
+                            "end": 3501,
                             "loc": {
                               "start": {
                                 "line": 130,
@@ -3649,8 +3588,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 3496,
-                      "end": 3541,
+                      "start": 3506,
+                      "end": 3551,
                       "loc": {
                         "start": {
                           "line": 131,
@@ -3663,8 +3602,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 3496,
-                        "end": 3540,
+                        "start": 3506,
+                        "end": 3550,
                         "loc": {
                           "start": {
                             "line": 131,
@@ -3677,8 +3616,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 3496,
-                          "end": 3523,
+                          "start": 3506,
+                          "end": 3533,
                           "loc": {
                             "start": {
                               "line": 131,
@@ -3691,8 +3630,8 @@
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 3496,
-                            "end": 3511,
+                            "start": 3506,
+                            "end": 3521,
                             "loc": {
                               "start": {
                                 "line": 131,
@@ -3705,8 +3644,8 @@
                             },
                             "object": {
                               "type": "MemberExpression",
-                              "start": 3496,
-                              "end": 3505,
+                              "start": 3506,
+                              "end": 3515,
                               "loc": {
                                 "start": {
                                   "line": 131,
@@ -3719,8 +3658,8 @@
                               },
                               "object": {
                                 "type": "ThisExpression",
-                                "start": 3496,
-                                "end": 3500,
+                                "start": 3506,
+                                "end": 3510,
                                 "loc": {
                                   "start": {
                                     "line": 131,
@@ -3734,8 +3673,8 @@
                               },
                               "property": {
                                 "type": "Identifier",
-                                "start": 3501,
-                                "end": 3505,
+                                "start": 3511,
+                                "end": 3515,
                                 "loc": {
                                   "start": {
                                     "line": 131,
@@ -3753,8 +3692,8 @@
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 3506,
-                              "end": 3511,
+                              "start": 3516,
+                              "end": 3521,
                               "loc": {
                                 "start": {
                                   "line": 131,
@@ -3772,8 +3711,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3512,
-                            "end": 3523,
+                            "start": 3522,
+                            "end": 3533,
                             "loc": {
                               "start": {
                                 "line": 131,
@@ -3792,8 +3731,8 @@
                         "arguments": [
                           {
                             "type": "MemberExpression",
-                            "start": 3524,
-                            "end": 3539,
+                            "start": 3534,
+                            "end": 3549,
                             "loc": {
                               "start": {
                                 "line": 131,
@@ -3806,8 +3745,8 @@
                             },
                             "object": {
                               "type": "ThisExpression",
-                              "start": 3524,
-                              "end": 3528,
+                              "start": 3534,
+                              "end": 3538,
                               "loc": {
                                 "start": {
                                   "line": 131,
@@ -3821,8 +3760,8 @@
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 3529,
-                              "end": 3539,
+                              "start": 3539,
+                              "end": 3549,
                               "loc": {
                                 "start": {
                                   "line": 131,
@@ -3843,8 +3782,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 3545,
-                      "end": 3570,
+                      "start": 3555,
+                      "end": 3580,
                       "loc": {
                         "start": {
                           "line": 133,
@@ -3857,8 +3796,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 3545,
-                        "end": 3569,
+                        "start": 3555,
+                        "end": 3579,
                         "loc": {
                           "start": {
                             "line": 133,
@@ -3871,8 +3810,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 3545,
-                          "end": 3556,
+                          "start": 3555,
+                          "end": 3566,
                           "loc": {
                             "start": {
                               "line": 133,
@@ -3885,8 +3824,8 @@
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 3545,
-                            "end": 3549,
+                            "start": 3555,
+                            "end": 3559,
                             "loc": {
                               "start": {
                                 "line": 133,
@@ -3900,8 +3839,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3550,
-                            "end": 3556,
+                            "start": 3560,
+                            "end": 3566,
                             "loc": {
                               "start": {
                                 "line": 133,
@@ -3920,8 +3859,8 @@
                         "arguments": [
                           {
                             "type": "Identifier",
-                            "start": 3557,
-                            "end": 3568,
+                            "start": 3567,
+                            "end": 3578,
                             "loc": {
                               "start": {
                                 "line": 133,
@@ -3964,8 +3903,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Destroys the UI\n\t ",
-                    "start": 3576,
-                    "end": 3604,
+                    "start": 3586,
+                    "end": 3614,
                     "loc": {
                       "start": {
                         "line": 136,
@@ -3981,8 +3920,8 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 3606,
-                "end": 3771,
+                "start": 3616,
+                "end": 3781,
                 "loc": {
                   "start": {
                     "line": 139,
@@ -3997,8 +3936,8 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 3606,
-                  "end": 3613,
+                  "start": 3616,
+                  "end": 3623,
                   "loc": {
                     "start": {
                       "line": 139,
@@ -4021,8 +3960,8 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 3616,
-                  "end": 3771,
+                  "start": 3626,
+                  "end": 3781,
                   "loc": {
                     "start": {
                       "line": 139,
@@ -4036,8 +3975,8 @@
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "start": 3620,
-                      "end": 3662,
+                      "start": 3630,
+                      "end": 3672,
                       "loc": {
                         "start": {
                           "line": 140,
@@ -4050,8 +3989,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 3620,
-                        "end": 3661,
+                        "start": 3630,
+                        "end": 3671,
                         "loc": {
                           "start": {
                             "line": 140,
@@ -4064,8 +4003,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 3620,
-                          "end": 3652,
+                          "start": 3630,
+                          "end": 3662,
                           "loc": {
                             "start": {
                               "line": 140,
@@ -4078,8 +4017,8 @@
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 3620,
-                            "end": 3645,
+                            "start": 3630,
+                            "end": 3655,
                             "loc": {
                               "start": {
                                 "line": 140,
@@ -4092,8 +4031,8 @@
                             },
                             "object": {
                               "type": "MemberExpression",
-                              "start": 3620,
-                              "end": 3635,
+                              "start": 3630,
+                              "end": 3645,
                               "loc": {
                                 "start": {
                                   "line": 140,
@@ -4106,8 +4045,8 @@
                               },
                               "object": {
                                 "type": "MemberExpression",
-                                "start": 3620,
-                                "end": 3629,
+                                "start": 3630,
+                                "end": 3639,
                                 "loc": {
                                   "start": {
                                     "line": 140,
@@ -4120,8 +4059,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 3620,
-                                  "end": 3624,
+                                  "start": 3630,
+                                  "end": 3634,
                                   "loc": {
                                     "start": {
                                       "line": 140,
@@ -4135,8 +4074,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3625,
-                                  "end": 3629,
+                                  "start": 3635,
+                                  "end": 3639,
                                   "loc": {
                                     "start": {
                                       "line": 140,
@@ -4154,8 +4093,8 @@
                               },
                               "property": {
                                 "type": "Identifier",
-                                "start": 3630,
-                                "end": 3635,
+                                "start": 3640,
+                                "end": 3645,
                                 "loc": {
                                   "start": {
                                     "line": 140,
@@ -4173,8 +4112,8 @@
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 3636,
-                              "end": 3645,
+                              "start": 3646,
+                              "end": 3655,
                               "loc": {
                                 "start": {
                                   "line": 140,
@@ -4192,8 +4131,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3646,
-                            "end": 3652,
+                            "start": 3656,
+                            "end": 3662,
                             "loc": {
                               "start": {
                                 "line": 140,
@@ -4212,8 +4151,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 3653,
-                            "end": 3660,
+                            "start": 3663,
+                            "end": 3670,
                             "loc": {
                               "start": {
                                 "line": 140,
@@ -4235,8 +4174,8 @@
                     },
                     {
                       "type": "IfStatement",
-                      "start": 3666,
-                      "end": 3748,
+                      "start": 3676,
+                      "end": 3758,
                       "loc": {
                         "start": {
                           "line": 142,
@@ -4249,8 +4188,8 @@
                       },
                       "test": {
                         "type": "MemberExpression",
-                        "start": 3670,
-                        "end": 3685,
+                        "start": 3680,
+                        "end": 3695,
                         "loc": {
                           "start": {
                             "line": 142,
@@ -4263,8 +4202,8 @@
                         },
                         "object": {
                           "type": "ThisExpression",
-                          "start": 3670,
-                          "end": 3674,
+                          "start": 3680,
+                          "end": 3684,
                           "loc": {
                             "start": {
                               "line": 142,
@@ -4278,8 +4217,8 @@
                         },
                         "property": {
                           "type": "Identifier",
-                          "start": 3675,
-                          "end": 3685,
+                          "start": 3685,
+                          "end": 3695,
                           "loc": {
                             "start": {
                               "line": 142,
@@ -4297,8 +4236,8 @@
                       },
                       "consequent": {
                         "type": "BlockStatement",
-                        "start": 3687,
-                        "end": 3748,
+                        "start": 3697,
+                        "end": 3758,
                         "loc": {
                           "start": {
                             "line": 142,
@@ -4312,8 +4251,8 @@
                         "body": [
                           {
                             "type": "ExpressionStatement",
-                            "start": 3692,
-                            "end": 3717,
+                            "start": 3702,
+                            "end": 3727,
                             "loc": {
                               "start": {
                                 "line": 143,
@@ -4326,8 +4265,8 @@
                             },
                             "expression": {
                               "type": "CallExpression",
-                              "start": 3692,
-                              "end": 3716,
+                              "start": 3702,
+                              "end": 3726,
                               "loc": {
                                 "start": {
                                   "line": 143,
@@ -4340,8 +4279,8 @@
                               },
                               "callee": {
                                 "type": "MemberExpression",
-                                "start": 3692,
-                                "end": 3714,
+                                "start": 3702,
+                                "end": 3724,
                                 "loc": {
                                   "start": {
                                     "line": 143,
@@ -4354,8 +4293,8 @@
                                 },
                                 "object": {
                                   "type": "MemberExpression",
-                                  "start": 3692,
-                                  "end": 3707,
+                                  "start": 3702,
+                                  "end": 3717,
                                   "loc": {
                                     "start": {
                                       "line": 143,
@@ -4368,8 +4307,8 @@
                                   },
                                   "object": {
                                     "type": "ThisExpression",
-                                    "start": 3692,
-                                    "end": 3696,
+                                    "start": 3702,
+                                    "end": 3706,
                                     "loc": {
                                       "start": {
                                         "line": 143,
@@ -4383,8 +4322,8 @@
                                   },
                                   "property": {
                                     "type": "Identifier",
-                                    "start": 3697,
-                                    "end": 3707,
+                                    "start": 3707,
+                                    "end": 3717,
                                     "loc": {
                                       "start": {
                                         "line": 143,
@@ -4402,8 +4341,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3708,
-                                  "end": 3714,
+                                  "start": 3718,
+                                  "end": 3724,
                                   "loc": {
                                     "start": {
                                       "line": 143,
@@ -4424,8 +4363,8 @@
                           },
                           {
                             "type": "ExpressionStatement",
-                            "start": 3721,
-                            "end": 3744,
+                            "start": 3731,
+                            "end": 3754,
                             "loc": {
                               "start": {
                                 "line": 144,
@@ -4438,8 +4377,8 @@
                             },
                             "expression": {
                               "type": "AssignmentExpression",
-                              "start": 3721,
-                              "end": 3743,
+                              "start": 3731,
+                              "end": 3753,
                               "loc": {
                                 "start": {
                                   "line": 144,
@@ -4453,8 +4392,8 @@
                               "operator": "=",
                               "left": {
                                 "type": "MemberExpression",
-                                "start": 3721,
-                                "end": 3736,
+                                "start": 3731,
+                                "end": 3746,
                                 "loc": {
                                   "start": {
                                     "line": 144,
@@ -4467,8 +4406,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 3721,
-                                  "end": 3725,
+                                  "start": 3731,
+                                  "end": 3735,
                                   "loc": {
                                     "start": {
                                       "line": 144,
@@ -4482,8 +4421,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3726,
-                                  "end": 3736,
+                                  "start": 3736,
+                                  "end": 3746,
                                   "loc": {
                                     "start": {
                                       "line": 144,
@@ -4501,8 +4440,8 @@
                               },
                               "right": {
                                 "type": "NullLiteral",
-                                "start": 3739,
-                                "end": 3743,
+                                "start": 3749,
+                                "end": 3753,
                                 "loc": {
                                   "start": {
                                     "line": 144,
@@ -4523,8 +4462,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 3752,
-                      "end": 3768,
+                      "start": 3762,
+                      "end": 3778,
                       "loc": {
                         "start": {
                           "line": 147,
@@ -4537,8 +4476,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 3752,
-                        "end": 3767,
+                        "start": 3762,
+                        "end": 3777,
                         "loc": {
                           "start": {
                             "line": 147,
@@ -4551,8 +4490,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 3752,
-                          "end": 3765,
+                          "start": 3762,
+                          "end": 3775,
                           "loc": {
                             "start": {
                               "line": 147,
@@ -4565,8 +4504,8 @@
                           },
                           "object": {
                             "type": "Super",
-                            "start": 3752,
-                            "end": 3757,
+                            "start": 3762,
+                            "end": 3767,
                             "loc": {
                               "start": {
                                 "line": 147,
@@ -4580,8 +4519,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3758,
-                            "end": 3765,
+                            "start": 3768,
+                            "end": 3775,
                             "loc": {
                               "start": {
                                 "line": 147,
@@ -4608,8 +4547,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Destroys the UI\n\t ",
-                    "start": 3576,
-                    "end": 3604,
+                    "start": 3586,
+                    "end": 3614,
                     "loc": {
                       "start": {
                         "line": 136,
@@ -4626,8 +4565,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Renders the UI\n\t ",
-                    "start": 3774,
-                    "end": 3801,
+                    "start": 3784,
+                    "end": 3811,
                     "loc": {
                       "start": {
                         "line": 150,
@@ -4643,8 +4582,8 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 3803,
-                "end": 4270,
+                "start": 3813,
+                "end": 4280,
                 "loc": {
                   "start": {
                     "line": 153,
@@ -4659,8 +4598,8 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 3803,
-                  "end": 3809,
+                  "start": 3813,
+                  "end": 3819,
                   "loc": {
                     "start": {
                       "line": 153,
@@ -4683,8 +4622,8 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 3810,
-                    "end": 3821,
+                    "start": 3820,
+                    "end": 3831,
                     "loc": {
                       "start": {
                         "line": 153,
@@ -4701,8 +4640,8 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 3823,
-                  "end": 4270,
+                  "start": 3833,
+                  "end": 4280,
                   "loc": {
                     "start": {
                       "line": 153,
@@ -4716,8 +4655,8 @@
                   "body": [
                     {
                       "type": "VariableDeclaration",
-                      "start": 3827,
-                      "end": 3876,
+                      "start": 3837,
+                      "end": 3886,
                       "loc": {
                         "start": {
                           "line": 154,
@@ -4731,8 +4670,8 @@
                       "declarations": [
                         {
                           "type": "VariableDeclarator",
-                          "start": 3833,
-                          "end": 3875,
+                          "start": 3843,
+                          "end": 3885,
                           "loc": {
                             "start": {
                               "line": 154,
@@ -4745,8 +4684,8 @@
                           },
                           "id": {
                             "type": "Identifier",
-                            "start": 3833,
-                            "end": 3838,
+                            "start": 3843,
+                            "end": 3848,
                             "loc": {
                               "start": {
                                 "line": 154,
@@ -4762,8 +4701,8 @@
                           },
                           "init": {
                             "type": "CallExpression",
-                            "start": 3841,
-                            "end": 3875,
+                            "start": 3851,
+                            "end": 3885,
                             "loc": {
                               "start": {
                                 "line": 154,
@@ -4776,8 +4715,8 @@
                             },
                             "callee": {
                               "type": "MemberExpression",
-                              "start": 3841,
-                              "end": 3857,
+                              "start": 3851,
+                              "end": 3867,
                               "loc": {
                                 "start": {
                                   "line": 154,
@@ -4790,8 +4729,8 @@
                               },
                               "object": {
                                 "type": "MemberExpression",
-                                "start": 3841,
-                                "end": 3850,
+                                "start": 3851,
+                                "end": 3860,
                                 "loc": {
                                   "start": {
                                     "line": 154,
@@ -4804,8 +4743,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 3841,
-                                  "end": 3845,
+                                  "start": 3851,
+                                  "end": 3855,
                                   "loc": {
                                     "start": {
                                       "line": 154,
@@ -4819,8 +4758,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3846,
-                                  "end": 3850,
+                                  "start": 3856,
+                                  "end": 3860,
                                   "loc": {
                                     "start": {
                                       "line": 154,
@@ -4838,8 +4777,8 @@
                               },
                               "property": {
                                 "type": "Identifier",
-                                "start": 3851,
-                                "end": 3857,
+                                "start": 3861,
+                                "end": 3867,
                                 "loc": {
                                   "start": {
                                     "line": 154,
@@ -4858,8 +4797,8 @@
                             "arguments": [
                               {
                                 "type": "StringLiteral",
-                                "start": 3858,
-                                "end": 3870,
+                                "start": 3868,
+                                "end": 3880,
                                 "loc": {
                                   "start": {
                                     "line": 154,
@@ -4878,8 +4817,8 @@
                               },
                               {
                                 "type": "ObjectExpression",
-                                "start": 3872,
-                                "end": 3874,
+                                "start": 3882,
+                                "end": 3884,
                                 "loc": {
                                   "start": {
                                     "line": 154,
@@ -4900,8 +4839,8 @@
                     },
                     {
                       "type": "VariableDeclaration",
-                      "start": 3879,
-                      "end": 3950,
+                      "start": 3889,
+                      "end": 3960,
                       "loc": {
                         "start": {
                           "line": 155,
@@ -4915,8 +4854,8 @@
                       "declarations": [
                         {
                           "type": "VariableDeclarator",
-                          "start": 3885,
-                          "end": 3949,
+                          "start": 3895,
+                          "end": 3959,
                           "loc": {
                             "start": {
                               "line": 155,
@@ -4929,8 +4868,8 @@
                           },
                           "id": {
                             "type": "Identifier",
-                            "start": 3885,
-                            "end": 3887,
+                            "start": 3895,
+                            "end": 3897,
                             "loc": {
                               "start": {
                                 "line": 155,
@@ -4946,8 +4885,8 @@
                           },
                           "init": {
                             "type": "CallExpression",
-                            "start": 3890,
-                            "end": 3949,
+                            "start": 3900,
+                            "end": 3959,
                             "loc": {
                               "start": {
                                 "line": 155,
@@ -4960,8 +4899,8 @@
                             },
                             "callee": {
                               "type": "Identifier",
-                              "start": 3890,
-                              "end": 3898,
+                              "start": 3900,
+                              "end": 3908,
                               "loc": {
                                 "start": {
                                   "line": 155,
@@ -4978,8 +4917,8 @@
                             "arguments": [
                               {
                                 "type": "MemberExpression",
-                                "start": 3899,
-                                "end": 3911,
+                                "start": 3909,
+                                "end": 3921,
                                 "loc": {
                                   "start": {
                                     "line": 155,
@@ -4992,8 +4931,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 3899,
-                                  "end": 3903,
+                                  "start": 3909,
+                                  "end": 3913,
                                   "loc": {
                                     "start": {
                                       "line": 155,
@@ -5007,8 +4946,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3904,
-                                  "end": 3911,
+                                  "start": 3914,
+                                  "end": 3921,
                                   "loc": {
                                     "start": {
                                       "line": 155,
@@ -5026,8 +4965,8 @@
                               },
                               {
                                 "type": "Identifier",
-                                "start": 3913,
-                                "end": 3918,
+                                "start": 3923,
+                                "end": 3928,
                                 "loc": {
                                   "start": {
                                     "line": 155,
@@ -5043,8 +4982,8 @@
                               },
                               {
                                 "type": "Identifier",
-                                "start": 3920,
-                                "end": 3931,
+                                "start": 3930,
+                                "end": 3941,
                                 "loc": {
                                   "start": {
                                     "line": 155,
@@ -5060,8 +4999,8 @@
                               },
                               {
                                 "type": "MemberExpression",
-                                "start": 3933,
-                                "end": 3948,
+                                "start": 3943,
+                                "end": 3958,
                                 "loc": {
                                   "start": {
                                     "line": 155,
@@ -5074,8 +5013,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 3933,
-                                  "end": 3937,
+                                  "start": 3943,
+                                  "end": 3947,
                                   "loc": {
                                     "start": {
                                       "line": 155,
@@ -5089,8 +5028,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3938,
-                                  "end": 3948,
+                                  "start": 3948,
+                                  "end": 3958,
                                   "loc": {
                                     "start": {
                                       "line": 155,
@@ -5114,8 +5053,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 3954,
-                      "end": 4025,
+                      "start": 3964,
+                      "end": 4035,
                       "loc": {
                         "start": {
                           "line": 157,
@@ -5128,8 +5067,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 3954,
-                        "end": 4024,
+                        "start": 3964,
+                        "end": 4034,
                         "loc": {
                           "start": {
                             "line": 157,
@@ -5142,8 +5081,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 3954,
-                          "end": 3959,
+                          "start": 3964,
+                          "end": 3969,
                           "loc": {
                             "start": {
                               "line": 157,
@@ -5156,8 +5095,8 @@
                           },
                           "object": {
                             "type": "Identifier",
-                            "start": 3954,
-                            "end": 3956,
+                            "start": 3964,
+                            "end": 3966,
                             "loc": {
                               "start": {
                                 "line": 157,
@@ -5173,8 +5112,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3957,
-                            "end": 3959,
+                            "start": 3967,
+                            "end": 3969,
                             "loc": {
                               "start": {
                                 "line": 157,
@@ -5193,8 +5132,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 3960,
-                            "end": 3975,
+                            "start": 3970,
+                            "end": 3985,
                             "loc": {
                               "start": {
                                 "line": 157,
@@ -5213,8 +5152,8 @@
                           },
                           {
                             "type": "ArrowFunctionExpression",
-                            "start": 3977,
-                            "end": 4023,
+                            "start": 3987,
+                            "end": 4033,
                             "loc": {
                               "start": {
                                 "line": 157,
@@ -5232,8 +5171,8 @@
                             "params": [
                               {
                                 "type": "Identifier",
-                                "start": 3978,
-                                "end": 3984,
+                                "start": 3988,
+                                "end": 3994,
                                 "loc": {
                                   "start": {
                                     "line": 157,
@@ -5250,8 +5189,8 @@
                             ],
                             "body": {
                               "type": "CallExpression",
-                              "start": 3989,
-                              "end": 4023,
+                              "start": 3999,
+                              "end": 4033,
                               "loc": {
                                 "start": {
                                   "line": 157,
@@ -5264,8 +5203,8 @@
                               },
                               "callee": {
                                 "type": "MemberExpression",
-                                "start": 3989,
-                                "end": 3998,
+                                "start": 3999,
+                                "end": 4008,
                                 "loc": {
                                   "start": {
                                     "line": 157,
@@ -5278,8 +5217,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 3989,
-                                  "end": 3993,
+                                  "start": 3999,
+                                  "end": 4003,
                                   "loc": {
                                     "start": {
                                       "line": 157,
@@ -5293,8 +5232,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 3994,
-                                  "end": 3998,
+                                  "start": 4004,
+                                  "end": 4008,
                                   "loc": {
                                     "start": {
                                       "line": 157,
@@ -5313,8 +5252,8 @@
                               "arguments": [
                                 {
                                   "type": "StringLiteral",
-                                  "start": 3999,
-                                  "end": 4014,
+                                  "start": 4009,
+                                  "end": 4024,
                                   "loc": {
                                     "start": {
                                       "line": 157,
@@ -5333,8 +5272,8 @@
                                 },
                                 {
                                   "type": "Identifier",
-                                  "start": 4016,
-                                  "end": 4022,
+                                  "start": 4026,
+                                  "end": 4032,
                                   "loc": {
                                     "start": {
                                       "line": 157,
@@ -5356,8 +5295,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 4028,
-                      "end": 4093,
+                      "start": 4038,
+                      "end": 4103,
                       "loc": {
                         "start": {
                           "line": 158,
@@ -5370,8 +5309,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 4028,
-                        "end": 4092,
+                        "start": 4038,
+                        "end": 4102,
                         "loc": {
                           "start": {
                             "line": 158,
@@ -5384,8 +5323,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 4028,
-                          "end": 4033,
+                          "start": 4038,
+                          "end": 4043,
                           "loc": {
                             "start": {
                               "line": 158,
@@ -5398,8 +5337,8 @@
                           },
                           "object": {
                             "type": "Identifier",
-                            "start": 4028,
-                            "end": 4030,
+                            "start": 4038,
+                            "end": 4040,
                             "loc": {
                               "start": {
                                 "line": 158,
@@ -5415,8 +5354,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 4031,
-                            "end": 4033,
+                            "start": 4041,
+                            "end": 4043,
                             "loc": {
                               "start": {
                                 "line": 158,
@@ -5435,8 +5374,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 4034,
-                            "end": 4046,
+                            "start": 4044,
+                            "end": 4056,
                             "loc": {
                               "start": {
                                 "line": 158,
@@ -5455,8 +5394,8 @@
                           },
                           {
                             "type": "ArrowFunctionExpression",
-                            "start": 4048,
-                            "end": 4091,
+                            "start": 4058,
+                            "end": 4101,
                             "loc": {
                               "start": {
                                 "line": 158,
@@ -5474,8 +5413,8 @@
                             "params": [
                               {
                                 "type": "Identifier",
-                                "start": 4049,
-                                "end": 4055,
+                                "start": 4059,
+                                "end": 4065,
                                 "loc": {
                                   "start": {
                                     "line": 158,
@@ -5492,8 +5431,8 @@
                             ],
                             "body": {
                               "type": "CallExpression",
-                              "start": 4060,
-                              "end": 4091,
+                              "start": 4070,
+                              "end": 4101,
                               "loc": {
                                 "start": {
                                   "line": 158,
@@ -5506,8 +5445,8 @@
                               },
                               "callee": {
                                 "type": "MemberExpression",
-                                "start": 4060,
-                                "end": 4069,
+                                "start": 4070,
+                                "end": 4079,
                                 "loc": {
                                   "start": {
                                     "line": 158,
@@ -5520,8 +5459,8 @@
                                 },
                                 "object": {
                                   "type": "ThisExpression",
-                                  "start": 4060,
-                                  "end": 4064,
+                                  "start": 4070,
+                                  "end": 4074,
                                   "loc": {
                                     "start": {
                                       "line": 158,
@@ -5535,8 +5474,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 4065,
-                                  "end": 4069,
+                                  "start": 4075,
+                                  "end": 4079,
                                   "loc": {
                                     "start": {
                                       "line": 158,
@@ -5555,8 +5494,8 @@
                               "arguments": [
                                 {
                                   "type": "StringLiteral",
-                                  "start": 4070,
-                                  "end": 4082,
+                                  "start": 4080,
+                                  "end": 4092,
                                   "loc": {
                                     "start": {
                                       "line": 158,
@@ -5575,8 +5514,8 @@
                                 },
                                 {
                                   "type": "Identifier",
-                                  "start": 4084,
-                                  "end": 4090,
+                                  "start": 4094,
+                                  "end": 4100,
                                   "loc": {
                                     "start": {
                                       "line": 158,
@@ -5598,8 +5537,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 4096,
-                      "end": 4149,
+                      "start": 4106,
+                      "end": 4159,
                       "loc": {
                         "start": {
                           "line": 159,
@@ -5612,8 +5551,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 4096,
-                        "end": 4148,
+                        "start": 4106,
+                        "end": 4158,
                         "loc": {
                           "start": {
                             "line": 159,
@@ -5626,8 +5565,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 4096,
-                          "end": 4103,
+                          "start": 4106,
+                          "end": 4113,
                           "loc": {
                             "start": {
                               "line": 159,
@@ -5640,8 +5579,8 @@
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 4096,
-                            "end": 4100,
+                            "start": 4106,
+                            "end": 4110,
                             "loc": {
                               "start": {
                                 "line": 159,
@@ -5655,8 +5594,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 4101,
-                            "end": 4103,
+                            "start": 4111,
+                            "end": 4113,
                             "loc": {
                               "start": {
                                 "line": 159,
@@ -5675,8 +5614,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 4104,
-                            "end": 4117,
+                            "start": 4114,
+                            "end": 4127,
                             "loc": {
                               "start": {
                                 "line": 159,
@@ -5695,8 +5634,8 @@
                           },
                           {
                             "type": "ArrowFunctionExpression",
-                            "start": 4119,
-                            "end": 4147,
+                            "start": 4129,
+                            "end": 4157,
                             "loc": {
                               "start": {
                                 "line": 159,
@@ -5714,8 +5653,8 @@
                             "params": [],
                             "body": {
                               "type": "CallExpression",
-                              "start": 4125,
-                              "end": 4147,
+                              "start": 4135,
+                              "end": 4157,
                               "loc": {
                                 "start": {
                                   "line": 159,
@@ -5728,8 +5667,8 @@
                               },
                               "callee": {
                                 "type": "MemberExpression",
-                                "start": 4125,
-                                "end": 4132,
+                                "start": 4135,
+                                "end": 4142,
                                 "loc": {
                                   "start": {
                                     "line": 159,
@@ -5742,8 +5681,8 @@
                                 },
                                 "object": {
                                   "type": "Identifier",
-                                  "start": 4125,
-                                  "end": 4127,
+                                  "start": 4135,
+                                  "end": 4137,
                                   "loc": {
                                     "start": {
                                       "line": 159,
@@ -5759,8 +5698,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 4128,
-                                  "end": 4132,
+                                  "start": 4138,
+                                  "end": 4142,
                                   "loc": {
                                     "start": {
                                       "line": 159,
@@ -5779,8 +5718,8 @@
                               "arguments": [
                                 {
                                   "type": "StringLiteral",
-                                  "start": 4133,
-                                  "end": 4146,
+                                  "start": 4143,
+                                  "end": 4156,
                                   "loc": {
                                     "start": {
                                       "line": 159,
@@ -5805,8 +5744,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 4152,
-                      "end": 4203,
+                      "start": 4162,
+                      "end": 4213,
                       "loc": {
                         "start": {
                           "line": 160,
@@ -5819,8 +5758,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 4152,
-                        "end": 4202,
+                        "start": 4162,
+                        "end": 4212,
                         "loc": {
                           "start": {
                             "line": 160,
@@ -5833,8 +5772,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 4152,
-                          "end": 4159,
+                          "start": 4162,
+                          "end": 4169,
                           "loc": {
                             "start": {
                               "line": 160,
@@ -5847,8 +5786,8 @@
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 4152,
-                            "end": 4156,
+                            "start": 4162,
+                            "end": 4166,
                             "loc": {
                               "start": {
                                 "line": 160,
@@ -5862,8 +5801,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 4157,
-                            "end": 4159,
+                            "start": 4167,
+                            "end": 4169,
                             "loc": {
                               "start": {
                                 "line": 160,
@@ -5882,8 +5821,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 4160,
-                            "end": 4172,
+                            "start": 4170,
+                            "end": 4182,
                             "loc": {
                               "start": {
                                 "line": 160,
@@ -5902,8 +5841,8 @@
                           },
                           {
                             "type": "ArrowFunctionExpression",
-                            "start": 4174,
-                            "end": 4201,
+                            "start": 4184,
+                            "end": 4211,
                             "loc": {
                               "start": {
                                 "line": 160,
@@ -5921,8 +5860,8 @@
                             "params": [],
                             "body": {
                               "type": "CallExpression",
-                              "start": 4180,
-                              "end": 4201,
+                              "start": 4190,
+                              "end": 4211,
                               "loc": {
                                 "start": {
                                   "line": 160,
@@ -5935,8 +5874,8 @@
                               },
                               "callee": {
                                 "type": "MemberExpression",
-                                "start": 4180,
-                                "end": 4187,
+                                "start": 4190,
+                                "end": 4197,
                                 "loc": {
                                   "start": {
                                     "line": 160,
@@ -5949,8 +5888,8 @@
                                 },
                                 "object": {
                                   "type": "Identifier",
-                                  "start": 4180,
-                                  "end": 4182,
+                                  "start": 4190,
+                                  "end": 4192,
                                   "loc": {
                                     "start": {
                                       "line": 160,
@@ -5966,8 +5905,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 4183,
-                                  "end": 4187,
+                                  "start": 4193,
+                                  "end": 4197,
                                   "loc": {
                                     "start": {
                                       "line": 160,
@@ -5986,8 +5925,8 @@
                               "arguments": [
                                 {
                                   "type": "StringLiteral",
-                                  "start": 4188,
-                                  "end": 4200,
+                                  "start": 4198,
+                                  "end": 4210,
                                   "loc": {
                                     "start": {
                                       "line": 160,
@@ -6012,8 +5951,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 4206,
-                      "end": 4267,
+                      "start": 4216,
+                      "end": 4277,
                       "loc": {
                         "start": {
                           "line": 161,
@@ -6026,8 +5965,8 @@
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 4206,
-                        "end": 4266,
+                        "start": 4216,
+                        "end": 4276,
                         "loc": {
                           "start": {
                             "line": 161,
@@ -6040,8 +5979,8 @@
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 4206,
-                          "end": 4213,
+                          "start": 4216,
+                          "end": 4223,
                           "loc": {
                             "start": {
                               "line": 161,
@@ -6054,8 +5993,8 @@
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 4206,
-                            "end": 4210,
+                            "start": 4216,
+                            "end": 4220,
                             "loc": {
                               "start": {
                                 "line": 161,
@@ -6069,8 +6008,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 4211,
-                            "end": 4213,
+                            "start": 4221,
+                            "end": 4223,
                             "loc": {
                               "start": {
                                 "line": 161,
@@ -6089,8 +6028,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 4214,
-                            "end": 4227,
+                            "start": 4224,
+                            "end": 4237,
                             "loc": {
                               "start": {
                                 "line": 161,
@@ -6109,8 +6048,8 @@
                           },
                           {
                             "type": "ArrowFunctionExpression",
-                            "start": 4229,
-                            "end": 4265,
+                            "start": 4239,
+                            "end": 4275,
                             "loc": {
                               "start": {
                                 "line": 161,
@@ -6128,8 +6067,8 @@
                             "params": [
                               {
                                 "type": "Identifier",
-                                "start": 4230,
-                                "end": 4233,
+                                "start": 4240,
+                                "end": 4243,
                                 "loc": {
                                   "start": {
                                     "line": 161,
@@ -6146,8 +6085,8 @@
                             ],
                             "body": {
                               "type": "CallExpression",
-                              "start": 4238,
-                              "end": 4265,
+                              "start": 4248,
+                              "end": 4275,
                               "loc": {
                                 "start": {
                                   "line": 161,
@@ -6160,8 +6099,8 @@
                               },
                               "callee": {
                                 "type": "MemberExpression",
-                                "start": 4238,
-                                "end": 4245,
+                                "start": 4248,
+                                "end": 4255,
                                 "loc": {
                                   "start": {
                                     "line": 161,
@@ -6174,8 +6113,8 @@
                                 },
                                 "object": {
                                   "type": "Identifier",
-                                  "start": 4238,
-                                  "end": 4240,
+                                  "start": 4248,
+                                  "end": 4250,
                                   "loc": {
                                     "start": {
                                       "line": 161,
@@ -6191,8 +6130,8 @@
                                 },
                                 "property": {
                                   "type": "Identifier",
-                                  "start": 4241,
-                                  "end": 4245,
+                                  "start": 4251,
+                                  "end": 4255,
                                   "loc": {
                                     "start": {
                                       "line": 161,
@@ -6211,8 +6150,8 @@
                               "arguments": [
                                 {
                                   "type": "StringLiteral",
-                                  "start": 4246,
-                                  "end": 4259,
+                                  "start": 4256,
+                                  "end": 4269,
                                   "loc": {
                                     "start": {
                                       "line": 161,
@@ -6231,8 +6170,8 @@
                                 },
                                 {
                                   "type": "Identifier",
-                                  "start": 4261,
-                                  "end": 4264,
+                                  "start": 4271,
+                                  "end": 4274,
                                   "loc": {
                                     "start": {
                                       "line": 161,
@@ -6259,8 +6198,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Renders the UI\n\t ",
-                    "start": 3774,
-                    "end": 3801,
+                    "start": 3784,
+                    "end": 3811,
                     "loc": {
                       "start": {
                         "line": 150,
@@ -6498,8 +6437,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Destroys the UI\n\t ",
-      "start": 3576,
-      "end": 3604,
+      "start": 3586,
+      "end": 3614,
       "loc": {
         "start": {
           "line": 136,
@@ -6514,8 +6453,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Renders the UI\n\t ",
-      "start": 3774,
-      "end": 3801,
+      "start": 3784,
+      "end": 3811,
       "loc": {
         "start": {
           "line": 150,
@@ -12786,8 +12725,7 @@
     },
     {
       "type": {
-        "label": "this",
-        "keyword": "this",
+        "label": "string",
         "beforeExpr": false,
         "startsExpr": true,
         "rightAssociative": false,
@@ -12798,9 +12736,9 @@
         "binop": null,
         "updateContext": null
       },
-      "value": "this",
+      "value": "meeseOS-login-container",
       "start": 3383,
-      "end": 3387,
+      "end": 3408,
       "loc": {
         "start": {
           "line": 128,
@@ -12808,111 +12746,7 @@
         },
         "end": {
           "line": 128,
-          "column": 27
-        }
-      }
-    },
-    {
-      "type": {
-        "label": ".",
-        "beforeExpr": false,
-        "startsExpr": false,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null,
-        "updateContext": null
-      },
-      "start": 3387,
-      "end": 3388,
-      "loc": {
-        "start": {
-          "line": 128,
-          "column": 27
-        },
-        "end": {
-          "line": 128,
-          "column": 28
-        }
-      }
-    },
-    {
-      "type": {
-        "label": "name",
-        "beforeExpr": false,
-        "startsExpr": true,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null
-      },
-      "value": "options",
-      "start": 3388,
-      "end": 3395,
-      "loc": {
-        "start": {
-          "line": 128,
-          "column": 28
-        },
-        "end": {
-          "line": 128,
-          "column": 35
-        }
-      }
-    },
-    {
-      "type": {
-        "label": ".",
-        "beforeExpr": false,
-        "startsExpr": false,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null,
-        "updateContext": null
-      },
-      "start": 3395,
-      "end": 3396,
-      "loc": {
-        "start": {
-          "line": 128,
-          "column": 35
-        },
-        "end": {
-          "line": 128,
-          "column": 36
-        }
-      }
-    },
-    {
-      "type": {
-        "label": "name",
-        "beforeExpr": false,
-        "startsExpr": true,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null
-      },
-      "value": "id",
-      "start": 3396,
-      "end": 3398,
-      "loc": {
-        "start": {
-          "line": 128,
-          "column": 36
-        },
-        "end": {
-          "line": 128,
-          "column": 38
+          "column": 48
         }
       }
     },
@@ -12929,16 +12763,16 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3398,
-      "end": 3399,
+      "start": 3408,
+      "end": 3409,
       "loc": {
         "start": {
           "line": 128,
-          "column": 38
+          "column": 48
         },
         "end": {
           "line": 128,
-          "column": 39
+          "column": 49
         }
       }
     },
@@ -12957,8 +12791,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3402,
-      "end": 3406,
+      "start": 3412,
+      "end": 3416,
       "loc": {
         "start": {
           "line": 129,
@@ -12983,8 +12817,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3406,
-      "end": 3407,
+      "start": 3416,
+      "end": 3417,
       "loc": {
         "start": {
           "line": 129,
@@ -13009,8 +12843,8 @@
         "binop": null
       },
       "value": "$container",
-      "start": 3407,
-      "end": 3417,
+      "start": 3417,
+      "end": 3427,
       "loc": {
         "start": {
           "line": 129,
@@ -13035,8 +12869,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3417,
-      "end": 3418,
+      "start": 3427,
+      "end": 3428,
       "loc": {
         "start": {
           "line": 129,
@@ -13061,8 +12895,8 @@
         "binop": null
       },
       "value": "className",
-      "start": 3418,
-      "end": 3427,
+      "start": 3428,
+      "end": 3437,
       "loc": {
         "start": {
           "line": 129,
@@ -13088,8 +12922,8 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 3428,
-      "end": 3429,
+      "start": 3438,
+      "end": 3439,
       "loc": {
         "start": {
           "line": 129,
@@ -13115,8 +12949,8 @@
         "updateContext": null
       },
       "value": "meeseOS-login-base",
-      "start": 3430,
-      "end": 3450,
+      "start": 3440,
+      "end": 3460,
       "loc": {
         "start": {
           "line": 129,
@@ -13141,8 +12975,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3450,
-      "end": 3451,
+      "start": 3460,
+      "end": 3461,
       "loc": {
         "start": {
           "line": 129,
@@ -13169,8 +13003,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3454,
-      "end": 3458,
+      "start": 3464,
+      "end": 3468,
       "loc": {
         "start": {
           "line": 130,
@@ -13195,8 +13029,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3458,
-      "end": 3459,
+      "start": 3468,
+      "end": 3469,
       "loc": {
         "start": {
           "line": 130,
@@ -13221,8 +13055,8 @@
         "binop": null
       },
       "value": "core",
-      "start": 3459,
-      "end": 3463,
+      "start": 3469,
+      "end": 3473,
       "loc": {
         "start": {
           "line": 130,
@@ -13247,8 +13081,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3463,
-      "end": 3464,
+      "start": 3473,
+      "end": 3474,
       "loc": {
         "start": {
           "line": 130,
@@ -13273,8 +13107,8 @@
         "binop": null
       },
       "value": "$root",
-      "start": 3464,
-      "end": 3469,
+      "start": 3474,
+      "end": 3479,
       "loc": {
         "start": {
           "line": 130,
@@ -13299,8 +13133,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3469,
-      "end": 3470,
+      "start": 3479,
+      "end": 3480,
       "loc": {
         "start": {
           "line": 130,
@@ -13325,8 +13159,8 @@
         "binop": null
       },
       "value": "classList",
-      "start": 3470,
-      "end": 3479,
+      "start": 3480,
+      "end": 3489,
       "loc": {
         "start": {
           "line": 130,
@@ -13351,8 +13185,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3479,
-      "end": 3480,
+      "start": 3489,
+      "end": 3490,
       "loc": {
         "start": {
           "line": 130,
@@ -13377,8 +13211,8 @@
         "binop": null
       },
       "value": "add",
-      "start": 3480,
-      "end": 3483,
+      "start": 3490,
+      "end": 3493,
       "loc": {
         "start": {
           "line": 130,
@@ -13402,8 +13236,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3483,
-      "end": 3484,
+      "start": 3493,
+      "end": 3494,
       "loc": {
         "start": {
           "line": 130,
@@ -13429,8 +13263,8 @@
         "updateContext": null
       },
       "value": "login",
-      "start": 3484,
-      "end": 3491,
+      "start": 3494,
+      "end": 3501,
       "loc": {
         "start": {
           "line": 130,
@@ -13454,8 +13288,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3491,
-      "end": 3492,
+      "start": 3501,
+      "end": 3502,
       "loc": {
         "start": {
           "line": 130,
@@ -13480,8 +13314,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3492,
-      "end": 3493,
+      "start": 3502,
+      "end": 3503,
       "loc": {
         "start": {
           "line": 130,
@@ -13508,8 +13342,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3496,
-      "end": 3500,
+      "start": 3506,
+      "end": 3510,
       "loc": {
         "start": {
           "line": 131,
@@ -13534,8 +13368,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3500,
-      "end": 3501,
+      "start": 3510,
+      "end": 3511,
       "loc": {
         "start": {
           "line": 131,
@@ -13560,8 +13394,8 @@
         "binop": null
       },
       "value": "core",
-      "start": 3501,
-      "end": 3505,
+      "start": 3511,
+      "end": 3515,
       "loc": {
         "start": {
           "line": 131,
@@ -13586,8 +13420,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3505,
-      "end": 3506,
+      "start": 3515,
+      "end": 3516,
       "loc": {
         "start": {
           "line": 131,
@@ -13612,8 +13446,8 @@
         "binop": null
       },
       "value": "$root",
-      "start": 3506,
-      "end": 3511,
+      "start": 3516,
+      "end": 3521,
       "loc": {
         "start": {
           "line": 131,
@@ -13638,8 +13472,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3511,
-      "end": 3512,
+      "start": 3521,
+      "end": 3522,
       "loc": {
         "start": {
           "line": 131,
@@ -13664,8 +13498,8 @@
         "binop": null
       },
       "value": "appendChild",
-      "start": 3512,
-      "end": 3523,
+      "start": 3522,
+      "end": 3533,
       "loc": {
         "start": {
           "line": 131,
@@ -13689,8 +13523,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3523,
-      "end": 3524,
+      "start": 3533,
+      "end": 3534,
       "loc": {
         "start": {
           "line": 131,
@@ -13717,8 +13551,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3524,
-      "end": 3528,
+      "start": 3534,
+      "end": 3538,
       "loc": {
         "start": {
           "line": 131,
@@ -13743,8 +13577,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3528,
-      "end": 3529,
+      "start": 3538,
+      "end": 3539,
       "loc": {
         "start": {
           "line": 131,
@@ -13769,8 +13603,8 @@
         "binop": null
       },
       "value": "$container",
-      "start": 3529,
-      "end": 3539,
+      "start": 3539,
+      "end": 3549,
       "loc": {
         "start": {
           "line": 131,
@@ -13794,8 +13628,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3539,
-      "end": 3540,
+      "start": 3549,
+      "end": 3550,
       "loc": {
         "start": {
           "line": 131,
@@ -13820,8 +13654,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3540,
-      "end": 3541,
+      "start": 3550,
+      "end": 3551,
       "loc": {
         "start": {
           "line": 131,
@@ -13848,8 +13682,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3545,
-      "end": 3549,
+      "start": 3555,
+      "end": 3559,
       "loc": {
         "start": {
           "line": 133,
@@ -13874,8 +13708,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3549,
-      "end": 3550,
+      "start": 3559,
+      "end": 3560,
       "loc": {
         "start": {
           "line": 133,
@@ -13900,8 +13734,8 @@
         "binop": null
       },
       "value": "render",
-      "start": 3550,
-      "end": 3556,
+      "start": 3560,
+      "end": 3566,
       "loc": {
         "start": {
           "line": 133,
@@ -13925,8 +13759,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3556,
-      "end": 3557,
+      "start": 3566,
+      "end": 3567,
       "loc": {
         "start": {
           "line": 133,
@@ -13951,8 +13785,8 @@
         "binop": null
       },
       "value": "startHidden",
-      "start": 3557,
-      "end": 3568,
+      "start": 3567,
+      "end": 3578,
       "loc": {
         "start": {
           "line": 133,
@@ -13976,8 +13810,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3568,
-      "end": 3569,
+      "start": 3578,
+      "end": 3579,
       "loc": {
         "start": {
           "line": 133,
@@ -14002,8 +13836,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3569,
-      "end": 3570,
+      "start": 3579,
+      "end": 3580,
       "loc": {
         "start": {
           "line": 133,
@@ -14027,8 +13861,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3572,
-      "end": 3573,
+      "start": 3582,
+      "end": 3583,
       "loc": {
         "start": {
           "line": 134,
@@ -14043,8 +13877,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Destroys the UI\n\t ",
-      "start": 3576,
-      "end": 3604,
+      "start": 3586,
+      "end": 3614,
       "loc": {
         "start": {
           "line": 136,
@@ -14069,8 +13903,8 @@
         "binop": null
       },
       "value": "destroy",
-      "start": 3606,
-      "end": 3613,
+      "start": 3616,
+      "end": 3623,
       "loc": {
         "start": {
           "line": 139,
@@ -14094,8 +13928,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3613,
-      "end": 3614,
+      "start": 3623,
+      "end": 3624,
       "loc": {
         "start": {
           "line": 139,
@@ -14119,8 +13953,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3614,
-      "end": 3615,
+      "start": 3624,
+      "end": 3625,
       "loc": {
         "start": {
           "line": 139,
@@ -14144,8 +13978,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3616,
-      "end": 3617,
+      "start": 3626,
+      "end": 3627,
       "loc": {
         "start": {
           "line": 139,
@@ -14172,8 +14006,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3620,
-      "end": 3624,
+      "start": 3630,
+      "end": 3634,
       "loc": {
         "start": {
           "line": 140,
@@ -14198,8 +14032,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3624,
-      "end": 3625,
+      "start": 3634,
+      "end": 3635,
       "loc": {
         "start": {
           "line": 140,
@@ -14224,8 +14058,8 @@
         "binop": null
       },
       "value": "core",
-      "start": 3625,
-      "end": 3629,
+      "start": 3635,
+      "end": 3639,
       "loc": {
         "start": {
           "line": 140,
@@ -14250,8 +14084,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3629,
-      "end": 3630,
+      "start": 3639,
+      "end": 3640,
       "loc": {
         "start": {
           "line": 140,
@@ -14276,8 +14110,8 @@
         "binop": null
       },
       "value": "$root",
-      "start": 3630,
-      "end": 3635,
+      "start": 3640,
+      "end": 3645,
       "loc": {
         "start": {
           "line": 140,
@@ -14302,8 +14136,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3635,
-      "end": 3636,
+      "start": 3645,
+      "end": 3646,
       "loc": {
         "start": {
           "line": 140,
@@ -14328,8 +14162,8 @@
         "binop": null
       },
       "value": "classList",
-      "start": 3636,
-      "end": 3645,
+      "start": 3646,
+      "end": 3655,
       "loc": {
         "start": {
           "line": 140,
@@ -14354,8 +14188,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3645,
-      "end": 3646,
+      "start": 3655,
+      "end": 3656,
       "loc": {
         "start": {
           "line": 140,
@@ -14380,8 +14214,8 @@
         "binop": null
       },
       "value": "remove",
-      "start": 3646,
-      "end": 3652,
+      "start": 3656,
+      "end": 3662,
       "loc": {
         "start": {
           "line": 140,
@@ -14405,8 +14239,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3652,
-      "end": 3653,
+      "start": 3662,
+      "end": 3663,
       "loc": {
         "start": {
           "line": 140,
@@ -14432,8 +14266,8 @@
         "updateContext": null
       },
       "value": "login",
-      "start": 3653,
-      "end": 3660,
+      "start": 3663,
+      "end": 3670,
       "loc": {
         "start": {
           "line": 140,
@@ -14457,8 +14291,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3660,
-      "end": 3661,
+      "start": 3670,
+      "end": 3671,
       "loc": {
         "start": {
           "line": 140,
@@ -14483,8 +14317,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3661,
-      "end": 3662,
+      "start": 3671,
+      "end": 3672,
       "loc": {
         "start": {
           "line": 140,
@@ -14511,8 +14345,8 @@
         "updateContext": null
       },
       "value": "if",
-      "start": 3666,
-      "end": 3668,
+      "start": 3676,
+      "end": 3678,
       "loc": {
         "start": {
           "line": 142,
@@ -14536,8 +14370,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3669,
-      "end": 3670,
+      "start": 3679,
+      "end": 3680,
       "loc": {
         "start": {
           "line": 142,
@@ -14564,8 +14398,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3670,
-      "end": 3674,
+      "start": 3680,
+      "end": 3684,
       "loc": {
         "start": {
           "line": 142,
@@ -14590,8 +14424,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3674,
-      "end": 3675,
+      "start": 3684,
+      "end": 3685,
       "loc": {
         "start": {
           "line": 142,
@@ -14616,8 +14450,8 @@
         "binop": null
       },
       "value": "$container",
-      "start": 3675,
-      "end": 3685,
+      "start": 3685,
+      "end": 3695,
       "loc": {
         "start": {
           "line": 142,
@@ -14641,8 +14475,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3685,
-      "end": 3686,
+      "start": 3695,
+      "end": 3696,
       "loc": {
         "start": {
           "line": 142,
@@ -14666,8 +14500,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3687,
-      "end": 3688,
+      "start": 3697,
+      "end": 3698,
       "loc": {
         "start": {
           "line": 142,
@@ -14694,8 +14528,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3692,
-      "end": 3696,
+      "start": 3702,
+      "end": 3706,
       "loc": {
         "start": {
           "line": 143,
@@ -14720,8 +14554,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3696,
-      "end": 3697,
+      "start": 3706,
+      "end": 3707,
       "loc": {
         "start": {
           "line": 143,
@@ -14746,8 +14580,8 @@
         "binop": null
       },
       "value": "$container",
-      "start": 3697,
-      "end": 3707,
+      "start": 3707,
+      "end": 3717,
       "loc": {
         "start": {
           "line": 143,
@@ -14772,8 +14606,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3707,
-      "end": 3708,
+      "start": 3717,
+      "end": 3718,
       "loc": {
         "start": {
           "line": 143,
@@ -14798,8 +14632,8 @@
         "binop": null
       },
       "value": "remove",
-      "start": 3708,
-      "end": 3714,
+      "start": 3718,
+      "end": 3724,
       "loc": {
         "start": {
           "line": 143,
@@ -14823,8 +14657,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3714,
-      "end": 3715,
+      "start": 3724,
+      "end": 3725,
       "loc": {
         "start": {
           "line": 143,
@@ -14848,8 +14682,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3715,
-      "end": 3716,
+      "start": 3725,
+      "end": 3726,
       "loc": {
         "start": {
           "line": 143,
@@ -14874,8 +14708,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3716,
-      "end": 3717,
+      "start": 3726,
+      "end": 3727,
       "loc": {
         "start": {
           "line": 143,
@@ -14902,8 +14736,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3721,
-      "end": 3725,
+      "start": 3731,
+      "end": 3735,
       "loc": {
         "start": {
           "line": 144,
@@ -14928,8 +14762,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3725,
-      "end": 3726,
+      "start": 3735,
+      "end": 3736,
       "loc": {
         "start": {
           "line": 144,
@@ -14954,8 +14788,8 @@
         "binop": null
       },
       "value": "$container",
-      "start": 3726,
-      "end": 3736,
+      "start": 3736,
+      "end": 3746,
       "loc": {
         "start": {
           "line": 144,
@@ -14981,8 +14815,8 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 3737,
-      "end": 3738,
+      "start": 3747,
+      "end": 3748,
       "loc": {
         "start": {
           "line": 144,
@@ -15009,8 +14843,8 @@
         "updateContext": null
       },
       "value": "null",
-      "start": 3739,
-      "end": 3743,
+      "start": 3749,
+      "end": 3753,
       "loc": {
         "start": {
           "line": 144,
@@ -15035,8 +14869,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3743,
-      "end": 3744,
+      "start": 3753,
+      "end": 3754,
       "loc": {
         "start": {
           "line": 144,
@@ -15060,8 +14894,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3747,
-      "end": 3748,
+      "start": 3757,
+      "end": 3758,
       "loc": {
         "start": {
           "line": 145,
@@ -15088,8 +14922,8 @@
         "updateContext": null
       },
       "value": "super",
-      "start": 3752,
-      "end": 3757,
+      "start": 3762,
+      "end": 3767,
       "loc": {
         "start": {
           "line": 147,
@@ -15114,8 +14948,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3757,
-      "end": 3758,
+      "start": 3767,
+      "end": 3768,
       "loc": {
         "start": {
           "line": 147,
@@ -15140,8 +14974,8 @@
         "binop": null
       },
       "value": "destroy",
-      "start": 3758,
-      "end": 3765,
+      "start": 3768,
+      "end": 3775,
       "loc": {
         "start": {
           "line": 147,
@@ -15165,8 +14999,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3765,
-      "end": 3766,
+      "start": 3775,
+      "end": 3776,
       "loc": {
         "start": {
           "line": 147,
@@ -15190,8 +15024,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3766,
-      "end": 3767,
+      "start": 3776,
+      "end": 3777,
       "loc": {
         "start": {
           "line": 147,
@@ -15216,8 +15050,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3767,
-      "end": 3768,
+      "start": 3777,
+      "end": 3778,
       "loc": {
         "start": {
           "line": 147,
@@ -15241,8 +15075,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3770,
-      "end": 3771,
+      "start": 3780,
+      "end": 3781,
       "loc": {
         "start": {
           "line": 148,
@@ -15257,8 +15091,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Renders the UI\n\t ",
-      "start": 3774,
-      "end": 3801,
+      "start": 3784,
+      "end": 3811,
       "loc": {
         "start": {
           "line": 150,
@@ -15283,8 +15117,8 @@
         "binop": null
       },
       "value": "render",
-      "start": 3803,
-      "end": 3809,
+      "start": 3813,
+      "end": 3819,
       "loc": {
         "start": {
           "line": 153,
@@ -15308,8 +15142,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3809,
-      "end": 3810,
+      "start": 3819,
+      "end": 3820,
       "loc": {
         "start": {
           "line": 153,
@@ -15334,8 +15168,8 @@
         "binop": null
       },
       "value": "startHidden",
-      "start": 3810,
-      "end": 3821,
+      "start": 3820,
+      "end": 3831,
       "loc": {
         "start": {
           "line": 153,
@@ -15359,8 +15193,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3821,
-      "end": 3822,
+      "start": 3831,
+      "end": 3832,
       "loc": {
         "start": {
           "line": 153,
@@ -15384,8 +15218,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3823,
-      "end": 3824,
+      "start": 3833,
+      "end": 3834,
       "loc": {
         "start": {
           "line": 153,
@@ -15412,8 +15246,8 @@
         "updateContext": null
       },
       "value": "const",
-      "start": 3827,
-      "end": 3832,
+      "start": 3837,
+      "end": 3842,
       "loc": {
         "start": {
           "line": 154,
@@ -15438,8 +15272,8 @@
         "binop": null
       },
       "value": "login",
-      "start": 3833,
-      "end": 3838,
+      "start": 3843,
+      "end": 3848,
       "loc": {
         "start": {
           "line": 154,
@@ -15465,8 +15299,8 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 3839,
-      "end": 3840,
+      "start": 3849,
+      "end": 3850,
       "loc": {
         "start": {
           "line": 154,
@@ -15493,8 +15327,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3841,
-      "end": 3845,
+      "start": 3851,
+      "end": 3855,
       "loc": {
         "start": {
           "line": 154,
@@ -15519,8 +15353,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3845,
-      "end": 3846,
+      "start": 3855,
+      "end": 3856,
       "loc": {
         "start": {
           "line": 154,
@@ -15545,8 +15379,8 @@
         "binop": null
       },
       "value": "core",
-      "start": 3846,
-      "end": 3850,
+      "start": 3856,
+      "end": 3860,
       "loc": {
         "start": {
           "line": 154,
@@ -15571,8 +15405,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3850,
-      "end": 3851,
+      "start": 3860,
+      "end": 3861,
       "loc": {
         "start": {
           "line": 154,
@@ -15597,8 +15431,8 @@
         "binop": null
       },
       "value": "config",
-      "start": 3851,
-      "end": 3857,
+      "start": 3861,
+      "end": 3867,
       "loc": {
         "start": {
           "line": 154,
@@ -15622,8 +15456,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3857,
-      "end": 3858,
+      "start": 3867,
+      "end": 3868,
       "loc": {
         "start": {
           "line": 154,
@@ -15649,8 +15483,8 @@
         "updateContext": null
       },
       "value": "auth.login",
-      "start": 3858,
-      "end": 3870,
+      "start": 3868,
+      "end": 3880,
       "loc": {
         "start": {
           "line": 154,
@@ -15675,8 +15509,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3870,
-      "end": 3871,
+      "start": 3880,
+      "end": 3881,
       "loc": {
         "start": {
           "line": 154,
@@ -15700,8 +15534,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3872,
-      "end": 3873,
+      "start": 3882,
+      "end": 3883,
       "loc": {
         "start": {
           "line": 154,
@@ -15725,8 +15559,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3873,
-      "end": 3874,
+      "start": 3883,
+      "end": 3884,
       "loc": {
         "start": {
           "line": 154,
@@ -15750,8 +15584,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3874,
-      "end": 3875,
+      "start": 3884,
+      "end": 3885,
       "loc": {
         "start": {
           "line": 154,
@@ -15776,8 +15610,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3875,
-      "end": 3876,
+      "start": 3885,
+      "end": 3886,
       "loc": {
         "start": {
           "line": 154,
@@ -15804,8 +15638,8 @@
         "updateContext": null
       },
       "value": "const",
-      "start": 3879,
-      "end": 3884,
+      "start": 3889,
+      "end": 3894,
       "loc": {
         "start": {
           "line": 155,
@@ -15830,8 +15664,8 @@
         "binop": null
       },
       "value": "ui",
-      "start": 3885,
-      "end": 3887,
+      "start": 3895,
+      "end": 3897,
       "loc": {
         "start": {
           "line": 155,
@@ -15857,8 +15691,8 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 3888,
-      "end": 3889,
+      "start": 3898,
+      "end": 3899,
       "loc": {
         "start": {
           "line": 155,
@@ -15883,8 +15717,8 @@
         "binop": null
       },
       "value": "createUI",
-      "start": 3890,
-      "end": 3898,
+      "start": 3900,
+      "end": 3908,
       "loc": {
         "start": {
           "line": 155,
@@ -15908,8 +15742,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3898,
-      "end": 3899,
+      "start": 3908,
+      "end": 3909,
       "loc": {
         "start": {
           "line": 155,
@@ -15936,8 +15770,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3899,
-      "end": 3903,
+      "start": 3909,
+      "end": 3913,
       "loc": {
         "start": {
           "line": 155,
@@ -15962,8 +15796,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3903,
-      "end": 3904,
+      "start": 3913,
+      "end": 3914,
       "loc": {
         "start": {
           "line": 155,
@@ -15988,8 +15822,8 @@
         "binop": null
       },
       "value": "options",
-      "start": 3904,
-      "end": 3911,
+      "start": 3914,
+      "end": 3921,
       "loc": {
         "start": {
           "line": 155,
@@ -16014,8 +15848,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3911,
-      "end": 3912,
+      "start": 3921,
+      "end": 3922,
       "loc": {
         "start": {
           "line": 155,
@@ -16040,8 +15874,8 @@
         "binop": null
       },
       "value": "login",
-      "start": 3913,
-      "end": 3918,
+      "start": 3923,
+      "end": 3928,
       "loc": {
         "start": {
           "line": 155,
@@ -16066,8 +15900,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3918,
-      "end": 3919,
+      "start": 3928,
+      "end": 3929,
       "loc": {
         "start": {
           "line": 155,
@@ -16092,8 +15926,8 @@
         "binop": null
       },
       "value": "startHidden",
-      "start": 3920,
-      "end": 3931,
+      "start": 3930,
+      "end": 3941,
       "loc": {
         "start": {
           "line": 155,
@@ -16118,8 +15952,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3931,
-      "end": 3932,
+      "start": 3941,
+      "end": 3942,
       "loc": {
         "start": {
           "line": 155,
@@ -16146,8 +15980,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3933,
-      "end": 3937,
+      "start": 3943,
+      "end": 3947,
       "loc": {
         "start": {
           "line": 155,
@@ -16172,8 +16006,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3937,
-      "end": 3938,
+      "start": 3947,
+      "end": 3948,
       "loc": {
         "start": {
           "line": 155,
@@ -16198,8 +16032,8 @@
         "binop": null
       },
       "value": "$container",
-      "start": 3938,
-      "end": 3948,
+      "start": 3948,
+      "end": 3958,
       "loc": {
         "start": {
           "line": 155,
@@ -16223,8 +16057,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3948,
-      "end": 3949,
+      "start": 3958,
+      "end": 3959,
       "loc": {
         "start": {
           "line": 155,
@@ -16249,8 +16083,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3949,
-      "end": 3950,
+      "start": 3959,
+      "end": 3960,
       "loc": {
         "start": {
           "line": 155,
@@ -16275,8 +16109,8 @@
         "binop": null
       },
       "value": "ui",
-      "start": 3954,
-      "end": 3956,
+      "start": 3964,
+      "end": 3966,
       "loc": {
         "start": {
           "line": 157,
@@ -16301,8 +16135,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3956,
-      "end": 3957,
+      "start": 3966,
+      "end": 3967,
       "loc": {
         "start": {
           "line": 157,
@@ -16327,8 +16161,8 @@
         "binop": null
       },
       "value": "on",
-      "start": 3957,
-      "end": 3959,
+      "start": 3967,
+      "end": 3969,
       "loc": {
         "start": {
           "line": 157,
@@ -16352,8 +16186,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3959,
-      "end": 3960,
+      "start": 3969,
+      "end": 3970,
       "loc": {
         "start": {
           "line": 157,
@@ -16379,8 +16213,8 @@
         "updateContext": null
       },
       "value": "register:post",
-      "start": 3960,
-      "end": 3975,
+      "start": 3970,
+      "end": 3985,
       "loc": {
         "start": {
           "line": 157,
@@ -16405,8 +16239,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3975,
-      "end": 3976,
+      "start": 3985,
+      "end": 3986,
       "loc": {
         "start": {
           "line": 157,
@@ -16430,8 +16264,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3977,
-      "end": 3978,
+      "start": 3987,
+      "end": 3988,
       "loc": {
         "start": {
           "line": 157,
@@ -16456,8 +16290,8 @@
         "binop": null
       },
       "value": "values",
-      "start": 3978,
-      "end": 3984,
+      "start": 3988,
+      "end": 3994,
       "loc": {
         "start": {
           "line": 157,
@@ -16481,8 +16315,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3984,
-      "end": 3985,
+      "start": 3994,
+      "end": 3995,
       "loc": {
         "start": {
           "line": 157,
@@ -16507,8 +16341,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3986,
-      "end": 3988,
+      "start": 3996,
+      "end": 3998,
       "loc": {
         "start": {
           "line": 157,
@@ -16535,8 +16369,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3989,
-      "end": 3993,
+      "start": 3999,
+      "end": 4003,
       "loc": {
         "start": {
           "line": 157,
@@ -16561,8 +16395,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3993,
-      "end": 3994,
+      "start": 4003,
+      "end": 4004,
       "loc": {
         "start": {
           "line": 157,
@@ -16587,8 +16421,8 @@
         "binop": null
       },
       "value": "emit",
-      "start": 3994,
-      "end": 3998,
+      "start": 4004,
+      "end": 4008,
       "loc": {
         "start": {
           "line": 157,
@@ -16612,8 +16446,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3998,
-      "end": 3999,
+      "start": 4008,
+      "end": 4009,
       "loc": {
         "start": {
           "line": 157,
@@ -16639,8 +16473,8 @@
         "updateContext": null
       },
       "value": "register:post",
-      "start": 3999,
-      "end": 4014,
+      "start": 4009,
+      "end": 4024,
       "loc": {
         "start": {
           "line": 157,
@@ -16665,8 +16499,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4014,
-      "end": 4015,
+      "start": 4024,
+      "end": 4025,
       "loc": {
         "start": {
           "line": 157,
@@ -16691,8 +16525,8 @@
         "binop": null
       },
       "value": "values",
-      "start": 4016,
-      "end": 4022,
+      "start": 4026,
+      "end": 4032,
       "loc": {
         "start": {
           "line": 157,
@@ -16716,8 +16550,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4022,
-      "end": 4023,
+      "start": 4032,
+      "end": 4033,
       "loc": {
         "start": {
           "line": 157,
@@ -16741,8 +16575,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4023,
-      "end": 4024,
+      "start": 4033,
+      "end": 4034,
       "loc": {
         "start": {
           "line": 157,
@@ -16767,8 +16601,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4024,
-      "end": 4025,
+      "start": 4034,
+      "end": 4035,
       "loc": {
         "start": {
           "line": 157,
@@ -16793,8 +16627,8 @@
         "binop": null
       },
       "value": "ui",
-      "start": 4028,
-      "end": 4030,
+      "start": 4038,
+      "end": 4040,
       "loc": {
         "start": {
           "line": 158,
@@ -16819,8 +16653,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4030,
-      "end": 4031,
+      "start": 4040,
+      "end": 4041,
       "loc": {
         "start": {
           "line": 158,
@@ -16845,8 +16679,8 @@
         "binop": null
       },
       "value": "on",
-      "start": 4031,
-      "end": 4033,
+      "start": 4041,
+      "end": 4043,
       "loc": {
         "start": {
           "line": 158,
@@ -16870,8 +16704,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4033,
-      "end": 4034,
+      "start": 4043,
+      "end": 4044,
       "loc": {
         "start": {
           "line": 158,
@@ -16897,8 +16731,8 @@
         "updateContext": null
       },
       "value": "login:post",
-      "start": 4034,
-      "end": 4046,
+      "start": 4044,
+      "end": 4056,
       "loc": {
         "start": {
           "line": 158,
@@ -16923,8 +16757,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4046,
-      "end": 4047,
+      "start": 4056,
+      "end": 4057,
       "loc": {
         "start": {
           "line": 158,
@@ -16948,8 +16782,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4048,
-      "end": 4049,
+      "start": 4058,
+      "end": 4059,
       "loc": {
         "start": {
           "line": 158,
@@ -16974,8 +16808,8 @@
         "binop": null
       },
       "value": "values",
-      "start": 4049,
-      "end": 4055,
+      "start": 4059,
+      "end": 4065,
       "loc": {
         "start": {
           "line": 158,
@@ -16999,8 +16833,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4055,
-      "end": 4056,
+      "start": 4065,
+      "end": 4066,
       "loc": {
         "start": {
           "line": 158,
@@ -17025,8 +16859,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4057,
-      "end": 4059,
+      "start": 4067,
+      "end": 4069,
       "loc": {
         "start": {
           "line": 158,
@@ -17053,8 +16887,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 4060,
-      "end": 4064,
+      "start": 4070,
+      "end": 4074,
       "loc": {
         "start": {
           "line": 158,
@@ -17079,8 +16913,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4064,
-      "end": 4065,
+      "start": 4074,
+      "end": 4075,
       "loc": {
         "start": {
           "line": 158,
@@ -17105,8 +16939,8 @@
         "binop": null
       },
       "value": "emit",
-      "start": 4065,
-      "end": 4069,
+      "start": 4075,
+      "end": 4079,
       "loc": {
         "start": {
           "line": 158,
@@ -17130,8 +16964,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4069,
-      "end": 4070,
+      "start": 4079,
+      "end": 4080,
       "loc": {
         "start": {
           "line": 158,
@@ -17157,8 +16991,8 @@
         "updateContext": null
       },
       "value": "login:post",
-      "start": 4070,
-      "end": 4082,
+      "start": 4080,
+      "end": 4092,
       "loc": {
         "start": {
           "line": 158,
@@ -17183,8 +17017,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4082,
-      "end": 4083,
+      "start": 4092,
+      "end": 4093,
       "loc": {
         "start": {
           "line": 158,
@@ -17209,8 +17043,8 @@
         "binop": null
       },
       "value": "values",
-      "start": 4084,
-      "end": 4090,
+      "start": 4094,
+      "end": 4100,
       "loc": {
         "start": {
           "line": 158,
@@ -17234,8 +17068,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4090,
-      "end": 4091,
+      "start": 4100,
+      "end": 4101,
       "loc": {
         "start": {
           "line": 158,
@@ -17259,8 +17093,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4091,
-      "end": 4092,
+      "start": 4101,
+      "end": 4102,
       "loc": {
         "start": {
           "line": 158,
@@ -17285,8 +17119,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4092,
-      "end": 4093,
+      "start": 4102,
+      "end": 4103,
       "loc": {
         "start": {
           "line": 158,
@@ -17313,8 +17147,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 4096,
-      "end": 4100,
+      "start": 4106,
+      "end": 4110,
       "loc": {
         "start": {
           "line": 159,
@@ -17339,8 +17173,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4100,
-      "end": 4101,
+      "start": 4110,
+      "end": 4111,
       "loc": {
         "start": {
           "line": 159,
@@ -17365,8 +17199,8 @@
         "binop": null
       },
       "value": "on",
-      "start": 4101,
-      "end": 4103,
+      "start": 4111,
+      "end": 4113,
       "loc": {
         "start": {
           "line": 159,
@@ -17390,8 +17224,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4103,
-      "end": 4104,
+      "start": 4113,
+      "end": 4114,
       "loc": {
         "start": {
           "line": 159,
@@ -17417,8 +17251,8 @@
         "updateContext": null
       },
       "value": "login:start",
-      "start": 4104,
-      "end": 4117,
+      "start": 4114,
+      "end": 4127,
       "loc": {
         "start": {
           "line": 159,
@@ -17443,8 +17277,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4117,
-      "end": 4118,
+      "start": 4127,
+      "end": 4128,
       "loc": {
         "start": {
           "line": 159,
@@ -17468,8 +17302,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4119,
-      "end": 4120,
+      "start": 4129,
+      "end": 4130,
       "loc": {
         "start": {
           "line": 159,
@@ -17493,8 +17327,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4120,
-      "end": 4121,
+      "start": 4130,
+      "end": 4131,
       "loc": {
         "start": {
           "line": 159,
@@ -17519,8 +17353,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4122,
-      "end": 4124,
+      "start": 4132,
+      "end": 4134,
       "loc": {
         "start": {
           "line": 159,
@@ -17545,8 +17379,8 @@
         "binop": null
       },
       "value": "ui",
-      "start": 4125,
-      "end": 4127,
+      "start": 4135,
+      "end": 4137,
       "loc": {
         "start": {
           "line": 159,
@@ -17571,8 +17405,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4127,
-      "end": 4128,
+      "start": 4137,
+      "end": 4138,
       "loc": {
         "start": {
           "line": 159,
@@ -17597,8 +17431,8 @@
         "binop": null
       },
       "value": "emit",
-      "start": 4128,
-      "end": 4132,
+      "start": 4138,
+      "end": 4142,
       "loc": {
         "start": {
           "line": 159,
@@ -17622,8 +17456,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4132,
-      "end": 4133,
+      "start": 4142,
+      "end": 4143,
       "loc": {
         "start": {
           "line": 159,
@@ -17649,8 +17483,8 @@
         "updateContext": null
       },
       "value": "login:start",
-      "start": 4133,
-      "end": 4146,
+      "start": 4143,
+      "end": 4156,
       "loc": {
         "start": {
           "line": 159,
@@ -17674,8 +17508,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4146,
-      "end": 4147,
+      "start": 4156,
+      "end": 4157,
       "loc": {
         "start": {
           "line": 159,
@@ -17699,8 +17533,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4147,
-      "end": 4148,
+      "start": 4157,
+      "end": 4158,
       "loc": {
         "start": {
           "line": 159,
@@ -17725,8 +17559,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4148,
-      "end": 4149,
+      "start": 4158,
+      "end": 4159,
       "loc": {
         "start": {
           "line": 159,
@@ -17753,8 +17587,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 4152,
-      "end": 4156,
+      "start": 4162,
+      "end": 4166,
       "loc": {
         "start": {
           "line": 160,
@@ -17779,8 +17613,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4156,
-      "end": 4157,
+      "start": 4166,
+      "end": 4167,
       "loc": {
         "start": {
           "line": 160,
@@ -17805,8 +17639,8 @@
         "binop": null
       },
       "value": "on",
-      "start": 4157,
-      "end": 4159,
+      "start": 4167,
+      "end": 4169,
       "loc": {
         "start": {
           "line": 160,
@@ -17830,8 +17664,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4159,
-      "end": 4160,
+      "start": 4169,
+      "end": 4170,
       "loc": {
         "start": {
           "line": 160,
@@ -17857,8 +17691,8 @@
         "updateContext": null
       },
       "value": "login:stop",
-      "start": 4160,
-      "end": 4172,
+      "start": 4170,
+      "end": 4182,
       "loc": {
         "start": {
           "line": 160,
@@ -17883,8 +17717,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4172,
-      "end": 4173,
+      "start": 4182,
+      "end": 4183,
       "loc": {
         "start": {
           "line": 160,
@@ -17908,8 +17742,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4174,
-      "end": 4175,
+      "start": 4184,
+      "end": 4185,
       "loc": {
         "start": {
           "line": 160,
@@ -17933,8 +17767,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4175,
-      "end": 4176,
+      "start": 4185,
+      "end": 4186,
       "loc": {
         "start": {
           "line": 160,
@@ -17959,8 +17793,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4177,
-      "end": 4179,
+      "start": 4187,
+      "end": 4189,
       "loc": {
         "start": {
           "line": 160,
@@ -17985,8 +17819,8 @@
         "binop": null
       },
       "value": "ui",
-      "start": 4180,
-      "end": 4182,
+      "start": 4190,
+      "end": 4192,
       "loc": {
         "start": {
           "line": 160,
@@ -18011,8 +17845,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4182,
-      "end": 4183,
+      "start": 4192,
+      "end": 4193,
       "loc": {
         "start": {
           "line": 160,
@@ -18037,8 +17871,8 @@
         "binop": null
       },
       "value": "emit",
-      "start": 4183,
-      "end": 4187,
+      "start": 4193,
+      "end": 4197,
       "loc": {
         "start": {
           "line": 160,
@@ -18062,8 +17896,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4187,
-      "end": 4188,
+      "start": 4197,
+      "end": 4198,
       "loc": {
         "start": {
           "line": 160,
@@ -18089,8 +17923,8 @@
         "updateContext": null
       },
       "value": "login:stop",
-      "start": 4188,
-      "end": 4200,
+      "start": 4198,
+      "end": 4210,
       "loc": {
         "start": {
           "line": 160,
@@ -18114,8 +17948,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4200,
-      "end": 4201,
+      "start": 4210,
+      "end": 4211,
       "loc": {
         "start": {
           "line": 160,
@@ -18139,8 +17973,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4201,
-      "end": 4202,
+      "start": 4211,
+      "end": 4212,
       "loc": {
         "start": {
           "line": 160,
@@ -18165,8 +17999,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4202,
-      "end": 4203,
+      "start": 4212,
+      "end": 4213,
       "loc": {
         "start": {
           "line": 160,
@@ -18193,8 +18027,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 4206,
-      "end": 4210,
+      "start": 4216,
+      "end": 4220,
       "loc": {
         "start": {
           "line": 161,
@@ -18219,8 +18053,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4210,
-      "end": 4211,
+      "start": 4220,
+      "end": 4221,
       "loc": {
         "start": {
           "line": 161,
@@ -18245,8 +18079,8 @@
         "binop": null
       },
       "value": "on",
-      "start": 4211,
-      "end": 4213,
+      "start": 4221,
+      "end": 4223,
       "loc": {
         "start": {
           "line": 161,
@@ -18270,8 +18104,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4213,
-      "end": 4214,
+      "start": 4223,
+      "end": 4224,
       "loc": {
         "start": {
           "line": 161,
@@ -18297,8 +18131,8 @@
         "updateContext": null
       },
       "value": "login:error",
-      "start": 4214,
-      "end": 4227,
+      "start": 4224,
+      "end": 4237,
       "loc": {
         "start": {
           "line": 161,
@@ -18323,8 +18157,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4227,
-      "end": 4228,
+      "start": 4237,
+      "end": 4238,
       "loc": {
         "start": {
           "line": 161,
@@ -18348,8 +18182,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4229,
-      "end": 4230,
+      "start": 4239,
+      "end": 4240,
       "loc": {
         "start": {
           "line": 161,
@@ -18374,8 +18208,8 @@
         "binop": null
       },
       "value": "err",
-      "start": 4230,
-      "end": 4233,
+      "start": 4240,
+      "end": 4243,
       "loc": {
         "start": {
           "line": 161,
@@ -18399,8 +18233,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4233,
-      "end": 4234,
+      "start": 4243,
+      "end": 4244,
       "loc": {
         "start": {
           "line": 161,
@@ -18425,8 +18259,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4235,
-      "end": 4237,
+      "start": 4245,
+      "end": 4247,
       "loc": {
         "start": {
           "line": 161,
@@ -18451,8 +18285,8 @@
         "binop": null
       },
       "value": "ui",
-      "start": 4238,
-      "end": 4240,
+      "start": 4248,
+      "end": 4250,
       "loc": {
         "start": {
           "line": 161,
@@ -18477,8 +18311,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4240,
-      "end": 4241,
+      "start": 4250,
+      "end": 4251,
       "loc": {
         "start": {
           "line": 161,
@@ -18503,8 +18337,8 @@
         "binop": null
       },
       "value": "emit",
-      "start": 4241,
-      "end": 4245,
+      "start": 4251,
+      "end": 4255,
       "loc": {
         "start": {
           "line": 161,
@@ -18528,8 +18362,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4245,
-      "end": 4246,
+      "start": 4255,
+      "end": 4256,
       "loc": {
         "start": {
           "line": 161,
@@ -18555,8 +18389,8 @@
         "updateContext": null
       },
       "value": "login:error",
-      "start": 4246,
-      "end": 4259,
+      "start": 4256,
+      "end": 4269,
       "loc": {
         "start": {
           "line": 161,
@@ -18581,8 +18415,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4259,
-      "end": 4260,
+      "start": 4269,
+      "end": 4270,
       "loc": {
         "start": {
           "line": 161,
@@ -18607,8 +18441,8 @@
         "binop": null
       },
       "value": "err",
-      "start": 4261,
-      "end": 4264,
+      "start": 4271,
+      "end": 4274,
       "loc": {
         "start": {
           "line": 161,
@@ -18632,8 +18466,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4264,
-      "end": 4265,
+      "start": 4274,
+      "end": 4275,
       "loc": {
         "start": {
           "line": 161,
@@ -18657,8 +18491,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4265,
-      "end": 4266,
+      "start": 4275,
+      "end": 4276,
       "loc": {
         "start": {
           "line": 161,
@@ -18683,8 +18517,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4266,
-      "end": 4267,
+      "start": 4276,
+      "end": 4277,
       "loc": {
         "start": {
           "line": 161,
@@ -18708,8 +18542,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4269,
-      "end": 4270,
+      "start": 4279,
+      "end": 4280,
       "loc": {
         "start": {
           "line": 162,
@@ -18733,8 +18567,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 4271,
-      "end": 4272,
+      "start": 4281,
+      "end": 4282,
       "loc": {
         "start": {
           "line": 163,
@@ -18759,8 +18593,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4273,
-      "end": 4273,
+      "start": 4283,
+      "end": 4283,
       "loc": {
         "start": {
           "line": 164,
