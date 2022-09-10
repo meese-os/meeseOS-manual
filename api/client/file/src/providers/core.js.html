@@ -151,6 +151,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-applyCursorEffect">applyCursorEffect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createPanelSubtraction">createPanelSubtraction</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDroppingImage">isDroppingImage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-resourceResolver">resourceResolver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validVfsDrop">validVfsDrop</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-draggable">draggable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-droppable">droppable</a></span></span></li>
@@ -529,7 +530,6 @@ export default class CoreServiceProvider extends ServiceProvider {
 				: new WindowBehavior(this.core)
 		);
 
-		// FIXME: deprecated
 		this.core.instance(&quot;meeseOS/event-handler&quot;, (...args) =&gt; {
 			logger.warn(
 				&quot;meeseOS/event-handler is deprecated, use meeseOS/event-emitter&quot;
@@ -708,6 +708,7 @@ export default class CoreServiceProvider extends ServiceProvider {
 			getCompatiblePackages: (mimeType) =&gt;
 				this.pm.getCompatiblePackages(mimeType),
 			running: () =&gt; this.pm.running(),
+			getMetadataFromName: (name) =&gt; this.pm.getMetadataFromName(name),
 		};
 	}
 

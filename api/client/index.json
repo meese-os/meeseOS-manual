@@ -9492,7 +9492,7 @@
     "__docId__": 392,
     "kind": "file",
     "name": "src/packages.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateManifestFromArray,\n\tcreatePackageAvailabilityCheck,\n\tfilterMetadataFilesByType,\n\tmetadataFilesToFilenames,\n} from \"./utils/packages\";\nimport Application from \"./application\";\nimport Preloader from \"./utils/preloader\";\nimport logger from \"./logger\";\n\n/**\n * A registered package reference\n *\n * @typedef {Object} PackageReference\n * @property {PackageMetadata} metadata Package metadata\n * @property {Function} callback Callback to instanciate\n */\n\n/**\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {String} name The package name\n * @property {String} [category] Package category\n * @property {String} [icon] Package icon\n * @property {Boolean} [singleton] If only one instance allowed\n * @property {Boolean} [autostart] Autostart on boot\n * @property {Boolean} [hidden] Hide from launch menus etc.\n * @property {String} [server] Server script filename\n * @property {String[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {String} title String title of package\n * @property {String} description String description of package\n */\n\n/**\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {Boolean} [forcePreload=false] Force preload reloading\n */\n\n/**\n * Package Manager\n *\n * Handles indexing, loading and launching of MeeseOS packages\n */\nexport default class Packages {\n\t/**\n\t * Create package manage\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * A list of registered packages\n\t\t * @type {PackageReference[]}\n\t\t */\n\t\tthis.packages = [];\n\n\t\t/**\n\t\t * The lost of loaded package metadata\n\t\t * @type {PackageMetadata[]}\n\t\t */\n\t\tthis.metadata = [];\n\n\t\t/**\n\t\t * A list of running application names\n\t\t *\n\t\t * Mainly used for singleton awareness\n\t\t *\n\t\t * @private\n\t\t * @type {String[]}\n\t\t */\n\t\tthis._running = [];\n\n\t\t/**\n\t\t * Preloader\n\t\t * @type {Preloader}\n\t\t * @readonly\n\t\t */\n\t\tthis.preloader = new Preloader(core.$resourceRoot);\n\n\t\t/**\n\t\t * If inited\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.inited = false;\n\t}\n\n\t/**\n\t * Destroy package manager\n\t */\n\tdestroy() {\n\t\tthis.packages = [];\n\t\tthis.metadata = [];\n\n\t\tthis.preloader.destroy();\n\t}\n\n\t/**\n\t * Initializes package manager\n\t * @returns {Promise<Boolean>}\n\t */\n\tinit() {\n\t\tlogger.debug(\"Packages::init()\");\n\n\t\tif (!this.inited) {\n\t\t\tthis.core.on(\"meeseOS/core:started\", () => this._autostart());\n\t\t}\n\n\t\tthis.metadata = this.core\n\t\t\t.config(\"packages.metadata\", [])\n\t\t\t.map((iter) => ({ type: \"application\", ...iter }));\n\n\t\tthis.inited = true;\n\n\t\tconst manifest = this.core.config(\"packages.manifest\");\n\n\t\treturn manifest\n\t\t\t? this.core\n\t\t\t\t.request(manifest, {}, \"json\", true)\n\t\t\t\t.then((metadata) => this.addPackages(metadata))\n\t\t\t\t.then((metadata) => this._preloadBackgroundFiles(metadata))\n\t\t\t\t.then(() => true)\n\t\t\t\t.catch((error) => logger.error(error))\n\t\t\t: Promise.resolve(true);\n\t}\n\n\t/**\n\t * Launches a (application) package\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t */\n\tlaunch(name, args = {}, options = {}) {\n\t\tlogger.debug(\"Packages::launch()\", name, args, options);\n\n\t\tconst metadata = this.metadata.find((pkg) => pkg.name === name);\n\t\tif (!metadata) {\n\t\t\tthrow new Error(`Package Metadata '${name}' not found`);\n\t\t}\n\n\t\tif ([\"theme\", \"icons\", \"sounds\"].indexOf(metadata.type) !== -1) {\n\t\t\treturn this._launchTheme(name, metadata);\n\t\t}\n\n\t\treturn this._launchApplication(name, metadata, args, options);\n\t}\n\n\t/**\n\t * Launches an application package\n\t *\n\t * @private\n\t * @param {String} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t */\n\t_launchApplication(name, metadata, args, options) {\n\t\tlet signaled = false;\n\n\t\tif (metadata.singleton) {\n\t\t\tconst foundApp = Application.getApplications().find(\n\t\t\t\t(app) => app.metadata.name === metadata.name\n\t\t\t);\n\n\t\t\tif (foundApp) {\n\t\t\t\tfoundApp.emit(\"attention\", args, options);\n\t\t\t\tsignaled = true;\n\n\t\t\t\treturn Promise.resolve(foundApp);\n\t\t\t}\n\n\t\t\tconst found = this._running.filter((n) => n === name);\n\n\t\t\tif (found.length > 0) {\n\t\t\t\treturn new Promise((resolve, reject) => {\n\t\t\t\t\tthis.core.once(`meeseOS/application:${name}:launched`, (a) => {\n\t\t\t\t\t\tif (signaled) {\n\t\t\t\t\t\t\tresolve(a);\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\ta.emit(\"attention\", args, options);\n\t\t\t\t\t\t\tresolve(a);\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\n\t\tthis.core.emit(\"meeseOS/application:launch\", name, args, options);\n\n\t\tthis._running.push(name);\n\n\t\treturn this._launch(name, metadata, args, options);\n\t}\n\n\t/**\n\t * Launches a (theme) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t */\n\t_launchTheme(name, metadata) {\n\t\tconst preloads = this._getPreloads(metadata, \"preload\", \"theme\");\n\n\t\treturn this.preloader.load(preloads).then((result) => {\n\t\t\treturn {\n\t\t\t\telements: {},\n\t\t\t\t...result,\n\t\t\t\t...(this.packages.find((pkg) => pkg.metadata.name === name) || {}),\n\t\t\t};\n\t\t});\n\t}\n\n\t/**\n\t * Returns preloads\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {String} fileType Files type\n\t * @param {String} packageType Package type\n\t * @returns {String[]}\n\t */\n\t_getPreloads(metadata, fileType, packageType) {\n\t\treturn metadataFilesToFilenames(\n\t\t\tfilterMetadataFilesByType(metadata.files, fileType)\n\t\t).map((f) => this.core.url(f, {}, { type: packageType, ...metadata }));\n\t}\n\n\t/**\n\t * Wrapper for launching a (application) package\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t */\n\t_launch(name, metadata, args, options) {\n\t\tconst canLaunch = createPackageAvailabilityCheck(this.core);\n\n\t\tconst dialog = (e) => {\n\t\t\tconst exception = `An exception occured in '${name}'`;\n\t\t\tif (this.core.has(\"meeseOS/dialog\")) {\n\t\t\t\tthis.core.make(\n\t\t\t\t\t\"meeseOS/dialog\",\n\t\t\t\t\t\"alert\",\n\t\t\t\t\t{\n\t\t\t\t\t\ttype: \"error\",\n\t\t\t\t\t\ttitle: exception,\n\t\t\t\t\t\tmessage: exception,\n\t\t\t\t\t\terror: e,\n\t\t\t\t\t},\n\t\t\t\t\t() => {\n\t\t\t\t\t\t/* noop */\n\t\t\t\t\t}\n\t\t\t\t);\n\t\t\t} else {\n\t\t\t\talert(`${exception}: ${e.stack || e}`);\n\t\t\t}\n\t\t};\n\n\t\tconst fail = (err) => {\n\t\t\tthis.core.emit(\"meeseOS/application:launched\", name, false);\n\t\t\tthis.core.emit(`meeseOS/application:${name}:launched`, false);\n\n\t\t\tdialog(err);\n\n\t\t\tthrow new Error(err);\n\t\t};\n\n\t\tconst preloads = this._getPreloads(metadata, \"preload\", \"apps\");\n\n\t\tconst create = (found) => {\n\t\t\tlet app;\n\n\t\t\ttry {\n\t\t\t\tconsole.group(\"Packages::_launch()\");\n\t\t\t\tapp = found.callback(this.core, args, options, found.metadata);\n\n\t\t\t\tif (app instanceof Application) {\n\t\t\t\t\tapp.on(\"destroy\", () => {\n\t\t\t\t\t\tconst foundIndex = this._running.findIndex((n) => n === name);\n\t\t\t\t\t\tif (foundIndex !== -1) {\n\t\t\t\t\t\t\tthis._running.splice(foundIndex, 1);\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t} else {\n\t\t\t\t\tlogger.warn(\n\t\t\t\t\t\t\"The application\",\n\t\t\t\t\t\tname,\n\t\t\t\t\t\t\"did not return an Application instance from registration\"\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t} catch (e) {\n\t\t\t\tdialog(e);\n\n\t\t\t\tlogger.warn(\"Exception when launching\", name, e);\n\t\t\t} finally {\n\t\t\t\tthis.core.emit(\"meeseOS/application:launched\", name, app);\n\t\t\t\tthis.core.emit(`meeseOS/application:${name}:launched`, app);\n\t\t\t\tconsole.groupEnd();\n\t\t\t}\n\n\t\t\treturn app;\n\t\t};\n\n\t\tif (!canLaunch(metadata)) {\n\t\t\tfail(`You are not permitted to run '${name}'`);\n\t\t}\n\n\t\treturn this.preloader\n\t\t\t.load(preloads, options.forcePreload === true)\n\t\t\t.then(({ errors }) => {\n\t\t\t\tif (errors.length) {\n\t\t\t\t\tfail(`Package Loading '${name}' failed: ${errors.join(\", \")}`);\n\t\t\t\t}\n\n\t\t\t\tconst found = this.packages.find((pkg) => pkg.metadata.name === name);\n\t\t\t\tif (!found) {\n\t\t\t\t\tfail(`Package Runtime '${name}' not found`);\n\t\t\t\t}\n\n\t\t\t\treturn create(found);\n\t\t\t});\n\t}\n\n\t/**\n\t * Autostarts tagged packages\n\t * @private\n\t */\n\t_autostart() {\n\t\tconst meta = this.metadata.filter((pkg) => pkg.autostart === true);\n\n\t\tconst configured = this.core\n\t\t\t.config(\"application.autostart\", [])\n\t\t\t.map((value) => (typeof value === \"string\" ? { name: value } : value));\n\n\t\t[...meta, ...configured].forEach(({ name, args }) =>\n\t\t\tthis.launch(name, args || {})\n\t\t);\n\t}\n\n\t/**\n\t * Registers a package\n\t *\n\t * @param {String} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t */\n\tregister(name, callback) {\n\t\tlogger.debug(\"Packages::register()\", name);\n\n\t\tconst metadata = this.metadata.find((pkg) => pkg.name === name);\n\t\tif (!metadata) {\n\t\t\tthrow new Error(\n\t\t\t\t`Metadata not found for '${name}'. Is it in the manifest?`\n\t\t\t);\n\t\t}\n\n\t\tconst foundIndex = this.packages.findIndex(\n\t\t\t(pkg) => pkg.metadata.name === name\n\t\t);\n\t\tif (foundIndex !== -1) {\n\t\t\tthis.packages.splice(foundIndex, 1);\n\t\t}\n\n\t\tthis.packages.push({\n\t\t\tmetadata,\n\t\t\tcallback,\n\t\t});\n\t}\n\n\t/**\n\t * Adds a set of packages\n\t * @param {PackageMetadata[]} list Package list\n\t * @returns {PackageMetadata[]} Current list of packages\n\t */\n\taddPackages(list) {\n\t\tif (list instanceof Array) {\n\t\t\tconst override = this.core.config(\"packages.overrideMetadata\", {});\n\t\t\tconst append = createManifestFromArray(list).map((meta) =>\n\t\t\t\toverride[meta.name] ? { ...meta, ...override[meta.name] } : meta\n\t\t\t);\n\n\t\t\tthis.metadata = [...this.metadata, ...append];\n\t\t}\n\n\t\treturn this.getPackages();\n\t}\n\n\t/**\n\t * Gets a list of packages (metadata)\n\t * @param {Function} [filter] A filter function\n\t * @returns {PackageMetadata[]}\n\t */\n\tgetPackages(filter) {\n\t\tfilter = filter || (() => true);\n\n\t\tconst metadata = this.metadata.map((m) => ({ ...m }));\n\t\tconst hidden = this.core.config(\"packages.hidden\", []);\n\t\tconst filterAvailable = createPackageAvailabilityCheck(this.core);\n\n\t\tconst filterConfigHidden = (iter) =>\n\t\t\thidden instanceof Array ? hidden.indexOf(iter.name) === -1 : true;\n\n\t\treturn metadata\n\t\t\t.filter(filterAvailable)\n\t\t\t.filter(filterConfigHidden)\n\t\t\t.filter(filter);\n\t}\n\n\t/**\n\t * Gets a list of packages compatible with the given mime type\n\t * @param {String} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t */\n\tgetCompatiblePackages(mimeType) {\n\t\treturn this.getPackages((meta) => {\n\t\t\tif (meta.mimes) {\n\t\t\t\treturn Boolean(\n\t\t\t\t\tmeta.mimes.find((mime) => {\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tconst re = new RegExp(mime);\n\t\t\t\t\t\t\treturn re.test(mimeType);\n\t\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\t\tlogger.warn(\"Compability check failed\", e);\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\treturn mime === mimeType;\n\t\t\t\t\t})\n\t\t\t\t);\n\t\t\t}\n\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Preloads background files of a set of packages\n\t * @param {PackageMetadata[]} list Package list\n\t */\n\t_preloadBackgroundFiles(list) {\n\t\tconst backgroundFiles = list.reduce(\n\t\t\t(filenames, iter) => [\n\t\t\t\t...filenames,\n\t\t\t\t...this._getPreloads(iter, \"background\", \"apps\"),\n\t\t\t],\n\t\t\t[]\n\t\t);\n\n\t\treturn this.preloader.load(backgroundFiles).then(({ errors = [] }) => {\n\t\t\terrors.forEach((error) => logger.error(error));\n\t\t});\n\t}\n\n\t/**\n\t * Gets a list of running packages\n\t * @returns {String[]}\n\t */\n\trunning() {\n\t\treturn this._running;\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateManifestFromArray,\n\tcreatePackageAvailabilityCheck,\n\tfilterMetadataFilesByType,\n\tmetadataFilesToFilenames,\n} from \"./utils/packages\";\nimport Application from \"./application\";\nimport Preloader from \"./utils/preloader\";\nimport logger from \"./logger\";\n\n/**\n * A registered package reference\n *\n * @typedef {Object} PackageReference\n * @property {PackageMetadata} metadata Package metadata\n * @property {Function} callback Callback to instanciate\n */\n\n/**\n * A package metadata\n *\n * @typedef {Object} PackageMetadata\n * @property {String} name The package name\n * @property {String} [category] Package category\n * @property {String} [icon] Package icon\n * @property {Boolean} [singleton] If only one instance allowed\n * @property {Boolean} [autostart] Autostart on boot\n * @property {Boolean} [hidden] Hide from launch menus etc.\n * @property {String} [server] Server script filename\n * @property {String[]} [groups] Only available for users in this group\n * @property {Object[]|string[]} [files] Files to preload\n * @property {String} title String title of package\n * @property {String} description String description of package\n */\n\n/**\n * Package Launch Options\n *\n * @typedef {Object} PackageLaunchOptions\n * @property {Boolean} [forcePreload=false] Force preload reloading\n */\n\n/**\n * Package Manager\n *\n * Handles indexing, loading and launching of MeeseOS packages\n */\nexport default class Packages {\n\t/**\n\t * Create package manager.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference.\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * A list of registered packages.\n\t\t * @type {PackageReference[]}\n\t\t */\n\t\tthis.packages = [];\n\n\t\t/**\n\t\t * The list of loaded package metadata.\n\t\t * @type {PackageMetadata[]}\n\t\t */\n\t\tthis.metadata = [];\n\n\t\t/**\n\t\t * A list of running application names.\n\t\t * Mainly used for singleton awareness.\n\t\t *\n\t\t * @private\n\t\t * @type {String[]}\n\t\t */\n\t\tthis._running = [];\n\n\t\t/**\n\t\t * Preloader.\n\t\t * @type {Preloader}\n\t\t * @readonly\n\t\t */\n\t\tthis.preloader = new Preloader(core.$resourceRoot);\n\n\t\t/**\n\t\t * If inited\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.inited = false;\n\t}\n\n\t/**\n\t * Destroy package manager.\n\t */\n\tdestroy() {\n\t\tthis.packages = [];\n\t\tthis.metadata = [];\n\n\t\tthis.preloader.destroy();\n\t}\n\n\t/**\n\t * Initializes package manager.\n\t * @returns {Promise<Boolean>}\n\t */\n\tinit() {\n\t\tlogger.debug(\"Packages::init()\");\n\n\t\tif (!this.inited) {\n\t\t\tthis.core.on(\"meeseOS/core:started\", () => this._autostart());\n\t\t}\n\n\t\tthis.metadata = this.core\n\t\t\t.config(\"packages.metadata\", [])\n\t\t\t.map((iter) => ({ type: \"application\", ...iter }));\n\n\t\tthis.inited = true;\n\n\t\tconst manifest = this.core.config(\"packages.manifest\");\n\n\t\treturn manifest\n\t\t\t? this.core\n\t\t\t\t.request(manifest, {}, \"json\", true)\n\t\t\t\t.then((metadata) => this.addPackages(metadata))\n\t\t\t\t.then((metadata) => this._preloadBackgroundFiles(metadata))\n\t\t\t\t.then(() => true)\n\t\t\t\t.catch((error) => logger.error(error))\n\t\t\t: Promise.resolve(true);\n\t}\n\n\t/**\n\t * Launches a (application) package.\n\t *\n\t * @param {String} name Package name\n\t * @param {{foo: *}} [args={}] Launch arguments\n\t * @param {PackageLaunchOptions} [options={}] Launch options\n\t * @see PackageServiceProvider\n\t * @throws {Error}\n\t * @returns {Promise<Application>}\n\t */\n\tlaunch(name, args = {}, options = {}) {\n\t\tlogger.debug(\"Packages::launch()\", name, args, options);\n\n\t\tconst metadata = this.metadata.find((pkg) => pkg.name === name);\n\t\tif (!metadata) {\n\t\t\tthrow new Error(`Package Metadata '${name}' not found`);\n\t\t}\n\n\t\tif ([\"theme\", \"icons\", \"sounds\"].indexOf(metadata.type) !== -1) {\n\t\t\treturn this._launchTheme(name, metadata);\n\t\t}\n\n\t\treturn this._launchApplication(name, metadata, args, options);\n\t}\n\n\t/**\n\t * Launches an application package.\n\t *\n\t * @private\n\t * @param {String} name Application package name\n\t * @param {Metadata} metadata Application metadata\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t */\n\t_launchApplication(name, metadata, args, options) {\n\t\tlet signaled = false;\n\n\t\tif (metadata.singleton) {\n\t\t\tconst foundApp = Application.getApplications().find(\n\t\t\t\t(app) => app.metadata.name === metadata.name\n\t\t\t);\n\n\t\t\tif (foundApp) {\n\t\t\t\tfoundApp.emit(\"attention\", args, options);\n\t\t\t\tsignaled = true;\n\n\t\t\t\treturn Promise.resolve(foundApp);\n\t\t\t}\n\n\t\t\tconst found = this._running.filter((n) => n === name);\n\n\t\t\tif (found.length > 0) {\n\t\t\t\treturn new Promise((resolve, reject) => {\n\t\t\t\t\tthis.core.once(`meeseOS/application:${name}:launched`, (a) => {\n\t\t\t\t\t\tif (signaled) {\n\t\t\t\t\t\t\tresolve(a);\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\ta.emit(\"attention\", args, options);\n\t\t\t\t\t\t\tresolve(a);\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\n\t\tthis.core.emit(\"meeseOS/application:launch\", name, args, options);\n\n\t\tthis._running.push(name);\n\n\t\treturn this._launch(name, metadata, args, options);\n\t}\n\n\t/**\n\t * Launches a (theme) package.\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {Metadata} metadata Application metadata\n\t * @throws {Error}\n\t * @returns {Promise<object>}\n\t */\n\t_launchTheme(name, metadata) {\n\t\tconst preloads = this._getPreloads(metadata, \"preload\", \"theme\");\n\n\t\treturn this.preloader.load(preloads).then((result) => {\n\t\t\treturn {\n\t\t\t\telements: {},\n\t\t\t\t...result,\n\t\t\t\t...(this.packages.find((pkg) => pkg.metadata.name === name) || {}),\n\t\t\t};\n\t\t});\n\t}\n\n\t/**\n\t * Returns preloads.\n\t *\n\t * @private\n\t * @param {Metadata} metadata Application metadata\n\t * @param {String} fileType Files type\n\t * @param {String} packageType Package type\n\t * @returns {String[]}\n\t */\n\t_getPreloads(metadata, fileType, packageType) {\n\t\treturn metadataFilesToFilenames(\n\t\t\tfilterMetadataFilesByType(metadata.files, fileType)\n\t\t).map((f) => this.core.url(f, {}, { type: packageType, ...metadata }));\n\t}\n\n\t/**\n\t * Wrapper for launching a (application) package.\n\t *\n\t * @private\n\t * @param {String} name Package name\n\t * @param {{foo: *}} args Launch arguments\n\t * @param {PackageLaunchOptions} options Launch options\n\t * @returns {Promise<Application>}\n\t */\n\t_launch(name, metadata, args, options) {\n\t\tconst canLaunch = createPackageAvailabilityCheck(this.core);\n\n\t\tconst dialog = (e) => {\n\t\t\tconst exception = `An exception occured in '${name}'`;\n\t\t\tif (this.core.has(\"meeseOS/dialog\")) {\n\t\t\t\tthis.core.make(\n\t\t\t\t\t\"meeseOS/dialog\",\n\t\t\t\t\t\"alert\",\n\t\t\t\t\t{\n\t\t\t\t\t\ttype: \"error\",\n\t\t\t\t\t\ttitle: exception,\n\t\t\t\t\t\tmessage: exception,\n\t\t\t\t\t\terror: e,\n\t\t\t\t\t},\n\t\t\t\t\t() => {\n\t\t\t\t\t\t/* noop */\n\t\t\t\t\t}\n\t\t\t\t);\n\t\t\t} else {\n\t\t\t\talert(`${exception}: ${e.stack || e}`);\n\t\t\t}\n\t\t};\n\n\t\tconst fail = (err) => {\n\t\t\tthis.core.emit(\"meeseOS/application:launched\", name, false);\n\t\t\tthis.core.emit(`meeseOS/application:${name}:launched`, false);\n\n\t\t\tdialog(err);\n\n\t\t\tthrow new Error(err);\n\t\t};\n\n\t\tconst preloads = this._getPreloads(metadata, \"preload\", \"apps\");\n\n\t\tconst create = (found) => {\n\t\t\tlet app;\n\n\t\t\ttry {\n\t\t\t\tconsole.group(\"Packages::_launch()\");\n\t\t\t\tapp = found.callback(this.core, args, options, found.metadata);\n\n\t\t\t\tif (app instanceof Application) {\n\t\t\t\t\tapp.on(\"destroy\", () => {\n\t\t\t\t\t\tconst foundIndex = this._running.findIndex((n) => n === name);\n\t\t\t\t\t\tif (foundIndex !== -1) {\n\t\t\t\t\t\t\tthis._running.splice(foundIndex, 1);\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t} else {\n\t\t\t\t\tlogger.warn(\n\t\t\t\t\t\t\"The application\",\n\t\t\t\t\t\tname,\n\t\t\t\t\t\t\"did not return an Application instance from registration\"\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t} catch (e) {\n\t\t\t\tdialog(e);\n\n\t\t\t\tlogger.warn(\"Exception when launching\", name, e);\n\t\t\t} finally {\n\t\t\t\tthis.core.emit(\"meeseOS/application:launched\", name, app);\n\t\t\t\tthis.core.emit(`meeseOS/application:${name}:launched`, app);\n\t\t\t\tconsole.groupEnd();\n\t\t\t}\n\n\t\t\treturn app;\n\t\t};\n\n\t\tif (!canLaunch(metadata)) {\n\t\t\tfail(`You are not permitted to run '${name}'`);\n\t\t}\n\n\t\treturn this.preloader\n\t\t\t.load(preloads, options.forcePreload === true)\n\t\t\t.then(({ errors }) => {\n\t\t\t\tif (errors.length) {\n\t\t\t\t\tfail(`Package Loading '${name}' failed: ${errors.join(\", \")}`);\n\t\t\t\t}\n\n\t\t\t\tconst found = this.packages.find((pkg) => pkg.metadata.name === name);\n\t\t\t\tif (!found) {\n\t\t\t\t\tfail(`Package Runtime '${name}' not found`);\n\t\t\t\t}\n\n\t\t\t\treturn create(found);\n\t\t\t});\n\t}\n\n\t/**\n\t * Autostarts tagged packages.\n\t * @private\n\t */\n\t_autostart() {\n\t\tconst meta = this.metadata.filter((pkg) => pkg.autostart === true);\n\n\t\tconst configured = this.core\n\t\t\t.config(\"application.autostart\", [])\n\t\t\t.map((value) => (typeof value === \"string\" ? { name: value } : value));\n\n\t\t[...meta, ...configured].forEach(({ name, args }) =>\n\t\t\tthis.launch(name, args || {})\n\t\t);\n\t}\n\n\t/**\n\t * Registers a package.\n\t *\n\t * @param {String} name Package name\n\t * @param {Function} callback Callback function to construct application instance\n\t * @throws {Error}\n\t */\n\tregister(name, callback) {\n\t\tlogger.debug(\"Packages::register()\", name);\n\n\t\tconst metadata = this.metadata.find((pkg) => pkg.name === name);\n\t\tif (!metadata) {\n\t\t\tthrow new Error(\n\t\t\t\t`Metadata not found for '${name}'. Is it in the manifest?`\n\t\t\t);\n\t\t}\n\n\t\tconst foundIndex = this.packages.findIndex(\n\t\t\t(pkg) => pkg.metadata.name === name\n\t\t);\n\t\tif (foundIndex !== -1) {\n\t\t\tthis.packages.splice(foundIndex, 1);\n\t\t}\n\n\t\tthis.packages.push({\n\t\t\tmetadata,\n\t\t\tcallback,\n\t\t});\n\t}\n\n\t/**\n\t * Adds a set of packages.\n\t * @param {PackageMetadata[]} list Package list\n\t * @returns {PackageMetadata[]} Current list of packages\n\t */\n\taddPackages(list) {\n\t\tif (list instanceof Array) {\n\t\t\tconst override = this.core.config(\"packages.overrideMetadata\", {});\n\t\t\tconst append = createManifestFromArray(list).map((meta) =>\n\t\t\t\toverride[meta.name] ? { ...meta, ...override[meta.name] } : meta\n\t\t\t);\n\n\t\t\tthis.metadata = [...this.metadata, ...append];\n\t\t}\n\n\t\treturn this.getPackages();\n\t}\n\n\t/**\n\t * Gets a list of packages (metadata).\n\t * @param {Function} [filter] A filter function\n\t * @returns {PackageMetadata[]}\n\t */\n\tgetPackages(filter) {\n\t\tfilter = filter || (() => true);\n\n\t\tconst metadata = this.metadata.map((m) => ({ ...m }));\n\t\tconst hidden = this.core.config(\"packages.hidden\", []);\n\t\tconst filterAvailable = createPackageAvailabilityCheck(this.core);\n\n\t\tconst filterConfigHidden = (iter) =>\n\t\t\thidden instanceof Array ? hidden.indexOf(iter.name) === -1 : true;\n\n\t\treturn metadata\n\t\t\t.filter(filterAvailable)\n\t\t\t.filter(filterConfigHidden)\n\t\t\t.filter(filter);\n\t}\n\n\t/**\n\t * Gets a list of packages compatible with the given mime type.\n\t * @param {String} mimeType MIME Type\n\t * @see PackageManager#getPackages\n\t * @returns {PackageMetadata[]}\n\t */\n\tgetCompatiblePackages(mimeType) {\n\t\treturn this.getPackages((meta) => {\n\t\t\tif (meta.mimes) {\n\t\t\t\treturn Boolean(\n\t\t\t\t\tmeta.mimes.find((mime) => {\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tconst re = new RegExp(mime);\n\t\t\t\t\t\t\treturn re.test(mimeType);\n\t\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\t\tlogger.warn(\"Compability check failed\", e);\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\treturn mime === mimeType;\n\t\t\t\t\t})\n\t\t\t\t);\n\t\t\t}\n\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Preloads background files of a set of packages.\n\t * @param {PackageMetadata[]} list Package list\n\t */\n\t_preloadBackgroundFiles(list) {\n\t\tconst backgroundFiles = list.reduce(\n\t\t\t(filenames, iter) => [\n\t\t\t\t...filenames,\n\t\t\t\t...this._getPreloads(iter, \"background\", \"apps\"),\n\t\t\t],\n\t\t\t[]\n\t\t);\n\n\t\treturn this.preloader.load(backgroundFiles).then(({ errors = [] }) => {\n\t\t\terrors.forEach((error) => logger.error(error));\n\t\t});\n\t}\n\n\t/**\n\t * Gets a list of running packages.\n\t * @returns {String[]}\n\t */\n\trunning() {\n\t\treturn this._running;\n\t}\n\n\t/**\n\t * Gets the package metadata for a given package name.\n\t * @param {String} name\n\t * @returns {PackageMetadata|null}\n\t */\n\tgetMetadataFromName(name) {\n\t\tconst found = this.metadata.find((pkg) => pkg.name === name);\n\t\treturn found ? { ...found } : null;\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/packages.js",
     "access": "public",
@@ -9724,8 +9724,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#constructor",
     "access": "public",
-    "description": "Create package manage",
-    "lineNumber": 84,
+    "description": "Create package manager.",
+    "lineNumber": 83,
     "params": [
       {
         "nullable": null,
@@ -9747,8 +9747,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#core",
     "access": "public",
-    "description": "Core instance reference",
-    "lineNumber": 90,
+    "description": "Core instance reference.",
+    "lineNumber": 89,
     "unknown": [
       {
         "tagName": "@readonly",
@@ -9772,8 +9772,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#packages",
     "access": "public",
-    "description": "A list of registered packages",
-    "lineNumber": 96,
+    "description": "A list of registered packages.",
+    "lineNumber": 95,
     "type": {
       "nullable": null,
       "types": [
@@ -9791,8 +9791,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#metadata",
     "access": "public",
-    "description": "The lost of loaded package metadata",
-    "lineNumber": 102,
+    "description": "The list of loaded package metadata.",
+    "lineNumber": 101,
     "type": {
       "nullable": null,
       "types": [
@@ -9810,8 +9810,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#_running",
     "access": "private",
-    "description": "A list of running application names\n\nMainly used for singleton awareness",
-    "lineNumber": 112,
+    "description": "A list of running application names.\nMainly used for singleton awareness.",
+    "lineNumber": 110,
     "type": {
       "nullable": null,
       "types": [
@@ -9829,8 +9829,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#preloader",
     "access": "public",
-    "description": "Preloader",
-    "lineNumber": 119,
+    "description": "Preloader.",
+    "lineNumber": 117,
     "unknown": [
       {
         "tagName": "@readonly",
@@ -9855,7 +9855,7 @@
     "longname": "src/packages.js~Packages#inited",
     "access": "public",
     "description": "If inited",
-    "lineNumber": 125,
+    "lineNumber": 123,
     "type": {
       "nullable": null,
       "types": [
@@ -9875,8 +9875,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#destroy",
     "access": "public",
-    "description": "Destroy package manager",
-    "lineNumber": 131,
+    "description": "Destroy package manager.",
+    "lineNumber": 129,
     "params": [],
     "return": null
   },
@@ -9890,8 +9890,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#init",
     "access": "public",
-    "description": "Initializes package manager",
-    "lineNumber": 142,
+    "description": "Initializes package manager.",
+    "lineNumber": 140,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9918,11 +9918,11 @@
     "static": false,
     "longname": "src/packages.js~Packages#launch",
     "access": "public",
-    "description": "Launches a (application) package",
+    "description": "Launches a (application) package.",
     "see": [
       "PackageServiceProvider"
     ],
-    "lineNumber": 177,
+    "lineNumber": 175,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9992,8 +9992,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#_launchApplication",
     "access": "private",
-    "description": "Launches an application package",
-    "lineNumber": 202,
+    "description": "Launches an application package.",
+    "lineNumber": 200,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10061,8 +10061,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#_launchTheme",
     "access": "private",
-    "description": "Launches a (theme) package",
-    "lineNumber": 249,
+    "description": "Launches a (theme) package.",
+    "lineNumber": 247,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10118,8 +10118,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#_getPreloads",
     "access": "private",
-    "description": "Returns preloads",
-    "lineNumber": 270,
+    "description": "Returns preloads.",
+    "lineNumber": 268,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10177,8 +10177,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#_launch",
     "access": "private",
-    "description": "Wrapper for launching a (application) package",
-    "lineNumber": 285,
+    "description": "Wrapper for launching a (application) package.",
+    "lineNumber": 283,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10236,8 +10236,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#_autostart",
     "access": "private",
-    "description": "Autostarts tagged packages",
-    "lineNumber": 378,
+    "description": "Autostarts tagged packages.",
+    "lineNumber": 376,
     "params": [],
     "return": null
   },
@@ -10251,8 +10251,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#register",
     "access": "public",
-    "description": "Registers a package",
-    "lineNumber": 397,
+    "description": "Registers a package.",
+    "lineNumber": 395,
     "params": [
       {
         "nullable": null,
@@ -10295,8 +10295,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#addPackages",
     "access": "public",
-    "description": "Adds a set of packages",
-    "lineNumber": 425,
+    "description": "Adds a set of packages.",
+    "lineNumber": 423,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10334,8 +10334,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#getPackages",
     "access": "public",
-    "description": "Gets a list of packages (metadata)",
-    "lineNumber": 443,
+    "description": "Gets a list of packages (metadata).",
+    "lineNumber": 441,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10373,11 +10373,11 @@
     "static": false,
     "longname": "src/packages.js~Packages#getCompatiblePackages",
     "access": "public",
-    "description": "Gets a list of packages compatible with the given mime type",
+    "description": "Gets a list of packages compatible with the given mime type.",
     "see": [
       "PackageManager#getPackages"
     ],
-    "lineNumber": 465,
+    "lineNumber": 463,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10415,8 +10415,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#_preloadBackgroundFiles",
     "access": "private",
-    "description": "Preloads background files of a set of packages",
-    "lineNumber": 490,
+    "description": "Preloads background files of a set of packages.",
+    "lineNumber": 488,
     "params": [
       {
         "nullable": null,
@@ -10445,8 +10445,8 @@
     "static": false,
     "longname": "src/packages.js~Packages#running",
     "access": "public",
-    "description": "Gets a list of running packages",
-    "lineNumber": 508,
+    "description": "Gets a list of running packages.",
+    "lineNumber": 506,
     "unknown": [
       {
         "tagName": "@returns",
@@ -10465,6 +10465,46 @@
   },
   {
     "__docId__": 423,
+    "kind": "method",
+    "name": "getMetadataFromName",
+    "memberof": "src/packages.js~Packages",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/packages.js~Packages#getMetadataFromName",
+    "access": "public",
+    "description": "Gets the package metadata for a given package name.",
+    "lineNumber": 515,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{PackageMetadata|null}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "PackageMetadata",
+        "null"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 424,
     "kind": "file",
     "name": "src/providers/auth.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { ServiceProvider } from \"@meeseOS/common\";\nimport Auth from \"../auth\";\n\n/**\n * Auth Service Contract\n * @typedef {Object} AuthProviderContract\n * @property {Function} show\n * @property {Function} login\n * @property {Function} logout\n * @property {Function} user\n */\n\n/**\n * Auth Service Options\n * @typedef {Object} AuthServiceOptions\n */\n\n/**\n * MeeseOS Auth Service Provider\n *\n * Creates the login prompt and handles authentication flow\n */\nexport default class AuthServiceProvider extends ServiceProvider {\n\t/**\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {AuthServiceOptions} [options={}]\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Auth}\n\t\t * @readonly\n\t\t */\n\t\tthis.auth = new Auth(core, options);\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/auth\"];\n\t}\n\n\t/**\n\t * Initializes authentication.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.core.singleton(\"meeseOS/auth\", () => this.createAuthContract());\n\n\t\treturn this.auth.init();\n\t}\n\n\t/**\n\t * Destroys authentication.\n\t */\n\tdestroy() {\n\t\tthis.auth.destroy();\n\n\t\treturn super.destroy();\n\t}\n\n\t/**\n\t * @returns {AuthProviderContract}\n\t */\n\tcreateAuthContract() {\n\t\treturn {\n\t\t\tshow: (cb) => this.auth.show(cb),\n\t\t\tlogin: (values) => this.auth.login(values),\n\t\t\tlogout: (reload) => this.auth.logout(reload),\n\t\t\tuser: () => this.core.getUser(),\n\t\t};\n\t}\n}\n",
@@ -10475,7 +10515,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 424,
+    "__docId__": 425,
     "kind": "typedef",
     "name": "AuthProviderContract",
     "memberof": "src/providers/auth.js",
@@ -10534,7 +10574,7 @@
     }
   },
   {
-    "__docId__": 425,
+    "__docId__": 426,
     "kind": "typedef",
     "name": "AuthServiceOptions",
     "memberof": "src/providers/auth.js",
@@ -10551,7 +10591,7 @@
     }
   },
   {
-    "__docId__": 426,
+    "__docId__": 427,
     "kind": "class",
     "name": "AuthServiceProvider",
     "memberof": "src/providers/auth.js",
@@ -10569,7 +10609,7 @@
     ]
   },
   {
-    "__docId__": 427,
+    "__docId__": 428,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -10606,7 +10646,7 @@
     ]
   },
   {
-    "__docId__": 428,
+    "__docId__": 429,
     "kind": "member",
     "name": "auth",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -10631,7 +10671,7 @@
     }
   },
   {
-    "__docId__": 429,
+    "__docId__": 430,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -10659,7 +10699,7 @@
     "params": []
   },
   {
-    "__docId__": 430,
+    "__docId__": 431,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -10687,7 +10727,7 @@
     "params": []
   },
   {
-    "__docId__": 431,
+    "__docId__": 432,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -10706,7 +10746,7 @@
     }
   },
   {
-    "__docId__": 432,
+    "__docId__": 433,
     "kind": "method",
     "name": "createAuthContract",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -10734,10 +10774,10 @@
     "params": []
   },
   {
-    "__docId__": 433,
+    "__docId__": 434,
     "kind": "file",
     "name": "src/providers/core.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { BasicApplication } from \"../basic-application.js\";\nimport { ServiceProvider } from \"@meeseOS/common\";\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport { playSound, script, style } from \"../utils/dom\";\nimport { resourceResolver } from \"../utils/desktop\";\nimport * as dnd from \"../utils/dnd\";\nimport Application from \"../application\";\nimport Clipboard from \"../clipboard\";\nimport Middleware from \"../middleware\";\nimport Packages from \"../packages\";\nimport Session from \"../session\";\nimport Tray from \"../tray\";\nimport Websocket from \"../websocket\";\nimport Window from \"../window\";\nimport WindowBehavior from \"../window-behavior\";\nimport logger from \"../logger\";\n\n/**\n * Core Provider Window Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderWindowContract\n * @property {Function} create\n * @property {Function} list\n * @property {Function} last\n */\n\n/**\n * Core Provider DnD Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderDnDContract\n * @property {Function} draggable\n * @property {Function} droppable\n */\n\n/**\n * Core Provider Theme Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderDOMContract\n * @property {Function} script\n * @property {Function} style\n */\n\n/**\n * Core Provider Theme Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderThemeContract\n * @property {Function} resource\n * @property {Function} icon\n */\n\n/**\n * Core Provider Sound Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderSoundContract\n * @property {Function} resource\n * @property {Function} play\n */\n\n/**\n * Core Provider Session Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderSessionContract\n * @property {Function} save\n * @property {Function} load\n */\n\n/**\n * Core Provider Packages Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderPackagesContract\n * @property {Function} [launch]\n * @property {Function} [register]\n * @property {Function} [addPackages]\n * @property {Function} [getPackages]\n * @property {Function} [getCompatiblePackages]\n * @property {Function} [running]\n */\n\n/**\n * Core Provider Clipboard Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderClipboardContract\n * @property {Function} [clear]\n * @property {Function} [set]\n * @property {Function} [has]\n * @property {Function} [get]\n */\n\n/**\n * Core Provider Middleware Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderMiddlewareContract\n * @property {Function} [add]\n * @property {Function} [get]\n */\n\n/**\n * Core Provider Tray Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderTrayContract\n * @property {Function} [create]\n * @property {Function} [remove]\n * @property {Function} [list]\n * @property {Function} [has]\n */\n\n/**\n * Core Provider Options\n * @typedef {Object} CoreProviderOptions\n * @property {Function} [windowBehavior] Custom Window Behavior\n */\n\n/**\n * MeeseOS Core Service Provider\n */\nexport default class CoreServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {CoreProviderOptions} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Session}\n\t\t * @readonly\n\t\t */\n\t\tthis.session = new Session(core);\n\n\t\t/**\n\t\t * @type {Tray}\n\t\t * @readonly\n\t\t */\n\t\tthis.tray = new Tray(core);\n\n\t\t/**\n\t\t * @type {Packages}\n\t\t * @readonly\n\t\t */\n\t\tthis.pm = new Packages(core);\n\n\t\t/**\n\t\t * @type {Clipboard}\n\t\t * @readonly\n\t\t */\n\t\tthis.clipboard = new Clipboard();\n\n\t\t/**\n\t\t * @type {Middleware}\n\t\t * @readonly\n\t\t */\n\t\tthis.middleware = new Middleware();\n\n\t\twindow.MeeseOS = this.createGlobalApi();\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\n\t\t\t\"meeseOS/application\",\n\t\t\t\"meeseOS/basic-application\",\n\t\t\t\"meeseOS/window\",\n\t\t\t\"meeseOS/windows\",\n\t\t\t\"meeseOS/event-handler\",\n\t\t\t\"meeseOS/window-behaviour\",\n\t\t\t\"meeseOS/dnd\",\n\t\t\t\"meeseOS/dom\",\n\t\t\t\"meeseOS/clipboard\",\n\t\t\t\"meeseOS/middleware\",\n\t\t\t\"meeseOS/tray\",\n\t\t\t\"meeseOS/packages\",\n\t\t\t\"meeseOS/websocket\",\n\t\t\t\"meeseOS/session\",\n\t\t\t\"meeseOS/theme\",\n\t\t\t\"meeseOS/sounds\",\n\t\t];\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tthis.tray.destroy();\n\t\tthis.pm.destroy();\n\t\tthis.clipboard.destroy();\n\t\tthis.middleware.destroy();\n\t\tthis.session.destroy();\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initializes provider.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.registerContracts();\n\n\t\tthis.core.on(\"meeseOS/core:started\", () => {\n\t\t\tthis.session.load();\n\t\t});\n\n\t\treturn this.pm.init();\n\t}\n\n\t/**\n\t * Starts provider.\n\t * @returns {Promise<undefined>}\n\t */\n\tstart() {\n\t\tif (this.core.config(\"development\")) {\n\t\t\tthis.core.on(\"meeseOS/dist:changed\", (filename) => {\n\t\t\t\tthis._onDistChanged(filename);\n\t\t\t});\n\n\t\t\tthis.core.on(\"meeseOS/packages:package:changed\", (name) => {\n\t\t\t\tthis._onPackageChanged(name);\n\t\t\t});\n\t\t}\n\n\t\tthis.core.on(\"meeseOS/packages:metadata:changed\", () => {\n\t\t\tthis.pm.init();\n\t\t});\n\t}\n\n\t/**\n\t * Registers contracts.\n\t */\n\tregisterContracts() {\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/window\",\n\t\t\t(options = {}) => new Window(this.core, options)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/application\",\n\t\t\t(data = {}) => new Application(this.core, data)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/basic-application\",\n\t\t\t(proc, win, options = {}) =>\n\t\t\t\tnew BasicApplication(this.core, proc, win, options)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/websocket\",\n\t\t\t(name, uri, options = {}) => new Websocket(name, uri, options)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/event-emitter\",\n\t\t\t(name) => new EventEmitter(name)\n\t\t);\n\n\t\tthis.core.singleton(\"meeseOS/windows\", () => this.createWindowContract());\n\t\tthis.core.singleton(\"meeseOS/dnd\", () => this.createDnDContract());\n\t\tthis.core.singleton(\"meeseOS/dom\", () => this.createDOMContract());\n\t\tthis.core.singleton(\"meeseOS/theme\", () => this.createThemeContract());\n\t\tthis.core.singleton(\"meeseOS/sounds\", () => this.createSoundsContract());\n\t\tthis.core.singleton(\"meeseOS/session\", () => this.createSessionContract());\n\t\tthis.core.singleton(\"meeseOS/packages\", () =>\n\t\t\tthis.createPackagesContract()\n\t\t);\n\t\tthis.core.singleton(\"meeseOS/clipboard\", () =>\n\t\t\tthis.createClipboardContract()\n\t\t);\n\t\tthis.core.singleton(\"meeseOS/middleware\", () =>\n\t\t\tthis.createMiddlewareContract()\n\t\t);\n\n\t\tthis.core.instance(\"meeseOS/tray\", (options, handler) => {\n\t\t\tif (typeof options !== \"undefined\") {\n\t\t\t\t// FIXME: Use contract instead\n\t\t\t\tlogger.warn(\"meeseOS/tray usage without .create() is deprecated\");\n\t\t\t\treturn this.tray.create(options, handler);\n\t\t\t}\n\n\t\t\treturn this.createTrayContract();\n\t\t});\n\n\t\t// FIXME: Remove this from public usage\n\t\tthis.core.singleton(\"meeseOS/window-behavior\", () =>\n\t\t\ttypeof this.options.windowBehavior === \"function\"\n\t\t\t\t? this.options.windowBehavior(this.core)\n\t\t\t\t: new WindowBehavior(this.core)\n\t\t);\n\n\t\t// FIXME: deprecated\n\t\tthis.core.instance(\"meeseOS/event-handler\", (...args) => {\n\t\t\tlogger.warn(\n\t\t\t\t\"meeseOS/event-handler is deprecated, use meeseOS/event-emitter\"\n\t\t\t);\n\t\t\treturn new EventEmitter(...args);\n\t\t});\n\t}\n\n\t/**\n\t * Expose some internals to global.\n\t */\n\tcreateGlobalApi() {\n\t\tconst globalBlacklist = this.core.config(\"providers.globalBlacklist\", []);\n\t\tconst globalWhitelist = this.core.config(\"providers.globalWhitelist\", []);\n\n\t\tconst make = (name, ...args) => {\n\t\t\tif (this.core.has(name)) {\n\t\t\t\tconst blacklisted =\n\t\t\t\t\tglobalBlacklist.length > 0 && globalBlacklist.indexOf(name) !== -1;\n\t\t\t\tconst notWhitelisted =\n\t\t\t\t\tglobalWhitelist.length > 0 && globalWhitelist.indexOf(name) === -1;\n\n\t\t\t\tif (blacklisted || notWhitelisted) {\n\t\t\t\t\tthrow new Error(\n\t\t\t\t\t\t`The provider '${name}' cannot be used via global scope`\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn this.core.make(name, ...args);\n\t\t};\n\n\t\treturn Object.freeze({\n\t\t\tmake,\n\t\t\tregister: (name, callback) => this.pm.register(name, callback),\n\t\t\turl: (endpoint, options, metadata) =>\n\t\t\t\tthis.core.url(endpoint, options, metadata),\n\t\t\trun: (name, args = {}, options = {}) =>\n\t\t\t\tthis.core.run(name, args, options),\n\t\t\topen: (file, options = {}) => this.core.open(file, options),\n\t\t\trequest: (url, options, type) => this.core.request(url, options, type),\n\t\t\tmiddleware: (group, callback) => this.middleware.add(group, callback),\n\t\t});\n\t}\n\n\t/**\n\t * Event when dist changes from a build or deployment.\n\t * @private\n\t * @param {String} filename The resource filename\n\t */\n\t_onDistChanged(filename) {\n\t\tconst url = this.core.url(filename).replace(/^\\//, \"\");\n\t\tconst found = this.core.$resourceRoot.querySelectorAll(\n\t\t\t\"link[rel=stylesheet]\"\n\t\t);\n\t\tconst map = Array.from(found).reduce((result, item) => {\n\t\t\tconst src = item.getAttribute(\"href\").split(\"?\")[0].replace(/^\\//, \"\");\n\t\t\treturn {\n\t\t\t\t[src]: item,\n\t\t\t\t...result,\n\t\t\t};\n\t\t}, {});\n\n\t\tif (map[url]) {\n\t\t\tlogger.debug(\"Hot-reloading\", url);\n\n\t\t\tsetTimeout(() => {\n\t\t\t\tmap[url].setAttribute(\"href\", url);\n\t\t\t}, 100);\n\t\t}\n\t}\n\n\t/**\n\t * Event when package dist changes from a build or deployment.\n\t * @private\n\t * @param {String} name The package name\n\t */\n\t_onPackageChanged(name) {\n\t\t// TODO: Reload themes as well\n\t\tApplication.getApplications()\n\t\t\t.filter((proc) => proc.metadata.name === name)\n\t\t\t.forEach((proc) => proc.relaunch());\n\t}\n\n\t/**\n\t * Provides window contract.\n\t * @returns {CoreProviderWindowContract}\n\t */\n\tcreateWindowContract() {\n\t\treturn {\n\t\t\tcreate: (options = {}) => new Window(this.core, options),\n\t\t\tlist: () => Window.getWindows(),\n\t\t\tlast: () => Window.lastWindow(),\n\t\t};\n\t}\n\n\t/**\n\t * Provides DnD contract.\n\t * @returns {CoreProviderDnDContract}\n\t */\n\tcreateDnDContract() {\n\t\treturn dnd;\n\t}\n\n\t/**\n\t * Provides DOM contract.\n\t * @returns {CoreProviderDOMContract}\n\t */\n\tcreateDOMContract() {\n\t\treturn {\n\t\t\tscript,\n\t\t\tstyle,\n\t\t};\n\t}\n\n\t/**\n\t * Provides Theme contract.\n\t * @returns {CoreProviderThemeContract}\n\t */\n\tcreateThemeContract() {\n\t\tconst { themeResource, icon } = resourceResolver(this.core);\n\n\t\treturn {\n\t\t\tresource: themeResource,\n\t\t\ticon\n\t\t};\n\t}\n\n\t/**\n\t * Provides Sounds contract.\n\t * @returns {CoreProviderSoundContract}\n\t */\n\tcreateSoundsContract() {\n\t\tconst { soundResource, soundsEnabled } = resourceResolver(this.core);\n\n\t\treturn {\n\t\t\tresource: soundResource,\n\t\t\tplay: (src, options = {}) => {\n\t\t\t\tif (soundsEnabled()) {\n\t\t\t\t\tconst absoluteSrc = src.match(/^(\\/|https?:)/)\n\t\t\t\t\t\t? src\n\t\t\t\t\t\t: soundResource(src);\n\n\t\t\t\t\tif (absoluteSrc) {\n\t\t\t\t\t\treturn playSound(absoluteSrc, options);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\treturn false;\n\t\t\t},\n\t\t};\n\t}\n\n\t/**\n\t * Provides Session contract.\n\t * @returns {CoreProviderSessionContract}\n\t */\n\tcreateSessionContract() {\n\t\treturn {\n\t\t\tsave: () => this.session.save(),\n\t\t\tload: (fresh = false) => this.session.load(fresh),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Packages contract.\n\t * @returns {CoreProviderPackagesContract}\n\t */\n\tcreatePackagesContract() {\n\t\treturn {\n\t\t\tlaunch: (name, args = {}, options = {}) =>\n\t\t\t\tthis.pm.launch(name, args, options),\n\t\t\tregister: (name, callback) => this.pm.register(name, callback),\n\t\t\taddPackages: (list) => this.pm.addPackages(list),\n\t\t\tgetPackages: (filter) => this.pm.getPackages(filter),\n\t\t\tgetCompatiblePackages: (mimeType) =>\n\t\t\t\tthis.pm.getCompatiblePackages(mimeType),\n\t\t\trunning: () => this.pm.running(),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Clipboard contract.\n\t * @returns {CoreProviderClipboardContract}\n\t */\n\tcreateClipboardContract() {\n\t\treturn {\n\t\t\tclear: () => this.clipboard.clear(),\n\t\t\tset: (data, type) => this.clipboard.set(data, type),\n\t\t\thas: (type) => this.clipboard.has(type),\n\t\t\tget: (clear = false) => this.clipboard.get(clear),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Middleware contract.\n\t * @returns {CoreProviderMiddlewareContract}\n\t */\n\tcreateMiddlewareContract() {\n\t\treturn {\n\t\t\tadd: (group, callback) => this.middleware.add(group, callback),\n\t\t\tget: (group) => this.middleware.get(group),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Tray contract.\n\t * @returns {CoreProviderTrayContract}\n\t */\n\tcreateTrayContract() {\n\t\treturn {\n\t\t\tcreate: (options, handler) => this.tray.create(options, handler),\n\t\t\tremove: (entry) => this.tray.remove(entry),\n\t\t\tlist: () => this.tray.list(),\n\t\t\thas: (key) => this.tray.has(key),\n\t\t};\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { BasicApplication } from \"../basic-application.js\";\nimport { ServiceProvider } from \"@meeseOS/common\";\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport { playSound, script, style } from \"../utils/dom\";\nimport { resourceResolver } from \"../utils/desktop\";\nimport * as dnd from \"../utils/dnd\";\nimport Application from \"../application\";\nimport Clipboard from \"../clipboard\";\nimport Middleware from \"../middleware\";\nimport Packages from \"../packages\";\nimport Session from \"../session\";\nimport Tray from \"../tray\";\nimport Websocket from \"../websocket\";\nimport Window from \"../window\";\nimport WindowBehavior from \"../window-behavior\";\nimport logger from \"../logger\";\n\n/**\n * Core Provider Window Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderWindowContract\n * @property {Function} create\n * @property {Function} list\n * @property {Function} last\n */\n\n/**\n * Core Provider DnD Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderDnDContract\n * @property {Function} draggable\n * @property {Function} droppable\n */\n\n/**\n * Core Provider Theme Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderDOMContract\n * @property {Function} script\n * @property {Function} style\n */\n\n/**\n * Core Provider Theme Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderThemeContract\n * @property {Function} resource\n * @property {Function} icon\n */\n\n/**\n * Core Provider Sound Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderSoundContract\n * @property {Function} resource\n * @property {Function} play\n */\n\n/**\n * Core Provider Session Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderSessionContract\n * @property {Function} save\n * @property {Function} load\n */\n\n/**\n * Core Provider Packages Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderPackagesContract\n * @property {Function} [launch]\n * @property {Function} [register]\n * @property {Function} [addPackages]\n * @property {Function} [getPackages]\n * @property {Function} [getCompatiblePackages]\n * @property {Function} [running]\n */\n\n/**\n * Core Provider Clipboard Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderClipboardContract\n * @property {Function} [clear]\n * @property {Function} [set]\n * @property {Function} [has]\n * @property {Function} [get]\n */\n\n/**\n * Core Provider Middleware Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderMiddlewareContract\n * @property {Function} [add]\n * @property {Function} [get]\n */\n\n/**\n * Core Provider Tray Contract\n * TODO: typedef\n * @typedef {Object} CoreProviderTrayContract\n * @property {Function} [create]\n * @property {Function} [remove]\n * @property {Function} [list]\n * @property {Function} [has]\n */\n\n/**\n * Core Provider Options\n * @typedef {Object} CoreProviderOptions\n * @property {Function} [windowBehavior] Custom Window Behavior\n */\n\n/**\n * MeeseOS Core Service Provider\n */\nexport default class CoreServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {CoreProviderOptions} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Session}\n\t\t * @readonly\n\t\t */\n\t\tthis.session = new Session(core);\n\n\t\t/**\n\t\t * @type {Tray}\n\t\t * @readonly\n\t\t */\n\t\tthis.tray = new Tray(core);\n\n\t\t/**\n\t\t * @type {Packages}\n\t\t * @readonly\n\t\t */\n\t\tthis.pm = new Packages(core);\n\n\t\t/**\n\t\t * @type {Clipboard}\n\t\t * @readonly\n\t\t */\n\t\tthis.clipboard = new Clipboard();\n\n\t\t/**\n\t\t * @type {Middleware}\n\t\t * @readonly\n\t\t */\n\t\tthis.middleware = new Middleware();\n\n\t\twindow.MeeseOS = this.createGlobalApi();\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\n\t\t\t\"meeseOS/application\",\n\t\t\t\"meeseOS/basic-application\",\n\t\t\t\"meeseOS/window\",\n\t\t\t\"meeseOS/windows\",\n\t\t\t\"meeseOS/event-handler\",\n\t\t\t\"meeseOS/window-behaviour\",\n\t\t\t\"meeseOS/dnd\",\n\t\t\t\"meeseOS/dom\",\n\t\t\t\"meeseOS/clipboard\",\n\t\t\t\"meeseOS/middleware\",\n\t\t\t\"meeseOS/tray\",\n\t\t\t\"meeseOS/packages\",\n\t\t\t\"meeseOS/websocket\",\n\t\t\t\"meeseOS/session\",\n\t\t\t\"meeseOS/theme\",\n\t\t\t\"meeseOS/sounds\",\n\t\t];\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tthis.tray.destroy();\n\t\tthis.pm.destroy();\n\t\tthis.clipboard.destroy();\n\t\tthis.middleware.destroy();\n\t\tthis.session.destroy();\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initializes provider.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.registerContracts();\n\n\t\tthis.core.on(\"meeseOS/core:started\", () => {\n\t\t\tthis.session.load();\n\t\t});\n\n\t\treturn this.pm.init();\n\t}\n\n\t/**\n\t * Starts provider.\n\t * @returns {Promise<undefined>}\n\t */\n\tstart() {\n\t\tif (this.core.config(\"development\")) {\n\t\t\tthis.core.on(\"meeseOS/dist:changed\", (filename) => {\n\t\t\t\tthis._onDistChanged(filename);\n\t\t\t});\n\n\t\t\tthis.core.on(\"meeseOS/packages:package:changed\", (name) => {\n\t\t\t\tthis._onPackageChanged(name);\n\t\t\t});\n\t\t}\n\n\t\tthis.core.on(\"meeseOS/packages:metadata:changed\", () => {\n\t\t\tthis.pm.init();\n\t\t});\n\t}\n\n\t/**\n\t * Registers contracts.\n\t */\n\tregisterContracts() {\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/window\",\n\t\t\t(options = {}) => new Window(this.core, options)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/application\",\n\t\t\t(data = {}) => new Application(this.core, data)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/basic-application\",\n\t\t\t(proc, win, options = {}) =>\n\t\t\t\tnew BasicApplication(this.core, proc, win, options)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/websocket\",\n\t\t\t(name, uri, options = {}) => new Websocket(name, uri, options)\n\t\t);\n\t\tthis.core.instance(\n\t\t\t\"meeseOS/event-emitter\",\n\t\t\t(name) => new EventEmitter(name)\n\t\t);\n\n\t\tthis.core.singleton(\"meeseOS/windows\", () => this.createWindowContract());\n\t\tthis.core.singleton(\"meeseOS/dnd\", () => this.createDnDContract());\n\t\tthis.core.singleton(\"meeseOS/dom\", () => this.createDOMContract());\n\t\tthis.core.singleton(\"meeseOS/theme\", () => this.createThemeContract());\n\t\tthis.core.singleton(\"meeseOS/sounds\", () => this.createSoundsContract());\n\t\tthis.core.singleton(\"meeseOS/session\", () => this.createSessionContract());\n\t\tthis.core.singleton(\"meeseOS/packages\", () =>\n\t\t\tthis.createPackagesContract()\n\t\t);\n\t\tthis.core.singleton(\"meeseOS/clipboard\", () =>\n\t\t\tthis.createClipboardContract()\n\t\t);\n\t\tthis.core.singleton(\"meeseOS/middleware\", () =>\n\t\t\tthis.createMiddlewareContract()\n\t\t);\n\n\t\tthis.core.instance(\"meeseOS/tray\", (options, handler) => {\n\t\t\tif (typeof options !== \"undefined\") {\n\t\t\t\t// FIXME: Use contract instead\n\t\t\t\tlogger.warn(\"meeseOS/tray usage without .create() is deprecated\");\n\t\t\t\treturn this.tray.create(options, handler);\n\t\t\t}\n\n\t\t\treturn this.createTrayContract();\n\t\t});\n\n\t\t// FIXME: Remove this from public usage\n\t\tthis.core.singleton(\"meeseOS/window-behavior\", () =>\n\t\t\ttypeof this.options.windowBehavior === \"function\"\n\t\t\t\t? this.options.windowBehavior(this.core)\n\t\t\t\t: new WindowBehavior(this.core)\n\t\t);\n\n\t\tthis.core.instance(\"meeseOS/event-handler\", (...args) => {\n\t\t\tlogger.warn(\n\t\t\t\t\"meeseOS/event-handler is deprecated, use meeseOS/event-emitter\"\n\t\t\t);\n\t\t\treturn new EventEmitter(...args);\n\t\t});\n\t}\n\n\t/**\n\t * Expose some internals to global.\n\t */\n\tcreateGlobalApi() {\n\t\tconst globalBlacklist = this.core.config(\"providers.globalBlacklist\", []);\n\t\tconst globalWhitelist = this.core.config(\"providers.globalWhitelist\", []);\n\n\t\tconst make = (name, ...args) => {\n\t\t\tif (this.core.has(name)) {\n\t\t\t\tconst blacklisted =\n\t\t\t\t\tglobalBlacklist.length > 0 && globalBlacklist.indexOf(name) !== -1;\n\t\t\t\tconst notWhitelisted =\n\t\t\t\t\tglobalWhitelist.length > 0 && globalWhitelist.indexOf(name) === -1;\n\n\t\t\t\tif (blacklisted || notWhitelisted) {\n\t\t\t\t\tthrow new Error(\n\t\t\t\t\t\t`The provider '${name}' cannot be used via global scope`\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn this.core.make(name, ...args);\n\t\t};\n\n\t\treturn Object.freeze({\n\t\t\tmake,\n\t\t\tregister: (name, callback) => this.pm.register(name, callback),\n\t\t\turl: (endpoint, options, metadata) =>\n\t\t\t\tthis.core.url(endpoint, options, metadata),\n\t\t\trun: (name, args = {}, options = {}) =>\n\t\t\t\tthis.core.run(name, args, options),\n\t\t\topen: (file, options = {}) => this.core.open(file, options),\n\t\t\trequest: (url, options, type) => this.core.request(url, options, type),\n\t\t\tmiddleware: (group, callback) => this.middleware.add(group, callback),\n\t\t});\n\t}\n\n\t/**\n\t * Event when dist changes from a build or deployment.\n\t * @private\n\t * @param {String} filename The resource filename\n\t */\n\t_onDistChanged(filename) {\n\t\tconst url = this.core.url(filename).replace(/^\\//, \"\");\n\t\tconst found = this.core.$resourceRoot.querySelectorAll(\n\t\t\t\"link[rel=stylesheet]\"\n\t\t);\n\t\tconst map = Array.from(found).reduce((result, item) => {\n\t\t\tconst src = item.getAttribute(\"href\").split(\"?\")[0].replace(/^\\//, \"\");\n\t\t\treturn {\n\t\t\t\t[src]: item,\n\t\t\t\t...result,\n\t\t\t};\n\t\t}, {});\n\n\t\tif (map[url]) {\n\t\t\tlogger.debug(\"Hot-reloading\", url);\n\n\t\t\tsetTimeout(() => {\n\t\t\t\tmap[url].setAttribute(\"href\", url);\n\t\t\t}, 100);\n\t\t}\n\t}\n\n\t/**\n\t * Event when package dist changes from a build or deployment.\n\t * @private\n\t * @param {String} name The package name\n\t */\n\t_onPackageChanged(name) {\n\t\t// TODO: Reload themes as well\n\t\tApplication.getApplications()\n\t\t\t.filter((proc) => proc.metadata.name === name)\n\t\t\t.forEach((proc) => proc.relaunch());\n\t}\n\n\t/**\n\t * Provides window contract.\n\t * @returns {CoreProviderWindowContract}\n\t */\n\tcreateWindowContract() {\n\t\treturn {\n\t\t\tcreate: (options = {}) => new Window(this.core, options),\n\t\t\tlist: () => Window.getWindows(),\n\t\t\tlast: () => Window.lastWindow(),\n\t\t};\n\t}\n\n\t/**\n\t * Provides DnD contract.\n\t * @returns {CoreProviderDnDContract}\n\t */\n\tcreateDnDContract() {\n\t\treturn dnd;\n\t}\n\n\t/**\n\t * Provides DOM contract.\n\t * @returns {CoreProviderDOMContract}\n\t */\n\tcreateDOMContract() {\n\t\treturn {\n\t\t\tscript,\n\t\t\tstyle,\n\t\t};\n\t}\n\n\t/**\n\t * Provides Theme contract.\n\t * @returns {CoreProviderThemeContract}\n\t */\n\tcreateThemeContract() {\n\t\tconst { themeResource, icon } = resourceResolver(this.core);\n\n\t\treturn {\n\t\t\tresource: themeResource,\n\t\t\ticon\n\t\t};\n\t}\n\n\t/**\n\t * Provides Sounds contract.\n\t * @returns {CoreProviderSoundContract}\n\t */\n\tcreateSoundsContract() {\n\t\tconst { soundResource, soundsEnabled } = resourceResolver(this.core);\n\n\t\treturn {\n\t\t\tresource: soundResource,\n\t\t\tplay: (src, options = {}) => {\n\t\t\t\tif (soundsEnabled()) {\n\t\t\t\t\tconst absoluteSrc = src.match(/^(\\/|https?:)/)\n\t\t\t\t\t\t? src\n\t\t\t\t\t\t: soundResource(src);\n\n\t\t\t\t\tif (absoluteSrc) {\n\t\t\t\t\t\treturn playSound(absoluteSrc, options);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\treturn false;\n\t\t\t},\n\t\t};\n\t}\n\n\t/**\n\t * Provides Session contract.\n\t * @returns {CoreProviderSessionContract}\n\t */\n\tcreateSessionContract() {\n\t\treturn {\n\t\t\tsave: () => this.session.save(),\n\t\t\tload: (fresh = false) => this.session.load(fresh),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Packages contract.\n\t * @returns {CoreProviderPackagesContract}\n\t */\n\tcreatePackagesContract() {\n\t\treturn {\n\t\t\tlaunch: (name, args = {}, options = {}) =>\n\t\t\t\tthis.pm.launch(name, args, options),\n\t\t\tregister: (name, callback) => this.pm.register(name, callback),\n\t\t\taddPackages: (list) => this.pm.addPackages(list),\n\t\t\tgetPackages: (filter) => this.pm.getPackages(filter),\n\t\t\tgetCompatiblePackages: (mimeType) =>\n\t\t\t\tthis.pm.getCompatiblePackages(mimeType),\n\t\t\trunning: () => this.pm.running(),\n\t\t\tgetMetadataFromName: (name) => this.pm.getMetadataFromName(name),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Clipboard contract.\n\t * @returns {CoreProviderClipboardContract}\n\t */\n\tcreateClipboardContract() {\n\t\treturn {\n\t\t\tclear: () => this.clipboard.clear(),\n\t\t\tset: (data, type) => this.clipboard.set(data, type),\n\t\t\thas: (type) => this.clipboard.has(type),\n\t\t\tget: (clear = false) => this.clipboard.get(clear),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Middleware contract.\n\t * @returns {CoreProviderMiddlewareContract}\n\t */\n\tcreateMiddlewareContract() {\n\t\treturn {\n\t\t\tadd: (group, callback) => this.middleware.add(group, callback),\n\t\t\tget: (group) => this.middleware.get(group),\n\t\t};\n\t}\n\n\t/**\n\t * Provides Tray contract.\n\t * @returns {CoreProviderTrayContract}\n\t */\n\tcreateTrayContract() {\n\t\treturn {\n\t\t\tcreate: (options, handler) => this.tray.create(options, handler),\n\t\t\tremove: (entry) => this.tray.remove(entry),\n\t\t\tlist: () => this.tray.list(),\n\t\t\thas: (key) => this.tray.has(key),\n\t\t};\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/providers/core.js",
     "access": "public",
@@ -10745,7 +10785,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 434,
+    "__docId__": 435,
     "kind": "typedef",
     "name": "CoreProviderWindowContract",
     "memberof": "src/providers/core.js",
@@ -10794,7 +10834,7 @@
     }
   },
   {
-    "__docId__": 435,
+    "__docId__": 436,
     "kind": "typedef",
     "name": "CoreProviderDnDContract",
     "memberof": "src/providers/core.js",
@@ -10833,7 +10873,7 @@
     }
   },
   {
-    "__docId__": 436,
+    "__docId__": 437,
     "kind": "typedef",
     "name": "CoreProviderDOMContract",
     "memberof": "src/providers/core.js",
@@ -10872,7 +10912,7 @@
     }
   },
   {
-    "__docId__": 437,
+    "__docId__": 438,
     "kind": "typedef",
     "name": "CoreProviderThemeContract",
     "memberof": "src/providers/core.js",
@@ -10911,7 +10951,7 @@
     }
   },
   {
-    "__docId__": 438,
+    "__docId__": 439,
     "kind": "typedef",
     "name": "CoreProviderSoundContract",
     "memberof": "src/providers/core.js",
@@ -10950,7 +10990,7 @@
     }
   },
   {
-    "__docId__": 439,
+    "__docId__": 440,
     "kind": "typedef",
     "name": "CoreProviderSessionContract",
     "memberof": "src/providers/core.js",
@@ -10989,7 +11029,7 @@
     }
   },
   {
-    "__docId__": 440,
+    "__docId__": 441,
     "kind": "typedef",
     "name": "CoreProviderPackagesContract",
     "memberof": "src/providers/core.js",
@@ -11068,7 +11108,7 @@
     }
   },
   {
-    "__docId__": 441,
+    "__docId__": 442,
     "kind": "typedef",
     "name": "CoreProviderClipboardContract",
     "memberof": "src/providers/core.js",
@@ -11127,7 +11167,7 @@
     }
   },
   {
-    "__docId__": 442,
+    "__docId__": 443,
     "kind": "typedef",
     "name": "CoreProviderMiddlewareContract",
     "memberof": "src/providers/core.js",
@@ -11166,7 +11206,7 @@
     }
   },
   {
-    "__docId__": 443,
+    "__docId__": 444,
     "kind": "typedef",
     "name": "CoreProviderTrayContract",
     "memberof": "src/providers/core.js",
@@ -11225,7 +11265,7 @@
     }
   },
   {
-    "__docId__": 444,
+    "__docId__": 445,
     "kind": "typedef",
     "name": "CoreProviderOptions",
     "memberof": "src/providers/core.js",
@@ -11254,7 +11294,7 @@
     }
   },
   {
-    "__docId__": 445,
+    "__docId__": 446,
     "kind": "class",
     "name": "CoreServiceProvider",
     "memberof": "src/providers/core.js",
@@ -11272,7 +11312,7 @@
     ]
   },
   {
-    "__docId__": 446,
+    "__docId__": 447,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11309,7 +11349,7 @@
     ]
   },
   {
-    "__docId__": 447,
+    "__docId__": 448,
     "kind": "member",
     "name": "session",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11334,7 +11374,7 @@
     }
   },
   {
-    "__docId__": 448,
+    "__docId__": 449,
     "kind": "member",
     "name": "tray",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11359,7 +11399,7 @@
     }
   },
   {
-    "__docId__": 449,
+    "__docId__": 450,
     "kind": "member",
     "name": "pm",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11384,7 +11424,7 @@
     }
   },
   {
-    "__docId__": 450,
+    "__docId__": 451,
     "kind": "member",
     "name": "clipboard",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11409,7 +11449,7 @@
     }
   },
   {
-    "__docId__": 451,
+    "__docId__": 452,
     "kind": "member",
     "name": "middleware",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11434,7 +11474,7 @@
     }
   },
   {
-    "__docId__": 452,
+    "__docId__": 453,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11462,7 +11502,7 @@
     "params": []
   },
   {
-    "__docId__": 453,
+    "__docId__": 454,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11477,7 +11517,7 @@
     "return": null
   },
   {
-    "__docId__": 454,
+    "__docId__": 455,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11505,7 +11545,7 @@
     "params": []
   },
   {
-    "__docId__": 455,
+    "__docId__": 456,
     "kind": "method",
     "name": "start",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11533,7 +11573,7 @@
     "params": []
   },
   {
-    "__docId__": 456,
+    "__docId__": 457,
     "kind": "method",
     "name": "registerContracts",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11548,7 +11588,7 @@
     "return": null
   },
   {
-    "__docId__": 457,
+    "__docId__": 458,
     "kind": "method",
     "name": "createGlobalApi",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11558,7 +11598,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createGlobalApi",
     "access": "public",
     "description": "Expose some internals to global.",
-    "lineNumber": 331,
+    "lineNumber": 330,
     "params": [],
     "return": {
       "types": [
@@ -11567,7 +11607,7 @@
     }
   },
   {
-    "__docId__": 458,
+    "__docId__": 459,
     "kind": "method",
     "name": "_onDistChanged",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11577,7 +11617,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#_onDistChanged",
     "access": "private",
     "description": "Event when dist changes from a build or deployment.",
-    "lineNumber": 370,
+    "lineNumber": 369,
     "params": [
       {
         "nullable": null,
@@ -11593,7 +11633,7 @@
     "return": null
   },
   {
-    "__docId__": 459,
+    "__docId__": 460,
     "kind": "method",
     "name": "_onPackageChanged",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11603,7 +11643,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#_onPackageChanged",
     "access": "private",
     "description": "Event when package dist changes from a build or deployment.",
-    "lineNumber": 397,
+    "lineNumber": 396,
     "params": [
       {
         "nullable": null,
@@ -11619,7 +11659,7 @@
     "return": null
   },
   {
-    "__docId__": 460,
+    "__docId__": 461,
     "kind": "method",
     "name": "createWindowContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11629,7 +11669,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createWindowContract",
     "access": "public",
     "description": "Provides window contract.",
-    "lineNumber": 408,
+    "lineNumber": 407,
     "unknown": [
       {
         "tagName": "@returns",
@@ -11647,7 +11687,7 @@
     "params": []
   },
   {
-    "__docId__": 461,
+    "__docId__": 462,
     "kind": "method",
     "name": "createDnDContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11657,7 +11697,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createDnDContract",
     "access": "public",
     "description": "Provides DnD contract.",
-    "lineNumber": 420,
+    "lineNumber": 419,
     "unknown": [
       {
         "tagName": "@returns",
@@ -11675,7 +11715,7 @@
     "params": []
   },
   {
-    "__docId__": 462,
+    "__docId__": 463,
     "kind": "method",
     "name": "createDOMContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11685,7 +11725,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createDOMContract",
     "access": "public",
     "description": "Provides DOM contract.",
-    "lineNumber": 428,
+    "lineNumber": 427,
     "unknown": [
       {
         "tagName": "@returns",
@@ -11703,7 +11743,7 @@
     "params": []
   },
   {
-    "__docId__": 463,
+    "__docId__": 464,
     "kind": "method",
     "name": "createThemeContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11713,7 +11753,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createThemeContract",
     "access": "public",
     "description": "Provides Theme contract.",
-    "lineNumber": 439,
+    "lineNumber": 438,
     "unknown": [
       {
         "tagName": "@returns",
@@ -11731,7 +11771,7 @@
     "params": []
   },
   {
-    "__docId__": 464,
+    "__docId__": 465,
     "kind": "method",
     "name": "createSoundsContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11741,7 +11781,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createSoundsContract",
     "access": "public",
     "description": "Provides Sounds contract.",
-    "lineNumber": 452,
+    "lineNumber": 451,
     "unknown": [
       {
         "tagName": "@returns",
@@ -11759,7 +11799,7 @@
     "params": []
   },
   {
-    "__docId__": 465,
+    "__docId__": 466,
     "kind": "method",
     "name": "createSessionContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11769,7 +11809,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createSessionContract",
     "access": "public",
     "description": "Provides Session contract.",
-    "lineNumber": 477,
+    "lineNumber": 476,
     "unknown": [
       {
         "tagName": "@returns",
@@ -11787,7 +11827,7 @@
     "params": []
   },
   {
-    "__docId__": 466,
+    "__docId__": 467,
     "kind": "method",
     "name": "createPackagesContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11797,7 +11837,7 @@
     "longname": "src/providers/core.js~CoreServiceProvider#createPackagesContract",
     "access": "public",
     "description": "Provides Packages contract.",
-    "lineNumber": 488,
+    "lineNumber": 487,
     "unknown": [
       {
         "tagName": "@returns",
@@ -11815,7 +11855,7 @@
     "params": []
   },
   {
-    "__docId__": 467,
+    "__docId__": 468,
     "kind": "method",
     "name": "createClipboardContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11843,7 +11883,7 @@
     "params": []
   },
   {
-    "__docId__": 468,
+    "__docId__": 469,
     "kind": "method",
     "name": "createMiddlewareContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11871,7 +11911,7 @@
     "params": []
   },
   {
-    "__docId__": 469,
+    "__docId__": 470,
     "kind": "method",
     "name": "createTrayContract",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -11899,7 +11939,7 @@
     "params": []
   },
   {
-    "__docId__": 470,
+    "__docId__": 471,
     "kind": "file",
     "name": "src/providers/desktop.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { ServiceProvider } from \"@meeseOS/common\";\nimport Desktop from \"../desktop\";\n\n/**\n * Desktop Service Contract\n * @typedef {Object} DeskopProviderContract\n * @property {Function} setKeyboardContext\n * @property {Function} openContextMenu\n * @property {Function} addContextMenuEntries\n * @property {Function} applySettings\n * @property {Function} createDropContextMenu\n * @property {Function} getRect\n */\n\n/**\n * MeeseOS Desktop Service Provider\n */\nexport default class DesktopServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options || {});\n\n\t\t/**\n\t\t * @type {Desktop}\n\t\t * @readonly\n\t\t */\n\t\tthis.desktop = new Desktop(this.core, this.options);\n\t}\n\n\t/**\n\t * Destroys instance.\n\t */\n\tdestroy() {\n\t\tthis.desktop = this.desktop.destroy();\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/desktop\"];\n\t}\n\n\t/**\n\t * Initializes desktop.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.desktop.init();\n\n\t\tthis.core.singleton(\"meeseOS/desktop\", () => this.createDesktopContract());\n\n\t\tthis.core.on(\"meeseOS/core:started\", () => {\n\t\t\tthis.desktop.applySettings();\n\t\t});\n\t}\n\n\t/**\n\t * Starts desktop.\n\t * @returns {Promise<undefined>}\n\t */\n\tstart() {\n\t\tthis.desktop.start();\n\t}\n\n\t/**\n\t * @returns {DeskopProviderContract}\n\t */\n\tcreateDesktopContract() {\n\t\treturn {\n\t\t\tsetKeyboardContext: (ctx) => this.desktop.setKeyboardContext(ctx),\n\t\t\topenContextMenu: (ev) => this.desktop.onContextMenu(ev),\n\t\t\taddContextMenuEntries: (entries) => this.desktop.addContextMenu(entries),\n\t\t\tapplySettings: (settings) => this.desktop.applySettings(settings),\n\t\t\tcreateDropContextMenu: (data) => this.desktop.createDropContextMenu(data),\n\t\t\tgetRect: () => this.desktop.getRect(),\n\t\t};\n\t}\n}\n",
@@ -11910,7 +11950,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 471,
+    "__docId__": 472,
     "kind": "typedef",
     "name": "DeskopProviderContract",
     "memberof": "src/providers/desktop.js",
@@ -11989,7 +12029,7 @@
     }
   },
   {
-    "__docId__": 472,
+    "__docId__": 473,
     "kind": "class",
     "name": "DesktopServiceProvider",
     "memberof": "src/providers/desktop.js",
@@ -12007,7 +12047,7 @@
     ]
   },
   {
-    "__docId__": 473,
+    "__docId__": 474,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/desktop.js~DesktopServiceProvider",
@@ -12044,7 +12084,7 @@
     ]
   },
   {
-    "__docId__": 474,
+    "__docId__": 475,
     "kind": "member",
     "name": "desktop",
     "memberof": "src/providers/desktop.js~DesktopServiceProvider",
@@ -12069,7 +12109,7 @@
     }
   },
   {
-    "__docId__": 475,
+    "__docId__": 476,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/desktop.js~DesktopServiceProvider",
@@ -12084,7 +12124,7 @@
     "return": null
   },
   {
-    "__docId__": 477,
+    "__docId__": 478,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/desktop.js~DesktopServiceProvider",
@@ -12112,7 +12152,7 @@
     "params": []
   },
   {
-    "__docId__": 478,
+    "__docId__": 479,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/desktop.js~DesktopServiceProvider",
@@ -12140,7 +12180,7 @@
     "params": []
   },
   {
-    "__docId__": 479,
+    "__docId__": 480,
     "kind": "method",
     "name": "start",
     "memberof": "src/providers/desktop.js~DesktopServiceProvider",
@@ -12168,7 +12208,7 @@
     "params": []
   },
   {
-    "__docId__": 480,
+    "__docId__": 481,
     "kind": "method",
     "name": "createDesktopContract",
     "memberof": "src/providers/desktop.js~DesktopServiceProvider",
@@ -12196,7 +12236,7 @@
     "params": []
   },
   {
-    "__docId__": 481,
+    "__docId__": 482,
     "kind": "file",
     "name": "src/providers/notifications.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport Notifications from \"../notifications\";\nimport { ServiceProvider } from \"@meeseOS/common\";\n\n/**\n * MeeseOS Notification Service Provider\n */\nexport default class NotificationServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Notifications}\n\t\t * @readonly\n\t\t */\n\t\tthis.notifications = new Notifications(core);\n\t}\n\n\t/**\n\t * Destroys notifications.\n\t */\n\tdestroy() {\n\t\tthis.notifications.destroy();\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/notification\"];\n\t}\n\n\t/**\n\t * Initializes authentication.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.core.instance(\"meeseOS/notification\", (options) => {\n\t\t\treturn this.notifications.create(options);\n\t\t});\n\n\t\treturn this.notifications.init();\n\t}\n}\n",
@@ -12207,7 +12247,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 482,
+    "__docId__": 483,
     "kind": "class",
     "name": "NotificationServiceProvider",
     "memberof": "src/providers/notifications.js",
@@ -12225,7 +12265,7 @@
     ]
   },
   {
-    "__docId__": 483,
+    "__docId__": 484,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/notifications.js~NotificationServiceProvider",
@@ -12250,7 +12290,7 @@
     ]
   },
   {
-    "__docId__": 484,
+    "__docId__": 485,
     "kind": "member",
     "name": "notifications",
     "memberof": "src/providers/notifications.js~NotificationServiceProvider",
@@ -12275,7 +12315,7 @@
     }
   },
   {
-    "__docId__": 485,
+    "__docId__": 486,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/notifications.js~NotificationServiceProvider",
@@ -12290,7 +12330,7 @@
     "return": null
   },
   {
-    "__docId__": 486,
+    "__docId__": 487,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/notifications.js~NotificationServiceProvider",
@@ -12318,7 +12358,7 @@
     "params": []
   },
   {
-    "__docId__": 487,
+    "__docId__": 488,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/notifications.js~NotificationServiceProvider",
@@ -12346,7 +12386,7 @@
     "params": []
   },
   {
-    "__docId__": 488,
+    "__docId__": 489,
     "kind": "file",
     "name": "src/providers/settings.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { ServiceProvider } from \"@meeseOS/common\";\nimport Settings from \"../settings\";\n\n/**\n * Settings Service Contract\n * @typedef {Object} SettingsProviderContract\n * @property {Function} save\n * @property {Function} load\n * @property {Function} clear\n * @property {Function} set\n * @property {Function} get\n */\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsServiceOptions\n * @property {Object} [config]\n */\n\n/**\n * MeeseOS Settings Service Provider\n */\nexport default class SettingsServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsProviderContract} [options={}]\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Settings}\n\t\t * @readonly\n\t\t */\n\t\tthis.settings = new Settings(core, {\n\t\t\tconfig: {},\n\t\t\t...options,\n\t\t});\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/settings\"];\n\t}\n\n\t/**\n\t * Initializes settings.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.core.singleton(\"meeseOS/settings\", () =>\n\t\t\tthis.createSettingsContract()\n\t\t);\n\n\t\treturn this.settings.init();\n\t}\n\n\t/**\n\t * @returns {SettingsProviderContract}\n\t */\n\tcreateSettingsContract() {\n\t\treturn {\n\t\t\tsave: () => this.settings.save(),\n\t\t\tload: () => this.settings.load(),\n\t\t\tclear: (ns) => this.settings.clear(ns),\n\t\t\tget: (ns, key, defaultValue) => this.settings.get(ns, key, defaultValue),\n\t\t\tset: (ns, key, value) => this.settings.set(ns, key, value),\n\t\t};\n\t}\n}\n",
@@ -12357,7 +12397,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 489,
+    "__docId__": 490,
     "kind": "typedef",
     "name": "SettingsProviderContract",
     "memberof": "src/providers/settings.js",
@@ -12426,7 +12466,7 @@
     }
   },
   {
-    "__docId__": 490,
+    "__docId__": 491,
     "kind": "typedef",
     "name": "SettingsServiceOptions",
     "memberof": "src/providers/settings.js",
@@ -12455,7 +12495,7 @@
     }
   },
   {
-    "__docId__": 491,
+    "__docId__": 492,
     "kind": "class",
     "name": "SettingsServiceProvider",
     "memberof": "src/providers/settings.js",
@@ -12473,7 +12513,7 @@
     ]
   },
   {
-    "__docId__": 492,
+    "__docId__": 493,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -12510,7 +12550,7 @@
     ]
   },
   {
-    "__docId__": 493,
+    "__docId__": 494,
     "kind": "member",
     "name": "settings",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -12535,7 +12575,7 @@
     }
   },
   {
-    "__docId__": 494,
+    "__docId__": 495,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -12563,7 +12603,7 @@
     "params": []
   },
   {
-    "__docId__": 495,
+    "__docId__": 496,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -12591,7 +12631,7 @@
     "params": []
   },
   {
-    "__docId__": 496,
+    "__docId__": 497,
     "kind": "method",
     "name": "createSettingsContract",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -12619,7 +12659,7 @@
     "params": []
   },
   {
-    "__docId__": 497,
+    "__docId__": 498,
     "kind": "file",
     "name": "src/providers/vfs.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { ServiceProvider } from \"@meeseOS/common\";\nimport * as utils from \"../utils/vfs\";\nimport Filesystem from \"../filesystem\";\n\n/**\n * Filesytem Service Contract\n * TODO: typedef\n * @typedef {Object} VFSServiceFilesystemContract\n * @property {Function} basename\n * @property {Function} pathname\n * @property {Function} pathJoin\n * @property {Function} icon\n * @property {Function} mountpoints\n * @property {Function} mount\n * @property {Function} unmount\n * @property {Function} addMountpoint\n */\n\n/**\n * VFS Service Contract\n * TODO: typedef\n * @typedef {Object} VFSServiceContract\n * @property {Function} readdir\n * @property {Function} readfile\n * @property {Function} writefile\n * @property {Function} copy\n * @property {Function} move\n * @property {Function} rename\n * @property {Function} mkdir\n * @property {Function} unlink\n * @property {Function} exists\n * @property {Function} stat\n * @property {Function} url\n * @property {Function} download\n * @property {Function} search\n * @property {Function} touch\n * @property {Function} archive\n */\n\n/**\n * VFS Service Options\n * @typedef {Object} VFSServiceOptions\n * @property {{name: FilesystemAdapter}} [adapters={}]\n * @property {FilesystemMountpoint[]} [mountpoints=[]]\n */\n\n/**\n * MeeseOS Virtual Filesystem Service Provider\n */\nexport default class VFSServiceProvider extends ServiceProvider {\n\t/**\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {VFSServiceOptions} [options={}]\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Filesystem}\n\t\t * @readonly\n\t\t */\n\t\tthis.fs = new Filesystem(core, {\n\t\t\tadapters: options.adapters || {},\n\t\t\tmounts: options.mounts || [],\n\t\t});\n\t}\n\n\t/**\n\t * Get a list of services this provider registers\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/vfs\", \"meeseOS/fs\"];\n\t}\n\n\t/**\n\t * Initializes VFS providers\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tthis.core.singleton(\"meeseOS/vfs\", () => this.createVFSContract());\n\t\tthis.core.singleton(\"meeseOS/fs\", () => this.createFilesystemContract());\n\n\t\treturn this.fs.mountAll(false);\n\t}\n\n\t/**\n\t * @returns {VFSServiceContract}\n\t */\n\tcreateVFSContract() {\n\t\treturn this.fs.request();\n\t}\n\n\t/**\n\t * @returns {VFSServiceFilesystemContract}\n\t */\n\tcreateFilesystemContract() {\n\t\tconst iconMap = this.core.config(\"vfs.icons\", {});\n\t\tconst icon = utils.getFileIcon(iconMap);\n\n\t\treturn {\n\t\t\tbasename: (p) => utils.basename(p),\n\t\t\tpathname: (p) => utils.pathname(p),\n\t\t\tpathJoin: (...args) => utils.pathJoin(...args),\n\t\t\ticon: icon,\n\t\t\tmountpoints: (all = false) => this.fs.getMounts(all),\n\t\t\taddMountpoint: (props, automount = true) =>\n\t\t\t\tthis.fs.addMountpoint(props, automount),\n\t\t\tmount: (m) => this.fs.mount(m),\n\t\t\tunmount: (name) => this.fs.unmount(name),\n\t\t};\n\t}\n}\n",
@@ -12630,7 +12670,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 498,
+    "__docId__": 499,
     "kind": "typedef",
     "name": "VFSServiceFilesystemContract",
     "memberof": "src/providers/vfs.js",
@@ -12729,7 +12769,7 @@
     }
   },
   {
-    "__docId__": 499,
+    "__docId__": 500,
     "kind": "typedef",
     "name": "VFSServiceContract",
     "memberof": "src/providers/vfs.js",
@@ -12898,7 +12938,7 @@
     }
   },
   {
-    "__docId__": 500,
+    "__docId__": 501,
     "kind": "typedef",
     "name": "VFSServiceOptions",
     "memberof": "src/providers/vfs.js",
@@ -12941,7 +12981,7 @@
     }
   },
   {
-    "__docId__": 501,
+    "__docId__": 502,
     "kind": "class",
     "name": "VFSServiceProvider",
     "memberof": "src/providers/vfs.js",
@@ -12959,7 +12999,7 @@
     ]
   },
   {
-    "__docId__": 502,
+    "__docId__": 503,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -12996,7 +13036,7 @@
     ]
   },
   {
-    "__docId__": 503,
+    "__docId__": 504,
     "kind": "member",
     "name": "fs",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -13021,7 +13061,7 @@
     }
   },
   {
-    "__docId__": 504,
+    "__docId__": 505,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -13049,7 +13089,7 @@
     "params": []
   },
   {
-    "__docId__": 505,
+    "__docId__": 506,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -13077,7 +13117,7 @@
     "params": []
   },
   {
-    "__docId__": 506,
+    "__docId__": 507,
     "kind": "method",
     "name": "createVFSContract",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -13105,7 +13145,7 @@
     "params": []
   },
   {
-    "__docId__": 507,
+    "__docId__": 508,
     "kind": "method",
     "name": "createFilesystemContract",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -13133,7 +13173,7 @@
     "params": []
   },
   {
-    "__docId__": 508,
+    "__docId__": 509,
     "kind": "file",
     "name": "src/search.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\nimport Window from \"./window\";\nimport createUI from \"./adapters/ui/search\";\nimport logger from \"./logger\";\n\n/**\n * Search Service\n */\nexport default class Search {\n\t/**\n\t * Create Search instance\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Wired actions\n\t\t * @type {Object}\n\t\t */\n\t\tthis.ui = null;\n\n\t\t/**\n\t\t * Last focused window\n\t\t * @type {Window}\n\t\t */\n\t\tthis.focusLastWindow = null;\n\n\t\t/**\n\t\t * Search root DOM element\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$element = document.createElement(\"div\");\n\t}\n\n\t/**\n\t * Destroy Search instance\n\t */\n\tdestroy() {\n\t\tif (this.ui) {\n\t\t\tthis.ui.destroy();\n\t\t}\n\t}\n\n\t/**\n\t * Initializes Search Service\n\t */\n\tinit() {\n\t\tconst { icon } = this.core.make(\"meeseOS/theme\");\n\n\t\tthis.$element.className = \"meeseOS-search\";\n\t\tthis.core.$root.appendChild(this.$element);\n\n\t\tthis.core.make(\"meeseOS/tray\").create(\n\t\t\t{\n\t\t\t\ttitle: \"Search Filesystem (F3)\",\n\t\t\t\ticon: icon(\"system-search\"),\n\t\t\t},\n\t\t\t() => this.show()\n\t\t);\n\n\t\tthis.ui = createUI(this.core, this.$element);\n\t\tthis.ui.on(\"hide\", () => this.hide());\n\t\tthis.ui.on(\"open\", (iter) => this.core.open(iter));\n\t\tthis.ui.on(\"search\", (query) => {\n\t\t\tthis.search(query)\n\t\t\t\t.then((results) => this.ui.emit(\"success\", results))\n\t\t\t\t.catch((error) => this.ui.emit(\"error\", error));\n\t\t});\n\t}\n\n\t/**\n\t * Performs a search across all mounts\n\t * @param {String} pattern Search query\n\t * @returns {Promise<FileMetadata[]>}\n\t */\n\tsearch(pattern) {\n\t\tconst vfs = this.core.make(\"meeseOS/vfs\");\n\t\tconst promises = this.core\n\t\t\t.make(\"meeseOS/fs\")\n\t\t\t.mountpoints()\n\t\t\t.map((mount) => `${mount.name}:/`)\n\t\t\t.map((path) => {\n\t\t\t\treturn vfs.search({ path }, pattern).catch((error) => {\n\t\t\t\t\tlogger.warn(\"Error while searching\", error);\n\t\t\t\t\treturn [];\n\t\t\t\t});\n\t\t\t});\n\n\t\treturn Promise.all(promises).then((lists) => [].concat(...lists));\n\t}\n\n\t/**\n\t * Focuses UI\n\t */\n\tfocus() {\n\t\tif (this.ui) {\n\t\t\tthis.ui.emit(\"focus\");\n\t\t}\n\t}\n\n\t/**\n\t * Hides UI\n\t */\n\thide() {\n\t\tif (this.ui) {\n\t\t\tthis.ui.emit(\"toggle\", false);\n\n\t\t\tconst win = Window.lastWindow();\n\t\t\tif (this.focusLastWindow && win) {\n\t\t\t\twin.focus();\n\t\t\t}\n\t\t}\n\t}\n\n\t/**\n\t * Shows UI\n\t */\n\tshow() {\n\t\tif (this.ui) {\n\t\t\tconst win = Window.lastWindow();\n\n\t\t\tthis.focusLastWindow = win && win.blur();\n\n\t\t\tthis.ui.emit(\"toggle\", true);\n\t\t\tsetTimeout(() => this.focus(), 1);\n\t\t}\n\t}\n}\n",
@@ -13144,7 +13184,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 509,
+    "__docId__": 510,
     "kind": "class",
     "name": "Search",
     "memberof": "src/search.js",
@@ -13159,7 +13199,7 @@
     "interface": false
   },
   {
-    "__docId__": 510,
+    "__docId__": 511,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/search.js~Search",
@@ -13184,7 +13224,7 @@
     ]
   },
   {
-    "__docId__": 511,
+    "__docId__": 512,
     "kind": "member",
     "name": "core",
     "memberof": "src/search.js~Search",
@@ -13209,7 +13249,7 @@
     }
   },
   {
-    "__docId__": 512,
+    "__docId__": 513,
     "kind": "member",
     "name": "ui",
     "memberof": "src/search.js~Search",
@@ -13228,7 +13268,7 @@
     }
   },
   {
-    "__docId__": 513,
+    "__docId__": 514,
     "kind": "member",
     "name": "focusLastWindow",
     "memberof": "src/search.js~Search",
@@ -13247,7 +13287,7 @@
     }
   },
   {
-    "__docId__": 514,
+    "__docId__": 515,
     "kind": "member",
     "name": "$element",
     "memberof": "src/search.js~Search",
@@ -13272,7 +13312,7 @@
     }
   },
   {
-    "__docId__": 515,
+    "__docId__": 516,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/search.js~Search",
@@ -13287,7 +13327,7 @@
     "return": null
   },
   {
-    "__docId__": 516,
+    "__docId__": 517,
     "kind": "method",
     "name": "init",
     "memberof": "src/search.js~Search",
@@ -13302,7 +13342,7 @@
     "return": null
   },
   {
-    "__docId__": 518,
+    "__docId__": 519,
     "kind": "method",
     "name": "search",
     "memberof": "src/search.js~Search",
@@ -13341,7 +13381,7 @@
     }
   },
   {
-    "__docId__": 519,
+    "__docId__": 520,
     "kind": "method",
     "name": "focus",
     "memberof": "src/search.js~Search",
@@ -13356,7 +13396,7 @@
     "return": null
   },
   {
-    "__docId__": 520,
+    "__docId__": 521,
     "kind": "method",
     "name": "hide",
     "memberof": "src/search.js~Search",
@@ -13371,7 +13411,7 @@
     "return": null
   },
   {
-    "__docId__": 521,
+    "__docId__": 522,
     "kind": "method",
     "name": "show",
     "memberof": "src/search.js~Search",
@@ -13386,7 +13426,7 @@
     "return": null
   },
   {
-    "__docId__": 523,
+    "__docId__": 524,
     "kind": "file",
     "name": "src/session.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport Application from \"./application\";\nimport logger from \"./logger\";\n\n/**\n * Session Handler\n */\nexport default class Session {\n\t/**\n\t * Creates the Session Handler\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\t}\n\n\t/**\n\t * Destroys the session, logging out the user\n\t * @returns {Promise<Boolean>}\n\t */\n\tdestroy() {\n\t\tApplication.destroyAll();\n\t\treturn this.core\n\t\t\t.make(\"meeseOS/settings\")\n\t\t\t.set(\"meeseOS/session\", null, [])\n\t\t\t.save();\n\t}\n\n\t/**\n\t * Saves the session\n\t * @returns {Promise<Boolean>}\n\t */\n\tsave() {\n\t\tconst apps = Application.getApplications().filter(\n\t\t\t(a) => a.options.sessionable !== false\n\t\t);\n\n\t\tconst session = apps.map((app) => app.getSession());\n\n\t\treturn this.core\n\t\t\t.make(\"meeseOS/settings\")\n\t\t\t.set(\"meeseOS/session\", null, session)\n\t\t\t.save();\n\t}\n\n\t/**\n\t * Loads session\n\t * @param {Boolean} [fresh=false] Kill all current applications first\n\t * @returns {Promise<Boolean>}\n\t */\n\tload(fresh = false) {\n\t\tif (fresh) {\n\t\t\tApplication.destroyAll();\n\t\t}\n\n\t\tlet session = this.core.make(\"meeseOS/settings\").get(\"meeseOS/session\");\n\n\t\tif (session && !(session instanceof Array)) {\n\t\t\tsession = Object.values(session);\n\t\t}\n\n\t\tif (session) {\n\t\t\tconsole.group(\"Session::load()\");\n\n\t\t\tsession.forEach((app) => {\n\t\t\t\ttry {\n\t\t\t\t\tthis.core.run(app.name, app.args, {\n\t\t\t\t\t\trestore: {\n\t\t\t\t\t\t\twindows: app.windows,\n\t\t\t\t\t\t},\n\t\t\t\t\t});\n\t\t\t\t} catch (e) {\n\t\t\t\t\tlogger.warn(\"Error while loading session entry\", e);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tconsole.groupEnd();\n\t\t}\n\n\t\treturn Promise.resolve(true);\n\t}\n}\n",
@@ -13397,7 +13437,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 524,
+    "__docId__": 525,
     "kind": "class",
     "name": "Session",
     "memberof": "src/session.js",
@@ -13412,7 +13452,7 @@
     "interface": false
   },
   {
-    "__docId__": 525,
+    "__docId__": 526,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/session.js~Session",
@@ -13437,7 +13477,7 @@
     ]
   },
   {
-    "__docId__": 526,
+    "__docId__": 527,
     "kind": "member",
     "name": "core",
     "memberof": "src/session.js~Session",
@@ -13462,7 +13502,7 @@
     }
   },
   {
-    "__docId__": 527,
+    "__docId__": 528,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/session.js~Session",
@@ -13490,7 +13530,7 @@
     "params": []
   },
   {
-    "__docId__": 528,
+    "__docId__": 529,
     "kind": "method",
     "name": "save",
     "memberof": "src/session.js~Session",
@@ -13518,7 +13558,7 @@
     "params": []
   },
   {
-    "__docId__": 529,
+    "__docId__": 530,
     "kind": "method",
     "name": "load",
     "memberof": "src/session.js~Session",
@@ -13559,7 +13599,7 @@
     }
   },
   {
-    "__docId__": 530,
+    "__docId__": 531,
     "kind": "file",
     "name": "src/settings.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport localStorageSettings from \"./adapters/settings/localstorage\";\nimport logger from \"./logger\";\nimport merge from \"deepmerge\";\nimport serverSettings from \"./adapters/settings/server\";\nimport simplejsonconf from \"simplejsonconf\";\n\nconst defaultAdapters = {\n\tserver: serverSettings,\n\tlocalStorage: localStorageSettings,\n};\n\nconst createAdapter = (core, options) => {\n\tconst adapter = core.config(\"standalone\")\n\t\t? localStorageSettings\n\t\t: typeof options.adapter === \"function\"\n\t\t\t? options.adapter\n\t\t\t: defaultAdapters[options.adapter || \"localStorage\"];\n\n\treturn {\n\t\tload: () => Promise.reject(new Error(\"Not implemented\")),\n\t\tsave: () => Promise.reject(new Error(\"Not implemented\")),\n\t\tinit: () => Promise.resolve(true),\n\t\tclear: () => Promise.resolve(true),\n\t\tdestroy: () => {},\n\t\t...adapter(core, options.config),\n\t};\n};\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapterConfiguration\n */\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapter\n */\n\n/**\n * @callback SettingsAdapterCallback\n * @param {Core} core\n * @returns {SettingsAdapterCallback}\n */\n\n/**\n * Settings Options\n *\n * @typedef {Object} SettingsOptions\n * @property {SettingsAdapterCallback|SettingsAdapter} [adapter] Adapter to use\n * @property {SettingsAdapterConfiguration} [config] Adapter configuration\n */\n\n/**\n * MeeseOS Settings Manager\n */\nexport default class Settings {\n\t// TODO: Destroy method\n\n\t/**\n\t * Create application\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsOptions} options Options\n\t */\n\tconstructor(core, options) {\n\t\t/**\n\t\t * The settings adapter\n\t\t * @type {SettingsAdapter}\n\t\t * @readonly\n\t\t */\n\t\tthis.adapter = createAdapter(core, options);\n\n\t\t/**\n\t\t * Internal timeout reference used for debouncing\n\t\t * @type {Object}\n\t\t */\n\t\tthis.debounce = null;\n\n\t\t/**\n\t\t * The settings tree\n\t\t * @type {{name: *}}\n\t\t */\n\t\tthis.settings = {};\n\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\t}\n\n\t/**\n\t * Initializes settings adapter\n\t */\n\tinit() {\n\t\treturn this.adapter.init();\n\t}\n\n\t/**\n\t * Saves settings\n\t * @returns {Promise<Boolean>}\n\t */\n\tsave() {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tif (this.debounce) {\n\t\t\t\tconst [promise, timer] = this.debounce;\n\t\t\t\tpromise.resolve(false);\n\t\t\t\tthis.debounce = clearTimeout(timer);\n\t\t\t}\n\n\t\t\tthis.debounce = [\n\t\t\t\t{ resolve, reject },\n\t\t\t\tsetTimeout(() => {\n\t\t\t\t\tthis.adapter\n\t\t\t\t\t\t.save(this.settings)\n\t\t\t\t\t\t.then((...args) => {\n\t\t\t\t\t\t\tthis.core.emit(\"meeseOS/settings:save\");\n\n\t\t\t\t\t\t\tresolve(...args);\n\t\t\t\t\t\t})\n\t\t\t\t\t\t.catch(reject);\n\t\t\t\t}, 100),\n\t\t\t];\n\t\t});\n\t}\n\n\t/**\n\t * Loads settings\n\t * @returns {Promise<Boolean>}\n\t */\n\tload() {\n\t\tconst defaults = this.core.config(\"settings.defaults\", {});\n\n\t\treturn this.adapter\n\t\t\t.load()\n\t\t\t.then((settings) => {\n\t\t\t\tthis.settings = merge(defaults, settings, {\n\t\t\t\t\tarrayMerge: (dest, source) => source,\n\t\t\t\t});\n\n\t\t\t\tthis.core.emit(\"meeseOS/settings:load\");\n\n\t\t\t\treturn true;\n\t\t\t})\n\t\t\t.catch((e) => {\n\t\t\t\tlogger.warn(\"Failed to set settings\", e);\n\t\t\t\tthis.settings = defaults;\n\n\t\t\t\treturn false;\n\t\t\t});\n\t}\n\n\t/**\n\t * Gets a settings entry by key (cached)\n\t *\n\t * @param {String} [ns] The namespace\n\t * @param {String} [key] The key to get the value from\n\t * @param {*} [defaultValue] If result is undefined, return this instead\n\t * @returns {*}\n\t */\n\tget(ns, key, defaultValue) {\n\t\tif (typeof ns === \"undefined\") {\n\t\t\treturn { ...this.settings };\n\t\t} else if (typeof this.settings[ns] === \"undefined\") {\n\t\t\treturn key ? defaultValue : defaultValue || {};\n\t\t}\n\n\t\tconst tree = simplejsonconf(this.settings[ns]);\n\n\t\treturn key ? tree.get(key, defaultValue) : tree.get() || defaultValue;\n\t}\n\n\t/**\n\t * Sets a settings entry by root key (but does not save).\n\t *\n\t * @param {String} ns The namespace\n\t * @param {String} [key] The key to set\n\t * @param {*} [value] The value to set\n\t * @returns {Settings} This\n\t */\n\tset(ns, key, value) {\n\t\tconst lock = this.core.config(\"settings.lock\", []);\n\t\tif (lock.indexOf(ns) !== -1) {\n\t\t\treturn this;\n\t\t}\n\n\t\tif (typeof this.settings[ns] === \"undefined\") {\n\t\t\tthis.settings[ns] = {};\n\t\t}\n\n\t\tif (key) {\n\t\t\ttry {\n\t\t\t\tconst sjc = simplejsonconf(this.settings[ns]);\n\t\t\t\tsjc.set(key, value);\n\t\t\t\tthis.settings[ns] = sjc.get();\n\t\t\t} catch (e) {\n\t\t\t\tlogger.warn(\"Error while setting settings for\", key, e);\n\t\t\t}\n\t\t} else {\n\t\t\tthis.settings[ns] = { ...value };\n\t\t}\n\n\t\treturn this;\n\t}\n\n\t/**\n\t * Clears a namespace by root key\n\t * @param {String} ns The namespace\n\t * @returns {Promise<Boolean>}\n\t */\n\tclear(ns) {\n\t\treturn this.adapter.clear(ns).then((result) => {\n\t\t\tif (result && this.settings[ns]) {\n\t\t\t\tdelete this.settings[ns];\n\t\t\t}\n\n\t\t\treturn result;\n\t\t});\n\t}\n}\n",
@@ -13570,7 +13610,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 531,
+    "__docId__": 532,
     "kind": "variable",
     "name": "defaultAdapters",
     "memberof": "src/settings.js",
@@ -13591,7 +13631,7 @@
     "ignore": true
   },
   {
-    "__docId__": 532,
+    "__docId__": 533,
     "kind": "function",
     "name": "createAdapter",
     "memberof": "src/settings.js",
@@ -13628,7 +13668,7 @@
     "ignore": true
   },
   {
-    "__docId__": 533,
+    "__docId__": 534,
     "kind": "typedef",
     "name": "SettingsAdapterConfiguration",
     "memberof": "src/settings.js",
@@ -13645,7 +13685,7 @@
     }
   },
   {
-    "__docId__": 534,
+    "__docId__": 535,
     "kind": "typedef",
     "name": "SettingsAdapter",
     "memberof": "src/settings.js",
@@ -13662,7 +13702,7 @@
     }
   },
   {
-    "__docId__": 535,
+    "__docId__": 536,
     "kind": "typedef",
     "name": "SettingsOptions",
     "memberof": "src/settings.js",
@@ -13702,7 +13742,7 @@
     }
   },
   {
-    "__docId__": 536,
+    "__docId__": 537,
     "kind": "class",
     "name": "Settings",
     "memberof": "src/settings.js",
@@ -13717,7 +13757,7 @@
     "interface": false
   },
   {
-    "__docId__": 537,
+    "__docId__": 538,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/settings.js~Settings",
@@ -13752,7 +13792,7 @@
     ]
   },
   {
-    "__docId__": 538,
+    "__docId__": 539,
     "kind": "member",
     "name": "adapter",
     "memberof": "src/settings.js~Settings",
@@ -13777,7 +13817,7 @@
     }
   },
   {
-    "__docId__": 539,
+    "__docId__": 540,
     "kind": "member",
     "name": "debounce",
     "memberof": "src/settings.js~Settings",
@@ -13796,7 +13836,7 @@
     }
   },
   {
-    "__docId__": 540,
+    "__docId__": 541,
     "kind": "member",
     "name": "settings",
     "memberof": "src/settings.js~Settings",
@@ -13815,7 +13855,7 @@
     }
   },
   {
-    "__docId__": 541,
+    "__docId__": 542,
     "kind": "member",
     "name": "core",
     "memberof": "src/settings.js~Settings",
@@ -13840,7 +13880,7 @@
     }
   },
   {
-    "__docId__": 542,
+    "__docId__": 543,
     "kind": "method",
     "name": "init",
     "memberof": "src/settings.js~Settings",
@@ -13859,7 +13899,7 @@
     }
   },
   {
-    "__docId__": 543,
+    "__docId__": 544,
     "kind": "method",
     "name": "save",
     "memberof": "src/settings.js~Settings",
@@ -13887,7 +13927,7 @@
     "params": []
   },
   {
-    "__docId__": 546,
+    "__docId__": 547,
     "kind": "method",
     "name": "load",
     "memberof": "src/settings.js~Settings",
@@ -13915,7 +13955,7 @@
     "params": []
   },
   {
-    "__docId__": 549,
+    "__docId__": 550,
     "kind": "method",
     "name": "get",
     "memberof": "src/settings.js~Settings",
@@ -13974,7 +14014,7 @@
     }
   },
   {
-    "__docId__": 550,
+    "__docId__": 551,
     "kind": "method",
     "name": "set",
     "memberof": "src/settings.js~Settings",
@@ -14033,7 +14073,7 @@
     }
   },
   {
-    "__docId__": 551,
+    "__docId__": 552,
     "kind": "method",
     "name": "clear",
     "memberof": "src/settings.js~Settings",
@@ -14072,7 +14112,7 @@
     }
   },
   {
-    "__docId__": 552,
+    "__docId__": 553,
     "kind": "file",
     "name": "src/splash.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport { createLettercrap } from \"./loading-screen/lettercrap.js\";\nimport loadingScreen from \"./loading-screen/loading.html\";\n\n/**\n * Splash Screen UI\n */\nexport default class Splash {\n\t/**\n\t * Create Splash\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Splash root element\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$loading = document.createElement(\"div\");\n\t\tthis.$loading.className = \"meeseOS-boot-splash\";\n\n\t\t/**\n\t\t * The transition time for `.loadingPage` in `styles/_loading.scss`\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.pageTransitionTime = 1000;\n\n\t\t/**\n\t\t * The time between quips, in milliseconds\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.timePerQuip = 1500;\n\n\t\t/**\n\t\t * The array of quips to display\n\t\t * @type {Array}\n\t\t * @readonly\n\t\t */\n\t\tthis.quips = [\n\t\t\t\"Contracting a wizard...\",\n\t\t\t\"Moving dragon from the mouth of the cave...\",\n\t\t\t\"Collecting all the loot...\",\n\t\t\t\"Divvying up dubloons...\",\n\t\t];\n\n\t\tcore.on(\"meeseOS/core:boot\", () => this.show());\n\t\t// TODO: Replace this with the cookie login event or something\n\t\t// core.on(\"meeseOS/core:logged-in\", () => this.show());\n\t\tcore.on(\"meeseOS/splash:finished\", () => this.destroy());\n\t}\n\n\t/**\n\t * Initializes splash with listener for user interaction\n\t */\n\tinit() {\n\t\tthis.$loading.appendChild(stringToHTML(loadingScreen));\n\t\tthis.$loading.style.transition = \"1s\";\n\t\tthis.core.emit(\"meeseOS/splash:loaded\");\n\n\t\t// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#specifying_this_using_bind\n\t\tthis.start = this.start.bind(this);\n\t\tdocument.body.style.cursor = \"pointer\";\n\t\tdocument.body.addEventListener(\"click\", this.start, false);\n\t}\n\n\t/**\n\t * Starts splash screen functionality after user interaction\n\t */\n\tstart() {\n\t\tthis.core.emit(\"meeseOS/splash:started\");\n\t\tdocument.body.removeEventListener(\"click\", this.start);\n\n\t\tif (this.core.has(\"meeseOS/sounds\")) {\n\t\t\tthis.core.make(\"meeseOS/sounds\").play(\"dial-up-modem\");\n\t\t}\n\n\t\tdocument.getElementById(\"mouseNotMoved\").style.display = \"none\";\n\t\tdocument.getElementById(\"mouseMoved\").style.display = \"block\";\n\t\tdocument.body.style.cursor = \"default\";\n\t\tcreateLettercrap();\n\n\t\tconst loadingBar = document.getElementById(\"loadingBar\");\n\t\tfor (let i = 1; i <= this.quips.length; i++) {\n\t\t\tsetTimeout(() => {\n\t\t\t\tloadingBar.innerText = this.quips[i - 1];\n\t\t\t\tloadingBar.style.width = (i / this.quips.length) * 100 + \"%\";\n\t\t\t}, this.timePerQuip * i);\n\t\t}\n\n\t\t// Fade out the loading screen after all the quips have been displayed\n\t\twindow.setTimeout(() => {\n\t\t\tthis.$loading.style.opacity = 0;\n\t\t\tthis.core.$contents.style.opacity = 1;\n\n\t\t\tsetTimeout(() => {\n\t\t\t\tthis.core.emit(\"meeseOS/splash:finished\");\n\t\t\t}, this.pageTransitionTime);\n\t\t}, this.timePerQuip * (this.quips.length + 1));\n\t}\n\n\t/**\n\t * Shows splash\n\t */\n\tshow() {\n\t\t// Hide the normal MeeseOS content\n\t\tconst content = document.querySelector(\".meeseOS-contents\");\n\t\tcontent.style.transition = \"1s\";\n\t\tcontent.style.opacity = 0;\n\n\t\tif (!this.$loading.parentNode) {\n\t\t\tthis.core.$root.appendChild(this.$loading);\n\t\t}\n\t}\n\n\t/**\n\t * Destroys splash\n\t */\n\tdestroy() {\n\t\tif (this.$loading.parentNode) {\n\t\t\tthis.$loading.remove();\n\t\t}\n\t}\n}\n\n/**\n * Convert a template string into HTML DOM nodes\n * @param  {String} str The template string\n * @returns {Node}       The template HTML\n */\nconst stringToHTML = (str) => {\n\tconst parser = new DOMParser();\n\tconst doc = parser.parseFromString(str, \"text/html\");\n\treturn doc.body;\n};\n",
@@ -14083,7 +14123,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 553,
+    "__docId__": 554,
     "kind": "class",
     "name": "Splash",
     "memberof": "src/splash.js",
@@ -14098,7 +14138,7 @@
     "interface": false
   },
   {
-    "__docId__": 554,
+    "__docId__": 555,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/splash.js~Splash",
@@ -14123,7 +14163,7 @@
     ]
   },
   {
-    "__docId__": 555,
+    "__docId__": 556,
     "kind": "member",
     "name": "core",
     "memberof": "src/splash.js~Splash",
@@ -14148,7 +14188,7 @@
     }
   },
   {
-    "__docId__": 556,
+    "__docId__": 557,
     "kind": "member",
     "name": "$loading",
     "memberof": "src/splash.js~Splash",
@@ -14173,7 +14213,7 @@
     }
   },
   {
-    "__docId__": 557,
+    "__docId__": 558,
     "kind": "member",
     "name": "pageTransitionTime",
     "memberof": "src/splash.js~Splash",
@@ -14198,7 +14238,7 @@
     }
   },
   {
-    "__docId__": 558,
+    "__docId__": 559,
     "kind": "member",
     "name": "timePerQuip",
     "memberof": "src/splash.js~Splash",
@@ -14223,7 +14263,7 @@
     }
   },
   {
-    "__docId__": 559,
+    "__docId__": 560,
     "kind": "member",
     "name": "quips",
     "memberof": "src/splash.js~Splash",
@@ -14248,7 +14288,7 @@
     }
   },
   {
-    "__docId__": 560,
+    "__docId__": 561,
     "kind": "method",
     "name": "init",
     "memberof": "src/splash.js~Splash",
@@ -14263,7 +14303,7 @@
     "return": null
   },
   {
-    "__docId__": 562,
+    "__docId__": 563,
     "kind": "method",
     "name": "start",
     "memberof": "src/splash.js~Splash",
@@ -14278,7 +14318,7 @@
     "return": null
   },
   {
-    "__docId__": 563,
+    "__docId__": 564,
     "kind": "method",
     "name": "show",
     "memberof": "src/splash.js~Splash",
@@ -14293,7 +14333,7 @@
     "return": null
   },
   {
-    "__docId__": 564,
+    "__docId__": 565,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/splash.js~Splash",
@@ -14308,7 +14348,7 @@
     "return": null
   },
   {
-    "__docId__": 565,
+    "__docId__": 566,
     "kind": "function",
     "name": "stringToHTML",
     "memberof": "src/splash.js",
@@ -14351,7 +14391,7 @@
     "ignore": true
   },
   {
-    "__docId__": 566,
+    "__docId__": 567,
     "kind": "file",
     "name": "src/tray.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport defaultIcon from \"./styles/icon.png\";\nimport logger from \"./logger\";\n\n/**\n * Tray Icon Data\n * @typedef {Object} TrayEntryData\n * @property {String} [key] Used as internal index for tray entry\n * @property {String} [icon] Icon source\n * @property {String} [title] The title and tooltip\n * @property {Function} [onclick] The callback function for clicks\n * @property {Function} [oncontextmenu] The callback function for contextmenu\n */\n\n/**\n * Tray Icon Entry\n * @typedef {Object} TrayEntry\n * @property {TrayEntryData} entry The given entry data\n * @property {Function} update Updates entry with given data\n * @property {Function} destroy Destroy the entry\n */\n\n/**\n * Tray Handler\n */\nexport default class Tray {\n\t/**\n\t * Creates the Tray Handler\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * All Tray entries\n\t\t * @type {TrayEntry[]}\n\t\t */\n\t\tthis.entries = [];\n\t}\n\n\t/**\n\t * Destroys instance\n\t */\n\tdestroy() {\n\t\tthis.entries = [];\n\t}\n\n\t/**\n\t * Creates a new Tray entry\n\t * @param {TrayEntryData} options Options\n\t * @param {Function} [handler] The callback function for all events\n\t * @returns {TrayEntry}\n\t */\n\tcreate(options, handler) {\n\t\tconst defaultTitle = \"Tray Entry\";\n\n\t\thandler = handler || (() => {});\n\n\t\tconst entry = {\n\t\t\tkey: null,\n\t\t\ticon: defaultIcon,\n\t\t\ttitle: defaultTitle,\n\t\t\tonclick: handler,\n\t\t\toncontextmenu: handler,\n\t\t\thandler,\n\t\t\t...options,\n\t\t};\n\n\t\tlogger.debug(\"Created new tray entry\", entry);\n\n\t\tthis.entries.push(entry);\n\n\t\tthis.core.emit(\"meeseOS/tray:create\", entry);\n\t\tthis.core.emit(\"meeseOS/tray:update\", this.entries);\n\n\t\tconst obj = {\n\t\t\tentry,\n\t\t\tupdate: (u) => {\n\t\t\t\tObject.keys(u).forEach((k) => (entry[k] = u[k]));\n\n\t\t\t\tthis.core.emit(\"meeseOS/tray:update\", this.entries);\n\t\t\t},\n\t\t\tdestroy: () => this.remove(entry),\n\t\t};\n\n\t\treturn obj;\n\t}\n\n\t/**\n\t * Removes a Tray entry\n\t * @param {TrayEntry} entry The tray entry\n\t */\n\tremove(entry) {\n\t\tconst foundIndex = this.entries.findIndex((e) => e === entry);\n\t\tif (foundIndex !== -1) {\n\t\t\tthis.entries.splice(foundIndex, 1);\n\n\t\t\tthis.core.emit(\"meeseOS/tray:remove\", entry);\n\t\t\tthis.core.emit(\"meeseOS/tray:update\", this.entries);\n\t\t}\n\t}\n\n\t/**\n\t * @returns {TrayEntry[]}\n\t */\n\tlist() {\n\t\treturn this.entries;\n\t}\n\n\t/**\n\t * @returns {Boolean}\n\t */\n\thas(key) {\n\t\treturn this.entries.findIndex((entry) => entry.key === key) !== -1;\n\t}\n}\n",
@@ -14362,7 +14402,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 567,
+    "__docId__": 568,
     "kind": "typedef",
     "name": "TrayEntryData",
     "memberof": "src/tray.js",
@@ -14431,7 +14471,7 @@
     }
   },
   {
-    "__docId__": 568,
+    "__docId__": 569,
     "kind": "typedef",
     "name": "TrayEntry",
     "memberof": "src/tray.js",
@@ -14480,7 +14520,7 @@
     }
   },
   {
-    "__docId__": 569,
+    "__docId__": 570,
     "kind": "class",
     "name": "Tray",
     "memberof": "src/tray.js",
@@ -14495,7 +14535,7 @@
     "interface": false
   },
   {
-    "__docId__": 570,
+    "__docId__": 571,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/tray.js~Tray",
@@ -14520,7 +14560,7 @@
     ]
   },
   {
-    "__docId__": 571,
+    "__docId__": 572,
     "kind": "member",
     "name": "core",
     "memberof": "src/tray.js~Tray",
@@ -14545,7 +14585,7 @@
     }
   },
   {
-    "__docId__": 572,
+    "__docId__": 573,
     "kind": "member",
     "name": "entries",
     "memberof": "src/tray.js~Tray",
@@ -14564,7 +14604,7 @@
     }
   },
   {
-    "__docId__": 573,
+    "__docId__": 574,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/tray.js~Tray",
@@ -14579,7 +14619,7 @@
     "return": null
   },
   {
-    "__docId__": 575,
+    "__docId__": 576,
     "kind": "method",
     "name": "create",
     "memberof": "src/tray.js~Tray",
@@ -14628,7 +14668,7 @@
     }
   },
   {
-    "__docId__": 576,
+    "__docId__": 577,
     "kind": "method",
     "name": "remove",
     "memberof": "src/tray.js~Tray",
@@ -14654,7 +14694,7 @@
     "return": null
   },
   {
-    "__docId__": 577,
+    "__docId__": 578,
     "kind": "method",
     "name": "list",
     "memberof": "src/tray.js~Tray",
@@ -14682,7 +14722,7 @@
     "params": []
   },
   {
-    "__docId__": 578,
+    "__docId__": 579,
     "kind": "method",
     "name": "has",
     "memberof": "src/tray.js~Tray",
@@ -14717,7 +14757,7 @@
     ]
   },
   {
-    "__docId__": 579,
+    "__docId__": 580,
     "kind": "file",
     "name": "src/utils/colors.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\n/**\n * Inverts a HEX color\n * @link https://stackoverflow.com/a/51568508\n * @param {String} hex Color hex code\n * @returns {String} Inverted hex code\n */\nexport const invertHex = (hex) =>\n\t\"#\" +\n\thex\n\t\t.match(/[a-f0-9]{2}/gi)\n\t\t.map((e) =>\n\t\t\t((255 - parseInt(e, 16)) | 0).toString(16).replace(/^([a-f0-9])$/, \"0$1\")\n\t\t)\n\t\t.join(\"\");\n",
@@ -14728,7 +14768,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 580,
+    "__docId__": 581,
     "kind": "function",
     "name": "invertHex",
     "memberof": "src/utils/colors.js",
@@ -14774,10 +14814,10 @@
     }
   },
   {
-    "__docId__": 581,
+    "__docId__": 582,
     "kind": "file",
     "name": "src/utils/desktop.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport logger from \"../logger\";\nimport { supportedMedia } from \"./dom\";\nimport cursorEffects from \"@meeseOS/cursor-effects\";\nimport dynamicWallpapers from \"@meeseOS/dynamic-wallpapers\";\nimport Core from \"../core\";\n\nconst imageDropMimes = [\n\t\"image/png\",\n\t\"image/jpe?g\",\n\t\"image/webp\",\n\t\"image/gif\",\n\t\"image/svg(\\\\+xml)?\",\n];\n\n/**\n * Check if droppable data is a VFS type\n * @param {Object} data\n * @returns {Boolean}\n */\nexport const validVfsDrop = (data) => data && data.path;\n\n/**\n * Check if droppable data contains image\n * @param {Object} data\n * @returns {Boolean}\n */\nexport const isDroppingImage = (data) =>\n\tvalidVfsDrop(data) &&\n\timageDropMimes.some((re) => Boolean(data.mime.match(re)));\n\n/** Array of common screen resolutions to match against and query Unsplash for. */\nconst standardResolutions = [\n\t// Desktops\n\t{ width: 3840, height: 2160 },\n\t{ width: 2560, height: 1440 },\n\t{ width: 1920, height: 1080 },\n\t{ width: 1600, height: 900 },\n\t{ width: 1440, height: 900 },\n\t{ width: 1366, height: 768 },\n\t{ width: 1280, height: 1024 },\n\t{ width: 1280, height: 800 },\n\t{ width: 1280, height: 720 },\n\t{ width: 1024, height: 768 },\n\t{ width: 800, height: 600 },\n\t// Mobile devices\n\t{ width: 720, height: 1280 },\n\t{ width: 750, height: 1334 },\n\t{ width: 1080, height: 1920 },\n\t{ width: 1125, height: 2436 },\n\t{ width: 1440, height: 2960 },\n];\n\n/**\n * Calculates the size difference between the real size and a standard screen size.\n * @param {Object} realSize The real size of the screen\n * @param {Object} standard The point to check for distance\n * @returns {Number} The distance between the real resolution and the standard resolution\n * @link https://stackoverflow.com/a/56306192/6456163\n */\nconst getResolutionDistance = (realSize, standard) =>\n\tMath.sqrt(\n\t\tMath.pow(realSize.width - standard.width, 2) +\n\t\tMath.pow(realSize.height - standard.height, 2)\n\t);\n\n/**\n * Uses the screen resolution to find an Unsplash wallpaper that matches the screen resolution.\n * @returns {String}\n * @link https://stackoverflow.com/a/56306192/6456163\n */\nconst getRandomWallpaper = () => {\n\tconst realWidth = window.screen.width * window.devicePixelRatio;\n\tconst realHeight = window.screen.height * window.devicePixelRatio;\n\tconst realSize = { width: realWidth, height: realHeight };\n\tconst closestResolution = standardResolutions.reduce((prev, curr) =>\n\t\tgetResolutionDistance(prev, realSize) < getResolutionDistance(curr, realSize)\n\t\t\t? prev\n\t\t\t: curr\n\t);\n\n\tconst resolution = `${closestResolution.width}x${closestResolution.height}`;\n\tconst orientation = window.innerHeight > window.innerWidth ? \"portrait\" : \"landscape\";\n\tconst orientationParam = `orientation=${orientation}`;\n\tconst sigParam = `sig=${Math.random()}`;\n\treturn `https://source.unsplash.com/random/${resolution}?${orientationParam}&${sigParam}`;\n};\n\n/**\n * Creates a static background with an image and a color, if applicable\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} background\n */\nconst createStaticBackground = (core, background) => {\n\tconst { $root } = core;\n\n\tconst styles = {\n\t\tbackgroundRepeat: \"no-repeat\",\n\t\tbackgroundPosition: \"50% 50%\",\n\t\tbackgroundSize: \"auto\",\n\t\tbackgroundColor: background.color,\n\t\tbackgroundImage: \"none\",\n\t};\n\n\tif (background.style === \"cover\" || background.style === \"contain\") {\n\t\tstyles.backgroundSize = background.style;\n\t} else if (background.style === \"repeat\") {\n\t\tstyles.backgroundRepeat = \"repeat\";\n\t}\n\n\tif (background.style !== \"color\") {\n\t\tif (background.random) {\n\t\t\tstyles.backgroundImage = `url(${getRandomWallpaper()})`;\n\t\t} else if (background.src === undefined) {\n\t\t\tstyles.backgroundImage = undefined;\n\t\t} else if (background.src.match(/^meeseOS:/)) {\n\t\t\tcore\n\t\t\t\t.make(\"meeseOS/vfs\")\n\t\t\t\t.url(background.src)\n\t\t\t\t.then((src) => {\n\t\t\t\t\tsetTimeout(() => ($root.style.backgroundImage = `url(${src})`), 1);\n\t\t\t\t})\n\t\t\t\t.catch((error) =>\n\t\t\t\t\tlogger.warn(\"Error while setting wallpaper from VFS\", error)\n\t\t\t\t);\n\t\t} else if (typeof background.src === \"string\") {\n\t\t\tstyles.backgroundImage = `url(${background.src})`;\n\t\t}\n\t}\n\n\tObject.keys(styles).forEach((k) => ($root.style[k] = styles[k]));\n};\n\n/**\n * Creates a dynamic background based on the specified settings\n * @param {Object} background\n */\nconst createDynamicBackground = (background) => {\n\tconst canvas = document.querySelector(\".meeseOS-dynamic-background\");\n\tcanvas.style.display = \"inherit\";\n\n\t// TODO: Destroy and re-create canvas as opposed to just hiding it\n\t// when transitioning between static and dynamic backgrounds\n\n\t// Calls the background effect function by name\n\tconst effectName = background.effect || \"default\";\n\tconst options = background.options || {};\n\tdynamicWallpapers[effectName].effect(canvas, options);\n};\n\n/**\n * Hides the dynamic background canvas\n */\nconst hideDynamicBackground = () => {\n\tconst canvas = document.querySelector(\".meeseOS-dynamic-background\");\n\tcanvas.style.display = \"none\";\n};\n\n/**\n * Applies a set of styles based on background settings\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} background\n */\nexport const applyBackgroundStyles = (core, background) => {\n\tif (background.type === \"static\") {\n\t\thideDynamicBackground();\n\t\tcreateStaticBackground(core, background);\n\t} else if (background.type === \"dynamic\") {\n\t\tcreateDynamicBackground(background);\n\t}\n};\n\n/**\n * Applies a cursor effect based on the specified settings\n * @param {Object} cursor\n */\nexport const applyCursorEffect = (cursor) => {\n\t// Get the second to last element of the body and remove it if it is a canvas,\n\t// which removes any previous cursor effects\n\tconst body = document.querySelector(\"body\");\n\tconst secondToLastChild = body.children[body.children.length - 2];\n\tif (secondToLastChild && secondToLastChild.tagName === \"CANVAS\") {\n\t\tbody.removeChild(secondToLastChild);\n\t}\n\n\t// Calls the cursor effect function by name\n\tconst effectName = cursor.effect || \"none\";\n\tconst options = cursor.options || {};\n\tcursorEffects[effectName].effect(options);\n};\n\n/**\n * Creates a rectangle with the realestate panels takes up\n */\nexport const createPanelSubtraction = (panel, panels) => {\n\tconst subtraction = { top: 0, left: 0, right: 0, bottom: 0 };\n\tconst set = (p) =>\n\t\t(subtraction[p.options.position] = p.$element.offsetHeight);\n\n\tif (panels.length > 0) {\n\t\tpanels.forEach(set);\n\t} else {\n\t\t// Backward compability\n\t\tset(panel);\n\t}\n\n\treturn subtraction;\n};\n\nexport const isVisible = (w) =>\n\tw && !w.getState(\"minimized\") && w.getState(\"focused\");\n\n/**\n * Allows for requesting whether a file exists without `async`.\n * @todo Move to MeeseOS VFS, so the 404 error doesn't log to console\n * @param {String} urlToFile\n * @returns {Boolean}\n */\nconst syncRequest = (urlToFile) => {\n\tconst xhr = new XMLHttpRequest();\n\txhr.open(\"HEAD\", urlToFile, false);\n\txhr.send();\n\n\treturn xhr.status > 199 && xhr.status < 300;\n};\n\n/*\n * Resolves various resources\n * TODO: Move all of this (and related) stuff to a Theme class\n */\nexport const resourceResolver = (core) => {\n\tconst media = supportedMedia();\n\n\tconst getThemeName = (type) => {\n\t\tconst defaultTheme = core.config(\"desktop.settings.\" + type);\n\t\treturn core\n\t\t\t.make(\"meeseOS/settings\")\n\t\t\t.get(\"meeseOS/desktop\", type, defaultTheme);\n\t};\n\n\tconst themeResource = (path) => {\n\t\tconst theme = getThemeName(\"theme\");\n\n\t\treturn core.url(`themes/${theme}/${path}`); // FIXME: Use metadata ?\n\t};\n\n\tconst getSoundThemeName = () => getThemeName(\"sounds\");\n\n\tconst soundResource = (path) => {\n\t\tif (!path.match(/\\.([a-z]+)$/)) {\n\t\t\tconst defaultExtension = \"mp3\";\n\t\t\tconst checkExtensions = [\"oga\", \"mp3\"];\n\t\t\tconst found = checkExtensions.find((str) => media.audio[str] === true);\n\t\t\tconst use = found || defaultExtension;\n\n\t\t\tpath += \".\" + use;\n\t\t}\n\n\t\tconst theme = getSoundThemeName();\n\n\t\treturn theme ? core.url(`sounds/${theme}/${path}`) : null; // FIXME: Use metadata ?\n\t};\n\n\tconst soundsEnabled = () => Boolean(getSoundThemeName());\n\n\tconst icon = (path) => {\n\t\tconst theme = getThemeName(\"icons\");\n\t\tconst urlBase = `icons/${theme}/icons`;\n\n\t\tif (!path.match(/\\.([a-z]+)$/)) {\n\t\t\tconst defaultExtension = \"png\";\n\t\t\tconst defaultImage = core.url(`${urlBase}/${path}.${defaultExtension}`);\n\t\t\tconst defaultImageExists = syncRequest(defaultImage);\n\t\t\tif (defaultImageExists) {\n\t\t\t\tpath += \".\" + defaultExtension;\n\t\t\t} else {\n\t\t\t\tconst checkExtensions = [\"svg\", \"gif\"];\n\t\t\t\tfor (const ext of checkExtensions) {\n\t\t\t\t\tconst url = core.url(`${urlBase}/${path}.${ext}`);\n\t\t\t\t\tconst urlExists = syncRequest(url);\n\t\t\t\t\tif (urlExists) {\n\t\t\t\t\t\tpath += \".\" + ext;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif (!path.match(/\\.([a-z]+)$/)) {\n\t\t\t\t\tpath += \".\" + defaultExtension;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\treturn core.url(`${urlBase}/${path}`);\n\t};\n\n\treturn { themeResource, soundResource, soundsEnabled, icon };\n};\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport logger from \"../logger\";\nimport { supportedMedia } from \"./dom\";\nimport cursorEffects from \"@meeseOS/cursor-effects\";\nimport dynamicWallpapers from \"@meeseOS/dynamic-wallpapers\";\nimport Core from \"../core\";\n\nconst imageDropMimes = [\n\t\"image/png\",\n\t\"image/jpe?g\",\n\t\"image/webp\",\n\t\"image/gif\",\n\t\"image/svg(\\\\+xml)?\",\n];\n\n/**\n * Check if droppable data is a VFS type\n * @param {Object} data\n * @returns {Boolean}\n */\nexport const validVfsDrop = (data) => data && data.path;\n\n/**\n * Check if droppable data contains image\n * @param {Object} data\n * @returns {Boolean}\n */\nexport const isDroppingImage = (data) =>\n\tvalidVfsDrop(data) &&\n\timageDropMimes.some((re) => Boolean(data.mime.match(re)));\n\n/** Array of common screen resolutions to match against and query Unsplash for. */\nconst standardResolutions = [\n\t// Desktops\n\t{ width: 3840, height: 2160 },\n\t{ width: 2560, height: 1440 },\n\t{ width: 1920, height: 1080 },\n\t{ width: 1600, height: 900 },\n\t{ width: 1440, height: 900 },\n\t{ width: 1366, height: 768 },\n\t{ width: 1280, height: 1024 },\n\t{ width: 1280, height: 800 },\n\t{ width: 1280, height: 720 },\n\t{ width: 1024, height: 768 },\n\t{ width: 800, height: 600 },\n\t// Mobile devices\n\t{ width: 720, height: 1280 },\n\t{ width: 750, height: 1334 },\n\t{ width: 1080, height: 1920 },\n\t{ width: 1125, height: 2436 },\n\t{ width: 1440, height: 2960 },\n];\n\n/**\n * Calculates the size difference between the real size and a standard screen size.\n * @param {Object} realSize The real size of the screen\n * @param {Object} standard The point to check for distance\n * @returns {Number} The distance between the real resolution and the standard resolution\n * @link https://stackoverflow.com/a/56306192/6456163\n */\nconst getResolutionDistance = (realSize, standard) =>\n\tMath.sqrt(\n\t\tMath.pow(realSize.width - standard.width, 2) +\n\t\tMath.pow(realSize.height - standard.height, 2)\n\t);\n\n/**\n * Uses the screen resolution to find an Unsplash wallpaper that matches the screen resolution.\n * @returns {String}\n * @link https://stackoverflow.com/a/56306192/6456163\n */\nconst getRandomWallpaper = () => {\n\tconst realWidth = window.screen.width * window.devicePixelRatio;\n\tconst realHeight = window.screen.height * window.devicePixelRatio;\n\tconst realSize = { width: realWidth, height: realHeight };\n\tconst closestResolution = standardResolutions.reduce((prev, curr) =>\n\t\tgetResolutionDistance(prev, realSize) < getResolutionDistance(curr, realSize)\n\t\t\t? prev\n\t\t\t: curr\n\t);\n\n\tconst resolution = `${closestResolution.width}x${closestResolution.height}`;\n\tconst orientation = window.innerHeight > window.innerWidth ? \"portrait\" : \"landscape\";\n\tconst orientationParam = `orientation=${orientation}`;\n\tconst sigParam = `sig=${Math.random()}`;\n\treturn `https://source.unsplash.com/random/${resolution}?${orientationParam}&${sigParam}`;\n};\n\n/**\n * Creates a static background with an image and a color, if applicable\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} background\n */\nconst createStaticBackground = (core, background) => {\n\tconst { $root } = core;\n\n\tconst styles = {\n\t\tbackgroundRepeat: \"no-repeat\",\n\t\tbackgroundPosition: \"50% 50%\",\n\t\tbackgroundSize: \"auto\",\n\t\tbackgroundColor: background.color,\n\t\tbackgroundImage: \"none\",\n\t};\n\n\tif (background.style === \"cover\" || background.style === \"contain\") {\n\t\tstyles.backgroundSize = background.style;\n\t} else if (background.style === \"repeat\") {\n\t\tstyles.backgroundRepeat = \"repeat\";\n\t}\n\n\tif (background.style !== \"color\") {\n\t\tif (background.random) {\n\t\t\tstyles.backgroundImage = `url(${getRandomWallpaper()})`;\n\t\t} else if (background.src === undefined) {\n\t\t\tstyles.backgroundImage = undefined;\n\t\t} else if (background.src.match(/^meeseOS:/)) {\n\t\t\tcore\n\t\t\t\t.make(\"meeseOS/vfs\")\n\t\t\t\t.url(background.src)\n\t\t\t\t.then((src) => {\n\t\t\t\t\tsetTimeout(() => ($root.style.backgroundImage = `url(${src})`), 1);\n\t\t\t\t})\n\t\t\t\t.catch((error) =>\n\t\t\t\t\tlogger.warn(\"Error while setting wallpaper from VFS\", error)\n\t\t\t\t);\n\t\t} else if (typeof background.src === \"string\") {\n\t\t\tstyles.backgroundImage = `url(${background.src})`;\n\t\t}\n\t}\n\n\tObject.keys(styles).forEach((k) => ($root.style[k] = styles[k]));\n};\n\n/**\n * Creates a dynamic background based on the specified settings\n * @param {Object} background\n */\nconst createDynamicBackground = (background) => {\n\tconst canvas = document.querySelector(\".meeseOS-dynamic-background\");\n\tcanvas.style.display = \"inherit\";\n\n\t// TODO: Destroy and re-create canvas as opposed to just hiding it\n\t// when transitioning between static and dynamic backgrounds\n\n\t// Calls the background effect function by name\n\tconst effectName = background.effect || \"default\";\n\tconst options = background.options || {};\n\tdynamicWallpapers[effectName].effect(canvas, options);\n};\n\n/**\n * Hides the dynamic background canvas\n */\nconst hideDynamicBackground = () => {\n\tconst canvas = document.querySelector(\".meeseOS-dynamic-background\");\n\tcanvas.style.display = \"none\";\n};\n\n/**\n * Applies a set of styles based on background settings\n * @param {Core} core MeeseOS Core instance reference\n * @param {Object} background\n */\nexport const applyBackgroundStyles = (core, background) => {\n\tif (background.type === \"static\") {\n\t\thideDynamicBackground();\n\t\tcreateStaticBackground(core, background);\n\t} else if (background.type === \"dynamic\") {\n\t\tcreateDynamicBackground(background);\n\t}\n};\n\n/**\n * Applies a cursor effect based on the specified settings\n * @param {Object} cursor\n */\nexport const applyCursorEffect = (cursor) => {\n\t// Get the second to last element of the body and remove it if it is a canvas,\n\t// which removes any previous cursor effects\n\tconst body = document.querySelector(\"body\");\n\tconst secondToLastChild = body.children[body.children.length - 2];\n\tif (secondToLastChild && secondToLastChild.tagName === \"CANVAS\") {\n\t\tbody.removeChild(secondToLastChild);\n\t}\n\n\t// Calls the cursor effect function by name\n\tconst effectName = cursor.effect || \"none\";\n\tconst options = cursor.options || {};\n\tcursorEffects[effectName].effect(options);\n};\n\n/**\n * Creates a rectangle with the realestate panels takes up\n */\nexport const createPanelSubtraction = (panel, panels) => {\n\tconst subtraction = { top: 0, left: 0, right: 0, bottom: 0 };\n\tconst set = (p) =>\n\t\t(subtraction[p.options.position] = p.$element.offsetHeight);\n\n\tif (panels.length > 0) {\n\t\tpanels.forEach(set);\n\t} else {\n\t\t// Backward compability\n\t\tset(panel);\n\t}\n\n\treturn subtraction;\n};\n\nexport const isVisible = (w) =>\n\tw && !w.getState(\"minimized\") && w.getState(\"focused\");\n\n/**\n * Resolves various resources\n * @todo: Move all of this (and related) stuff to a Theme class\n * @param {Core} core MeeseOS Core instance reference\n */\nexport const resourceResolver = (core) => {\n\tconst media = supportedMedia();\n\n\tconst getThemeName = (type) => {\n\t\tconst defaultTheme = core.config(\"desktop.settings.\" + type);\n\t\treturn core\n\t\t\t.make(\"meeseOS/settings\")\n\t\t\t.get(\"meeseOS/desktop\", type, defaultTheme);\n\t};\n\n\tconst themeResource = (path) => {\n\t\tconst theme = getThemeName(\"theme\");\n\n\t\treturn core.url(`themes/${theme}/${path}`); // FIXME: Use metadata ?\n\t};\n\n\tconst getSoundThemeName = () => getThemeName(\"sounds\");\n\n\tconst soundResource = (path) => {\n\t\tif (!path.match(/\\.([a-z]+)$/)) {\n\t\t\tconst defaultExtension = \"mp3\";\n\t\t\tconst checkExtensions = [\"oga\", \"mp3\"];\n\t\t\tconst found = checkExtensions.find((str) => media.audio[str] === true);\n\t\t\tconst use = found || defaultExtension;\n\n\t\t\tpath += \".\" + use;\n\t\t}\n\n\t\tconst theme = getSoundThemeName();\n\n\t\treturn theme ? core.url(`sounds/${theme}/${path}`) : null; // FIXME: Use metadata ?\n\t};\n\n\tconst soundsEnabled = () => Boolean(getSoundThemeName());\n\n\tconst icon = (name) => {\n\t\t// Removes the standard icon extensions if they are present\n\t\tname = name.replace(/\\.(png|svg|gif)$/, \"\");\n\n\t\tconst { getMetadataFromName } = core.make(\"meeseOS/packages\");\n\t\tconst theme = getThemeName(\"icons\");\n\t\tconst metadata = getMetadataFromName(theme) || {};\n\t\tconst iconDefinitions = metadata.icons || {};\n\t\tconst extension = iconDefinitions[name] || \"png\";\n\n\t\treturn core.url(`icons/${theme}/icons/${name}.${extension}`);\n\t};\n\n\treturn { themeResource, soundResource, soundsEnabled, icon };\n};\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/utils/desktop.js",
     "access": "public",
@@ -14785,7 +14825,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 582,
+    "__docId__": 583,
     "kind": "variable",
     "name": "imageDropMimes",
     "memberof": "src/utils/desktop.js",
@@ -14806,7 +14846,7 @@
     "ignore": true
   },
   {
-    "__docId__": 583,
+    "__docId__": 584,
     "kind": "function",
     "name": "validVfsDrop",
     "memberof": "src/utils/desktop.js",
@@ -14848,7 +14888,7 @@
     }
   },
   {
-    "__docId__": 584,
+    "__docId__": 585,
     "kind": "function",
     "name": "isDroppingImage",
     "memberof": "src/utils/desktop.js",
@@ -14890,7 +14930,7 @@
     }
   },
   {
-    "__docId__": 585,
+    "__docId__": 586,
     "kind": "variable",
     "name": "standardResolutions",
     "memberof": "src/utils/desktop.js",
@@ -14910,7 +14950,7 @@
     "ignore": true
   },
   {
-    "__docId__": 586,
+    "__docId__": 587,
     "kind": "function",
     "name": "getResolutionDistance",
     "memberof": "src/utils/desktop.js",
@@ -14967,7 +15007,7 @@
     "ignore": true
   },
   {
-    "__docId__": 587,
+    "__docId__": 588,
     "kind": "function",
     "name": "getRandomWallpaper",
     "memberof": "src/utils/desktop.js",
@@ -15003,7 +15043,7 @@
     "ignore": true
   },
   {
-    "__docId__": 588,
+    "__docId__": 589,
     "kind": "function",
     "name": "createStaticBackground",
     "memberof": "src/utils/desktop.js",
@@ -15043,7 +15083,7 @@
     "ignore": true
   },
   {
-    "__docId__": 589,
+    "__docId__": 590,
     "kind": "function",
     "name": "createDynamicBackground",
     "memberof": "src/utils/desktop.js",
@@ -15073,7 +15113,7 @@
     "ignore": true
   },
   {
-    "__docId__": 590,
+    "__docId__": 591,
     "kind": "function",
     "name": "hideDynamicBackground",
     "memberof": "src/utils/desktop.js",
@@ -15092,7 +15132,7 @@
     "ignore": true
   },
   {
-    "__docId__": 591,
+    "__docId__": 592,
     "kind": "function",
     "name": "applyBackgroundStyles",
     "memberof": "src/utils/desktop.js",
@@ -15131,7 +15171,7 @@
     "return": null
   },
   {
-    "__docId__": 592,
+    "__docId__": 593,
     "kind": "function",
     "name": "applyCursorEffect",
     "memberof": "src/utils/desktop.js",
@@ -15160,7 +15200,7 @@
     "return": null
   },
   {
-    "__docId__": 593,
+    "__docId__": 594,
     "kind": "function",
     "name": "createPanelSubtraction",
     "memberof": "src/utils/desktop.js",
@@ -15195,7 +15235,7 @@
     }
   },
   {
-    "__docId__": 594,
+    "__docId__": 595,
     "kind": "function",
     "name": "isVisible",
     "memberof": "src/utils/desktop.js",
@@ -15222,52 +15262,6 @@
     "ignore": true
   },
   {
-    "__docId__": 595,
-    "kind": "function",
-    "name": "syncRequest",
-    "memberof": "src/utils/desktop.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/utils/desktop.js~syncRequest",
-    "access": "public",
-    "export": false,
-    "importPath": "@meeseOS/client/src/utils/desktop.js",
-    "importStyle": null,
-    "description": "Allows for requesting whether a file exists without `async`.",
-    "lineNumber": 248,
-    "todo": [
-      "Move to MeeseOS VFS, so the 404 error doesn't log to console"
-    ],
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Boolean}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "urlToFile",
-        "description": ""
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Boolean"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "ignore": true
-  },
-  {
     "__docId__": 596,
     "kind": "function",
     "name": "resourceResolver",
@@ -15280,23 +15274,25 @@
     "export": true,
     "importPath": "@meeseOS/client/src/utils/desktop.js",
     "importStyle": "{resourceResolver}",
-    "description": null,
-    "lineNumber": 260,
-    "undocument": true,
+    "description": "Resolves various resources\n@todo: Move all of this (and related) stuff to a Theme class",
+    "lineNumber": 247,
     "params": [
       {
-        "name": "core",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
       }
     ],
     "return": {
       "types": [
         "{\"themeResource\": *, \"soundResource\": *, \"soundsEnabled\": *, \"icon\": *}"
       ]
-    },
-    "ignore": true
+    }
   },
   {
     "__docId__": 597,
@@ -23243,7 +23239,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meeseOS/client\",\n  \"version\": \"2.5.2\",\n  \"description\": \"meeseOS client\",\n  \"main\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"typings\": \"index.d.ts\",\n  \"files\": [\n    \"index.d.ts\",\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js 'src/**/*.js'\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss  --fix\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"@meeseOS/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.17.2\",\n    \"@babel/plugin-transform-runtime\": \"^7.17.0\",\n    \"@babel/preset-env\": \"^7.16.11\",\n    \"@babel/runtime\": \"^7.17.2\",\n    \"babel-loader\": \"^8.2.3\",\n    \"copy-webpack-plugin\": \"^10.2.4\",\n    \"css-loader\": \"^6.6.0\",\n    \"css-minimizer-webpack-plugin\": \"^3.4.1\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"html-loader\": \"^3.1.0\",\n    \"html-loader-jest\": \"^0.2.1\",\n    \"mini-css-extract-plugin\": \"^2.5.3\",\n    \"sass\": \"^1.53.0\",\n    \"sass-loader\": \"^13.0.2\",\n    \"stylelint\": \"^14.5.0\",\n    \"stylelint-config-standard\": \"^25.0.0\",\n    \"stylelint-config-standard-scss\": \"^4.0.0\",\n    \"webpack\": \"^5.68.0\",\n    \"webpack-cli\": \"^4.9.2\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"@meeseOS/cursor-effects\": \"workspace:*\",\n    \"@meeseOS/dynamic-wallpapers\": \"workspace:*\",\n    \"@meeseOS/event-emitter\": \"workspace:*\",\n    \"@meeseOS/gui\": \"workspace:*\",\n    \"@meeseOS/sounds\": \"workspace:*\",\n    \"css-mediaquery\": \"^0.1.2\",\n    \"deepmerge\": \"^4.2.2\",\n    \"hyperapp\": \"^1.2.10\",\n    \"js-cookie\": \"^3.0.1\",\n    \"simplejsonconf\": \"^2.0.7\",\n    \"is-plain-object\": \"^5.0.0\",\n    \"express-session\": \"^1.17.3\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meeseOS/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Core API\",\n            \"description\": \"meeseOS Core API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"testEnvironment\": \"jsdom\",\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"setupFilesAfterEnv\": [\n      \"<rootDir>/__mocks__/setup.js\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\",\n      \"^.+\\\\.html?$\": \"html-loader-jest\",\n      \"^.+\\\\.scss$\": \"<rootDir>/__mocks__/null-module.js\",\n      \"^.+\\\\.(png|jpe?g|gif)$\": \"<rootDir>/__mocks__/null-module.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
+    "content": "{\n  \"name\": \"@meeseOS/client\",\n  \"version\": \"2.5.3\",\n  \"description\": \"meeseOS client\",\n  \"main\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"typings\": \"index.d.ts\",\n  \"files\": [\n    \"index.d.ts\",\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js 'src/**/*.js'\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss  --fix\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"@meeseOS/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.17.2\",\n    \"@babel/plugin-transform-runtime\": \"^7.17.0\",\n    \"@babel/preset-env\": \"^7.16.11\",\n    \"@babel/runtime\": \"^7.17.2\",\n    \"babel-loader\": \"^8.2.3\",\n    \"copy-webpack-plugin\": \"^10.2.4\",\n    \"css-loader\": \"^6.6.0\",\n    \"css-minimizer-webpack-plugin\": \"^3.4.1\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"html-loader\": \"^3.1.0\",\n    \"html-loader-jest\": \"^0.2.1\",\n    \"mini-css-extract-plugin\": \"^2.5.3\",\n    \"sass\": \"^1.53.0\",\n    \"sass-loader\": \"^13.0.2\",\n    \"stylelint\": \"^14.5.0\",\n    \"stylelint-config-standard\": \"^25.0.0\",\n    \"stylelint-config-standard-scss\": \"^4.0.0\",\n    \"webpack\": \"^5.68.0\",\n    \"webpack-cli\": \"^4.9.2\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"@meeseOS/cursor-effects\": \"workspace:*\",\n    \"@meeseOS/dynamic-wallpapers\": \"workspace:*\",\n    \"@meeseOS/event-emitter\": \"workspace:*\",\n    \"@meeseOS/gui\": \"workspace:*\",\n    \"@meeseOS/sounds\": \"workspace:*\",\n    \"css-mediaquery\": \"^0.1.2\",\n    \"deepmerge\": \"^4.2.2\",\n    \"hyperapp\": \"^1.2.10\",\n    \"js-cookie\": \"^3.0.1\",\n    \"simplejsonconf\": \"^2.0.7\",\n    \"is-plain-object\": \"^5.0.0\",\n    \"express-session\": \"^1.17.3\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meeseOS/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Core API\",\n            \"description\": \"meeseOS Core API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"testEnvironment\": \"jsdom\",\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"setupFilesAfterEnv\": [\n      \"<rootDir>/__mocks__/setup.js\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\",\n      \"^.+\\\\.html?$\": \"html-loader-jest\",\n      \"^.+\\\\.scss$\": \"<rootDir>/__mocks__/null-module.js\",\n      \"^.+\\\\.(png|jpe?g|gif)$\": \"<rootDir>/__mocks__/null-module.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/package.json",
     "name": "package.json",
     "static": true,

@@ -151,6 +151,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-applyCursorEffect">applyCursorEffect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createPanelSubtraction">createPanelSubtraction</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDroppingImage">isDroppingImage</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-resourceResolver">resourceResolver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validVfsDrop">validVfsDrop</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-draggable">draggable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-droppable">droppable</a></span></span></li>
@@ -277,7 +278,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Create package manage</p>
+        <div data-ice="description"><p>Create package manager.</p>
 </div>
       </div>
     </td>
@@ -313,7 +314,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Core instance reference</p>
+        <div data-ice="description"><p>Core instance reference.</p>
 </div>
       </div>
     </td>
@@ -371,7 +372,7 @@
       <div>
         
         
-        <div data-ice="description"><p>The lost of loaded package metadata</p>
+        <div data-ice="description"><p>The list of loaded package metadata.</p>
 </div>
       </div>
     </td>
@@ -400,7 +401,7 @@
       <div>
         
         
-        <div data-ice="description"><p>A list of registered packages</p>
+        <div data-ice="description"><p>A list of registered packages.</p>
 </div>
       </div>
     </td>
@@ -429,7 +430,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Preloader</p>
+        <div data-ice="description"><p>Preloader.</p>
 </div>
       </div>
     </td>
@@ -464,7 +465,7 @@
       <div>
         
         
-        <div data-ice="description"><p>A list of running application names</p>
+        <div data-ice="description"><p>A list of running application names.</p>
 </div>
       </div>
     </td>
@@ -500,7 +501,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Adds a set of packages</p>
+        <div data-ice="description"><p>Adds a set of packages.</p>
 </div>
       </div>
     </td>
@@ -529,7 +530,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Destroy package manager</p>
+        <div data-ice="description"><p>Destroy package manager.</p>
 </div>
       </div>
     </td>
@@ -558,7 +559,36 @@
       <div>
         
         
-        <div data-ice="description"><p>Gets a list of packages compatible with the given mime type</p>
+        <div data-ice="description"><p>Gets a list of packages compatible with the given mime type.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/packages.js~Packages.html#instance-method-getMetadataFromName">getMetadataFromName</a></span></span><span class="code" data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="typedef/index.html#static-typedef-PackageMetadata">PackageMetadata</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Gets the package metadata for a given package name.</p>
 </div>
       </div>
     </td>
@@ -587,7 +617,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Gets a list of packages (metadata)</p>
+        <div data-ice="description"><p>Gets a list of packages (metadata).</p>
 </div>
       </div>
     </td>
@@ -616,7 +646,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Initializes package manager</p>
+        <div data-ice="description"><p>Initializes package manager.</p>
 </div>
       </div>
     </td>
@@ -645,7 +675,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Launches a (application) package</p>
+        <div data-ice="description"><p>Launches a (application) package.</p>
 </div>
       </div>
     </td>
@@ -674,7 +704,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Registers a package</p>
+        <div data-ice="description"><p>Registers a package.</p>
 </div>
       </div>
     </td>
@@ -703,7 +733,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Gets a list of running packages</p>
+        <div data-ice="description"><p>Gets a list of running packages.</p>
 </div>
       </div>
     </td>
@@ -738,7 +768,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Autostarts tagged packages</p>
+        <div data-ice="description"><p>Autostarts tagged packages.</p>
 </div>
       </div>
     </td>
@@ -767,7 +797,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Returns preloads</p>
+        <div data-ice="description"><p>Returns preloads.</p>
 </div>
       </div>
     </td>
@@ -796,7 +826,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Wrapper for launching a (application) package</p>
+        <div data-ice="description"><p>Wrapper for launching a (application) package.</p>
 </div>
       </div>
     </td>
@@ -825,7 +855,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Launches an application package</p>
+        <div data-ice="description"><p>Launches an application package.</p>
 </div>
       </div>
     </td>
@@ -854,7 +884,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Launches a (theme) package</p>
+        <div data-ice="description"><p>Launches a (theme) package.</p>
 </div>
       </div>
     </td>
@@ -883,7 +913,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Preloads background files of a set of packages</p>
+        <div data-ice="description"><p>Preloads background files of a set of packages.</p>
 </div>
       </div>
     </td>
@@ -914,14 +944,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber84">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber83">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Create package manage</p>
+  <div data-ice="description"><p>Create package manager.</p>
 </div>
 
   
@@ -978,14 +1008,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber90">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber89">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Core instance reference</p>
+  <div data-ice="description"><p>Core instance reference.</p>
 </div>
 
   
@@ -1022,7 +1052,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber125">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber123">source</a></span></span>
     </span>
   </h3>
 
@@ -1066,14 +1096,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber102">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber101">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>The lost of loaded package metadata</p>
+  <div data-ice="description"><p>The list of loaded package metadata.</p>
 </div>
 
   
@@ -1110,14 +1140,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber96">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber95">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>A list of registered packages</p>
+  <div data-ice="description"><p>A list of registered packages.</p>
 </div>
 
   
@@ -1154,14 +1184,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber119">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber117">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Preloader</p>
+  <div data-ice="description"><p>Preloader.</p>
 </div>
 
   
@@ -1200,15 +1230,15 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber112">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber110">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>A list of running application names</p>
-<p>Mainly used for singleton awareness</p>
+  <div data-ice="description"><p>A list of running application names.
+Mainly used for singleton awareness.</p>
 </div>
 
   
@@ -1248,14 +1278,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber425">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber423">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Adds a set of packages</p>
+  <div data-ice="description"><p>Adds a set of packages.</p>
 </div>
 
   
@@ -1322,14 +1352,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber131">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber129">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Destroy package manager</p>
+  <div data-ice="description"><p>Destroy package manager.</p>
 </div>
 
   
@@ -1366,14 +1396,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber465">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber463">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Gets a list of packages compatible with the given mime type</p>
+  <div data-ice="description"><p>Gets a list of packages compatible with the given mime type.</p>
 </div>
 
   
@@ -1428,6 +1458,78 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-getMetadataFromName">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">getMetadataFromName</span><span class="code" data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="typedef/index.html#static-typedef-PackageMetadata">PackageMetadata</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber515">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Gets the package metadata for a given package name.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">name</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="typedef/index.html#static-typedef-PackageMetadata">PackageMetadata</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-getPackages">
     <span class="access" data-ice="access">public</span>
     
@@ -1439,14 +1541,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber443">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber441">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Gets a list of packages (metadata)</p>
+  <div data-ice="description"><p>Gets a list of packages (metadata).</p>
 </div>
 
   
@@ -1512,14 +1614,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber142">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber140">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Initializes package manager</p>
+  <div data-ice="description"><p>Initializes package manager.</p>
 </div>
 
   
@@ -1568,14 +1670,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber177">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber175">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Launches a (application) package</p>
+  <div data-ice="description"><p>Launches a (application) package.</p>
 </div>
 
   
@@ -1668,14 +1770,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber397">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber395">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Registers a package</p>
+  <div data-ice="description"><p>Registers a package.</p>
 </div>
 
   
@@ -1747,14 +1849,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber508">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber506">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Gets a list of running packages</p>
+  <div data-ice="description"><p>Gets a list of running packages.</p>
 </div>
 
   
@@ -1805,14 +1907,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber378">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber376">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Autostarts tagged packages</p>
+  <div data-ice="description"><p>Autostarts tagged packages.</p>
 </div>
 
   
@@ -1849,14 +1951,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber270">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber268">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Returns preloads</p>
+  <div data-ice="description"><p>Returns preloads.</p>
 </div>
 
   
@@ -1936,14 +2038,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber285">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber283">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Wrapper for launching a (application) package</p>
+  <div data-ice="description"><p>Wrapper for launching a (application) package.</p>
 </div>
 
   
@@ -2023,14 +2125,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber202">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber200">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Launches an application package</p>
+  <div data-ice="description"><p>Launches an application package.</p>
 </div>
 
   
@@ -2117,14 +2219,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber249">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber247">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Launches a (theme) package</p>
+  <div data-ice="description"><p>Launches a (theme) package.</p>
 </div>
 
   
@@ -2208,14 +2310,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber490">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/packages.js.html#lineNumber488">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Preloads background files of a set of packages</p>
+  <div data-ice="description"><p>Preloads background files of a set of packages.</p>
 </div>
 
   
