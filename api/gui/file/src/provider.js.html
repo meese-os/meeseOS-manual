@@ -121,15 +121,6 @@ export class GUIServiceProvider {
 		this.contextmenu = new ContextMenu(core);
 	}
 
-	destroy() {
-		const menu = document.getElementById(&quot;meeseOS-context-menu&quot;);
-		if (menu) {
-			menu.remove();
-		}
-
-		this.contextmenu.destroy();
-	}
-
 	async init() {
 		const contextmenuApi = {
 			show: (...args) =&gt; this.contextmenu.show(...args),
@@ -152,6 +143,15 @@ export class GUIServiceProvider {
 			ev.stopPropagation();
 			ev.preventDefault();
 		});
+	}
+
+	destroy() {
+		const menu = document.getElementById(&quot;meeseOS-context-menu&quot;);
+		if (menu) {
+			menu.remove();
+		}
+
+		this.contextmenu.destroy();
 	}
 
 	start() {

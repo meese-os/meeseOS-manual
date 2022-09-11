@@ -304,12 +304,8 @@ export default class Core extends CoreBase {
 
 		super(defaultConfiguration, config, options);
 
-		const $dynamicBackground = document.createElement(&quot;canvas&quot;);
-		$dynamicBackground.className = &quot;meeseOS-dynamic-background&quot;;
-
 		const $contents = document.createElement(&quot;div&quot;);
 		$contents.className = &quot;meeseOS-contents&quot;;
-		$contents.appendChild($dynamicBackground);
 
 		this.logger = logger;
 

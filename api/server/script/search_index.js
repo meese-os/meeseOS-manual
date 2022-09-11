@@ -1080,12 +1080,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/providers/core.js~coreserviceprovider#provides",
-    "class/src/providers/core.js~CoreServiceProvider.html#instance-method-provides",
-    "src/providers/core.js~CoreServiceProvider#provides",
-    "method"
-  ],
-  [
     "src/providers/core.js~coreserviceprovider#start",
     "class/src/providers/core.js~CoreServiceProvider.html#instance-method-start",
     "src/providers/core.js~CoreServiceProvider#start",
@@ -1096,6 +1090,12 @@ window.esdocSearchIndex = [
     "class/src/providers/core.js~CoreServiceProvider.html#instance-member-watches",
     "src/providers/core.js~CoreServiceProvider#watches",
     "member"
+  ],
+  [
+    "src/providers/core.js~coreserviceprovider.provides",
+    "class/src/providers/core.js~CoreServiceProvider.html#static-method-provides",
+    "src/providers/core.js~CoreServiceProvider.provides",
+    "method"
   ],
   [
     "src/providers/packages.js",

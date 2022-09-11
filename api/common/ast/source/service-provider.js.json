@@ -1,7 +1,7 @@
 {
   "type": "File",
   "start": 0,
-  "end": 2301,
+  "end": 2315,
   "loc": {
     "start": {
       "line": 1,
@@ -15,7 +15,7 @@
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 2301,
+    "end": 2315,
     "loc": {
       "start": {
         "line": 1,
@@ -31,7 +31,7 @@
       {
         "type": "ExportNamedDeclaration",
         "start": 1670,
-        "end": 2300,
+        "end": 2314,
         "loc": {
           "start": {
             "line": 38,
@@ -47,7 +47,7 @@
         "declaration": {
           "type": "ClassDeclaration",
           "start": 1677,
-          "end": 2300,
+          "end": 2314,
           "loc": {
             "start": {
               "line": 38,
@@ -80,7 +80,7 @@
           "body": {
             "type": "ClassBody",
             "start": 1699,
-            "end": 2300,
+            "end": 2314,
             "loc": {
               "start": {
                 "line": 38,
@@ -470,7 +470,7 @@
               {
                 "type": "ClassMethod",
                 "start": 2011,
-                "end": 2039,
+                "end": 2046,
                 "loc": {
                   "start": {
                     "line": 56,
@@ -481,25 +481,24 @@
                     "column": 2
                   }
                 },
-                "static": false,
+                "static": true,
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2011,
-                  "end": 2019,
+                  "start": 2018,
+                  "end": 2026,
                   "loc": {
                     "start": {
                       "line": 56,
-                      "column": 1
+                      "column": 8
                     },
                     "end": {
                       "line": 56,
-                      "column": 9
+                      "column": 16
                     },
                     "identifierName": "provides"
                   },
-                  "name": "provides",
-                  "leadingComments": null
+                  "name": "provides"
                 },
                 "kind": "method",
                 "id": null,
@@ -509,12 +508,12 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2022,
-                  "end": 2039,
+                  "start": 2029,
+                  "end": 2046,
                   "loc": {
                     "start": {
                       "line": 56,
-                      "column": 12
+                      "column": 19
                     },
                     "end": {
                       "line": 58,
@@ -524,8 +523,8 @@
                   "body": [
                     {
                       "type": "ReturnStatement",
-                      "start": 2026,
-                      "end": 2036,
+                      "start": 2033,
+                      "end": 2043,
                       "loc": {
                         "start": {
                           "line": 57,
@@ -538,8 +537,8 @@
                       },
                       "argument": {
                         "type": "ArrayExpression",
-                        "start": 2033,
-                        "end": 2035,
+                        "start": 2040,
+                        "end": 2042,
                         "loc": {
                           "start": {
                             "line": 57,
@@ -579,8 +578,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t ",
-                    "start": 2042,
-                    "end": 2123,
+                    "start": 2049,
+                    "end": 2130,
                     "loc": {
                       "start": {
                         "line": 60,
@@ -596,8 +595,8 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 2125,
-                "end": 2152,
+                "start": 2132,
+                "end": 2166,
                 "loc": {
                   "start": {
                     "line": 64,
@@ -608,25 +607,24 @@
                     "column": 2
                   }
                 },
-                "static": false,
+                "static": true,
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2125,
-                  "end": 2132,
+                  "start": 2139,
+                  "end": 2146,
                   "loc": {
                     "start": {
                       "line": 64,
-                      "column": 1
+                      "column": 8
                     },
                     "end": {
                       "line": 64,
-                      "column": 8
+                      "column": 15
                     },
                     "identifierName": "depends"
                   },
-                  "name": "depends",
-                  "leadingComments": null
+                  "name": "depends"
                 },
                 "kind": "method",
                 "id": null,
@@ -636,12 +634,12 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2135,
-                  "end": 2152,
+                  "start": 2149,
+                  "end": 2166,
                   "loc": {
                     "start": {
                       "line": 64,
-                      "column": 11
+                      "column": 18
                     },
                     "end": {
                       "line": 66,
@@ -651,8 +649,8 @@
                   "body": [
                     {
                       "type": "ReturnStatement",
-                      "start": 2139,
-                      "end": 2149,
+                      "start": 2153,
+                      "end": 2163,
                       "loc": {
                         "start": {
                           "line": 65,
@@ -665,8 +663,8 @@
                       },
                       "argument": {
                         "type": "ArrayExpression",
-                        "start": 2146,
-                        "end": 2148,
+                        "start": 2160,
+                        "end": 2162,
                         "loc": {
                           "start": {
                             "line": 65,
@@ -688,8 +686,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t ",
-                    "start": 2042,
-                    "end": 2123,
+                    "start": 2049,
+                    "end": 2130,
                     "loc": {
                       "start": {
                         "line": 60,
@@ -706,8 +704,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Initializes provider.\n\t ",
-                    "start": 2155,
-                    "end": 2189,
+                    "start": 2169,
+                    "end": 2203,
                     "loc": {
                       "start": {
                         "line": 68,
@@ -723,8 +721,8 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 2191,
-                "end": 2206,
+                "start": 2205,
+                "end": 2220,
                 "loc": {
                   "start": {
                     "line": 71,
@@ -739,8 +737,8 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2197,
-                  "end": 2201,
+                  "start": 2211,
+                  "end": 2215,
                   "loc": {
                     "start": {
                       "line": 71,
@@ -762,8 +760,8 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2204,
-                  "end": 2206,
+                  "start": 2218,
+                  "end": 2220,
                   "loc": {
                     "start": {
                       "line": 71,
@@ -783,8 +781,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Initializes provider.\n\t ",
-                    "start": 2155,
-                    "end": 2189,
+                    "start": 2169,
+                    "end": 2203,
                     "loc": {
                       "start": {
                         "line": 68,
@@ -801,8 +799,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Starts provider.\n\t ",
-                    "start": 2209,
-                    "end": 2238,
+                    "start": 2223,
+                    "end": 2252,
                     "loc": {
                       "start": {
                         "line": 73,
@@ -818,8 +816,8 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 2240,
-                "end": 2250,
+                "start": 2254,
+                "end": 2264,
                 "loc": {
                   "start": {
                     "line": 76,
@@ -834,8 +832,8 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2240,
-                  "end": 2245,
+                  "start": 2254,
+                  "end": 2259,
                   "loc": {
                     "start": {
                       "line": 76,
@@ -858,8 +856,8 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2248,
-                  "end": 2250,
+                  "start": 2262,
+                  "end": 2264,
                   "loc": {
                     "start": {
                       "line": 76,
@@ -879,8 +877,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Starts provider.\n\t ",
-                    "start": 2209,
-                    "end": 2238,
+                    "start": 2223,
+                    "end": 2252,
                     "loc": {
                       "start": {
                         "line": 73,
@@ -897,8 +895,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Destroys provider.\n\t ",
-                    "start": 2253,
-                    "end": 2284,
+                    "start": 2267,
+                    "end": 2298,
                     "loc": {
                       "start": {
                         "line": 78,
@@ -914,8 +912,8 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 2286,
-                "end": 2298,
+                "start": 2300,
+                "end": 2312,
                 "loc": {
                   "start": {
                     "line": 81,
@@ -930,8 +928,8 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2286,
-                  "end": 2293,
+                  "start": 2300,
+                  "end": 2307,
                   "loc": {
                     "start": {
                       "line": 81,
@@ -954,8 +952,8 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2296,
-                  "end": 2298,
+                  "start": 2310,
+                  "end": 2312,
                   "loc": {
                     "start": {
                       "line": 81,
@@ -973,8 +971,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n\t * Destroys provider.\n\t ",
-                    "start": 2253,
-                    "end": 2284,
+                    "start": 2267,
+                    "end": 2298,
                     "loc": {
                       "start": {
                         "line": 78,
@@ -1148,8 +1146,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t ",
-      "start": 2042,
-      "end": 2123,
+      "start": 2049,
+      "end": 2130,
       "loc": {
         "start": {
           "line": 60,
@@ -1164,8 +1162,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Initializes provider.\n\t ",
-      "start": 2155,
-      "end": 2189,
+      "start": 2169,
+      "end": 2203,
       "loc": {
         "start": {
           "line": 68,
@@ -1180,8 +1178,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Starts provider.\n\t ",
-      "start": 2209,
-      "end": 2238,
+      "start": 2223,
+      "end": 2252,
       "loc": {
         "start": {
           "line": 73,
@@ -1196,8 +1194,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Destroys provider.\n\t ",
-      "start": 2253,
-      "end": 2284,
+      "start": 2267,
+      "end": 2298,
       "loc": {
         "start": {
           "line": 78,
@@ -2009,9 +2007,9 @@
         "postfix": false,
         "binop": null
       },
-      "value": "provides",
+      "value": "static",
       "start": 2011,
-      "end": 2019,
+      "end": 2017,
       "loc": {
         "start": {
           "line": 56,
@@ -2019,7 +2017,33 @@
         },
         "end": {
           "line": 56,
-          "column": 9
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "provides",
+      "start": 2018,
+      "end": 2026,
+      "loc": {
+        "start": {
+          "line": 56,
+          "column": 8
+        },
+        "end": {
+          "line": 56,
+          "column": 16
         }
       }
     },
@@ -2035,16 +2059,16 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2019,
-      "end": 2020,
+      "start": 2026,
+      "end": 2027,
       "loc": {
         "start": {
           "line": 56,
-          "column": 9
+          "column": 16
         },
         "end": {
           "line": 56,
-          "column": 10
+          "column": 17
         }
       }
     },
@@ -2060,16 +2084,16 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2020,
-      "end": 2021,
+      "start": 2027,
+      "end": 2028,
       "loc": {
         "start": {
           "line": 56,
-          "column": 10
+          "column": 17
         },
         "end": {
           "line": 56,
-          "column": 11
+          "column": 18
         }
       }
     },
@@ -2085,16 +2109,16 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2022,
-      "end": 2023,
+      "start": 2029,
+      "end": 2030,
       "loc": {
         "start": {
           "line": 56,
-          "column": 12
+          "column": 19
         },
         "end": {
           "line": 56,
-          "column": 13
+          "column": 20
         }
       }
     },
@@ -2113,8 +2137,8 @@
         "updateContext": null
       },
       "value": "return",
-      "start": 2026,
-      "end": 2032,
+      "start": 2033,
+      "end": 2039,
       "loc": {
         "start": {
           "line": 57,
@@ -2139,8 +2163,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2033,
-      "end": 2034,
+      "start": 2040,
+      "end": 2041,
       "loc": {
         "start": {
           "line": 57,
@@ -2165,8 +2189,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2034,
-      "end": 2035,
+      "start": 2041,
+      "end": 2042,
       "loc": {
         "start": {
           "line": 57,
@@ -2191,8 +2215,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2035,
-      "end": 2036,
+      "start": 2042,
+      "end": 2043,
       "loc": {
         "start": {
           "line": 57,
@@ -2216,8 +2240,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2038,
-      "end": 2039,
+      "start": 2045,
+      "end": 2046,
       "loc": {
         "start": {
           "line": 58,
@@ -2232,8 +2256,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t ",
-      "start": 2042,
-      "end": 2123,
+      "start": 2049,
+      "end": 2130,
       "loc": {
         "start": {
           "line": 60,
@@ -2257,9 +2281,9 @@
         "postfix": false,
         "binop": null
       },
-      "value": "depends",
-      "start": 2125,
-      "end": 2132,
+      "value": "static",
+      "start": 2132,
+      "end": 2138,
       "loc": {
         "start": {
           "line": 64,
@@ -2267,7 +2291,33 @@
         },
         "end": {
           "line": 64,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "depends",
+      "start": 2139,
+      "end": 2146,
+      "loc": {
+        "start": {
+          "line": 64,
           "column": 8
+        },
+        "end": {
+          "line": 64,
+          "column": 15
         }
       }
     },
@@ -2283,16 +2333,16 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2132,
-      "end": 2133,
+      "start": 2146,
+      "end": 2147,
       "loc": {
         "start": {
           "line": 64,
-          "column": 8
+          "column": 15
         },
         "end": {
           "line": 64,
-          "column": 9
+          "column": 16
         }
       }
     },
@@ -2308,16 +2358,16 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2133,
-      "end": 2134,
+      "start": 2147,
+      "end": 2148,
       "loc": {
         "start": {
           "line": 64,
-          "column": 9
+          "column": 16
         },
         "end": {
           "line": 64,
-          "column": 10
+          "column": 17
         }
       }
     },
@@ -2333,16 +2383,16 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2135,
-      "end": 2136,
+      "start": 2149,
+      "end": 2150,
       "loc": {
         "start": {
           "line": 64,
-          "column": 11
+          "column": 18
         },
         "end": {
           "line": 64,
-          "column": 12
+          "column": 19
         }
       }
     },
@@ -2361,8 +2411,8 @@
         "updateContext": null
       },
       "value": "return",
-      "start": 2139,
-      "end": 2145,
+      "start": 2153,
+      "end": 2159,
       "loc": {
         "start": {
           "line": 65,
@@ -2387,8 +2437,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2146,
-      "end": 2147,
+      "start": 2160,
+      "end": 2161,
       "loc": {
         "start": {
           "line": 65,
@@ -2413,8 +2463,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2147,
-      "end": 2148,
+      "start": 2161,
+      "end": 2162,
       "loc": {
         "start": {
           "line": 65,
@@ -2439,8 +2489,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2148,
-      "end": 2149,
+      "start": 2162,
+      "end": 2163,
       "loc": {
         "start": {
           "line": 65,
@@ -2464,8 +2514,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2151,
-      "end": 2152,
+      "start": 2165,
+      "end": 2166,
       "loc": {
         "start": {
           "line": 66,
@@ -2480,8 +2530,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Initializes provider.\n\t ",
-      "start": 2155,
-      "end": 2189,
+      "start": 2169,
+      "end": 2203,
       "loc": {
         "start": {
           "line": 68,
@@ -2506,8 +2556,8 @@
         "binop": null
       },
       "value": "async",
-      "start": 2191,
-      "end": 2196,
+      "start": 2205,
+      "end": 2210,
       "loc": {
         "start": {
           "line": 71,
@@ -2532,8 +2582,8 @@
         "binop": null
       },
       "value": "init",
-      "start": 2197,
-      "end": 2201,
+      "start": 2211,
+      "end": 2215,
       "loc": {
         "start": {
           "line": 71,
@@ -2557,8 +2607,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2201,
-      "end": 2202,
+      "start": 2215,
+      "end": 2216,
       "loc": {
         "start": {
           "line": 71,
@@ -2582,8 +2632,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2202,
-      "end": 2203,
+      "start": 2216,
+      "end": 2217,
       "loc": {
         "start": {
           "line": 71,
@@ -2607,8 +2657,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2204,
-      "end": 2205,
+      "start": 2218,
+      "end": 2219,
       "loc": {
         "start": {
           "line": 71,
@@ -2632,8 +2682,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2205,
-      "end": 2206,
+      "start": 2219,
+      "end": 2220,
       "loc": {
         "start": {
           "line": 71,
@@ -2648,8 +2698,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Starts provider.\n\t ",
-      "start": 2209,
-      "end": 2238,
+      "start": 2223,
+      "end": 2252,
       "loc": {
         "start": {
           "line": 73,
@@ -2674,8 +2724,8 @@
         "binop": null
       },
       "value": "start",
-      "start": 2240,
-      "end": 2245,
+      "start": 2254,
+      "end": 2259,
       "loc": {
         "start": {
           "line": 76,
@@ -2699,8 +2749,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2245,
-      "end": 2246,
+      "start": 2259,
+      "end": 2260,
       "loc": {
         "start": {
           "line": 76,
@@ -2724,8 +2774,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2246,
-      "end": 2247,
+      "start": 2260,
+      "end": 2261,
       "loc": {
         "start": {
           "line": 76,
@@ -2749,8 +2799,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2248,
-      "end": 2249,
+      "start": 2262,
+      "end": 2263,
       "loc": {
         "start": {
           "line": 76,
@@ -2774,8 +2824,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2249,
-      "end": 2250,
+      "start": 2263,
+      "end": 2264,
       "loc": {
         "start": {
           "line": 76,
@@ -2790,8 +2840,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n\t * Destroys provider.\n\t ",
-      "start": 2253,
-      "end": 2284,
+      "start": 2267,
+      "end": 2298,
       "loc": {
         "start": {
           "line": 78,
@@ -2816,8 +2866,8 @@
         "binop": null
       },
       "value": "destroy",
-      "start": 2286,
-      "end": 2293,
+      "start": 2300,
+      "end": 2307,
       "loc": {
         "start": {
           "line": 81,
@@ -2841,8 +2891,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2293,
-      "end": 2294,
+      "start": 2307,
+      "end": 2308,
       "loc": {
         "start": {
           "line": 81,
@@ -2866,8 +2916,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2294,
-      "end": 2295,
+      "start": 2308,
+      "end": 2309,
       "loc": {
         "start": {
           "line": 81,
@@ -2891,8 +2941,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2296,
-      "end": 2297,
+      "start": 2310,
+      "end": 2311,
       "loc": {
         "start": {
           "line": 81,
@@ -2916,8 +2966,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2297,
-      "end": 2298,
+      "start": 2311,
+      "end": 2312,
       "loc": {
         "start": {
           "line": 81,
@@ -2941,8 +2991,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2299,
-      "end": 2300,
+      "start": 2313,
+      "end": 2314,
       "loc": {
         "start": {
           "line": 82,
@@ -2967,8 +3017,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2301,
-      "end": 2301,
+      "start": 2315,
+      "end": 2315,
       "loc": {
         "start": {
           "line": 83,
