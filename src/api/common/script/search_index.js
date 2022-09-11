@@ -384,12 +384,6 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/service-provider.js~serviceprovider#depends",
-    "class/src/service-provider.js~ServiceProvider.html#instance-method-depends",
-    "src/service-provider.js~ServiceProvider#depends",
-    "method"
-  ],
-  [
     "src/service-provider.js~serviceprovider#destroy",
     "class/src/service-provider.js~ServiceProvider.html#instance-method-destroy",
     "src/service-provider.js~ServiceProvider#destroy",
@@ -402,15 +396,21 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/service-provider.js~serviceprovider#provides",
-    "class/src/service-provider.js~ServiceProvider.html#instance-method-provides",
-    "src/service-provider.js~ServiceProvider#provides",
-    "method"
-  ],
-  [
     "src/service-provider.js~serviceprovider#start",
     "class/src/service-provider.js~ServiceProvider.html#instance-method-start",
     "src/service-provider.js~ServiceProvider#start",
+    "method"
+  ],
+  [
+    "src/service-provider.js~serviceprovider.depends",
+    "class/src/service-provider.js~ServiceProvider.html#static-method-depends",
+    "src/service-provider.js~ServiceProvider.depends",
+    "method"
+  ],
+  [
+    "src/service-provider.js~serviceprovider.provides",
+    "class/src/service-provider.js~ServiceProvider.html#static-method-provides",
+    "src/service-provider.js~ServiceProvider.provides",
     "method"
   ],
   [

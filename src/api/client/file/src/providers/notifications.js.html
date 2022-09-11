@@ -264,22 +264,15 @@ export default class NotificationServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Destroys notifications.
-	 */
-	destroy() {
-		this.notifications.destroy();
-	}
-
-	/**
 	 * Get a list of services this provider registers.
 	 * @returns {String[]}
 	 */
-	provides() {
+	static provides() {
 		return [&quot;meeseOS/notification&quot;];
 	}
 
 	/**
-	 * Initializes authentication.
+	 * Initializes the service provider.
 	 * @returns {Promise&lt;undefined&gt;}
 	 */
 	init() {
@@ -288,6 +281,13 @@ export default class NotificationServiceProvider extends ServiceProvider {
 		);
 
 		return this.notifications.init();
+	}
+
+	/**
+	 * Destroys notifications.
+	 */
+	destroy() {
+		this.notifications.destroy();
 	}
 }
 </code></pre>

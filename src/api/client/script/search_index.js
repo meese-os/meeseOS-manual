@@ -2484,9 +2484,9 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/providers/auth.js~authserviceprovider#provides",
-    "class/src/providers/auth.js~AuthServiceProvider.html#instance-method-provides",
-    "src/providers/auth.js~AuthServiceProvider#provides",
+    "src/providers/auth.js~authserviceprovider.provides",
+    "class/src/providers/auth.js~AuthServiceProvider.html#static-method-provides",
+    "src/providers/auth.js~AuthServiceProvider.provides",
     "method"
   ],
   [
@@ -2676,12 +2676,6 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/providers/core.js~coreserviceprovider#provides",
-    "class/src/providers/core.js~CoreServiceProvider.html#instance-method-provides",
-    "src/providers/core.js~CoreServiceProvider#provides",
-    "method"
-  ],
-  [
     "src/providers/core.js~coreserviceprovider#registercontracts",
     "class/src/providers/core.js~CoreServiceProvider.html#instance-method-registerContracts",
     "src/providers/core.js~CoreServiceProvider#registerContracts",
@@ -2704,6 +2698,12 @@ window.esdocSearchIndex = [
     "class/src/providers/core.js~CoreServiceProvider.html#instance-member-tray",
     "src/providers/core.js~CoreServiceProvider#tray",
     "member"
+  ],
+  [
+    "src/providers/core.js~coreserviceprovider.provides",
+    "class/src/providers/core.js~CoreServiceProvider.html#static-method-provides",
+    "src/providers/core.js~CoreServiceProvider.provides",
+    "method"
   ],
   [
     "src/providers/desktop.js",
@@ -2748,15 +2748,15 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/providers/desktop.js~desktopserviceprovider#provides",
-    "class/src/providers/desktop.js~DesktopServiceProvider.html#instance-method-provides",
-    "src/providers/desktop.js~DesktopServiceProvider#provides",
-    "method"
-  ],
-  [
     "src/providers/desktop.js~desktopserviceprovider#start",
     "class/src/providers/desktop.js~DesktopServiceProvider.html#instance-method-start",
     "src/providers/desktop.js~DesktopServiceProvider#start",
+    "method"
+  ],
+  [
+    "src/providers/desktop.js~desktopserviceprovider.provides",
+    "class/src/providers/desktop.js~DesktopServiceProvider.html#static-method-provides",
+    "src/providers/desktop.js~DesktopServiceProvider.provides",
     "method"
   ],
   [
@@ -2790,9 +2790,9 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/providers/notifications.js~notificationserviceprovider#provides",
-    "class/src/providers/notifications.js~NotificationServiceProvider.html#instance-method-provides",
-    "src/providers/notifications.js~NotificationServiceProvider#provides",
+    "src/providers/notifications.js~notificationserviceprovider.provides",
+    "class/src/providers/notifications.js~NotificationServiceProvider.html#static-method-provides",
+    "src/providers/notifications.js~NotificationServiceProvider.provides",
     "method"
   ],
   [
@@ -2832,16 +2832,16 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/providers/settings.js~settingsserviceprovider#provides",
-    "class/src/providers/settings.js~SettingsServiceProvider.html#instance-method-provides",
-    "src/providers/settings.js~SettingsServiceProvider#provides",
-    "method"
-  ],
-  [
     "src/providers/settings.js~settingsserviceprovider#settings",
     "class/src/providers/settings.js~SettingsServiceProvider.html#instance-member-settings",
     "src/providers/settings.js~SettingsServiceProvider#settings",
     "member"
+  ],
+  [
+    "src/providers/settings.js~settingsserviceprovider.provides",
+    "class/src/providers/settings.js~SettingsServiceProvider.html#static-method-provides",
+    "src/providers/settings.js~SettingsServiceProvider.provides",
+    "method"
   ],
   [
     "src/providers/vfs.js",
@@ -2898,9 +2898,9 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/providers/vfs.js~vfsserviceprovider#provides",
-    "class/src/providers/vfs.js~VFSServiceProvider.html#instance-method-provides",
-    "src/providers/vfs.js~VFSServiceProvider#provides",
+    "src/providers/vfs.js~vfsserviceprovider.provides",
+    "class/src/providers/vfs.js~VFSServiceProvider.html#static-method-provides",
+    "src/providers/vfs.js~VFSServiceProvider.provides",
     "method"
   ],
   [

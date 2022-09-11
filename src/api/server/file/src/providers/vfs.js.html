@@ -134,11 +134,11 @@ class VFSServiceProvider extends ServiceProvider {
 		super.destroy();
 	}
 
-	depends() {
+	static depends() {
 		return [&quot;meeseOS/express&quot;];
 	}
 
-	provides() {
+	static provides() {
 		return [&quot;meeseOS/fs&quot;, &quot;meeseOS/vfs&quot;];
 	}
 
