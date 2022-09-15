@@ -383,6 +383,20 @@ export const defaultConfiguration = {
 		disableDownload: false,
 	},
 
+	gapi: {
+		enabled: false,
+		src: &quot;https://accounts.google.com/gsi/client&quot;,
+		client: {
+			api_key: null,
+			client_id: null,
+			scope: [
+				&quot;openid&quot;,
+				&quot;profile&quot;,
+				&quot;email&quot;,
+			],
+		},
+	},
+
 	search: {
 		enabled: true,
 	},

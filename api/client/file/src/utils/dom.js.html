@@ -267,23 +267,31 @@ export const style = (root, src) =&gt;
 	});
 
 /**
- * Creates a new Script DOM element
+ * Creates a new Script DOM element.
  * @param {Element} root Root node
  * @param {String} src Source
+ * @param {Object} [options={}] Options
  * @returns {Promise&lt;StyleElement&gt;}
  */
-export const script = (root, src) =&gt;
+export const script = (root, src, options = {}) =&gt;
 	new Promise((resolve, reject) =&gt; {
 		const el = document.createElement(&quot;script&quot;);
+		const opts = {
+			async: false,
+			defer: false,
+			...options,
+			src,
+			onerror: (err) =&gt; reject(err),
+			onload: () =&gt; resolve(el),
+		};
+
 		el.onreadystatechange = function() {
 			if (this.readyState === &quot;complete&quot; || this.readyState === &quot;loaded&quot;) {
 				resolve(el);
 			}
 		};
-		el.onerror = (err) =&gt; reject(err);
-		el.onload = () =&gt; resolve(el);
-		el.src = src;
 
+		Object.assign(el, opts);
 		root.appendChild(el);
 
 		return el;
@@ -351,10 +359,10 @@ export const getActiveElement = (root) =&gt; {
  * @returns {Boolean}
  */
 export const supportsPassive = (function() {
-	let supportsPassive = false;
+	let doesSupportPassive = false;
 	try {
 		const opts = Object.defineProperty({}, &quot;passive&quot;, {
-			get: () =&gt; (supportsPassive = true),
+			get: () =&gt; (doesSupportPassive = true),
 		});
 
 		window.addEventListener(&quot;testPassive&quot;, null, opts);
@@ -363,7 +371,7 @@ export const supportsPassive = (function() {
 		// noop
 	}
 
-	return () =&gt; supportsPassive;
+	return () =&gt; doesSupportPassive;
 })();
 
 /**
