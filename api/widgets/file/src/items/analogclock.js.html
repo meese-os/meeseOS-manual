@@ -30,6 +30,11 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/provider.js~WidgetServiceProvider.html">WidgetServiceProvider</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#items">items</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AnalogClockColors">AnalogClockColors</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AnalogClockOptions">AnalogClockOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DigitalClockOptions">DigitalClockOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Quote">Quote</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-QuoteDisplayOptions">QuoteDisplayOptions</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -70,7 +75,28 @@
 
 import Widget from &quot;../widget&quot;;
 
+/**
+ * Analog Clock Colors Options
+ * @typedef {Object} AnalogClockColors
+ * @property {String} [number=&quot;#000000&quot;] Number color
+ * @property {String} [hour=&quot;#000000&quot;] Hour color
+ * @property {String} [minute=&quot;#000000&quot;] Minute color
+ * @property {String} [second=&quot;#000000&quot;] Second color
+ */
+
+/**
+ * Analog Clock Widget Options
+ * @typedef {Object} AnalogClockOptions
+ * @property {String} [fontFamily=&quot;Monospace&quot;] Font family
+ * @property {AnalogClockColors} [color] Clock colors
+ */
+
 export default class AnalogClockWidget extends Widget {
+	/**
+	 * Creates a new instance.
+	 * @param {Core} core MeeseOS Core instance reference
+	 * @param {AnalogClockOptions} [options] Instance options
+	 */
 	constructor(core, options) {
 		/** The default starting size for this widget. */
 		const startingSize = 250;

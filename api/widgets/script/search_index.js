@@ -294,21 +294,51 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/items/analogclock.js~analogclockcolors",
+    "typedef/index.html#static-typedef-AnalogClockColors",
+    "src/items/analogclock.js~AnalogClockColors",
+    "typedef"
+  ],
+  [
+    "src/items/analogclock.js~analogclockoptions",
+    "typedef/index.html#static-typedef-AnalogClockOptions",
+    "src/items/analogclock.js~AnalogClockOptions",
+    "typedef"
+  ],
+  [
     "src/items/digitalclock.js",
     "file/src/items/digitalclock.js.html",
     "src/items/digitalclock.js",
     "file"
   ],
   [
-    "src/provider.js",
-    "file/src/provider.js.html",
-    "src/provider.js",
+    "src/items/digitalclock.js~digitalclockoptions",
+    "typedef/index.html#static-typedef-DigitalClockOptions",
+    "src/items/digitalclock.js~DigitalClockOptions",
+    "typedef"
+  ],
+  [
+    "src/items/quotedisplay.js",
+    "file/src/items/quotedisplay.js.html",
+    "src/items/quotedisplay.js",
     "file"
   ],
   [
-    "src/widget.js",
-    "file/src/widget.js.html",
-    "src/widget.js",
+    "src/items/quotedisplay.js~quote",
+    "typedef/index.html#static-typedef-Quote",
+    "src/items/quotedisplay.js~Quote",
+    "typedef"
+  ],
+  [
+    "src/items/quotedisplay.js~quotedisplayoptions",
+    "typedef/index.html#static-typedef-QuoteDisplayOptions",
+    "src/items/quotedisplay.js~QuoteDisplayOptions",
+    "typedef"
+  ],
+  [
+    "src/provider.js",
+    "file/src/provider.js.html",
+    "src/provider.js",
     "file"
   ]
 ]
