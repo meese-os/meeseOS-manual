@@ -348,7 +348,7 @@ import logger from &quot;./logger&quot;;
 const windows = [];
 let windowCount = 0;
 let nextZindex = 1;
-let lastWindow = null;
+const lastWindow = [];
 
 /**
  * Default window template.
@@ -586,8 +586,13 @@ export default class Window extends EventEmitter {
 			this.$element.remove();
 		}
 
-		if (lastWindow === this) {
-			lastWindow = null;
+		if (lastWindow.at(-1) === this) {
+			lastWindow.pop();
+
+			// Set focus to the last window in the stack
+			if (lastWindow.length &gt; 0) {
+				lastWindow.at(-1).focus();
+			}
 		}
 
 		const foundIndex = windows.findIndex((w) =&gt; w === this);
@@ -797,11 +802,11 @@ export default class Window extends EventEmitter {
 	 * @private
 	 */
 	_focus() {
-		if (lastWindow &amp;&amp; lastWindow !== this) {
-			lastWindow.blur();
+		if (lastWindow.length &amp;&amp; lastWindow.at(-1) !== this) {
+			lastWindow.at(-1).blur();
 		}
 
-		lastWindow = this;
+		lastWindow.push(this);
 
 		this.setNextZindex();
 	}
@@ -1087,7 +1092,7 @@ export default class Window extends EventEmitter {
 	 * @returns {Window}
 	 */
 	static lastWindow() {
-		return lastWindow;
+		return lastWindow.length &gt; 0 ? lastWindow.at(-1) : null;
 	}
 
 	/**
