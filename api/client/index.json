@@ -20922,7 +20922,7 @@
     "__docId__": 765,
     "kind": "file",
     "name": "src/window.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateAttributes,\n\tcreateDOMAttributes,\n\tcreateDOMStyles,\n\tclampPosition,\n\tcreateState,\n\tdimensionFromElement,\n\tpositionFromGravity,\n\trenderCallback,\n\ttransformVectors,\n} from \"./utils/windows\";\nimport {\n\tcreateCssText,\n\tescapeHtml,\n\tgetActiveElement,\n\tsupportsTransition,\n} from \"./utils/dom\";\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport { droppable } from \"./utils/dnd\";\nimport logger from \"./logger\";\n\n/**\n * Window dimension definition.\n * @typedef {Object} WindowDimension\n * @property {Number} width Width in pixels (or float for percentage in setters)\n * @property {Number} height Height in pixels (or float for percentage in setters)\n */\n\n/**\n * Window position definition.\n * @typedef {Object} WindowPosition\n * @property {Number} left Left in pixels (or float for percentage in setters)\n * @property {Number} top Top in pixels (or float for percentage in setters)\n */\n\n/**\n * Window session.\n *\n * @typedef {Object} WindowSession\n * @property {Number} id\n * @property {Boolean} maximized\n * @property {Boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n */\n\n/**\n * Window attributes definition.\n *\n * @typedef {Object} WindowAttributes\n * @property {String[]} [classNames=[]] A list of class names\n * @property {Boolean} [ontop=false] If always on top\n * @property {String} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {Boolean} [resizable=true] If resizable\n * @property {Boolean} [focusable=true] If focusable\n * @property {Boolean} [maximizable=true] If window if maximizable\n * @property {Boolean} [minimizable=true] If minimizable\n * @property {Boolean} [moveable=true] If moveable\n * @property {Boolean} [closeable=true] If closeable\n * @property {Boolean} [header=true] Show header\n * @property {Boolean} [controls=true] Show controls\n * @property {String} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {Boolean} [clamp=true] Clamp the window position upon creation\n * @property {Boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n */\n\n/**\n * Window state definition.\n *\n * @typedef {Object} WindowState\n * @property {String} title Title\n * @property {String} icon Icon\n * @property {Boolean} [moving=false] If moving\n * @property {Boolean} [resizing=false] If resizing\n * @property {Boolean} [loading=false] If loading\n * @property {Boolean} [focused=false] If focused\n * @property {Boolean} [maximized=false] If maximized\n * @property {Boolean} [mimimized=false] If mimimized\n * @property {Boolean} [modal=false] If modal to the parent\n * @property {Number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n */\n\n/**\n * Window options definition.\n *\n * @typedef {Object} WindowOptions\n * @property {String} id Window Id (not globaly unique)\n * @property {String} [title] Window Title\n * @property {String} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {String|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n */\n\nconst windows = [];\nlet windowCount = 0;\nlet nextZindex = 1;\nlet lastWindow = null;\n\n/**\n * Default window template.\n */\nconst TEMPLATE = `<div class=\"meeseOS-window-inner\">\n  <div class=\"meeseOS-window-header\">\n    <div class=\"meeseOS-window-icon\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-title\"></div>\n    <div class=\"meeseOS-window-button\" data-action=\"minimize\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-button\" data-action=\"maximize\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-button\" data-action=\"close\">\n      <div></div>\n    </div>\n  </div>\n  <div class=\"meeseOS-window-content\">\n  </div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"n\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"nw\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"w\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"sw\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"s\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"se\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"e\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"ne\"></div>\n</div>`\n\t.replace(/\\n\\s+/g, \"\")\n\t.trim();\n\n/**\n * Window Implementation\n */\nexport default class Window extends EventEmitter {\n\t/**\n\t * Create window.\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {WindowOptions} [options={}] Options\n\t */\n\tconstructor(core, options = {}) {\n\t\toptions = {\n\t\t\tid: null,\n\t\t\ttitle: null,\n\t\t\tparent: null,\n\t\t\ttemplate: null,\n\t\t\tondestroy: null,\n\t\t\tattributes: {},\n\t\t\tposition: {},\n\t\t\tdimension: {},\n\t\t\tstate: {},\n\t\t\t...options,\n\t\t};\n\n\t\tlogger.debug(\"Window::constructor()\", options);\n\n\t\tsuper(\"Window@\" + options.id);\n\n\t\tif (typeof options.position === \"string\") {\n\t\t\toptions.attributes.gravity = options.position;\n\t\t\toptions.position = {};\n\t\t}\n\n\t\t/**\n\t\t * The Window ID.\n\t\t * @type {String}\n\t\t * @readonly\n\t\t */\n\t\tthis.id = options.id;\n\n\t\t/**\n\t\t * The Window ID.\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.wid = ++windowCount;\n\n\t\t/**\n\t\t * Parent Window reference.\n\t\t * @type {Window}\n\t\t * @readonly\n\t\t */\n\t\tthis.parent = options.parent;\n\n\t\t/**\n\t\t * Child windows (via 'parent')\n\t\t * @type {Window[]}\n\t\t */\n\t\tthis.children = [];\n\n\t\t/**\n\t\t * Core instance reference.\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * The window destruction state.\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.destroyed = false;\n\n\t\t/**\n\t\t * The window rendered state.\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.rendered = false;\n\n\t\t/**\n\t\t * The window was inited.\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.inited = false;\n\n\t\t/**\n\t\t * The window attributes.\n\t\t * @type {WindowAttributes}\n\t\t */\n\t\tthis.attributes = createAttributes(options.attributes);\n\n\t\t/**\n\t\t * The window state.\n\t\t * @type {WindowState}\n\t\t */\n\t\tthis.state = createState(options.state, options, this.attributes);\n\n\t\t/**\n\t\t * The window container.\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$element = document.createElement(\"div\");\n\n\t\t/**\n\t\t * The content container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$content = null;\n\n\t\t/**\n\t\t * The header container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$header = null;\n\n\t\t/**\n\t\t * The icon container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$icon = null;\n\n\t\t/**\n\t\t * The title container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$title = null;\n\n\t\t/**\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore).\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis._preventDefaultPosition = false;\n\n\t\t/**\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis._loadingDebounce = null;\n\n\t\t/**\n\t\t * The window template.\n\t\t * @private\n\t\t * @type {String|Function}\n\t\t */\n\t\tthis._template = options.template;\n\n\t\t/**\n\t\t * Custom destructor callback.\n\t\t * @private\n\t\t * @type {Function}\n\t\t * @readonly\n\t\t */\n\t\tthis._ondestroy = options.ondestroy || (() => true);\n\n\t\t// For whatever reason, these need to be included up here to be\n\t\t// bound to the window instance.\n\t\tthis.setState = this.setState.bind(this);\n\t\tthis.focus = this.focus.bind(this);\n\n\t\t/**\n\t\t * Last DOM update CSS text.\n\t\t * @private\n\t\t * @type {String}\n\t\t */\n\t\tthis._lastCssText = \"\";\n\n\t\t/**\n\t\t * Last DOM update data attributes.\n\t\t * @private\n\t\t * @type {WindowAttributes}\n\t\t */\n\t\tthis._lastAttributes = {};\n\n\t\twindows.push(this);\n\t}\n\n\t/**\n\t * Destroy window.\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) return;\n\n\t\tif (typeof this._ondestroy === \"function\" && this._ondestroy() === false) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.destroyed = true;\n\t\tlogger.debug(\"Window::destroy()\");\n\n\t\tthis.emit(\"destroy\", this);\n\t\tthis.core.emit(\"meeseOS/window:destroy\", this);\n\n\t\tthis.children.forEach((w) => w.destroy());\n\n\t\tif (this.$element) {\n\t\t\tthis.$element.remove();\n\t\t}\n\n\t\tif (lastWindow === this) {\n\t\t\tlastWindow = null;\n\t\t}\n\n\t\tconst foundIndex = windows.findIndex((w) => w === this);\n\t\tif (foundIndex !== -1) {\n\t\t\twindows.splice(foundIndex, 1);\n\t\t}\n\n\t\tthis.children = [];\n\t\tthis.parent = null;\n\t\tthis.$element = null;\n\t\tthis.$content = null;\n\t\tthis.$header = null;\n\t\tthis.$icon = null;\n\t\tthis.$title = null;\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initialize window.\n\t */\n\tinit() {\n\t\tif (this.inited) return this;\n\n\t\tif (this.parent) {\n\t\t\t// Assign the window if it is a child\n\t\t\tthis.on(\"destroy\", () => {\n\t\t\t\tconst foundIndex = this.parent.children.findIndex((w) => w === this);\n\t\t\t\tif (foundIndex !== -1) {\n\t\t\t\t\tthis.parent.children.splice(foundIndex, 1);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tthis.parent.children.push(this);\n\t\t}\n\n\t\tthis._initTemplate();\n\t\tthis._initBehavior();\n\n\t\tthis.inited = true;\n\t\tthis.emit(\"init\", this);\n\t\tthis.core.emit(\"meeseOS/window:create\", this);\n\n\t\treturn this;\n\t}\n\n\t/**\n\t * Initializes window template.\n\t * @private\n\t */\n\t_initTemplate() {\n\t\tconst tpl = this.core.config(\"windows.template\") || TEMPLATE;\n\t\tif (this._template) {\n\t\t\tthis.$element.innerHTML = typeof this._template === \"function\"\n\t\t\t\t? this._template(this, tpl)\n\t\t\t\t: this._template;\n\t\t} else {\n\t\t\tthis.$element.innerHTML = tpl;\n\t\t}\n\n\t\tthis.$content = this.$element.querySelector(\".meeseOS-window-content\");\n\t\tthis.$header = this.$element.querySelector(\".meeseOS-window-header\");\n\t\tthis.$icon = this.$element.querySelector(\".meeseOS-window-icon > div\");\n\t\tthis.$title = this.$element.querySelector(\".meeseOS-window-title\");\n\t}\n\n\t/**\n\t * Initializes window behavior.\n\t * @private\n\t */\n\t_initBehavior() {\n\t\t// Transform percentages in dimension to pixels\n\t\tif (this.core.has(\"meeseOS/desktop\")) {\n\t\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\t\t\tconst { dimension, position } = transformVectors(\n\t\t\t\trect,\n\t\t\t\tthis.state.dimension,\n\t\t\t\tthis.state.position\n\t\t\t);\n\t\t\tthis.state.dimension = dimension;\n\t\t\tthis.state.position = position;\n\t\t}\n\n\t\t// Behavior\n\t\tconst behavior = this.core.make(\"meeseOS/window-behavior\");\n\t\tif (behavior) {\n\t\t\tbehavior.init(this);\n\t\t}\n\n\t\t// DnD functionality\n\t\tif (this.attributes.droppable) {\n\t\t\tconst d = droppable(this.$element, {\n\t\t\t\tondragenter: (...args) => this.emit(\"dragenter\", ...args, this),\n\t\t\t\tondragover: (...args) => this.emit(\"dragover\", ...args, this),\n\t\t\t\tondragleave: (...args) => this.emit(\"dragleave\", ...args, this),\n\t\t\t\tondrop: (...args) => this.emit(\"drop\", ...args, this),\n\t\t\t});\n\n\t\t\tthis.on(\"destroy\", () => d.destroy());\n\t\t}\n\t}\n\n\t/**\n\t * Checks the modal state of the window upon render.\n\t * @private\n\t */\n\t_checkModal() {\n\t\tif (!this.parent) return;\n\t\tif (this.attributes.modal) {\n\t\t\tthis.on(\"render\", () => this.parent.setState(\"loading\", true));\n\t\t\tthis.on(\"destroy\", () => this.parent.setState(\"loading\", false));\n\t\t}\n\n\t\tthis.on(\"destroy\", () => this.parent.focus());\n\t}\n\n\t/**\n\t * Sets the initial class names.\n\t * @private\n\t */\n\t_setClassNames() {\n\t\tconst classNames = [\"meeseOS-window\", ...this.attributes.classNames];\n\t\tif (this.id) {\n\t\t\tclassNames.push(`Window_${this.id}`);\n\t\t}\n\n\t\tclassNames\n\t\t\t.filter((val) => Boolean(val))\n\t\t\t.forEach((val) => this.$element.classList.add(val));\n\t}\n\n\t/**\n\t * Render window.\n\t * @param {Function} [callback] Callback when window DOM has been constructed\n\t * @returns {Window} this instance\n\t */\n\trender(callback = function() {}) {\n\t\tif (this.rendered) {\n\t\t\treturn this;\n\t\t} else if (!this.inited) {\n\t\t\tthis.init();\n\t\t}\n\n\t\tthis._setClassNames();\n\t\tthis._updateButtons();\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t\tthis._updateTitle();\n\t\tthis._updateIconStyles();\n\t\tthis._updateHeaderStyles();\n\t\tthis._checkModal();\n\n\t\tif (!this._preventDefaultPosition) {\n\t\t\tthis.gravitate(this.attributes.gravity);\n\t\t}\n\n\t\t// Clamp the initial window position to viewport\n\t\tif (this.attributes.clamp) {\n\t\t\tthis.clampToViewport(false);\n\t\t}\n\n\t\tthis.setNextZindex(true);\n\n\t\tthis.core.$contents.appendChild(this.$element);\n\n\t\trenderCallback(this, callback);\n\n\t\tthis.rendered = true;\n\n\t\tsetTimeout(() => {\n\t\t\tthis.emit(\"render\", this);\n\t\t\tthis.core.emit(\"meeseOS/window:render\", this);\n\t\t}, 1);\n\n\t\treturn this;\n\t}\n\n\t/**\n\t * Close the window.\n\t * @returns {Boolean}\n\t */\n\tclose() {\n\t\tif (this.destroyed) return false;\n\n\t\tthis.emit(\"close\", this);\n\t\tthis.destroy();\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Focus the window.\n\t * @returns {Boolean}\n\t */\n\tfocus() {\n\t\tif (!this.state.minimized && this._toggleState(\"focused\", true, \"focus\")) {\n\t\t\tthis._focus();\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Internal for focus.\n\t * @private\n\t */\n\t_focus() {\n\t\tif (lastWindow && lastWindow !== this) {\n\t\t\tlastWindow.blur();\n\t\t}\n\n\t\tlastWindow = this;\n\n\t\tthis.setNextZindex();\n\t}\n\n\t/**\n\t * Blur (un-focus) the window.\n\t * @returns {Boolean}\n\t */\n\tblur() {\n\t\t// Forces blur-ing of browser input element belonging to this window\n\t\tconst activeElement = getActiveElement(this.$element);\n\t\tif (activeElement) activeElement.blur();\n\n\t\treturn this._toggleState(\"focused\", false, \"blur\");\n\t}\n\n\t/**\n\t * Minimize (hide) the window.\n\t * @returns {Boolean}\n\t */\n\tminimize() {\n\t\tif (this.attributes.minimizable) {\n\t\t\tif (this._toggleState(\"minimized\", true, \"minimize\")) {\n\t\t\t\tthis.blur();\n\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Raise (un-minimize) the window.\n\t * @returns {Boolean}\n\t */\n\traise() {\n\t\treturn this._toggleState(\"minimized\", false, \"raise\");\n\t}\n\n\t/**\n\t * Maximize the window.\n\t * @returns {Boolean}\n\t */\n\tmaximize() {\n\t\tif (this.attributes.maximizable) {\n\t\t\treturn this._maximize(true);\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Restore (un-maximize) the window.\n\t * @returns {Boolean}\n\t */\n\trestore() {\n\t\treturn this._maximize(false);\n\t}\n\n\t/**\n\t * Internal for Maximize or restore.\n\t * @private\n\t * @param {Boolean} toggle Maximize or restore\n\t * @returns {Boolean}\n\t */\n\t_maximize(toggle) {\n\t\tif (\n\t\t\tthis._toggleState(\"maximized\", toggle, toggle ? \"maximize\" : \"restore\")\n\t\t) {\n\t\t\tconst emit = () =>\n\t\t\t\tthis.emit(\n\t\t\t\t\t\"resized\",\n\t\t\t\t\t{\n\t\t\t\t\t\twidth: this.$element ? this.$element.offsetWidth : -1,\n\t\t\t\t\t\theight: this.$element ? this.$element.offsetHeight : -1,\n\t\t\t\t\t},\n\t\t\t\t\tthis\n\t\t\t\t);\n\n\t\t\tif (supportsTransition()) {\n\t\t\t\tthis.once(\"transitionend\", emit);\n\t\t\t} else {\n\t\t\t\temit();\n\t\t\t}\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Resize to fit to current container.\n\t * @param {Element} [container] The DOM element to use\n\t */\n\tresizeFit(container) {\n\t\tcontainer = container || this.$content.firstChild;\n\n\t\tif (container) {\n\t\t\tconst rect = this.core.has(\"meeseOS/desktop\")\n\t\t\t\t? this.core.make(\"meeseOS/desktop\").getRect(/* n00b */)\n\t\t\t\t: null;\n\n\t\t\tconst { width, height } = dimensionFromElement(this, rect, container);\n\t\t\tif (!isNaN(width) && !isNaN(height)) {\n\t\t\t\tthis.setDimension({ width, height });\n\t\t\t}\n\t\t}\n\t}\n\n\t/**\n\t * Clamps the position to viewport.\n\t * @param {Boolean} [update=true] Update DOM\n\t */\n\tclampToViewport(update = true) {\n\t\tif (!this.core.has(\"meeseOS/desktop\")) return;\n\n\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\n\t\tthis.state.position = {\n\t\t\t...this.state.position,\n\t\t\t...clampPosition(rect, this.state),\n\t\t};\n\n\t\tif (update) {\n\t\t\tthis._updateStyles();\n\t\t}\n\t}\n\n\t/**\n\t * Set the Window icon.\n\t * @param {String} uri Icon URI\n\t */\n\tsetIcon(uri) {\n\t\tthis.state.icon = uri;\n\n\t\tthis._updateIconStyles();\n\t}\n\n\t/**\n\t * Set the Window title.\n\t * @param {String} title Title\n\t */\n\tsetTitle(title) {\n\t\tthis.state.title = title || \"\";\n\t\tthis._updateTitle();\n\n\t\tthis.core.emit(\"meeseOS/window:change\", this, \"title\", title);\n\t}\n\n\t/**\n\t * Set the Window dimension.\n\t * @param {WindowDimension} dimension The dimension\n\t */\n\tsetDimension(dimension) {\n\t\tconst { width, height } = { ...this.state.dimension, ...(dimension || {}) };\n\n\t\tthis.state.dimension.width = width;\n\t\tthis.state.dimension.height = height;\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Set the Window position.\n\t * @param {WindowPosition} position The position\n\t * @param {Boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t */\n\tsetPosition(position, preventDefault = false) {\n\t\tconst { left, top } = { ...this.state.position, ...(position || {}) };\n\n\t\tthis.state.position.top = top;\n\t\tthis.state.position.left = left;\n\n\t\tif (preventDefault) {\n\t\t\tthis._preventDefaultPosition = true;\n\t\t}\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Set the Window z index.\n\t * @param {Number} zIndex the index\n\t */\n\tsetZindex(zIndex) {\n\t\tthis.state.zIndex = zIndex;\n\t\tlogger.debug(\"Window::setZindex()\", zIndex);\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Sets the Window to next z index.\n\t * @param {Boolean} [force] Force next index\n\t */\n\tsetNextZindex(force) {\n\t\tconst setNext = force || this._checkNextZindex();\n\n\t\tif (setNext) {\n\t\t\tthis.setZindex(nextZindex);\n\t\t\tnextZindex++;\n\t\t}\n\t}\n\n\t/**\n\t * Set a state by value.\n\t *\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t */\n\tsetState(name, value, update = true) {\n\t\tconst set = () => this._setState(name, value, update);\n\n\t\t// Allows for some \"grace time\" so the overlay does not\n\t\t// \"blink\"\n\t\tif (name === \"loading\" && update) {\n\t\t\tclearTimeout(this._loadingDebounce);\n\n\t\t\tif (value === true) {\n\t\t\t\tthis._loadingDebounce = setTimeout(() => set(), 250);\n\t\t\t\treturn;\n\t\t\t}\n\t\t}\n\n\t\tset();\n\t}\n\n\t/**\n\t * Gravitates window towards a certain area.\n\t * @param {String} gravity Gravity\n\t */\n\tgravitate(gravity) {\n\t\tif (!this.core.has(\"meeseOS/desktop\")) return;\n\n\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\t\tconst position = positionFromGravity(this, rect, gravity);\n\n\t\tthis.setPosition(position);\n\t}\n\n\t/**\n\t * Gets a astate.\n\t * @returns {*}\n\t */\n\tgetState(n) {\n\t\tconst value = this.state[n];\n\n\t\treturn [\"position\", \"dimension\", \"styles\"].indexOf(n) !== -1\n\t\t\t? { ...value }\n\t\t\t: value;\n\t}\n\n\t/**\n\t * Get a snapshot of the Window session.\n\t * @returns {WindowSession}\n\t */\n\tgetSession() {\n\t\treturn this.attributes.sessionable === false\n\t\t\t? null\n\t\t\t: {\n\t\t\t\tid: this.id,\n\t\t\t\tmaximized: this.state.maximized,\n\t\t\t\tminimized: this.state.minimized,\n\t\t\t\tposition: { ...this.state.position },\n\t\t\t\tdimension: { ...this.state.dimension },\n\t\t\t};\n\t}\n\n\t/**\n\t * Get a list of all windows.\n\t * @returns {Window[]}\n\t */\n\tstatic getWindows() {\n\t\treturn windows;\n\t}\n\n\t/**\n\t * Gets the lastly focused Window.\n\t * @returns {Window}\n\t */\n\tstatic lastWindow() {\n\t\treturn lastWindow;\n\t}\n\n\t/**\n\t * Internal method for setting state.\n\t *\n\t * @private\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @param {Boolean} [updateAll=true] Update the entire DOM\n\t */\n\t_setState(name, value, update = true) {\n\t\tconst oldValue = this.state[name];\n\t\tthis.state[name] = value;\n\t\tif (!update) return;\n\n\t\tif (oldValue !== value) {\n\t\t\tlogger.debug(\"Window::_setState()\", name, value);\n\t\t}\n\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Internal method for toggling state.\n\t *\n\t * @private\n\t * @param {String} name State name\n\t * @param {any} value State value\n\t * @param {String} eventName Name of event to emit\n\t * @param {Boolean} [update=true] Update the DOM\n\t */\n\t_toggleState(name, value, eventName, update = true) {\n\t\tif (this.state[name] === value) {\n\t\t\treturn false;\n\t\t}\n\n\t\tlogger.debug(\"Window::_toggleState()\", name, value, eventName, update);\n\n\t\tthis.state[name] = value;\n\t\tthis.emit(eventName, this);\n\t\tthis.core.emit(\"meeseOS/window:change\", this, name, value);\n\n\t\tif (update) {\n\t\t\tthis._updateAttributes();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Check if we have to set next z index.\n\t * @private\n\t * @returns {Boolean}\n\t */\n\t_checkNextZindex() {\n\t\tconst { ontop } = this.attributes;\n\t\tconst { zIndex } = this.state;\n\n\t\tconst windexes = windows\n\t\t\t.filter((w) => w.attributes.ontop === ontop)\n\t\t\t.filter((w) => w.wid !== this.wid)\n\t\t\t.map((w) => w.state.zIndex);\n\n\t\tconst max = windexes.length > 0 ? Math.max.apply(null, windexes) : 0;\n\n\t\treturn zIndex < max;\n\t}\n\n\t/**\n\t * Updates window styles and attributes.\n\t */\n\t_updateDOM() {\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Updates the window buttons in DOM.\n\t * @private\n\t */\n\t_updateButtons() {\n\t\tconst hideButton = (action) =>\n\t\t\t(this.$header.querySelector(\n\t\t\t\t`.meeseOS-window-button[data-action=${action}]`\n\t\t\t).style.display = \"none\");\n\n\t\tconst buttonmap = {\n\t\t\tmaximizable: \"maximize\",\n\t\t\tminimizable: \"minimize\",\n\t\t\tcloseable: \"close\",\n\t\t};\n\n\t\tif (this.attributes.controls) {\n\t\t\tObject.keys(buttonmap).forEach((key) => {\n\t\t\t\tif (!this.attributes[key]) {\n\t\t\t\t\thideButton(buttonmap[key]);\n\t\t\t\t}\n\t\t\t});\n\t\t} else {\n\t\t\tArray.from(\n\t\t\t\tthis.$header.querySelectorAll(\".meeseOS-window-button\")\n\t\t\t).forEach((el) => (el.style.display = \"none\"));\n\t\t}\n\t}\n\n\t/**\n\t * Updates window title in DOM.\n\t * @private\n\t */\n\t_updateTitle() {\n\t\tif (!this.$title) return;\n\n\t\tconst escapedTitle = escapeHtml(this.state.title);\n\t\tif (this.$title.innerHTML !== escapedTitle) {\n\t\t\tthis.$title.innerHTML = escapedTitle;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window icon decoration in DOM.\n\t * @private\n\t */\n\t_updateIconStyles() {\n\t\tif (!this.$icon) return;\n\n\t\tconst iconSource = `url(${this.state.icon})`;\n\t\tif (this.$icon.style.backgroundImage !== iconSource) {\n\t\t\tthis.$icon.style.backgroundImage = iconSource;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window header decoration in DOM.\n\t * @private\n\t */\n\t_updateHeaderStyles() {\n\t\tif (!this.$header) return;\n\n\t\tconst headerDisplay = this.attributes.header ? undefined : \"none\";\n\t\tif (this.$header.style.display !== headerDisplay) {\n\t\t\tthis.$header.style.display = headerDisplay;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window data in DOM.\n\t * @private\n\t */\n\t_updateAttributes() {\n\t\tif (!this.$element) return;\n\n\t\tconst attrs = createDOMAttributes(this.id, this.state, this.attributes);\n\t\tconst applyAttrs = Object.keys(attrs).filter(\n\t\t\t(k) => attrs[k] !== this._lastAttributes[k]\n\t\t);\n\n\t\tif (applyAttrs.length > 0) {\n\t\t\tapplyAttrs.forEach((a) =>\n\t\t\t\tthis.$element.setAttribute(`data-${a}`, String(attrs[a]))\n\t\t\t);\n\t\t\tthis._lastAttributes = attrs;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window style in DOM.\n\t * @private\n\t */\n\t_updateStyles() {\n\t\tif (!this.$element) return;\n\n\t\tconst cssText = createCssText(createDOMStyles(this.state, this.attributes));\n\t\tif (cssText !== this._lastCssText) {\n\t\t\tthis.$element.style.cssText = cssText;\n\t\t\tthis._lastCssText = cssText;\n\t\t}\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\nimport {\n\tcreateAttributes,\n\tcreateDOMAttributes,\n\tcreateDOMStyles,\n\tclampPosition,\n\tcreateState,\n\tdimensionFromElement,\n\tpositionFromGravity,\n\trenderCallback,\n\ttransformVectors,\n} from \"./utils/windows\";\nimport {\n\tcreateCssText,\n\tescapeHtml,\n\tgetActiveElement,\n\tsupportsTransition,\n} from \"./utils/dom\";\nimport { EventEmitter } from \"@meeseOS/event-emitter\";\nimport { droppable } from \"./utils/dnd\";\nimport logger from \"./logger\";\n\n/**\n * Window dimension definition.\n * @typedef {Object} WindowDimension\n * @property {Number} width Width in pixels (or float for percentage in setters)\n * @property {Number} height Height in pixels (or float for percentage in setters)\n */\n\n/**\n * Window position definition.\n * @typedef {Object} WindowPosition\n * @property {Number} left Left in pixels (or float for percentage in setters)\n * @property {Number} top Top in pixels (or float for percentage in setters)\n */\n\n/**\n * Window session.\n *\n * @typedef {Object} WindowSession\n * @property {Number} id\n * @property {Boolean} maximized\n * @property {Boolean} minimized\n * @property {WindowPosition} position\n * @property {WindowDimension} dimension\n */\n\n/**\n * Window attributes definition.\n *\n * @typedef {Object} WindowAttributes\n * @property {String[]} [classNames=[]] A list of class names\n * @property {Boolean} [ontop=false] If always on top\n * @property {String} [gravity] Gravity (center/top/left/right/bottom or any combination)\n * @property {Boolean} [resizable=true] If resizable\n * @property {Boolean} [focusable=true] If focusable\n * @property {Boolean} [maximizable=true] If window if maximizable\n * @property {Boolean} [minimizable=true] If minimizable\n * @property {Boolean} [moveable=true] If moveable\n * @property {Boolean} [closeable=true] If closeable\n * @property {Boolean} [header=true] Show header\n * @property {Boolean} [controls=true] Show controls\n * @property {String} [visibility=global] Global visibility, 'restricted' to hide from window lists etc.\n * @property {Boolean} [clamp=true] Clamp the window position upon creation\n * @property {Boolean} [droppable=true] If window should have the default drop action\n * @property {WindowDimension} [minDimension] Minimum dimension\n * @property {WindowDimension} [maxDimension] Maximum dimension\n * @property {{name: string}} [mediaQueries] A map of matchMedia to name\n */\n\n/**\n * Window state definition.\n *\n * @typedef {Object} WindowState\n * @property {String} title Title\n * @property {String} icon Icon\n * @property {Boolean} [moving=false] If moving\n * @property {Boolean} [resizing=false] If resizing\n * @property {Boolean} [loading=false] If loading\n * @property {Boolean} [focused=false] If focused\n * @property {Boolean} [maximized=false] If maximized\n * @property {Boolean} [mimimized=false] If mimimized\n * @property {Boolean} [modal=false] If modal to the parent\n * @property {Number} [zIndex=10] The z-index (auto calculated)\n * @property {WindowPosition} [position] Position\n * @property {WindowDimension} [dimension] Dimension\n */\n\n/**\n * Window options definition.\n *\n * @typedef {Object} WindowOptions\n * @property {String} id Window Id (not globaly unique)\n * @property {String} [title] Window Title\n * @property {String} [icon] Window Icon\n * @property {Window} [parent] The parent Window reference\n * @property {String|Function} [template] The Window HTML template (or function with signature (el, win) for programatic construction)\n * @property {Function} [ondestroy] A callback function when window destructs to interrupt the procedure\n * @property {WindowPosition|string} [position] Window position\n * @property {WindowDimension} [dimension] Window dimension\n * @property {WindowAttributes} [attributes] Apply Window attributes\n * @property {WindowState} [state] Apply Window state\n */\n\nconst windows = [];\nlet windowCount = 0;\nlet nextZindex = 1;\nconst lastWindow = [];\n\n/**\n * Default window template.\n */\nconst TEMPLATE = `<div class=\"meeseOS-window-inner\">\n  <div class=\"meeseOS-window-header\">\n    <div class=\"meeseOS-window-icon\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-title\"></div>\n    <div class=\"meeseOS-window-button\" data-action=\"minimize\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-button\" data-action=\"maximize\">\n      <div></div>\n    </div>\n    <div class=\"meeseOS-window-button\" data-action=\"close\">\n      <div></div>\n    </div>\n  </div>\n  <div class=\"meeseOS-window-content\">\n  </div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"n\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"nw\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"w\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"sw\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"s\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"se\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"e\"></div>\n  <div class=\"meeseOS-window-resize\" data-direction=\"ne\"></div>\n</div>`\n\t.replace(/\\n\\s+/g, \"\")\n\t.trim();\n\n/**\n * Window Implementation\n */\nexport default class Window extends EventEmitter {\n\t/**\n\t * Create window.\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {WindowOptions} [options={}] Options\n\t */\n\tconstructor(core, options = {}) {\n\t\toptions = {\n\t\t\tid: null,\n\t\t\ttitle: null,\n\t\t\tparent: null,\n\t\t\ttemplate: null,\n\t\t\tondestroy: null,\n\t\t\tattributes: {},\n\t\t\tposition: {},\n\t\t\tdimension: {},\n\t\t\tstate: {},\n\t\t\t...options,\n\t\t};\n\n\t\tlogger.debug(\"Window::constructor()\", options);\n\n\t\tsuper(\"Window@\" + options.id);\n\n\t\tif (typeof options.position === \"string\") {\n\t\t\toptions.attributes.gravity = options.position;\n\t\t\toptions.position = {};\n\t\t}\n\n\t\t/**\n\t\t * The Window ID.\n\t\t * @type {String}\n\t\t * @readonly\n\t\t */\n\t\tthis.id = options.id;\n\n\t\t/**\n\t\t * The Window ID.\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.wid = ++windowCount;\n\n\t\t/**\n\t\t * Parent Window reference.\n\t\t * @type {Window}\n\t\t * @readonly\n\t\t */\n\t\tthis.parent = options.parent;\n\n\t\t/**\n\t\t * Child windows (via 'parent')\n\t\t * @type {Window[]}\n\t\t */\n\t\tthis.children = [];\n\n\t\t/**\n\t\t * Core instance reference.\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * The window destruction state.\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.destroyed = false;\n\n\t\t/**\n\t\t * The window rendered state.\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.rendered = false;\n\n\t\t/**\n\t\t * The window was inited.\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.inited = false;\n\n\t\t/**\n\t\t * The window attributes.\n\t\t * @type {WindowAttributes}\n\t\t */\n\t\tthis.attributes = createAttributes(options.attributes);\n\n\t\t/**\n\t\t * The window state.\n\t\t * @type {WindowState}\n\t\t */\n\t\tthis.state = createState(options.state, options, this.attributes);\n\n\t\t/**\n\t\t * The window container.\n\t\t * @type {Element}\n\t\t * @readonly\n\t\t */\n\t\tthis.$element = document.createElement(\"div\");\n\n\t\t/**\n\t\t * The content container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$content = null;\n\n\t\t/**\n\t\t * The header container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$header = null;\n\n\t\t/**\n\t\t * The icon container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$icon = null;\n\n\t\t/**\n\t\t * The title container.\n\t\t * @type {Element}\n\t\t */\n\t\tthis.$title = null;\n\n\t\t/**\n\t\t * Internal variable to signal not to use default position\n\t\t * given by user (used for restore).\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis._preventDefaultPosition = false;\n\n\t\t/**\n\t\t * Internal timeout reference used for triggering the loading\n\t\t * overlay.\n\t\t * @private\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis._loadingDebounce = null;\n\n\t\t/**\n\t\t * The window template.\n\t\t * @private\n\t\t * @type {String|Function}\n\t\t */\n\t\tthis._template = options.template;\n\n\t\t/**\n\t\t * Custom destructor callback.\n\t\t * @private\n\t\t * @type {Function}\n\t\t * @readonly\n\t\t */\n\t\tthis._ondestroy = options.ondestroy || (() => true);\n\n\t\t// For whatever reason, these need to be included up here to be\n\t\t// bound to the window instance.\n\t\tthis.setState = this.setState.bind(this);\n\t\tthis.focus = this.focus.bind(this);\n\n\t\t/**\n\t\t * Last DOM update CSS text.\n\t\t * @private\n\t\t * @type {String}\n\t\t */\n\t\tthis._lastCssText = \"\";\n\n\t\t/**\n\t\t * Last DOM update data attributes.\n\t\t * @private\n\t\t * @type {WindowAttributes}\n\t\t */\n\t\tthis._lastAttributes = {};\n\n\t\twindows.push(this);\n\t}\n\n\t/**\n\t * Destroy window.\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) return;\n\n\t\tif (typeof this._ondestroy === \"function\" && this._ondestroy() === false) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.destroyed = true;\n\t\tlogger.debug(\"Window::destroy()\");\n\n\t\tthis.emit(\"destroy\", this);\n\t\tthis.core.emit(\"meeseOS/window:destroy\", this);\n\n\t\tthis.children.forEach((w) => w.destroy());\n\n\t\tif (this.$element) {\n\t\t\tthis.$element.remove();\n\t\t}\n\n\t\tif (lastWindow.at(-1) === this) {\n\t\t\tlastWindow.pop();\n\n\t\t\t// Set focus to the last window in the stack\n\t\t\tif (lastWindow.length > 0) {\n\t\t\t\tlastWindow.at(-1).focus();\n\t\t\t}\n\t\t}\n\n\t\tconst foundIndex = windows.findIndex((w) => w === this);\n\t\tif (foundIndex !== -1) {\n\t\t\twindows.splice(foundIndex, 1);\n\t\t}\n\n\t\tthis.children = [];\n\t\tthis.parent = null;\n\t\tthis.$element = null;\n\t\tthis.$content = null;\n\t\tthis.$header = null;\n\t\tthis.$icon = null;\n\t\tthis.$title = null;\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initialize window.\n\t */\n\tinit() {\n\t\tif (this.inited) return this;\n\n\t\tif (this.parent) {\n\t\t\t// Assign the window if it is a child\n\t\t\tthis.on(\"destroy\", () => {\n\t\t\t\tconst foundIndex = this.parent.children.findIndex((w) => w === this);\n\t\t\t\tif (foundIndex !== -1) {\n\t\t\t\t\tthis.parent.children.splice(foundIndex, 1);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tthis.parent.children.push(this);\n\t\t}\n\n\t\tthis._initTemplate();\n\t\tthis._initBehavior();\n\n\t\tthis.inited = true;\n\t\tthis.emit(\"init\", this);\n\t\tthis.core.emit(\"meeseOS/window:create\", this);\n\n\t\treturn this;\n\t}\n\n\t/**\n\t * Initializes window template.\n\t * @private\n\t */\n\t_initTemplate() {\n\t\tconst tpl = this.core.config(\"windows.template\") || TEMPLATE;\n\t\tif (this._template) {\n\t\t\tthis.$element.innerHTML = typeof this._template === \"function\"\n\t\t\t\t? this._template(this, tpl)\n\t\t\t\t: this._template;\n\t\t} else {\n\t\t\tthis.$element.innerHTML = tpl;\n\t\t}\n\n\t\tthis.$content = this.$element.querySelector(\".meeseOS-window-content\");\n\t\tthis.$header = this.$element.querySelector(\".meeseOS-window-header\");\n\t\tthis.$icon = this.$element.querySelector(\".meeseOS-window-icon > div\");\n\t\tthis.$title = this.$element.querySelector(\".meeseOS-window-title\");\n\t}\n\n\t/**\n\t * Initializes window behavior.\n\t * @private\n\t */\n\t_initBehavior() {\n\t\t// Transform percentages in dimension to pixels\n\t\tif (this.core.has(\"meeseOS/desktop\")) {\n\t\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\t\t\tconst { dimension, position } = transformVectors(\n\t\t\t\trect,\n\t\t\t\tthis.state.dimension,\n\t\t\t\tthis.state.position\n\t\t\t);\n\t\t\tthis.state.dimension = dimension;\n\t\t\tthis.state.position = position;\n\t\t}\n\n\t\t// Behavior\n\t\tconst behavior = this.core.make(\"meeseOS/window-behavior\");\n\t\tif (behavior) {\n\t\t\tbehavior.init(this);\n\t\t}\n\n\t\t// DnD functionality\n\t\tif (this.attributes.droppable) {\n\t\t\tconst d = droppable(this.$element, {\n\t\t\t\tondragenter: (...args) => this.emit(\"dragenter\", ...args, this),\n\t\t\t\tondragover: (...args) => this.emit(\"dragover\", ...args, this),\n\t\t\t\tondragleave: (...args) => this.emit(\"dragleave\", ...args, this),\n\t\t\t\tondrop: (...args) => this.emit(\"drop\", ...args, this),\n\t\t\t});\n\n\t\t\tthis.on(\"destroy\", () => d.destroy());\n\t\t}\n\t}\n\n\t/**\n\t * Checks the modal state of the window upon render.\n\t * @private\n\t */\n\t_checkModal() {\n\t\tif (!this.parent) return;\n\t\tif (this.attributes.modal) {\n\t\t\tthis.on(\"render\", () => this.parent.setState(\"loading\", true));\n\t\t\tthis.on(\"destroy\", () => this.parent.setState(\"loading\", false));\n\t\t}\n\n\t\tthis.on(\"destroy\", () => this.parent.focus());\n\t}\n\n\t/**\n\t * Sets the initial class names.\n\t * @private\n\t */\n\t_setClassNames() {\n\t\tconst classNames = [\"meeseOS-window\", ...this.attributes.classNames];\n\t\tif (this.id) {\n\t\t\tclassNames.push(`Window_${this.id}`);\n\t\t}\n\n\t\tclassNames\n\t\t\t.filter((val) => Boolean(val))\n\t\t\t.forEach((val) => this.$element.classList.add(val));\n\t}\n\n\t/**\n\t * Render window.\n\t * @param {Function} [callback] Callback when window DOM has been constructed\n\t * @returns {Window} this instance\n\t */\n\trender(callback = function() {}) {\n\t\tif (this.rendered) {\n\t\t\treturn this;\n\t\t} else if (!this.inited) {\n\t\t\tthis.init();\n\t\t}\n\n\t\tthis._setClassNames();\n\t\tthis._updateButtons();\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t\tthis._updateTitle();\n\t\tthis._updateIconStyles();\n\t\tthis._updateHeaderStyles();\n\t\tthis._checkModal();\n\n\t\tif (!this._preventDefaultPosition) {\n\t\t\tthis.gravitate(this.attributes.gravity);\n\t\t}\n\n\t\t// Clamp the initial window position to viewport\n\t\tif (this.attributes.clamp) {\n\t\t\tthis.clampToViewport(false);\n\t\t}\n\n\t\tthis.setNextZindex(true);\n\n\t\tthis.core.$contents.appendChild(this.$element);\n\n\t\trenderCallback(this, callback);\n\n\t\tthis.rendered = true;\n\n\t\tsetTimeout(() => {\n\t\t\tthis.emit(\"render\", this);\n\t\t\tthis.core.emit(\"meeseOS/window:render\", this);\n\t\t}, 1);\n\n\t\treturn this;\n\t}\n\n\t/**\n\t * Close the window.\n\t * @returns {Boolean}\n\t */\n\tclose() {\n\t\tif (this.destroyed) return false;\n\n\t\tthis.emit(\"close\", this);\n\t\tthis.destroy();\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Focus the window.\n\t * @returns {Boolean}\n\t */\n\tfocus() {\n\t\tif (!this.state.minimized && this._toggleState(\"focused\", true, \"focus\")) {\n\t\t\tthis._focus();\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Internal for focus.\n\t * @private\n\t */\n\t_focus() {\n\t\tif (lastWindow.length && lastWindow.at(-1) !== this) {\n\t\t\tlastWindow.at(-1).blur();\n\t\t}\n\n\t\tlastWindow.push(this);\n\n\t\tthis.setNextZindex();\n\t}\n\n\t/**\n\t * Blur (un-focus) the window.\n\t * @returns {Boolean}\n\t */\n\tblur() {\n\t\t// Forces blur-ing of browser input element belonging to this window\n\t\tconst activeElement = getActiveElement(this.$element);\n\t\tif (activeElement) activeElement.blur();\n\n\t\treturn this._toggleState(\"focused\", false, \"blur\");\n\t}\n\n\t/**\n\t * Minimize (hide) the window.\n\t * @returns {Boolean}\n\t */\n\tminimize() {\n\t\tif (this.attributes.minimizable) {\n\t\t\tif (this._toggleState(\"minimized\", true, \"minimize\")) {\n\t\t\t\tthis.blur();\n\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Raise (un-minimize) the window.\n\t * @returns {Boolean}\n\t */\n\traise() {\n\t\treturn this._toggleState(\"minimized\", false, \"raise\");\n\t}\n\n\t/**\n\t * Maximize the window.\n\t * @returns {Boolean}\n\t */\n\tmaximize() {\n\t\tif (this.attributes.maximizable) {\n\t\t\treturn this._maximize(true);\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Restore (un-maximize) the window.\n\t * @returns {Boolean}\n\t */\n\trestore() {\n\t\treturn this._maximize(false);\n\t}\n\n\t/**\n\t * Internal for Maximize or restore.\n\t * @private\n\t * @param {Boolean} toggle Maximize or restore\n\t * @returns {Boolean}\n\t */\n\t_maximize(toggle) {\n\t\tif (\n\t\t\tthis._toggleState(\"maximized\", toggle, toggle ? \"maximize\" : \"restore\")\n\t\t) {\n\t\t\tconst emit = () =>\n\t\t\t\tthis.emit(\n\t\t\t\t\t\"resized\",\n\t\t\t\t\t{\n\t\t\t\t\t\twidth: this.$element ? this.$element.offsetWidth : -1,\n\t\t\t\t\t\theight: this.$element ? this.$element.offsetHeight : -1,\n\t\t\t\t\t},\n\t\t\t\t\tthis\n\t\t\t\t);\n\n\t\t\tif (supportsTransition()) {\n\t\t\t\tthis.once(\"transitionend\", emit);\n\t\t\t} else {\n\t\t\t\temit();\n\t\t\t}\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Resize to fit to current container.\n\t * @param {Element} [container] The DOM element to use\n\t */\n\tresizeFit(container) {\n\t\tcontainer = container || this.$content.firstChild;\n\n\t\tif (container) {\n\t\t\tconst rect = this.core.has(\"meeseOS/desktop\")\n\t\t\t\t? this.core.make(\"meeseOS/desktop\").getRect(/* n00b */)\n\t\t\t\t: null;\n\n\t\t\tconst { width, height } = dimensionFromElement(this, rect, container);\n\t\t\tif (!isNaN(width) && !isNaN(height)) {\n\t\t\t\tthis.setDimension({ width, height });\n\t\t\t}\n\t\t}\n\t}\n\n\t/**\n\t * Clamps the position to viewport.\n\t * @param {Boolean} [update=true] Update DOM\n\t */\n\tclampToViewport(update = true) {\n\t\tif (!this.core.has(\"meeseOS/desktop\")) return;\n\n\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\n\t\tthis.state.position = {\n\t\t\t...this.state.position,\n\t\t\t...clampPosition(rect, this.state),\n\t\t};\n\n\t\tif (update) {\n\t\t\tthis._updateStyles();\n\t\t}\n\t}\n\n\t/**\n\t * Set the Window icon.\n\t * @param {String} uri Icon URI\n\t */\n\tsetIcon(uri) {\n\t\tthis.state.icon = uri;\n\n\t\tthis._updateIconStyles();\n\t}\n\n\t/**\n\t * Set the Window title.\n\t * @param {String} title Title\n\t */\n\tsetTitle(title) {\n\t\tthis.state.title = title || \"\";\n\t\tthis._updateTitle();\n\n\t\tthis.core.emit(\"meeseOS/window:change\", this, \"title\", title);\n\t}\n\n\t/**\n\t * Set the Window dimension.\n\t * @param {WindowDimension} dimension The dimension\n\t */\n\tsetDimension(dimension) {\n\t\tconst { width, height } = { ...this.state.dimension, ...(dimension || {}) };\n\n\t\tthis.state.dimension.width = width;\n\t\tthis.state.dimension.height = height;\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Set the Window position.\n\t * @param {WindowPosition} position The position\n\t * @param {Boolean} [preventDefault=false] Prevents any future position setting in init procedure\n\t */\n\tsetPosition(position, preventDefault = false) {\n\t\tconst { left, top } = { ...this.state.position, ...(position || {}) };\n\n\t\tthis.state.position.top = top;\n\t\tthis.state.position.left = left;\n\n\t\tif (preventDefault) {\n\t\t\tthis._preventDefaultPosition = true;\n\t\t}\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Set the Window z index.\n\t * @param {Number} zIndex the index\n\t */\n\tsetZindex(zIndex) {\n\t\tthis.state.zIndex = zIndex;\n\t\tlogger.debug(\"Window::setZindex()\", zIndex);\n\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Sets the Window to next z index.\n\t * @param {Boolean} [force] Force next index\n\t */\n\tsetNextZindex(force) {\n\t\tconst setNext = force || this._checkNextZindex();\n\n\t\tif (setNext) {\n\t\t\tthis.setZindex(nextZindex);\n\t\t\tnextZindex++;\n\t\t}\n\t}\n\n\t/**\n\t * Set a state by value.\n\t *\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @see {WindowState}\n\t */\n\tsetState(name, value, update = true) {\n\t\tconst set = () => this._setState(name, value, update);\n\n\t\t// Allows for some \"grace time\" so the overlay does not\n\t\t// \"blink\"\n\t\tif (name === \"loading\" && update) {\n\t\t\tclearTimeout(this._loadingDebounce);\n\n\t\t\tif (value === true) {\n\t\t\t\tthis._loadingDebounce = setTimeout(() => set(), 250);\n\t\t\t\treturn;\n\t\t\t}\n\t\t}\n\n\t\tset();\n\t}\n\n\t/**\n\t * Gravitates window towards a certain area.\n\t * @param {String} gravity Gravity\n\t */\n\tgravitate(gravity) {\n\t\tif (!this.core.has(\"meeseOS/desktop\")) return;\n\n\t\tconst rect = this.core.make(\"meeseOS/desktop\").getRect();\n\t\tconst position = positionFromGravity(this, rect, gravity);\n\n\t\tthis.setPosition(position);\n\t}\n\n\t/**\n\t * Gets a astate.\n\t * @returns {*}\n\t */\n\tgetState(n) {\n\t\tconst value = this.state[n];\n\n\t\treturn [\"position\", \"dimension\", \"styles\"].indexOf(n) !== -1\n\t\t\t? { ...value }\n\t\t\t: value;\n\t}\n\n\t/**\n\t * Get a snapshot of the Window session.\n\t * @returns {WindowSession}\n\t */\n\tgetSession() {\n\t\treturn this.attributes.sessionable === false\n\t\t\t? null\n\t\t\t: {\n\t\t\t\tid: this.id,\n\t\t\t\tmaximized: this.state.maximized,\n\t\t\t\tminimized: this.state.minimized,\n\t\t\t\tposition: { ...this.state.position },\n\t\t\t\tdimension: { ...this.state.dimension },\n\t\t\t};\n\t}\n\n\t/**\n\t * Get a list of all windows.\n\t * @returns {Window[]}\n\t */\n\tstatic getWindows() {\n\t\treturn windows;\n\t}\n\n\t/**\n\t * Gets the lastly focused Window.\n\t * @returns {Window}\n\t */\n\tstatic lastWindow() {\n\t\treturn lastWindow.length > 0 ? lastWindow.at(-1) : null;\n\t}\n\n\t/**\n\t * Internal method for setting state.\n\t *\n\t * @private\n\t * @param {String} name State name\n\t * @param {*} value State value\n\t * @param {Boolean} [update=true] Update the DOM\n\t * @param {Boolean} [updateAll=true] Update the entire DOM\n\t */\n\t_setState(name, value, update = true) {\n\t\tconst oldValue = this.state[name];\n\t\tthis.state[name] = value;\n\t\tif (!update) return;\n\n\t\tif (oldValue !== value) {\n\t\t\tlogger.debug(\"Window::_setState()\", name, value);\n\t\t}\n\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Internal method for toggling state.\n\t *\n\t * @private\n\t * @param {String} name State name\n\t * @param {any} value State value\n\t * @param {String} eventName Name of event to emit\n\t * @param {Boolean} [update=true] Update the DOM\n\t */\n\t_toggleState(name, value, eventName, update = true) {\n\t\tif (this.state[name] === value) {\n\t\t\treturn false;\n\t\t}\n\n\t\tlogger.debug(\"Window::_toggleState()\", name, value, eventName, update);\n\n\t\tthis.state[name] = value;\n\t\tthis.emit(eventName, this);\n\t\tthis.core.emit(\"meeseOS/window:change\", this, name, value);\n\n\t\tif (update) {\n\t\t\tthis._updateAttributes();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Check if we have to set next z index.\n\t * @private\n\t * @returns {Boolean}\n\t */\n\t_checkNextZindex() {\n\t\tconst { ontop } = this.attributes;\n\t\tconst { zIndex } = this.state;\n\n\t\tconst windexes = windows\n\t\t\t.filter((w) => w.attributes.ontop === ontop)\n\t\t\t.filter((w) => w.wid !== this.wid)\n\t\t\t.map((w) => w.state.zIndex);\n\n\t\tconst max = windexes.length > 0 ? Math.max.apply(null, windexes) : 0;\n\n\t\treturn zIndex < max;\n\t}\n\n\t/**\n\t * Updates window styles and attributes.\n\t */\n\t_updateDOM() {\n\t\tthis._updateAttributes();\n\t\tthis._updateStyles();\n\t}\n\n\t/**\n\t * Updates the window buttons in DOM.\n\t * @private\n\t */\n\t_updateButtons() {\n\t\tconst hideButton = (action) =>\n\t\t\t(this.$header.querySelector(\n\t\t\t\t`.meeseOS-window-button[data-action=${action}]`\n\t\t\t).style.display = \"none\");\n\n\t\tconst buttonmap = {\n\t\t\tmaximizable: \"maximize\",\n\t\t\tminimizable: \"minimize\",\n\t\t\tcloseable: \"close\",\n\t\t};\n\n\t\tif (this.attributes.controls) {\n\t\t\tObject.keys(buttonmap).forEach((key) => {\n\t\t\t\tif (!this.attributes[key]) {\n\t\t\t\t\thideButton(buttonmap[key]);\n\t\t\t\t}\n\t\t\t});\n\t\t} else {\n\t\t\tArray.from(\n\t\t\t\tthis.$header.querySelectorAll(\".meeseOS-window-button\")\n\t\t\t).forEach((el) => (el.style.display = \"none\"));\n\t\t}\n\t}\n\n\t/**\n\t * Updates window title in DOM.\n\t * @private\n\t */\n\t_updateTitle() {\n\t\tif (!this.$title) return;\n\n\t\tconst escapedTitle = escapeHtml(this.state.title);\n\t\tif (this.$title.innerHTML !== escapedTitle) {\n\t\t\tthis.$title.innerHTML = escapedTitle;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window icon decoration in DOM.\n\t * @private\n\t */\n\t_updateIconStyles() {\n\t\tif (!this.$icon) return;\n\n\t\tconst iconSource = `url(${this.state.icon})`;\n\t\tif (this.$icon.style.backgroundImage !== iconSource) {\n\t\t\tthis.$icon.style.backgroundImage = iconSource;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window header decoration in DOM.\n\t * @private\n\t */\n\t_updateHeaderStyles() {\n\t\tif (!this.$header) return;\n\n\t\tconst headerDisplay = this.attributes.header ? undefined : \"none\";\n\t\tif (this.$header.style.display !== headerDisplay) {\n\t\t\tthis.$header.style.display = headerDisplay;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window data in DOM.\n\t * @private\n\t */\n\t_updateAttributes() {\n\t\tif (!this.$element) return;\n\n\t\tconst attrs = createDOMAttributes(this.id, this.state, this.attributes);\n\t\tconst applyAttrs = Object.keys(attrs).filter(\n\t\t\t(k) => attrs[k] !== this._lastAttributes[k]\n\t\t);\n\n\t\tif (applyAttrs.length > 0) {\n\t\t\tapplyAttrs.forEach((a) =>\n\t\t\t\tthis.$element.setAttribute(`data-${a}`, String(attrs[a]))\n\t\t\t);\n\t\t\tthis._lastAttributes = attrs;\n\t\t}\n\t}\n\n\t/**\n\t * Updates window style in DOM.\n\t * @private\n\t */\n\t_updateStyles() {\n\t\tif (!this.$element) return;\n\n\t\tconst cssText = createCssText(createDOMStyles(this.state, this.attributes));\n\t\tif (cssText !== this._lastCssText) {\n\t\t\tthis.$element.style.cssText = cssText;\n\t\t\tthis._lastCssText = cssText;\n\t\t}\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/window.js",
     "access": "public",
@@ -21626,7 +21626,7 @@
     "undocument": true,
     "type": {
       "types": [
-        "*"
+        "*[]"
       ]
     },
     "ignore": true
@@ -22168,7 +22168,7 @@
     "longname": "src/window.js~Window#init",
     "access": "public",
     "description": "Initialize window.",
-    "lineNumber": 398,
+    "lineNumber": 403,
     "params": [],
     "return": {
       "types": [
@@ -22187,7 +22187,7 @@
     "longname": "src/window.js~Window#_initTemplate",
     "access": "private",
     "description": "Initializes window template.",
-    "lineNumber": 427,
+    "lineNumber": 432,
     "params": [],
     "return": null
   },
@@ -22202,7 +22202,7 @@
     "longname": "src/window.js~Window#_initBehavior",
     "access": "private",
     "description": "Initializes window behavior.",
-    "lineNumber": 447,
+    "lineNumber": 452,
     "params": [],
     "return": null
   },
@@ -22217,7 +22217,7 @@
     "longname": "src/window.js~Window#_checkModal",
     "access": "private",
     "description": "Checks the modal state of the window upon render.",
-    "lineNumber": 483,
+    "lineNumber": 488,
     "params": [],
     "return": null
   },
@@ -22232,7 +22232,7 @@
     "longname": "src/window.js~Window#_setClassNames",
     "access": "private",
     "description": "Sets the initial class names.",
-    "lineNumber": 497,
+    "lineNumber": 502,
     "params": [],
     "return": null
   },
@@ -22247,7 +22247,7 @@
     "longname": "src/window.js~Window#render",
     "access": "public",
     "description": "Render window.",
-    "lineNumber": 513,
+    "lineNumber": 518,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22286,7 +22286,7 @@
     "longname": "src/window.js~Window#close",
     "access": "public",
     "description": "Close the window.",
-    "lineNumber": 558,
+    "lineNumber": 563,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22314,7 +22314,7 @@
     "longname": "src/window.js~Window#focus",
     "access": "public",
     "description": "Focus the window.",
-    "lineNumber": 571,
+    "lineNumber": 576,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22342,7 +22342,7 @@
     "longname": "src/window.js~Window#_focus",
     "access": "private",
     "description": "Internal for focus.",
-    "lineNumber": 585,
+    "lineNumber": 590,
     "params": [],
     "return": null
   },
@@ -22357,7 +22357,7 @@
     "longname": "src/window.js~Window#blur",
     "access": "public",
     "description": "Blur (un-focus) the window.",
-    "lineNumber": 599,
+    "lineNumber": 604,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22385,7 +22385,7 @@
     "longname": "src/window.js~Window#minimize",
     "access": "public",
     "description": "Minimize (hide) the window.",
-    "lineNumber": 611,
+    "lineNumber": 616,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22413,7 +22413,7 @@
     "longname": "src/window.js~Window#raise",
     "access": "public",
     "description": "Raise (un-minimize) the window.",
-    "lineNumber": 627,
+    "lineNumber": 632,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22441,7 +22441,7 @@
     "longname": "src/window.js~Window#maximize",
     "access": "public",
     "description": "Maximize the window.",
-    "lineNumber": 635,
+    "lineNumber": 640,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22469,7 +22469,7 @@
     "longname": "src/window.js~Window#restore",
     "access": "public",
     "description": "Restore (un-maximize) the window.",
-    "lineNumber": 647,
+    "lineNumber": 652,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22497,7 +22497,7 @@
     "longname": "src/window.js~Window#_maximize",
     "access": "private",
     "description": "Internal for Maximize or restore.",
-    "lineNumber": 657,
+    "lineNumber": 662,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22536,7 +22536,7 @@
     "longname": "src/window.js~Window#resizeFit",
     "access": "public",
     "description": "Resize to fit to current container.",
-    "lineNumber": 687,
+    "lineNumber": 692,
     "params": [
       {
         "nullable": null,
@@ -22562,7 +22562,7 @@
     "longname": "src/window.js~Window#clampToViewport",
     "access": "public",
     "description": "Clamps the position to viewport.",
-    "lineNumber": 706,
+    "lineNumber": 711,
     "params": [
       {
         "nullable": null,
@@ -22590,7 +22590,7 @@
     "longname": "src/window.js~Window#setIcon",
     "access": "public",
     "description": "Set the Window icon.",
-    "lineNumber": 725,
+    "lineNumber": 730,
     "params": [
       {
         "nullable": null,
@@ -22616,7 +22616,7 @@
     "longname": "src/window.js~Window#setTitle",
     "access": "public",
     "description": "Set the Window title.",
-    "lineNumber": 735,
+    "lineNumber": 740,
     "params": [
       {
         "nullable": null,
@@ -22642,7 +22642,7 @@
     "longname": "src/window.js~Window#setDimension",
     "access": "public",
     "description": "Set the Window dimension.",
-    "lineNumber": 746,
+    "lineNumber": 751,
     "params": [
       {
         "nullable": null,
@@ -22668,7 +22668,7 @@
     "longname": "src/window.js~Window#setPosition",
     "access": "public",
     "description": "Set the Window position.",
-    "lineNumber": 760,
+    "lineNumber": 765,
     "params": [
       {
         "nullable": null,
@@ -22706,7 +22706,7 @@
     "longname": "src/window.js~Window#setZindex",
     "access": "public",
     "description": "Set the Window z index.",
-    "lineNumber": 777,
+    "lineNumber": 782,
     "params": [
       {
         "nullable": null,
@@ -22732,7 +22732,7 @@
     "longname": "src/window.js~Window#setNextZindex",
     "access": "public",
     "description": "Sets the Window to next z index.",
-    "lineNumber": 788,
+    "lineNumber": 793,
     "params": [
       {
         "nullable": null,
@@ -22761,7 +22761,7 @@
     "see": [
       "{WindowState}"
     ],
-    "lineNumber": 805,
+    "lineNumber": 810,
     "params": [
       {
         "nullable": null,
@@ -22809,7 +22809,7 @@
     "longname": "src/window.js~Window#gravitate",
     "access": "public",
     "description": "Gravitates window towards a certain area.",
-    "lineNumber": 826,
+    "lineNumber": 831,
     "params": [
       {
         "nullable": null,
@@ -22835,7 +22835,7 @@
     "longname": "src/window.js~Window#getState",
     "access": "public",
     "description": "Gets a astate.",
-    "lineNumber": 839,
+    "lineNumber": 844,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22870,7 +22870,7 @@
     "longname": "src/window.js~Window#getSession",
     "access": "public",
     "description": "Get a snapshot of the Window session.",
-    "lineNumber": 851,
+    "lineNumber": 856,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22898,7 +22898,7 @@
     "longname": "src/window.js~Window.getWindows",
     "access": "public",
     "description": "Get a list of all windows.",
-    "lineNumber": 867,
+    "lineNumber": 872,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22926,7 +22926,7 @@
     "longname": "src/window.js~Window.lastWindow",
     "access": "public",
     "description": "Gets the lastly focused Window.",
-    "lineNumber": 875,
+    "lineNumber": 880,
     "unknown": [
       {
         "tagName": "@returns",
@@ -22954,7 +22954,7 @@
     "longname": "src/window.js~Window#_setState",
     "access": "private",
     "description": "Internal method for setting state.",
-    "lineNumber": 888,
+    "lineNumber": 893,
     "params": [
       {
         "nullable": null,
@@ -23014,7 +23014,7 @@
     "longname": "src/window.js~Window#_toggleState",
     "access": "private",
     "description": "Internal method for toggling state.",
-    "lineNumber": 910,
+    "lineNumber": 915,
     "params": [
       {
         "nullable": null,
@@ -23076,7 +23076,7 @@
     "longname": "src/window.js~Window#_checkNextZindex",
     "access": "private",
     "description": "Check if we have to set next z index.",
-    "lineNumber": 933,
+    "lineNumber": 938,
     "unknown": [
       {
         "tagName": "@returns",
@@ -23104,7 +23104,7 @@
     "longname": "src/window.js~Window#_updateDOM",
     "access": "private",
     "description": "Updates window styles and attributes.",
-    "lineNumber": 950,
+    "lineNumber": 955,
     "params": [],
     "return": null
   },
@@ -23119,7 +23119,7 @@
     "longname": "src/window.js~Window#_updateButtons",
     "access": "private",
     "description": "Updates the window buttons in DOM.",
-    "lineNumber": 959,
+    "lineNumber": 964,
     "params": [],
     "return": null
   },
@@ -23134,7 +23134,7 @@
     "longname": "src/window.js~Window#_updateTitle",
     "access": "private",
     "description": "Updates window title in DOM.",
-    "lineNumber": 988,
+    "lineNumber": 993,
     "params": [],
     "return": null
   },
@@ -23149,7 +23149,7 @@
     "longname": "src/window.js~Window#_updateIconStyles",
     "access": "private",
     "description": "Updates window icon decoration in DOM.",
-    "lineNumber": 1001,
+    "lineNumber": 1006,
     "params": [],
     "return": null
   },
@@ -23164,7 +23164,7 @@
     "longname": "src/window.js~Window#_updateHeaderStyles",
     "access": "private",
     "description": "Updates window header decoration in DOM.",
-    "lineNumber": 1014,
+    "lineNumber": 1019,
     "params": [],
     "return": null
   },
@@ -23179,7 +23179,7 @@
     "longname": "src/window.js~Window#_updateAttributes",
     "access": "private",
     "description": "Updates window data in DOM.",
-    "lineNumber": 1027,
+    "lineNumber": 1032,
     "params": [],
     "return": null
   },
@@ -23194,7 +23194,7 @@
     "longname": "src/window.js~Window#_updateStyles",
     "access": "private",
     "description": "Updates window style in DOM.",
-    "lineNumber": 1047,
+    "lineNumber": 1052,
     "params": [],
     "return": null
   },
@@ -23208,7 +23208,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meeseOS/client\",\n  \"version\": \"2.5.7\",\n  \"description\": \"meeseOS client\",\n  \"main\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"typings\": \"index.d.ts\",\n  \"files\": [\n    \"index.d.ts\",\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js 'src/**/*.js'\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss  --fix\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"@meeseOS/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.17.2\",\n    \"@babel/plugin-transform-runtime\": \"^7.17.0\",\n    \"@babel/preset-env\": \"^7.16.11\",\n    \"@babel/runtime\": \"^7.17.2\",\n    \"babel-loader\": \"^8.2.3\",\n    \"copy-webpack-plugin\": \"^10.2.4\",\n    \"css-loader\": \"^6.6.0\",\n    \"css-minimizer-webpack-plugin\": \"^3.4.1\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"html-loader\": \"^3.1.0\",\n    \"html-loader-jest\": \"^0.2.1\",\n    \"mini-css-extract-plugin\": \"^2.5.3\",\n    \"sass\": \"^1.53.0\",\n    \"sass-loader\": \"^13.0.2\",\n    \"stylelint\": \"^14.5.0\",\n    \"stylelint-config-standard\": \"^25.0.0\",\n    \"stylelint-config-standard-scss\": \"^4.0.0\",\n    \"webpack\": \"^5.68.0\",\n    \"webpack-cli\": \"^4.9.2\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"@meeseOS/cursor-effects\": \"workspace:*\",\n    \"@meeseOS/dynamic-wallpapers\": \"workspace:*\",\n    \"@meeseOS/event-emitter\": \"workspace:*\",\n    \"@meeseOS/gui\": \"workspace:*\",\n    \"@meeseOS/sounds\": \"workspace:*\",\n    \"css-mediaquery\": \"^0.1.2\",\n    \"deepmerge\": \"^4.2.2\",\n    \"hyperapp\": \"^1.2.10\",\n    \"js-cookie\": \"^3.0.1\",\n    \"simplejsonconf\": \"^2.0.7\",\n    \"is-plain-object\": \"^5.0.0\",\n    \"express-session\": \"^1.17.3\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meeseOS/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Core API\",\n            \"description\": \"meeseOS Core API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"testEnvironment\": \"jsdom\",\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"setupFilesAfterEnv\": [\n      \"<rootDir>/__mocks__/setup.js\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\",\n      \"^.+\\\\.html?$\": \"html-loader-jest\",\n      \"^.+\\\\.scss$\": \"<rootDir>/__mocks__/null-module.js\",\n      \"^.+\\\\.(png|jpe?g|gif)$\": \"<rootDir>/__mocks__/null-module.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
+    "content": "{\n  \"name\": \"@meeseOS/client\",\n  \"version\": \"2.5.8\",\n  \"description\": \"meeseOS client\",\n  \"main\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"typings\": \"index.d.ts\",\n  \"files\": [\n    \"index.d.ts\",\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint && npm run jest\",\n    \"jest\": \"jest\",\n    \"coverage\": \"jest --coverage\",\n    \"eslint\": \"eslint index.js 'src/**/*.js'\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss  --fix\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meeseOS/eslint-config\": \"workspace:*\",\n    \"@meeseOS/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.17.2\",\n    \"@babel/plugin-transform-runtime\": \"^7.17.0\",\n    \"@babel/preset-env\": \"^7.16.11\",\n    \"@babel/runtime\": \"^7.17.2\",\n    \"babel-loader\": \"^8.2.3\",\n    \"copy-webpack-plugin\": \"^10.2.4\",\n    \"css-loader\": \"^6.6.0\",\n    \"css-minimizer-webpack-plugin\": \"^3.4.1\",\n    \"eslint\": \"^8.18.0\",\n    \"eslint-plugin-jest\": \"^26.5.3\",\n    \"html-loader\": \"^3.1.0\",\n    \"html-loader-jest\": \"^0.2.1\",\n    \"mini-css-extract-plugin\": \"^2.5.3\",\n    \"sass\": \"^1.53.0\",\n    \"sass-loader\": \"^13.0.2\",\n    \"stylelint\": \"^14.5.0\",\n    \"stylelint-config-standard\": \"^25.0.0\",\n    \"stylelint-config-standard-scss\": \"^4.0.0\",\n    \"webpack\": \"^5.68.0\",\n    \"webpack-cli\": \"^4.9.2\",\n    \"jest\": \"^26.0.0\"\n  },\n  \"dependencies\": {\n    \"@meeseOS/common\": \"workspace:*\",\n    \"@meeseOS/cursor-effects\": \"workspace:*\",\n    \"@meeseOS/dynamic-wallpapers\": \"workspace:*\",\n    \"@meeseOS/event-emitter\": \"workspace:*\",\n    \"@meeseOS/gui\": \"workspace:*\",\n    \"@meeseOS/sounds\": \"workspace:*\",\n    \"css-mediaquery\": \"^0.1.2\",\n    \"deepmerge\": \"^4.2.2\",\n    \"hyperapp\": \"^1.2.10\",\n    \"js-cookie\": \"^3.0.1\",\n    \"simplejsonconf\": \"^2.0.7\",\n    \"is-plain-object\": \"^5.0.0\",\n    \"express-session\": \"^1.17.3\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meeseOS/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meeseOS/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Core API\",\n            \"description\": \"meeseOS Core API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"testEnvironment\": \"jsdom\",\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"setupFilesAfterEnv\": [\n      \"<rootDir>/__mocks__/setup.js\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\",\n      \"^.+\\\\.html?$\": \"html-loader-jest\",\n      \"^.+\\\\.scss$\": \"<rootDir>/__mocks__/null-module.js\",\n      \"^.+\\\\.(png|jpe?g|gif)$\": \"<rootDir>/__mocks__/null-module.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  }\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/package.json",
     "name": "package.json",
     "static": true,
