@@ -2064,14 +2064,14 @@
 <p>This tutorial explains how to use the Drag-and-Drop (DnD) APIs.</p>
 <h2 id="usage">Usage</h2>
 <h3 id="draggable">Draggable</h3>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> {draggable} = core.make(<span class="hljs-string">&quot;meeseOS/dnd&quot;</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> { draggable } = core.make(<span class="hljs-string">&quot;meeseOS/dnd&quot;</span>);
 
 draggable(element, {
-  <span class="hljs-attr">data</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&quot;World!&quot;</span>}
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">hello</span>: <span class="hljs-string">&quot;World!&quot;</span> }
 });
 </code></pre>
 <h3 id="droppable">Droppable</h3>
-<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> {droppable} = core.make(<span class="hljs-string">&quot;meeseOS/dnd&quot;</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> { droppable } = core.make(<span class="hljs-string">&quot;meeseOS/dnd&quot;</span>);
 
 droppable(element, {
   <span class="hljs-attr">ondrop</span>: <span class="hljs-function">(<span class="hljs-params">ev, data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(data) <span class="hljs-comment">// =&gt; {hello: &quot;World!&quot;}</span>
@@ -2079,7 +2079,7 @@ droppable(element, {
 </code></pre>
 <h2 id="usage-in-hyperapp">Usage in Hyperapp</h2>
 <p>A very basic example:</p>
-<pre><code class="lang-javascript">h(Component, {<span class="hljs-attr">oncreate</span>: <span class="hljs-function"><span class="hljs-params">element</span> =&gt;</span> draggable(element, {<span class="hljs-attr">data</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&quot;World!&quot;</span>}})});
+<pre><code class="lang-javascript">h(Component, { <span class="hljs-attr">oncreate</span>: <span class="hljs-function"><span class="hljs-params">element</span> =&gt;</span> draggable(element, { <span class="hljs-attr">data</span>: { <span class="hljs-attr">hello</span>: <span class="hljs-string">&quot;World!&quot;</span> }}) });
 </code></pre>
 
   <div style="text-align:center; font-size:80%;padding:2em;color:#aaa;">
@@ -2128,7 +2128,7 @@ droppable(element, {
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"This tutorial explains how to use the Drag-and-Drop (DnD) APIs.","full_title":"Drag-and-Drop Tutorial","title":"Drag-and-Drop","level":"4.12.5","depth":2,"next":{"title":"IFrames","level":"4.12.6","depth":2,"path":"tutorial/iframe/README.md","ref":"tutorial/iframe/README.md","articles":[]},"previous":{"title":"Clipboard","level":"4.12.4","depth":2,"path":"tutorial/clipboard/README.md","ref":"tutorial/clipboard/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/dnd/README.md","mtime":"2022-10-10T22:00:40.846Z","type":"markdown"},"gitbook":{"version":"3.7.5","time":"2022-10-10T22:00:48.867Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"This tutorial explains how to use the Drag-and-Drop (DnD) APIs.","full_title":"Drag-and-Drop Tutorial","title":"Drag-and-Drop","level":"4.12.5","depth":2,"next":{"title":"IFrames","level":"4.12.6","depth":2,"path":"tutorial/iframe/README.md","ref":"tutorial/iframe/README.md","articles":[]},"previous":{"title":"Clipboard","level":"4.12.4","depth":2,"path":"tutorial/clipboard/README.md","ref":"tutorial/clipboard/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/dnd/README.md","mtime":"2022-10-14T23:30:58.149Z","type":"markdown"},"gitbook":{"version":"3.7.5","time":"2022-10-14T23:31:09.530Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

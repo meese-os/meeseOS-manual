@@ -2091,18 +2091,18 @@ Look up the official documentation (linked above) for a deeper dive of the inner
 <p>If you&apos;re familiar with frameworks similar to React, you can use the <a href="#jsx">JSX syntax</a> for a more familiar experience.</p>
 <h2 id="basic-example">Basic Example</h2>
 <p><img src="example-1.png" alt="Basic Example"></p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> {h, app} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;hyperapp&quot;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { h, app } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;hyperapp&quot;</span>;
 
 <span class="hljs-keyword">const</span> createView = <span class="hljs-function">(<span class="hljs-params">state, actions</span>) =&gt;</span> h(<span class="hljs-string">&quot;div&quot;</span>, {}, [
   h(<span class="hljs-string">&quot;div&quot;</span>, {}, <span class="hljs-built_in">String</span>(state.counter)),
-  h(<span class="hljs-string">&quot;button&quot;</span>, {<span class="hljs-attr">type</span>: <span class="hljs-string">&quot;button&quot;</span>, <span class="hljs-attr">onclick</span>: <span class="hljs-function">() =&gt;</span> actions.increment()}, <span class="hljs-string">&quot;Increment counter&quot;</span>)
+  h(<span class="hljs-string">&quot;button&quot;</span>, { <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;button&quot;</span>, <span class="hljs-attr">onclick</span>: <span class="hljs-function">() =&gt;</span> actions.increment() }, <span class="hljs-string">&quot;Increment counter&quot;</span>)
 ]);
 
 <span class="hljs-keyword">const</span> createApp = <span class="hljs-function">(<span class="hljs-params">$content</span>) =&gt;</span> {
   app({
     <span class="hljs-attr">counter</span>: <span class="hljs-number">0</span>
   }, {
-    <span class="hljs-attr">increment</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> ({<span class="hljs-attr">counter</span>: state.counter + <span class="hljs-number">1</span>})
+    <span class="hljs-attr">increment</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> ({ <span class="hljs-attr">counter</span>: state.counter + <span class="hljs-number">1</span> })
   }, createView, $content);
 };
 </code></pre>
@@ -2114,7 +2114,7 @@ win.render($content =&gt; createApp($content));
 <h3 id="using-components">Using Components</h3>
 <p>A <a href="https://meeseOS.github.io/meeseOS-manual/api/gui/" target="_blank">standard component library</a> for Hyperapp is officially provided.</p>
 <p><img src="example-2.png" alt="Basic Example"></p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> {Box, BoxContainer, Button} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/gui&quot;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { Box, BoxContainer, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/gui&quot;</span>;
 
 <span class="hljs-keyword">const</span> createView = <span class="hljs-function">(<span class="hljs-params">state, actions</span>) =&gt;</span> h(Box, {}, [
   h(BoxContainer, {}, <span class="hljs-built_in">String</span>(state.counter)),
@@ -2336,7 +2336,7 @@ oninput: (event, value) =&gt; {}
 <h2 id="component-examples">Component Examples</h2>
 <h3 id="basic-layout">Basic Layout</h3>
 <p>A simple three-row layout:</p>
-<pre><code class="lang-javascript">h(Box, {<span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span>}, [
+<pre><code class="lang-javascript">h(Box, { <span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span> }, [
   h(BoxContainer, {}, <span class="hljs-string">&quot;Row 1&quot;</span>),
   h(BoxContainer, {}, <span class="hljs-string">&quot;Row 2&quot;</span>),
   h(BoxContainer, {}, <span class="hljs-string">&quot;Row 3&quot;</span>)
@@ -2345,11 +2345,11 @@ oninput: (event, value) =&gt; {}
 <p></p><p data-height="400" data-theme-id="0" data-slug-hash="pqybGW" data-default-tab="result" data-user="andersevenrud" class="codepen">See the Pen <a href="http://codepen.io/andersevenrud/pen/pqybGW/" target="_blank"></a> by andersevenrud (<a href="http://codepen.io/andersevenrud" target="_blank">@andersevenrud</a>) on <a href="http://codepen.io" target="_blank">CodePen</a>.</p><p></p>
 <h3 id="basic-layout-continued">Basic Layout, continued</h3>
 <p>Same as above, but contained within an outer <code>Box</code> with a <code>Menubar</code> and <code>Statusbar</code></p>
-<pre><code class="lang-javascript">h(Box, {<span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span>}, [
+<pre><code class="lang-javascript">h(Box, { <span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span> }, [
   h(Menubar, {}, [
-    h(MenubarItem, {<span class="hljs-attr">onclick</span>: <span class="hljs-function">() =&gt;</span> alert(<span class="hljs-string">&quot;clicked&quot;</span>)}, <span class="hljs-string">&quot;Menubar Item&quot;</span>)
+    h(MenubarItem, { <span class="hljs-attr">onclick</span>: <span class="hljs-function">() =&gt;</span> alert(<span class="hljs-string">&quot;clicked&quot;</span>) }, <span class="hljs-string">&quot;Menubar Item&quot;</span>)
   ]),
-  h(Box, {<span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>}, [
+  h(Box, { <span class="hljs-attr">grow</span>: <span class="hljs-number">1</span> }, [
     h(BoxContainer, {}, <span class="hljs-string">&quot;Row 1&quot;</span>),
     h(BoxContainer, {}, <span class="hljs-string">&quot;Row 2&quot;</span>),
     h(BoxContainer, {}, <span class="hljs-string">&quot;Row 3&quot;</span>)
@@ -2363,7 +2363,7 @@ oninput: (event, value) =&gt; {}
 <pre><code class="lang-javascript">app({
   <span class="hljs-attr">myfield</span>: <span class="hljs-string">&quot;Initial value&quot;</span>
 }, {
-  <span class="hljs-attr">setValue</span>: <span class="hljs-function"><span class="hljs-params">myfield</span> =&gt;</span> <span class="hljs-function">() =&gt;</span> ({myfield})
+  <span class="hljs-attr">setValue</span>: <span class="hljs-function"><span class="hljs-params">myfield</span> =&gt;</span> <span class="hljs-function">() =&gt;</span> ({ myfield })
 }, <span class="hljs-function">(<span class="hljs-params">state, actions</span>) =&gt;</span> {
   <span class="hljs-keyword">return</span> h(Box, {}, [
     h(TextField, {
@@ -2378,11 +2378,11 @@ oninput: (event, value) =&gt; {}
 <p></p><p data-height="400" data-theme-id="0" data-slug-hash="zyqKYM" data-default-tab="result" data-user="andersevenrud" class="codepen">See the Pen <a href="http://codepen.io/andersevenrud/pen/zyqKYM/" target="_blank"></a> by andersevenrud (<a href="http://codepen.io/andersevenrud" target="_blank">@andersevenrud</a>) on <a href="http://codepen.io" target="_blank">CodePen</a>.</p><p></p>
 <h3 id="using-listview">Using ListView</h3>
 <p>Certain components, like ListView needs some context and works a little bit different:</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> {listView} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/gui&quot;</span>; <span class="hljs-comment">// Lower-case l</span>
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { listView } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/gui&quot;</span>; <span class="hljs-comment">// Lower-case l</span>
 
 <span class="hljs-keyword">const</span> initialRows = [{
   <span class="hljs-attr">columns</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>],
-  <span class="hljs-attr">data</span>: {<span class="hljs-attr">foo</span>: <span class="hljs-string">&quot;bar&quot;</span>}
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">foo</span>: <span class="hljs-string">&quot;bar&quot;</span> }
 }];
 
 app({
@@ -2394,16 +2394,16 @@ app({
 }, {
   <span class="hljs-comment">// Register callback actions</span>
   <span class="hljs-attr">mylistview</span>: listView.actions({
-    <span class="hljs-attr">select</span>: <span class="hljs-function">(<span class="hljs-params">{data, index, ev}</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Selected&quot;</span>, data, index, ev),
-    <span class="hljs-attr">activate</span>: <span class="hljs-function">(<span class="hljs-params">{data, index, ev}</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Activated&quot;</span>, data, index, ev),
-    <span class="hljs-attr">contextmenu</span>: <span class="hljs-function">(<span class="hljs-params">{data, index, ev}</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Menu&quot;</span>, data, index, ev)
+    <span class="hljs-attr">select</span>: <span class="hljs-function">(<span class="hljs-params">{ data, index, ev }</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Selected&quot;</span>, data, index, ev),
+    <span class="hljs-attr">activate</span>: <span class="hljs-function">(<span class="hljs-params">{ data, index, ev }</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Activated&quot;</span>, data, index, ev),
+    <span class="hljs-attr">contextmenu</span>: <span class="hljs-function">(<span class="hljs-params">{ data, index, ev }</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Menu&quot;</span>, data, index, ev)
  }),
 }, <span class="hljs-function">(<span class="hljs-params">state, actions</span>) =&gt;</span> {
   <span class="hljs-comment">// Creates a new component based on the state and actions created</span>
   <span class="hljs-keyword">const</span> MyListView = listView.component(state.mylistview, actions.mylistview);
 
-  <span class="hljs-keyword">return</span> h(Box, {<span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span>}, [
-    h(MyListView, {<span class="hljs-attr">box</span>: {<span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span>}})
+  <span class="hljs-keyword">return</span> h(Box, { <span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span> }, [
+    h(MyListView, { <span class="hljs-attr">box</span>: { <span class="hljs-attr">grow</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">shrink</span>: <span class="hljs-number">1</span> }})
   ])
 }, <span class="hljs-built_in">document</span>.body);
 </code></pre>
@@ -2455,7 +2455,7 @@ app({
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"This turorial goes over how to create reactive UIs using components.","full_title":"GUI Tutorial","title":"GUI","level":"4.4","depth":1,"next":{"title":"Service Provider","level":"4.5","depth":1,"path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md","articles":[{"title":"Usage","level":"4.5.1","depth":2,"anchor":"#usage","path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md#usage","articles":[]},{"title":"Custom Service Provider","level":"4.5.2","depth":2,"anchor":"#custom-service-provider","path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md#custom-service-provider","articles":[]},{"title":"Basic Example","level":"4.5.3","depth":2,"anchor":"#basic-example","path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md#basic-example","articles":[]}]},"previous":{"title":"Dialog","level":"4.3","depth":1,"path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md","articles":[{"title":"Usage","level":"4.3.1","depth":2,"anchor":"#usage","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#usage","articles":[]},{"title":"Custom Dialog","level":"4.3.2","depth":2,"anchor":"#custom-dialog","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#custom-dialog","articles":[]},{"title":"Registration","level":"4.3.3","depth":2,"anchor":"#registration","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#registration","articles":[]},{"title":"Programmatic","level":"4.3.4","depth":2,"anchor":"#programmatic","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#programmatic","articles":[]},{"title":"UI customization","level":"4.3.5","depth":2,"anchor":"#ui-customization","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#ui-customization","articles":[]}]},"articles":[{"title":"Usage","level":"4.4.1","depth":2,"anchor":"#usage","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#usage","articles":[]},{"title":"Basic Example","level":"4.4.2","depth":2,"anchor":"#basic-example","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#basic-example","articles":[]},{"title":"JSX","level":"4.4.3","depth":2,"anchor":"#jsx","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#jsx","articles":[]},{"title":"Contextmenu","level":"4.4.4","depth":2,"anchor":"#contextmenu","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#contextmenu","articles":[]},{"title":"Components","level":"4.4.5","depth":2,"anchor":"#components","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#components","articles":[]},{"title":"Component Examples","level":"4.4.6","depth":2,"anchor":"#component-examples","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#component-examples","articles":[]}],"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/gui/README.md","mtime":"2022-10-10T22:00:40.846Z","type":"markdown"},"gitbook":{"version":"3.7.5","time":"2022-10-10T22:00:48.867Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"This turorial goes over how to create reactive UIs using components.","full_title":"GUI Tutorial","title":"GUI","level":"4.4","depth":1,"next":{"title":"Service Provider","level":"4.5","depth":1,"path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md","articles":[{"title":"Usage","level":"4.5.1","depth":2,"anchor":"#usage","path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md#usage","articles":[]},{"title":"Custom Service Provider","level":"4.5.2","depth":2,"anchor":"#custom-service-provider","path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md#custom-service-provider","articles":[]},{"title":"Basic Example","level":"4.5.3","depth":2,"anchor":"#basic-example","path":"tutorial/provider/README.md","ref":"tutorial/provider/README.md#basic-example","articles":[]}]},"previous":{"title":"Dialog","level":"4.3","depth":1,"path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md","articles":[{"title":"Usage","level":"4.3.1","depth":2,"anchor":"#usage","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#usage","articles":[]},{"title":"Custom Dialog","level":"4.3.2","depth":2,"anchor":"#custom-dialog","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#custom-dialog","articles":[]},{"title":"Registration","level":"4.3.3","depth":2,"anchor":"#registration","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#registration","articles":[]},{"title":"Programmatic","level":"4.3.4","depth":2,"anchor":"#programmatic","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#programmatic","articles":[]},{"title":"UI customization","level":"4.3.5","depth":2,"anchor":"#ui-customization","path":"tutorial/dialog/README.md","ref":"tutorial/dialog/README.md#ui-customization","articles":[]}]},"articles":[{"title":"Usage","level":"4.4.1","depth":2,"anchor":"#usage","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#usage","articles":[]},{"title":"Basic Example","level":"4.4.2","depth":2,"anchor":"#basic-example","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#basic-example","articles":[]},{"title":"JSX","level":"4.4.3","depth":2,"anchor":"#jsx","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#jsx","articles":[]},{"title":"Contextmenu","level":"4.4.4","depth":2,"anchor":"#contextmenu","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#contextmenu","articles":[]},{"title":"Components","level":"4.4.5","depth":2,"anchor":"#components","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#components","articles":[]},{"title":"Component Examples","level":"4.4.6","depth":2,"anchor":"#component-examples","path":"tutorial/gui/README.md","ref":"tutorial/gui/README.md#component-examples","articles":[]}],"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/gui/README.md","mtime":"2022-10-14T23:30:58.149Z","type":"markdown"},"gitbook":{"version":"3.7.5","time":"2022-10-14T23:31:09.530Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

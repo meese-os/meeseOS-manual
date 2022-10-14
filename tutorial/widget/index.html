@@ -2066,7 +2066,7 @@
 <p>Widgets floats on the bottom layer of the Desktop.</p>
 </blockquote>
 <h2 id="custom-widget">Custom Widget</h2>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> {Widget} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/widgets&quot;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { Widget } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/widgets&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyWidget</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Widget</span> </span>{
 
@@ -2100,7 +2100,7 @@
   <span class="hljs-function"><span class="hljs-title">onMove</span>(<span class="hljs-params"></span>)</span> {}
 
   <span class="hljs-comment">// Every rendering tick (or just once if no canvas)</span>
-  <span class="hljs-function"><span class="hljs-title">render</span>(<span class="hljs-params">{canvas, context, width, height}</span>)</span> {
+  <span class="hljs-function"><span class="hljs-title">render</span>(<span class="hljs-params">{ canvas, context, width, height }</span>)</span> {
     <span class="hljs-keyword">const</span> text = <span class="hljs-built_in">this</span>.options.myText;
 
     context.font = <span class="hljs-string">&quot;monospace&quot;</span>;
@@ -2131,8 +2131,8 @@
 }
 </code></pre>
 <h3 id="attaching-a-dialog">Attaching a dialog</h3>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> {h, app} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;hyperapp&quot;</span>;
-<span class="hljs-keyword">import</span> {TextField} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/gui&quot;</span>;
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { h, app } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;hyperapp&quot;</span>;
+<span class="hljs-keyword">import</span> { TextField } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/gui&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyWidget</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Widget</span> </span>{
 
@@ -2143,7 +2143,7 @@
       dialog.app = app({
         <span class="hljs-attr">myText</span>: <span class="hljs-built_in">this</span>.options.myText
       }, {
-        <span class="hljs-attr">setText</span>: <span class="hljs-function"><span class="hljs-params">myText</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> ({myText}),
+        <span class="hljs-attr">setText</span>: <span class="hljs-function"><span class="hljs-params">myText</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> ({ myText }),
         <span class="hljs-attr">getValues</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> state
       }, <span class="hljs-function">(<span class="hljs-params">state, actions</span>) =&gt;</span> {
         <span class="hljs-keyword">return</span> dialog.createView([
@@ -2167,7 +2167,8 @@
 }
 </code></pre>
 <h3 id="registration">Registration</h3>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> {WidgetServiceProvider} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/widgets&quot;</span>;
+<p>To bootstrap with pre-defined widgets:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { WidgetServiceProvider } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@meeseOS/widgets&quot;</span>;
 <span class="hljs-keyword">import</span> MyWidget <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;path/to/MyWidget&quot;</span>;
 
 meeseOS.register(WidgetServiceProvider, {
@@ -2177,6 +2178,10 @@ meeseOS.register(WidgetServiceProvider, {
     }
   }
 });
+</code></pre>
+<p>Or alternatively on runtime:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> MyWidget <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;path/to/MyWidget&quot;</span>;
+core.make(<span class="hljs-string">&quot;meeseOS/widgets&quot;</span>).register(<span class="hljs-string">&quot;my-widget&quot;</span>, MyWidget);
 </code></pre>
 
   <div style="text-align:center; font-size:80%;padding:2em;color:#aaa;">
@@ -2225,7 +2230,7 @@ meeseOS.register(WidgetServiceProvider, {
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"description":"This tutorial shows you how to create and register your own widgets.","full_title":"Widget Tutorial","title":"Widget","level":"4.11.2","depth":2,"next":{"title":"Notification","level":"4.11.3","depth":2,"path":"tutorial/notification/README.md","ref":"tutorial/notification/README.md","articles":[]},"previous":{"title":"Panel Item","level":"4.11.1","depth":2,"path":"tutorial/panel/README.md","ref":"tutorial/panel/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/widget/README.md","mtime":"2022-10-10T22:00:40.846Z","type":"markdown"},"gitbook":{"version":"3.7.5","time":"2022-10-10T22:00:48.867Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"description":"This tutorial shows you how to create and register your own widgets.","full_title":"Widget Tutorial","title":"Widget","level":"4.11.2","depth":2,"next":{"title":"Notification","level":"4.11.3","depth":2,"path":"tutorial/notification/README.md","ref":"tutorial/notification/README.md","articles":[]},"previous":{"title":"Panel Item","level":"4.11.1","depth":2,"path":"tutorial/panel/README.md","ref":"tutorial/panel/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["sitemap","alerts","edit-link","codepen"],"root":"src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"codepen":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sitemap":{"hostname":"https://meese-enterprises.github.io/meeseOS-manual/","path":"/"},"alerts":{},"edit-link":{"label":"Edit this page","base":"https://github.com/meese-enterprises/meeseOS-manual/edit/master/src"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Aaron Meese <aaronjmeese@gmail.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"MeeseOS Web Desktop Manual","language":"en","gitbook":"*"},"file":{"path":"tutorial/widget/README.md","mtime":"2022-10-14T23:30:58.153Z","type":"markdown"},"gitbook":{"version":"3.7.5","time":"2022-10-14T23:31:09.530Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>
