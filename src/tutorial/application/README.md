@@ -108,10 +108,10 @@ Typically `index.js`:
 
 ```javascript
 import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
-import {name as applicationName} from "./metadata.json";
+import { name as applicationName } from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
-  const proc = core.make("meeseOS/application", {args, options, metadata});
+  const proc = core.make("meeseOS/application", { args, options, metadata });
 
   // Create your windows etc here
 
@@ -142,7 +142,7 @@ module.exports = (core, proc) => ({
 To create a new [Window](../window/README.md) instance:
 
 ```javascript
-const win = proc.createWindow({title: "My Window"})
+const win = proc.createWindow({ title: "My Window" })
 ```
 
 If you want to close your application when the window is destructed:
@@ -217,11 +217,11 @@ In your server script, create a matching endpoint with Express:
 > [info] You can access POST body data via `req.body` and GET parameters via `req.query`.
 
 ```javascript
-const {routeAuthenticated} = core.make("meeseOS/express");
+const { routeAuthenticated } = core.make("meeseOS/express");
 const endpoint = proc.resource("/hello-world");
 
 routeAuthenticated("POST", endpoint, (req, res) => {
-  res.json({result: "Hello World"});
+  res.json({ result: "Hello World" });
 });
 ```
 
@@ -308,7 +308,7 @@ Applications also supports [settings](/tutorial/settings/README.md) storage:
 ```javascript
 // Set default settings
 import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
-import {name as applicationName} from "./metadata.json";
+import { name as applicationName } from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
   options.settings = {
@@ -342,10 +342,10 @@ Retrieve arguments in application:
 
 ```javascript
 import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
-import {name as applicationName} from "./metadata.json";
+import { name as applicationName } from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
-  const proc = core.make("meeseOS/application", {args, options, metadata});
+  const proc = core.make("meeseOS/application", { args, options, metadata });
 
   console.log(proc.args); // "foo" will be set
 
@@ -360,10 +360,10 @@ save your application state whenever the user logs out:
 
 ```javascript
 import meeseOS from "meeseOS"; // Webpack external. Same as "window.meeseOS"
-import {name as applicationName} from "./metadata.json";
+import { name as applicationName } from "./metadata.json";
 
 meeseOS.register(applicationName, (core, args, options, metadata) => {
-  const proc = core.make("meeseOS/application", {args, options, metadata});
+  const proc = core.make("meeseOS/application", { args, options, metadata });
 
   // Arguments launched with your application, including session:
   console.log(proc.args.session); // Only set if the application was saved and restored

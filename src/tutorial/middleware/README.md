@@ -69,7 +69,7 @@ Now the middleware can be added in the `middleware.js` file. In this example a c
 ```javascript
 import meeseOS from "meeseOS";
 
-meeseOS.middleware("meeseOS/filemanager:menu:edit", async (({file, isContextMenu}) => {
+meeseOS.middleware("meeseOS/filemanager:menu:edit", async (({ file, isContextMenu }) => {
   // It should return an array of objects with `label`, `disabled` and `onclick`
 
   if (isContextMenu) {
@@ -77,7 +77,7 @@ meeseOS.middleware("meeseOS/filemanager:menu:edit", async (({file, isContextMenu
     return [{
       label: "Open in my application",
       disabled: !file || !file.isFile,
-      onclick: () => meeseOS.run("my-app-name", {file})
+      onclick: () => meeseOS.run("my-app-name", { file })
     }];
   }
 

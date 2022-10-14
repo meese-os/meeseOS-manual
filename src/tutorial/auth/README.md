@@ -17,7 +17,7 @@ The client authentication service provides some API methods:
 const auth = core.make("meeseOS/auth");
 auth.user(); // Get user information
 auth.show(fn); // Shows the authentication dialog (internal usage only)
-auth.login({username, password}); // Log in a user
+auth.login({ username, password }); // Log in a user
 auth.logout(reload?); // Log out current user
 ```
 
@@ -60,10 +60,10 @@ In this example we only allow the user `aaron` with the password `meese`.
 ```javascript
 const myAdapter = (core, config) => ({
   async login(req, res) {
-    const {username, password} = req.body;
+    const { username, password } = req.body;
 
     if (username === "aaron" && password === "meese") {
-      return {username, groups: ["admin"]};
+      return { username, groups: ["admin"] };
     }
 
     return false;

@@ -86,7 +86,7 @@ Then in your `package.json`s `babel` section:
 Then, add the following to your `webpack.config.js` file:
 
 ```javascript
-const {VueLoaderPlugin} = require("vue-loader");
+const { VueLoaderPlugin } = require("vue-loader");
 module.exports = {
   plugins: [
     new VueLoaderPlugin()
@@ -153,8 +153,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   plugins: [
     new CopyWebpackPlugin([
-      {from: "foo/bar/library.js", to: "library.js"},
-      {from: "foo/bar/library.css", to: "library.css"}
+      { from: "foo/bar/library.js", to: "library.js" },
+      { from: "foo/bar/library.css", to: "library.css" }
     ])
   ]
 };
@@ -191,8 +191,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   plugins: [
     new CopyWebpackPlugin([
-      {from: "foo/bar/library.js", to: "library.js"},
-      {from: "foo/bar/library.css", to: "library.css"}
+      { from: "foo/bar/library.js", to: "library.js" },
+      { from: "foo/bar/library.css", to: "library.css" }
     ])
   ]
 };

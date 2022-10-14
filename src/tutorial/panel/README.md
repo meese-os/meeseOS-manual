@@ -81,11 +81,11 @@ module.exports = {
       panels: [{
         position: "top",
         items: [
-          {name: "menu"},
-          {name: "windows"},
-          {name: "my-panel-item"}, // Your panel item name
-          {name: "tray"},
-          {name: "clock"}
+          { name: "menu" },
+          { name: "windows" },
+          { name: "my-panel-item" }, // Your panel item name
+          { name: "tray" },
+          { name: "clock" }
         ]
       }]
     }

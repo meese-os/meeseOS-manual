@@ -23,15 +23,13 @@ it within the `src/` directory of your installation.
 
 > Please note, on `node` you should use `require/module.exports` instead of `import/export`.
 
-<!-- -->
-
 > [info] If you're adding client-side service provider, you need to rebuild your
 > client with `npm run build`.
 
 ```javascript
-import MyService from "some-provider"
+import MyService from "some-provider";
 
-meeseOS.register(MyService)
+meeseOS.register(MyService);
 ```
 
 ### Configuring
@@ -63,7 +61,7 @@ this stage, set the `before` parameter when you register a service:
 ```javascript
 meeseOS.register(MyService, {
   before: true
-})
+});
 ```
 
 Load order can also be set by creating a dependency chain. If your service provider
@@ -85,5 +83,5 @@ Or you can defined them in your bootstrap:
 ```javascript
 meeseOS.register(MyService, {
   depends: ["meeseOS/core"]
-})
+});
 ```

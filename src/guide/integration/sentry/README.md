@@ -19,7 +19,7 @@ Then, in your `src/server/index.js` file, add the following:
 
 ```javascript
 const Sentry = require("@sentry/node");
-Sentry.init({dsn: "https://xxxxxxxxxxxx@sentry.io/xxxxxx"});
+Sentry.init({ dsn: "https://xxxxxxxxxxxx@sentry.io/xxxxxx" });
 ```
 
 > [info] Restart your server after adding these changes
@@ -38,7 +38,7 @@ Add the sentry client script to your template in `src/client/index.ejs`:
 In the bottom of your `src/client/index.js` file, add the following:
 
 ```javascript
-Sentry.init({dsn: "https://xxxxxxxxxxxx@sentry.io/xxxxxx"});
+Sentry.init({ dsn: "https://xxxxxxxxxxxx@sentry.io/xxxxxx" });
 ```
 
 > [info] Rebuild your client with `npm run build`

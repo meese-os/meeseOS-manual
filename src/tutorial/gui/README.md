@@ -38,18 +38,18 @@ If you're familiar with frameworks similar to React, you can use the [JSX syntax
 ![Basic Example](example-1.png)
 
 ```javascript
-import {h, app} from "hyperapp";
+import { h, app } from "hyperapp";
 
 const createView = (state, actions) => h("div", {}, [
   h("div", {}, String(state.counter)),
-  h("button", {type: "button", onclick: () => actions.increment()}, "Increment counter")
+  h("button", { type: "button", onclick: () => actions.increment() }, "Increment counter")
 ]);
 
 const createApp = ($content) => {
   app({
     counter: 0
   }, {
-    increment: () => state => ({counter: state.counter + 1})
+    increment: () => state => ({ counter: state.counter + 1 })
   }, createView, $content);
 };
 ```
@@ -70,7 +70,7 @@ A [standard component library](https://meeseOS.github.io/meeseOS-manual/api/gui/
 ![Basic Example](example-2.png)
 
 ```javascript
-import {Box, BoxContainer, Button} from "@meeseOS/gui";
+import { Box, BoxContainer, Button } from "@meeseOS/gui";
 
 const createView = (state, actions) => h(Box, {}, [
   h(BoxContainer, {}, String(state.counter)),
@@ -220,7 +220,7 @@ oninput: (event, value) => {}
 A simple three-row layout:
 
 ```javascript
-h(Box, {grow: 1, shrink: 1}, [
+h(Box, { grow: 1, shrink: 1 }, [
   h(BoxContainer, {}, "Row 1"),
   h(BoxContainer, {}, "Row 2"),
   h(BoxContainer, {}, "Row 3")
@@ -234,11 +234,11 @@ h(Box, {grow: 1, shrink: 1}, [
 Same as above, but contained within an outer `Box` with a `Menubar` and `Statusbar`
 
 ```javascript
-h(Box, {grow: 1, shrink: 1}, [
+h(Box, { grow: 1, shrink: 1 }, [
   h(Menubar, {}, [
-    h(MenubarItem, {onclick: () => alert("clicked")}, "Menubar Item")
+    h(MenubarItem, { onclick: () => alert("clicked") }, "Menubar Item")
   ]),
-  h(Box, {grow: 1}, [
+  h(Box, { grow: 1 }, [
     h(BoxContainer, {}, "Row 1"),
     h(BoxContainer, {}, "Row 2"),
     h(BoxContainer, {}, "Row 3")
@@ -258,7 +258,7 @@ Reactive value for inputs:
 app({
   myfield: "Initial value"
 }, {
-  setValue: myfield => () => ({myfield})
+  setValue: myfield => () => ({ myfield })
 }, (state, actions) => {
   return h(Box, {}, [
     h(TextField, {
@@ -278,11 +278,11 @@ app({
 Certain components, like ListView needs some context and works a little bit different:
 
 ```javascript
-import {listView} from "@meeseOS/gui"; // Lower-case l
+import { listView } from "@meeseOS/gui"; // Lower-case l
 
 const initialRows = [{
   columns: [1, 2, 3],
-  data: {foo: "bar"}
+  data: { foo: "bar" }
 }];
 
 app({
@@ -294,16 +294,16 @@ app({
 }, {
   // Register callback actions
   mylistview: listView.actions({
-    select: ({data, index, ev}) => console.log("Selected", data, index, ev),
-    activate: ({data, index, ev}) => console.log("Activated", data, index, ev),
-    contextmenu: ({data, index, ev}) => console.log("Menu", data, index, ev)
+    select: ({ data, index, ev }) => console.log("Selected", data, index, ev),
+    activate: ({ data, index, ev }) => console.log("Activated", data, index, ev),
+    contextmenu: ({ data, index, ev }) => console.log("Menu", data, index, ev)
  }),
 }, (state, actions) => {
   // Creates a new component based on the state and actions created
   const MyListView = listView.component(state.mylistview, actions.mylistview);
 
-  return h(Box, {grow: 1, shrink: 1}, [
-    h(MyListView, {box: {grow: 1, shrink: 1}})
+  return h(Box, { grow: 1, shrink: 1 }, [
+    h(MyListView, { box: { grow: 1, shrink: 1 }})
   ])
 }, document.body);
 ```

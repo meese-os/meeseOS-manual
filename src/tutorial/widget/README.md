@@ -12,7 +12,7 @@ This tutorial shows you how to create and register your own widgets.
 ## Custom Widget
 
 ```javascript
-import {Widget} from "@meeseOS/widgets";
+import { Widget } from "@meeseOS/widgets";
 
 export default class MyWidget extends Widget {
 
@@ -46,7 +46,7 @@ export default class MyWidget extends Widget {
   onMove() {}
 
   // Every rendering tick (or just once if no canvas)
-  render({canvas, context, width, height}) {
+  render({ canvas, context, width, height }) {
     const text = this.options.myText;
 
     context.font = "monospace";
@@ -80,8 +80,8 @@ export default class MyWidget extends Widget {
 ### Attaching a dialog
 
 ```javascript
-import {h, app} from "hyperapp";
-import {TextField} from "@meeseOS/gui";
+import { h, app } from "hyperapp";
+import { TextField } from "@meeseOS/gui";
 
 export default class MyWidget extends Widget {
 
@@ -92,7 +92,7 @@ export default class MyWidget extends Widget {
       dialog.app = app({
         myText: this.options.myText
       }, {
-        setText: myText => state => ({myText}),
+        setText: myText => state => ({ myText }),
         getValues: () => state => state
       }, (state, actions) => {
         return dialog.createView([
@@ -118,8 +118,10 @@ export default class MyWidget extends Widget {
 
 ### Registration
 
+To bootstrap with pre-defined widgets:
+
 ```javascript
-import {WidgetServiceProvider} from "@meeseOS/widgets";
+import { WidgetServiceProvider } from "@meeseOS/widgets";
 import MyWidget from "path/to/MyWidget";
 
 meeseOS.register(WidgetServiceProvider, {
@@ -129,4 +131,11 @@ meeseOS.register(WidgetServiceProvider, {
     }
   }
 });
+```
+
+Or alternatively on runtime:
+
+```javascript
+import MyWidget from "path/to/MyWidget";
+core.make("meeseOS/widgets").register("my-widget", MyWidget);
 ```

@@ -117,7 +117,7 @@ const windowFactory = (proc, bus) => {
 // Your application code.
 // This is where we set up a bus for sentralized event handling.
 const register = (core, args, options, metadata) => {
-  const proc = core.make("meeseOS/application", {args, options, metadata});
+  const proc = core.make("meeseOS/application", { args, options, metadata });
   const bus = core.make("meeseOS/event-emitter", "SomeOptionalBusName");
   const factory = windowFactory(proc, bus);
 

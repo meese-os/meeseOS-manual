@@ -24,30 +24,29 @@ core.make("service-name", ...args);
 This is the service provider interface:
 
 ```javascript
-class ServiceProvider
-{
+class ServiceProvider {
   constructor(core, options = {}) {
     this.core = core;
     this.options = options;
   }
 
-  /* The list of registered services */
+  /** The list of registered services */
   provides() {
     return [];
   }
 
-  /* An optional list of dependant services */
+  /** An optional list of dependant services */
   depends() {
     return [];
   }
 
-  /* Initialize your services */
+  /** Initialize your services */
   async init() {}
 
-  /* Start your services. Runs after all services has been init-ed */
+  /** Start your services. Runs after all services has been init-ed */
   start() {}
 
-  /* Clean up */
+  /** Clean up */
   destroy() {}
 }
 ```
@@ -71,7 +70,7 @@ core.instance("service-name", (...args) => new SomeClass(...args));
 To register a singleton:
 
 ```javascript
-core.singleton("service-name", () => new SomeClass({foo: "bar"}));
+core.singleton("service-name", () => new SomeClass({ foo: "bar" }));
 ```
 
 ## Basic example
@@ -80,8 +79,7 @@ Register a singleton in form of an object with a method that opens `alert()`:
 
 ```javascript
 // src/client/myprovider.js
-export class MyApiServiceProvider
-{
+export class MyApiServiceProvider {
   constructor(core, options = {}) {
     this.core = core;
     this.options = options;

@@ -34,7 +34,7 @@ settings.set("some/namespace", "key", "value")
 An application is given the namespace `meeseOS/application/{name}` (where the name is taken from your application metadata):
 
 ```javascript
-import {name as applicationName} from "./metadata.json";
+import { name as applicationName } from "./metadata.json";
 
 meeseOS.make("meeseOS/packages").register(applicationName, (core, args, options, metadata) => {
   // Default settings
@@ -42,7 +42,7 @@ meeseOS.make("meeseOS/packages").register(applicationName, (core, args, options,
     foo: "bar"
   };
 
-  const proc = core.make("name", {options, args, metadata});
+  const proc = core.make("name", { options, args, metadata });
 
   // Get a setting
   console.log(proc.settings.foo); // => "bar"

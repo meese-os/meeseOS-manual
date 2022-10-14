@@ -72,7 +72,7 @@ This allows you to interact with the underlying MeeseOS APIs and services from a
 ### Application implementation
 
 ```javascript
-proc.createWindow({dimension: {width: 400, height: 400}})
+proc.createWindow({ dimension: { width: 400, height: 400 }})
   .on("destroy", () => proc.destroy())
   .render(($content, win) => {
     // Add our process and window id to iframe URL

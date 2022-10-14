@@ -27,9 +27,9 @@ You can use the provided methods to set up routes from your Applications and Ser
 > [info] Note that the last argument int `routeAuthenticated` (strict group check argument) defaults to `auth.requireAllGroups` configuration option.
 
 ```javascript
-const {route, routeAuthenticated} = core.make("meeseOS/express");
+const { route, routeAuthenticated } = core.make("meeseOS/express");
 
-const respond = (req, res) => res.json({result: "pong"});
+const respond = (req, res) => res.json({ result: "pong" });
 
 // Regular route
 route("GET", "/ping", respond);
@@ -49,7 +49,7 @@ routeAuthenticated("GET", "/ping", respond, ["admin"], true);
 To inject middleware into the route handler (`route()` and `routeAuthenticated()`), use the following service:
 
 ```javascript
-const {middleware} = core.make("meeseOS/express");
+const { middleware } = core.make("meeseOS/express");
 
 middleware(true, (req, res, next) => {}); // routeAuthenticated()
 middleware(false, (req, res, next) => {}); // route()

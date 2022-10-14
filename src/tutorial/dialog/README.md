@@ -39,7 +39,7 @@ core.make("meeseOS/dialog", name, args, options, cb);
 The default Dialog Service provider allows you to add (or override) dialogs:
 
 ```javascript
-import {Dialog} from "@meeseOS/dialogs";
+import { Dialog } from "@meeseOS/dialogs";
 
 class MyDialog extends Dialog {
   constructor(core, args, callback) {
@@ -127,8 +127,8 @@ Use the `.render()` callback instead of `.renderCustom()` to hook into the base 
 This allows you to extend the internal dialog view with `.createView()`:
 
 ```javascript
-import {app, h} from "hyperapp";
-import {ComponentName} from "@meeseOS/gui";
+import { app, h } from "hyperapp";
+import { ComponentName } from "@meeseOS/gui";
 
 dialog.render($content => {
   app({

@@ -49,13 +49,13 @@ this *might* not work, so it is recommended that you use the `Object` signature 
 .readdir("meeseOS:/")
 
 // Vs
-.readdir({path: "meeseOS:/"})
+.readdir({ path: "meeseOS:/" })
 ```
 
 On a non-traditional filesystem, this might look like:
 
 ```javascript
-.readdir({path: "custom-mountpoint:/", id: "some-unique-resource-id"})
+.readdir({ path: "custom-mountpoint:/", id: "some-unique-resource-id" })
 ```
 
 A File `Object` consists of the [Stat](#stat) described below.
@@ -128,7 +128,7 @@ core vfs = core.make("meeseOS/vfs");
 
 // Gets the real filesystem path of a file in the VFS
 // NOTE: This does not work for filesystems that is not a mountpoint or physical drive
-const realPath = vfs.realpath("home:/filename", {username: "meeseOS"});
+const realPath = vfs.realpath("home:/filename", { username: "meeseOS" });
 
 // Gets the mime type of a real filesystem file path
 const mimeType = vfs.mime(realPath);
@@ -138,6 +138,6 @@ vfs.request("readdir", req, res)
   .then(result => {})
 
 // Performs a VFS operation directly
-vfs.call({method: "readdir", user: {username: "demo"}}, "home:/")
+vfs.call({ method: "readdir", user: { username: "demo" } }, "home:/")
   .then(result => {})
 ```

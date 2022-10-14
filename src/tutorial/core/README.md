@@ -49,13 +49,13 @@ The client has some extra methods for dealing with user data, requests, resource
 const url = core.url("/foo/bar");
 
 // Creates a new fetch() request
-const promise = core.request("http://url", {/* options */}, "type")
+const promise = core.request("http://url", {/* options */}, "type");
 
 // Launches an application
-core.run("Preview", {file: {path: "home://image.png"}})
+core.run("Preview", { file: { path: "home://image.png" } });
 
 // Launches a new application based on a file
-core.open({path: "home://image.png", mime: "image/png"});
+core.open({ path: "home://image.png", mime: "image/png" });
 
 // Gets user data
 const user = core.getUser();
@@ -199,6 +199,6 @@ These are the default provided services and their signatures:
 * `meeseOS/core:start => ()` - Core start
 * `meeseOS/core:started => ()` - Core started
 * `meeseOS/core:ping => (req)` - User pinged the server
-* `meeseOS/core:vfs:watch:change => ({mountpoint, target, type})` - VFS watch trigger
+* `meeseOS/core:vfs:watch:change => ({ mountpoint, target, type })` - VFS watch trigger
 * `meeseOS/core:logged-in => (session)` - User logged in
 * `meeseOS/core:logging-out => (session)` - User is logging out

@@ -50,7 +50,7 @@ An example:
 ```javascript
 const mod = cli => ({
   // Basic callback
-  mytask: async ({logger, options, args}) => {
+  mytask: async ({ logger, options, args }) => {
     console.log("Called my task with arguments", args)
     return true;
   },
@@ -62,7 +62,7 @@ const mod = cli => ({
     options: {
       "-foo": "Some description"
     },
-    action: async ({logger, options, args}) => {
+    action: async ({ logger, options, args }) => {
       return true;
     }
   }

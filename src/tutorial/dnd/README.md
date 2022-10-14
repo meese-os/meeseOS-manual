@@ -12,17 +12,17 @@ This tutorial explains how to use the Drag-and-Drop (DnD) APIs.
 ### Draggable
 
 ```javascript
-const {draggable} = core.make("meeseOS/dnd");
+const { draggable } = core.make("meeseOS/dnd");
 
 draggable(element, {
-  data: {hello: "World!"}
+  data: { hello: "World!" }
 });
 ```
 
 ### Droppable
 
 ```javascript
-const {droppable} = core.make("meeseOS/dnd");
+const { droppable } = core.make("meeseOS/dnd");
 
 droppable(element, {
   ondrop: (ev, data) => console.log(data) // => {hello: "World!"}
@@ -34,5 +34,5 @@ droppable(element, {
 A very basic example:
 
 ```javascript
-h(Component, {oncreate: element => draggable(element, {data: {hello: "World!"}})});
+h(Component, { oncreate: element => draggable(element, { data: { hello: "World!" }}) });
 ```

@@ -41,10 +41,10 @@ module.exports = {
       panels: [{
         position: "top",
         items: [
-          {name: "menu"},
-          {name: "windows"},
-          {name: "tray"},
-          {name: "clock"}
+          { name: "menu" },
+          { name: "windows" },
+          { name: "tray" },
+          { name: "clock" }
         ]
       }],
       background: {
@@ -165,7 +165,7 @@ Use the `WindowBehavior` class in `@meeseOS/client` as your base class to extend
 To customize the initial splash screen you can override the internal class in your `src/client/index.js` file:
 
 ```javascript
-import {Core, Splash} from "@meeseOS/client";
+import { Core, Splash } from "@meeseOS/client";
 
 class CustomSplash extends Splash {
   init() {

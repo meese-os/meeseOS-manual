@@ -126,7 +126,7 @@ You can also replace the default UI with your own:
 Extend the default adapter in for example `src/client/custom-login.js`:
 
 ```javascript
-import {Login} from "@meeseOS/client";
+import { Login } from "@meeseOS/client";
 
 export default class MyCustomLogin extends Login {
   render() {
