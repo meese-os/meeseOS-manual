@@ -26,13 +26,13 @@ This project uses the following technologies: HTML, CSS (using Sass/SCSS), JavaS
 
 Most of the articles assume you at least have basic understanding of these.
 
-If you still have questions, head into the [chatroom](https://gitter.im/os-js/OS.js).
+If you still have questions, head into the [chatroom](https://gitter.im/meeseOS/community).
 
 ## Q: How do I contribute?
 
 See the following resources:
 
-* [Contributing overview](https://gitter.im/os-js/OS.js)
+* [Contributing overview](https://gitter.im/meeseOS/community)
 * [Contributing guide](development/README.md#contributing)
 
 ## Q: How do I perform installation on Windows?
@@ -55,7 +55,7 @@ The adapter is what authenticates a user and you can [customize it](guide/auth/R
 
 ## Q: Can I add feature X or application Y?
 
-Since OS.js runs on JavaScript within a browser environment and Node on the backend, these are your limitations.
+Since MeeseOS runs on JavaScript within a browser environment and Node on the backend, these are your limitations.
 
 Anything that can use these technologies can technically run on this platform.
 
@@ -81,4 +81,4 @@ See the [IFrames tutorial](tutorial/iframe/README.md).
 
 Gitter can now be used via Matrix officially:
 
-https://matrix.to/#/#os-js_OS.js:gitter.im?utm_source=gitter
+https://matrix.to/#/#meeseOS_community:gitter.im
