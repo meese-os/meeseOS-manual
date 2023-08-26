@@ -1,44 +1,44 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/panels/src/items/clock.js~clockpanelitem",
+    "@meese-os/panels/src/items/clock.js~clockpanelitem",
     "class/src/items/clock.js~ClockPanelItem.html",
-    "<span>ClockPanelItem</span> <span class=\"search-result-import-path\">@meeseOS/panels/src/items/clock.js</span>",
+    "<span>ClockPanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/items/clock.js</span>",
     "class"
   ],
   [
-    "@meeseos/panels/src/items/menu.js~menupanelitem",
+    "@meese-os/panels/src/items/menu.js~menupanelitem",
     "class/src/items/menu.js~MenuPanelItem.html",
-    "<span>MenuPanelItem</span> <span class=\"search-result-import-path\">@meeseOS/panels/src/items/menu.js</span>",
+    "<span>MenuPanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/items/menu.js</span>",
     "class"
   ],
   [
-    "@meeseos/panels/src/panel.js~panel",
+    "@meese-os/panels/src/panel.js~panel",
     "class/src/panel.js~Panel.html",
-    "<span>Panel</span> <span class=\"search-result-import-path\">@meeseOS/panels/src/panel.js</span>",
+    "<span>Panel</span> <span class=\"search-result-import-path\">@meese-os/panels/src/panel.js</span>",
     "class"
   ],
   [
-    "@meeseos/panels/src/panel-item.js~panelitem",
+    "@meese-os/panels/src/panel-item.js~panelitem",
     "class/src/panel-item.js~PanelItem.html",
-    "<span>PanelItem</span> <span class=\"search-result-import-path\">@meeseOS/panels/src/panel-item.js</span>",
+    "<span>PanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/panel-item.js</span>",
     "class"
   ],
   [
-    "@meeseos/panels/src/provider.js~panelserviceprovider",
+    "@meese-os/panels/src/provider.js~panelserviceprovider",
     "class/src/provider.js~PanelServiceProvider.html",
-    "<span>PanelServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/panels/src/provider.js</span>",
+    "<span>PanelServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/panels/src/provider.js</span>",
     "class"
   ],
   [
-    "@meeseos/panels/src/items/tray.js~traypanelitem",
+    "@meese-os/panels/src/items/tray.js~traypanelitem",
     "class/src/items/tray.js~TrayPanelItem.html",
-    "<span>TrayPanelItem</span> <span class=\"search-result-import-path\">@meeseOS/panels/src/items/tray.js</span>",
+    "<span>TrayPanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/items/tray.js</span>",
     "class"
   ],
   [
-    "@meeseos/panels/src/items/windows.js~windowspanelitem",
+    "@meese-os/panels/src/items/windows.js~windowspanelitem",
     "class/src/items/windows.js~WindowsPanelItem.html",
-    "<span>WindowsPanelItem</span> <span class=\"search-result-import-path\">@meeseOS/panels/src/items/windows.js</span>",
+    "<span>WindowsPanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/items/windows.js</span>",
     "class"
   ],
   [

@@ -1,8 +1,8 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/widgets/src/provider.js~widgetserviceprovider",
+    "@meese-os/widgets/src/provider.js~widgetserviceprovider",
     "class/src/provider.js~WidgetServiceProvider.html",
-    "<span>WidgetServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/widgets/src/provider.js</span>",
+    "<span>WidgetServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/widgets/src/provider.js</span>",
     "class"
   ],
   [

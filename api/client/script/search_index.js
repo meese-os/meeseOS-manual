@@ -1,632 +1,632 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/client/src/application.js~application",
+    "@meese-os/client/src/application.js~application",
     "class/src/application.js~Application.html",
-    "<span>Application</span> <span class=\"search-result-import-path\">@meeseOS/client/src/application.js</span>",
+    "<span>Application</span> <span class=\"search-result-import-path\">@meese-os/client/src/application.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/auth.js~auth",
+    "@meese-os/client/src/auth.js~auth",
     "class/src/auth.js~Auth.html",
-    "<span>Auth</span> <span class=\"search-result-import-path\">@meeseOS/client/src/auth.js</span>",
+    "<span>Auth</span> <span class=\"search-result-import-path\">@meese-os/client/src/auth.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/providers/auth.js~authserviceprovider",
+    "@meese-os/client/src/providers/auth.js~authserviceprovider",
     "class/src/providers/auth.js~AuthServiceProvider.html",
-    "<span>AuthServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/client/src/providers/auth.js</span>",
+    "<span>AuthServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/auth.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/basic-application.js~basicapplication",
+    "@meese-os/client/src/basic-application.js~basicapplication",
     "class/src/basic-application.js~BasicApplication.html",
-    "<span>BasicApplication</span> <span class=\"search-result-import-path\">@meeseOS/client/src/basic-application.js</span>",
+    "<span>BasicApplication</span> <span class=\"search-result-import-path\">@meese-os/client/src/basic-application.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/clipboard.js~clipboard",
+    "@meese-os/client/src/clipboard.js~clipboard",
     "class/src/clipboard.js~Clipboard.html",
-    "<span>Clipboard</span> <span class=\"search-result-import-path\">@meeseOS/client/src/clipboard.js</span>",
+    "<span>Clipboard</span> <span class=\"search-result-import-path\">@meese-os/client/src/clipboard.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/core.js~core",
+    "@meese-os/client/src/core.js~core",
     "class/src/core.js~Core.html",
-    "<span>Core</span> <span class=\"search-result-import-path\">@meeseOS/client/src/core.js</span>",
+    "<span>Core</span> <span class=\"search-result-import-path\">@meese-os/client/src/core.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/providers/core.js~coreserviceprovider",
+    "@meese-os/client/src/providers/core.js~coreserviceprovider",
     "class/src/providers/core.js~CoreServiceProvider.html",
-    "<span>CoreServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/client/src/providers/core.js</span>",
+    "<span>CoreServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/core.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/desktop.js~desktop",
+    "@meese-os/client/src/desktop.js~desktop",
     "class/src/desktop.js~Desktop.html",
-    "<span>Desktop</span> <span class=\"search-result-import-path\">@meeseOS/client/src/desktop.js</span>",
+    "<span>Desktop</span> <span class=\"search-result-import-path\">@meese-os/client/src/desktop.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/adapters/ui/iconview.js~desktopiconview",
+    "@meese-os/client/src/adapters/ui/iconview.js~desktopiconview",
     "class/src/adapters/ui/iconview.js~DesktopIconView.html",
-    "<span>DesktopIconView</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/ui/iconview.js</span>",
+    "<span>DesktopIconView</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/ui/iconview.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/providers/desktop.js~desktopserviceprovider",
+    "@meese-os/client/src/providers/desktop.js~desktopserviceprovider",
     "class/src/providers/desktop.js~DesktopServiceProvider.html",
-    "<span>DesktopServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/client/src/providers/desktop.js</span>",
+    "<span>DesktopServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/desktop.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/utils/dom-animator.js~domanimator",
+    "@meese-os/client/src/utils/dom-animator.js~domanimator",
     "function/index.html#static-function-DomAnimator",
-    "<span>DomAnimator</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom-animator.js</span>",
+    "<span>DomAnimator</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom-animator.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/filesystem.js~filesystem",
+    "@meese-os/client/src/filesystem.js~filesystem",
     "class/src/filesystem.js~Filesystem.html",
-    "<span>Filesystem</span> <span class=\"search-result-import-path\">@meeseOS/client/src/filesystem.js</span>",
+    "<span>Filesystem</span> <span class=\"search-result-import-path\">@meese-os/client/src/filesystem.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/login.js~login",
+    "@meese-os/client/src/login.js~login",
     "class/src/login.js~Login.html",
-    "<span>Login</span> <span class=\"search-result-import-path\">@meeseOS/client/src/login.js</span>",
+    "<span>Login</span> <span class=\"search-result-import-path\">@meese-os/client/src/login.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/middleware.js~middleware",
+    "@meese-os/client/src/middleware.js~middleware",
     "class/src/middleware.js~Middleware.html",
-    "<span>Middleware</span> <span class=\"search-result-import-path\">@meeseOS/client/src/middleware.js</span>",
+    "<span>Middleware</span> <span class=\"search-result-import-path\">@meese-os/client/src/middleware.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/notification.js~notification",
+    "@meese-os/client/src/notification.js~notification",
     "class/src/notification.js~Notification.html",
-    "<span>Notification</span> <span class=\"search-result-import-path\">@meeseOS/client/src/notification.js</span>",
+    "<span>Notification</span> <span class=\"search-result-import-path\">@meese-os/client/src/notification.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/providers/notifications.js~notificationserviceprovider",
+    "@meese-os/client/src/providers/notifications.js~notificationserviceprovider",
     "class/src/providers/notifications.js~NotificationServiceProvider.html",
-    "<span>NotificationServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/client/src/providers/notifications.js</span>",
+    "<span>NotificationServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/notifications.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/notifications.js~notifications",
+    "@meese-os/client/src/notifications.js~notifications",
     "class/src/notifications.js~Notifications.html",
-    "<span>Notifications</span> <span class=\"search-result-import-path\">@meeseOS/client/src/notifications.js</span>",
+    "<span>Notifications</span> <span class=\"search-result-import-path\">@meese-os/client/src/notifications.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/packages.js~packages",
+    "@meese-os/client/src/packages.js~packages",
     "class/src/packages.js~Packages.html",
-    "<span>Packages</span> <span class=\"search-result-import-path\">@meeseOS/client/src/packages.js</span>",
+    "<span>Packages</span> <span class=\"search-result-import-path\">@meese-os/client/src/packages.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/utils/preloader.js~preloader",
+    "@meese-os/client/src/utils/preloader.js~preloader",
     "class/src/utils/preloader.js~Preloader.html",
-    "<span>Preloader</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/preloader.js</span>",
+    "<span>Preloader</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/preloader.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/search.js~search",
+    "@meese-os/client/src/search.js~search",
     "class/src/search.js~Search.html",
-    "<span>Search</span> <span class=\"search-result-import-path\">@meeseOS/client/src/search.js</span>",
+    "<span>Search</span> <span class=\"search-result-import-path\">@meese-os/client/src/search.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/session.js~session",
+    "@meese-os/client/src/session.js~session",
     "class/src/session.js~Session.html",
-    "<span>Session</span> <span class=\"search-result-import-path\">@meeseOS/client/src/session.js</span>",
+    "<span>Session</span> <span class=\"search-result-import-path\">@meese-os/client/src/session.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/settings.js~settings",
+    "@meese-os/client/src/settings.js~settings",
     "class/src/settings.js~Settings.html",
-    "<span>Settings</span> <span class=\"search-result-import-path\">@meeseOS/client/src/settings.js</span>",
+    "<span>Settings</span> <span class=\"search-result-import-path\">@meese-os/client/src/settings.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/providers/settings.js~settingsserviceprovider",
+    "@meese-os/client/src/providers/settings.js~settingsserviceprovider",
     "class/src/providers/settings.js~SettingsServiceProvider.html",
-    "<span>SettingsServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/client/src/providers/settings.js</span>",
+    "<span>SettingsServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/settings.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/splash.js~splash",
+    "@meese-os/client/src/splash.js~splash",
     "class/src/splash.js~Splash.html",
-    "<span>Splash</span> <span class=\"search-result-import-path\">@meeseOS/client/src/splash.js</span>",
+    "<span>Splash</span> <span class=\"search-result-import-path\">@meese-os/client/src/splash.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/tray.js~tray",
+    "@meese-os/client/src/tray.js~tray",
     "class/src/tray.js~Tray.html",
-    "<span>Tray</span> <span class=\"search-result-import-path\">@meeseOS/client/src/tray.js</span>",
+    "<span>Tray</span> <span class=\"search-result-import-path\">@meese-os/client/src/tray.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/providers/vfs.js~vfsserviceprovider",
+    "@meese-os/client/src/providers/vfs.js~vfsserviceprovider",
     "class/src/providers/vfs.js~VFSServiceProvider.html",
-    "<span>VFSServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/client/src/providers/vfs.js</span>",
+    "<span>VFSServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/vfs.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/websocket.js~websocket",
+    "@meese-os/client/src/websocket.js~websocket",
     "class/src/websocket.js~Websocket.html",
-    "<span>Websocket</span> <span class=\"search-result-import-path\">@meeseOS/client/src/websocket.js</span>",
+    "<span>Websocket</span> <span class=\"search-result-import-path\">@meese-os/client/src/websocket.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/window.js~window",
+    "@meese-os/client/src/window.js~window",
     "class/src/window.js~Window.html",
-    "<span>Window</span> <span class=\"search-result-import-path\">@meeseOS/client/src/window.js</span>",
+    "<span>Window</span> <span class=\"search-result-import-path\">@meese-os/client/src/window.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/window-behavior.js~windowbehavior",
+    "@meese-os/client/src/window-behavior.js~windowbehavior",
     "class/src/window-behavior.js~WindowBehavior.html",
-    "<span>WindowBehavior</span> <span class=\"search-result-import-path\">@meeseOS/client/src/window-behavior.js</span>",
+    "<span>WindowBehavior</span> <span class=\"search-result-import-path\">@meese-os/client/src/window-behavior.js</span>",
     "class"
   ],
   [
-    "@meeseos/client/src/adapters/vfs/apps.js~adapter",
+    "@meese-os/client/src/adapters/vfs/apps.js~adapter",
     "function/index.html#static-function-adapter",
-    "<span>adapter</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/vfs/apps.js</span>",
+    "<span>adapter</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/vfs/apps.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/vfs/system.js~adapter",
+    "@meese-os/client/src/adapters/vfs/system.js~adapter",
     "function/index.html#static-function-adapter",
-    "<span>adapter</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/vfs/system.js</span>",
+    "<span>adapter</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/vfs/system.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/desktop.js~applybackgroundstyles",
+    "@meese-os/client/src/utils/desktop.js~applybackgroundstyles",
     "function/index.html#static-function-applyBackgroundStyles",
-    "<span>applyBackgroundStyles</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "<span>applyBackgroundStyles</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/desktop.js~applycursoreffect",
+    "@meese-os/client/src/utils/desktop.js~applycursoreffect",
     "function/index.html#static-function-applyCursorEffect",
-    "<span>applyCursorEffect</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "<span>applyCursorEffect</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~archive",
+    "@meese-os/client/src/vfs.js~archive",
     "function/index.html#static-function-archive",
-    "<span>archive</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>archive</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~basename",
+    "@meese-os/client/src/utils/vfs.js~basename",
     "function/index.html#static-function-basename",
-    "<span>basename</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>basename</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~capabilities",
+    "@meese-os/client/src/vfs.js~capabilities",
     "function/index.html#static-function-capabilities",
-    "<span>capabilities</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>capabilities</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~clampposition",
+    "@meese-os/client/src/utils/windows.js~clampposition",
     "function/index.html#static-function-clampPosition",
-    "<span>clampPosition</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>clampPosition</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~copy",
+    "@meese-os/client/src/vfs.js~copy",
     "function/index.html#static-function-copy",
-    "<span>copy</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>copy</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/ui/login.js~create",
+    "@meese-os/client/src/adapters/ui/login.js~create",
     "function/index.html#static-function-create",
-    "<span>create</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/ui/login.js</span>",
+    "<span>create</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/ui/login.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/ui/search.js~create",
+    "@meese-os/client/src/adapters/ui/search.js~create",
     "function/index.html#static-function-create",
-    "<span>create</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/ui/search.js</span>",
+    "<span>create</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/ui/search.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~createattributes",
+    "@meese-os/client/src/utils/windows.js~createattributes",
     "function/index.html#static-function-createAttributes",
-    "<span>createAttributes</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>createAttributes</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~createcsstext",
+    "@meese-os/client/src/utils/dom.js~createcsstext",
     "function/index.html#static-function-createCssText",
-    "<span>createCssText</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>createCssText</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~createdomattributes",
+    "@meese-os/client/src/utils/windows.js~createdomattributes",
     "function/index.html#static-function-createDOMAttributes",
-    "<span>createDOMAttributes</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>createDOMAttributes</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~createdomstyles",
+    "@meese-os/client/src/utils/windows.js~createdomstyles",
     "function/index.html#static-function-createDOMStyles",
-    "<span>createDOMStyles</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>createDOMStyles</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~createfileiter",
+    "@meese-os/client/src/utils/vfs.js~createfileiter",
     "function/index.html#static-function-createFileIter",
-    "<span>createFileIter</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>createFileIter</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~createnativenotification",
+    "@meese-os/client/src/utils/dom.js~createnativenotification",
     "function/index.html#static-function-createNativeNotification",
-    "<span>createNativeNotification</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>createNativeNotification</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/packages.js~createpackageavailabilitycheck",
+    "@meese-os/client/src/utils/packages.js~createpackageavailabilitycheck",
     "function/index.html#static-function-createPackageAvailabilityCheck",
-    "<span>createPackageAvailabilityCheck</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/packages.js</span>",
+    "<span>createPackageAvailabilityCheck</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/packages.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/desktop.js~createpanelsubtraction",
+    "@meese-os/client/src/utils/desktop.js~createpanelsubtraction",
     "function/index.html#static-function-createPanelSubtraction",
-    "<span>createPanelSubtraction</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "<span>createPanelSubtraction</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~createstate",
+    "@meese-os/client/src/utils/windows.js~createstate",
     "function/index.html#static-function-createState",
-    "<span>createState</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>createState</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~createwatchevents",
+    "@meese-os/client/src/utils/vfs.js~createwatchevents",
     "function/index.html#static-function-createWatchEvents",
-    "<span>createWatchEvents</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>createWatchEvents</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~dimensionfromelement",
+    "@meese-os/client/src/utils/windows.js~dimensionfromelement",
     "function/index.html#static-function-dimensionFromElement",
-    "<span>dimensionFromElement</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>dimensionFromElement</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/input.js~doubletap",
+    "@meese-os/client/src/utils/input.js~doubletap",
     "function/index.html#static-function-doubleTap",
-    "<span>doubleTap</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/input.js</span>",
+    "<span>doubleTap</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/input.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~download",
+    "@meese-os/client/src/vfs.js~download",
     "function/index.html#static-function-download",
-    "<span>download</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>download</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dnd.js~draggable",
+    "@meese-os/client/src/utils/dnd.js~draggable",
     "function/index.html#static-function-draggable",
-    "<span>draggable</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dnd.js</span>",
+    "<span>draggable</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dnd.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dnd.js~droppable",
+    "@meese-os/client/src/utils/dnd.js~droppable",
     "function/index.html#static-function-droppable",
-    "<span>droppable</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dnd.js</span>",
+    "<span>droppable</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dnd.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~escapehtml",
+    "@meese-os/client/src/utils/dom.js~escapehtml",
     "function/index.html#static-function-escapeHtml",
-    "<span>escapeHtml</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>escapeHtml</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~exists",
+    "@meese-os/client/src/vfs.js~exists",
     "function/index.html#static-function-exists",
-    "<span>exists</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>exists</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/fetch.js~fetch",
+    "@meese-os/client/src/utils/fetch.js~fetch",
     "function/index.html#static-function-fetch",
-    "<span>fetch</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/fetch.js</span>",
+    "<span>fetch</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/fetch.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~filtermountbygroups",
+    "@meese-os/client/src/utils/vfs.js~filtermountbygroups",
     "function/index.html#static-function-filterMountByGroups",
-    "<span>filterMountByGroups</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>filterMountByGroups</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~getcascadeposition",
+    "@meese-os/client/src/utils/windows.js~getcascadeposition",
     "function/index.html#static-function-getCascadePosition",
-    "<span>getCascadePosition</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>getCascadePosition</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/input.js~getevent",
+    "@meese-os/client/src/utils/input.js~getevent",
     "function/index.html#static-function-getEvent",
-    "<span>getEvent</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/input.js</span>",
+    "<span>getEvent</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/input.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~getfileicon",
+    "@meese-os/client/src/utils/vfs.js~getfileicon",
     "function/index.html#static-function-getFileIcon",
-    "<span>getFileIcon</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>getFileIcon</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~getmediaqueryname",
+    "@meese-os/client/src/utils/windows.js~getmediaqueryname",
     "function/index.html#static-function-getMediaQueryName",
-    "<span>getMediaQueryName</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>getMediaQueryName</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~handletabontextarea",
+    "@meese-os/client/src/utils/dom.js~handletabontextarea",
     "function/index.html#static-function-handleTabOnTextarea",
-    "<span>handleTabOnTextarea</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>handleTabOnTextarea</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~humanfilesize",
+    "@meese-os/client/src/utils/vfs.js~humanfilesize",
     "function/index.html#static-function-humanFileSize",
-    "<span>humanFileSize</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>humanFileSize</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/colors.js~inverthex",
+    "@meese-os/client/src/utils/colors.js~inverthex",
     "function/index.html#static-function-invertHex",
-    "<span>invertHex</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/colors.js</span>",
+    "<span>invertHex</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/colors.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/desktop.js~isdroppingimage",
+    "@meese-os/client/src/utils/desktop.js~isdroppingimage",
     "function/index.html#static-function-isDroppingImage",
-    "<span>isDroppingImage</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "<span>isDroppingImage</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~loadoptionsfromconfig",
+    "@meese-os/client/src/utils/windows.js~loadoptionsfromconfig",
     "function/index.html#static-function-loadOptionsFromConfig",
-    "<span>loadOptionsFromConfig</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>loadOptionsFromConfig</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/auth/localstorage.js~localstorageauth",
+    "@meese-os/client/src/adapters/auth/localstorage.js~localstorageauth",
     "function/index.html#static-function-localStorageAuth",
-    "<span>localStorageAuth</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/auth/localstorage.js</span>",
+    "<span>localStorageAuth</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/auth/localstorage.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/settings/localstorage.js~localstoragesettings",
+    "@meese-os/client/src/adapters/settings/localstorage.js~localstoragesettings",
     "function/index.html#static-function-localStorageSettings",
-    "<span>localStorageSettings</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/settings/localstorage.js</span>",
+    "<span>localStorageSettings</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/settings/localstorage.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/input.js~matchkeycombo",
+    "@meese-os/client/src/utils/input.js~matchkeycombo",
     "function/index.html#static-function-matchKeyCombo",
-    "<span>matchKeyCombo</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/input.js</span>",
+    "<span>matchKeyCombo</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/input.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~mkdir",
+    "@meese-os/client/src/vfs.js~mkdir",
     "function/index.html#static-function-mkdir",
-    "<span>mkdir</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>mkdir</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~move",
+    "@meese-os/client/src/vfs.js~move",
     "variable/index.html#static-variable-move",
-    "<span>move</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>move</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "variable"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~mover",
+    "@meese-os/client/src/utils/windows.js~mover",
     "function/index.html#static-function-mover",
-    "<span>mover</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>mover</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/vfs/null.js~nulladapter",
+    "@meese-os/client/src/adapters/vfs/null.js~nulladapter",
     "variable/index.html#static-variable-nullAdapter",
-    "<span>nullAdapter</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/vfs/null.js</span>",
+    "<span>nullAdapter</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/vfs/null.js</span>",
     "variable"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~parentdirectory",
+    "@meese-os/client/src/utils/vfs.js~parentdirectory",
     "function/index.html#static-function-parentDirectory",
-    "<span>parentDirectory</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>parentDirectory</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~parsemountpointprefix",
+    "@meese-os/client/src/utils/vfs.js~parsemountpointprefix",
     "function/index.html#static-function-parseMountpointPrefix",
-    "<span>parseMountpointPrefix</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>parseMountpointPrefix</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~pathjoin",
+    "@meese-os/client/src/utils/vfs.js~pathjoin",
     "function/index.html#static-function-pathJoin",
-    "<span>pathJoin</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>pathJoin</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~pathname",
+    "@meese-os/client/src/utils/vfs.js~pathname",
     "function/index.html#static-function-pathname",
-    "<span>pathname</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>pathname</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~playsound",
+    "@meese-os/client/src/utils/dom.js~playsound",
     "function/index.html#static-function-playSound",
-    "<span>playSound</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>playSound</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~positionfromgravity",
+    "@meese-os/client/src/utils/windows.js~positionfromgravity",
     "function/index.html#static-function-positionFromGravity",
-    "<span>positionFromGravity</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>positionFromGravity</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~readdir",
+    "@meese-os/client/src/vfs.js~readdir",
     "function/index.html#static-function-readdir",
-    "<span>readdir</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>readdir</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~readfile",
+    "@meese-os/client/src/vfs.js~readfile",
     "function/index.html#static-function-readfile",
-    "<span>readfile</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>readfile</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~rename",
+    "@meese-os/client/src/vfs.js~rename",
     "function/index.html#static-function-rename",
-    "<span>rename</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>rename</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~rendercallback",
+    "@meese-os/client/src/utils/windows.js~rendercallback",
     "function/index.html#static-function-renderCallback",
-    "<span>renderCallback</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>renderCallback</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~resizer",
+    "@meese-os/client/src/utils/windows.js~resizer",
     "function/index.html#static-function-resizer",
-    "<span>resizer</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>resizer</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/desktop.js~resourceresolver",
+    "@meese-os/client/src/utils/desktop.js~resourceresolver",
     "function/index.html#static-function-resourceResolver",
-    "<span>resourceResolver</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "<span>resourceResolver</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~script",
+    "@meese-os/client/src/utils/dom.js~script",
     "function/index.html#static-function-script",
-    "<span>script</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>script</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~search",
+    "@meese-os/client/src/vfs.js~search",
     "function/index.html#static-function-search",
-    "<span>search</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>search</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/auth/server.js~serverauth",
+    "@meese-os/client/src/adapters/auth/server.js~serverauth",
     "function/index.html#static-function-serverAuth",
-    "<span>serverAuth</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/auth/server.js</span>",
+    "<span>serverAuth</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/auth/server.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/adapters/settings/server.js~serversettings",
+    "@meese-os/client/src/adapters/settings/server.js~serversettings",
     "function/index.html#static-function-serverSettings",
-    "<span>serverSettings</span> <span class=\"search-result-import-path\">@meeseOS/client/src/adapters/settings/server.js</span>",
+    "<span>serverSettings</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/settings/server.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~stat",
+    "@meese-os/client/src/vfs.js~stat",
     "function/index.html#static-function-stat",
-    "<span>stat</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>stat</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~style",
+    "@meese-os/client/src/utils/dom.js~style",
     "function/index.html#static-function-style",
-    "<span>style</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>style</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~supportedmedia",
+    "@meese-os/client/src/utils/dom.js~supportedmedia",
     "function/index.html#static-function-supportedMedia",
-    "<span>supportedMedia</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>supportedMedia</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~supportspassive",
+    "@meese-os/client/src/utils/dom.js~supportspassive",
     "variable/index.html#static-variable-supportsPassive",
-    "<span>supportsPassive</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>supportsPassive</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "variable"
   ],
   [
-    "@meeseos/client/src/utils/dom.js~supportstransition",
+    "@meese-os/client/src/utils/dom.js~supportstransition",
     "variable/index.html#static-variable-supportsTransition",
-    "<span>supportsTransition</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/dom.js</span>",
+    "<span>supportsTransition</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
     "variable"
   ],
   [
-    "@meeseos/client/src/vfs.js~touch",
+    "@meese-os/client/src/vfs.js~touch",
     "function/index.html#static-function-touch",
-    "<span>touch</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>touch</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~transformarraybuffer",
+    "@meese-os/client/src/utils/vfs.js~transformarraybuffer",
     "function/index.html#static-function-transformArrayBuffer",
-    "<span>transformArrayBuffer</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>transformArrayBuffer</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/vfs.js~transformreaddir",
+    "@meese-os/client/src/utils/vfs.js~transformreaddir",
     "function/index.html#static-function-transformReaddir",
-    "<span>transformReaddir</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/vfs.js</span>",
+    "<span>transformReaddir</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/windows.js~transformvectors",
+    "@meese-os/client/src/utils/windows.js~transformvectors",
     "function/index.html#static-function-transformVectors",
-    "<span>transformVectors</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/windows.js</span>",
+    "<span>transformVectors</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~unlink",
+    "@meese-os/client/src/vfs.js~unlink",
     "function/index.html#static-function-unlink",
-    "<span>unlink</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>unlink</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~url",
+    "@meese-os/client/src/vfs.js~url",
     "function/index.html#static-function-url",
-    "<span>url</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>url</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/url.js~urlresolver",
+    "@meese-os/client/src/utils/url.js~urlresolver",
     "function/index.html#static-function-urlResolver",
-    "<span>urlResolver</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/url.js</span>",
+    "<span>urlResolver</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/url.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/utils/desktop.js~validvfsdrop",
+    "@meese-os/client/src/utils/desktop.js~validvfsdrop",
     "function/index.html#static-function-validVfsDrop",
-    "<span>validVfsDrop</span> <span class=\"search-result-import-path\">@meeseOS/client/src/utils/desktop.js</span>",
+    "<span>validVfsDrop</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
-    "@meeseos/client/src/vfs.js~writefile",
+    "@meese-os/client/src/vfs.js~writefile",
     "function/index.html#static-function-writefile",
-    "<span>writefile</span> <span class=\"search-result-import-path\">@meeseOS/client/src/vfs.js</span>",
+    "<span>writefile</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "function"
   ],
   [

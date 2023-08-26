@@ -1,44 +1,44 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/dialogs/src/dialogs/confirm.js~confirmdialog",
+    "@meese-os/dialogs/src/dialogs/confirm.js~confirmdialog",
     "class/src/dialogs/confirm.js~ConfirmDialog.html",
-    "<span>ConfirmDialog</span> <span class=\"search-result-import-path\">@meeseOS/dialogs/src/dialogs/confirm.js</span>",
+    "<span>ConfirmDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/confirm.js</span>",
     "class"
   ],
   [
-    "@meeseos/dialogs/src/dialogs/progress.js~progressdialog",
+    "@meese-os/dialogs/src/dialogs/progress.js~progressdialog",
     "class/src/dialogs/progress.js~ProgressDialog.html",
-    "<span>ProgressDialog</span> <span class=\"search-result-import-path\">@meeseOS/dialogs/src/dialogs/progress.js</span>",
+    "<span>ProgressDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/progress.js</span>",
     "class"
   ],
   [
-    "@meeseos/dialogs/src/color-utils.js~colorfromclick",
+    "@meese-os/dialogs/src/color-utils.js~colorfromclick",
     "function/index.html#static-function-colorFromClick",
-    "<span>colorFromClick</span> <span class=\"search-result-import-path\">@meeseOS/dialogs/src/color-utils.js</span>",
+    "<span>colorFromClick</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/color-utils.js</span>",
     "function"
   ],
   [
-    "@meeseos/dialogs/src/color-utils.js~componenttohex",
+    "@meese-os/dialogs/src/color-utils.js~componenttohex",
     "function/index.html#static-function-componentToHex",
-    "<span>componentToHex</span> <span class=\"search-result-import-path\">@meeseOS/dialogs/src/color-utils.js</span>",
+    "<span>componentToHex</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/color-utils.js</span>",
     "function"
   ],
   [
-    "@meeseos/dialogs/src/color-utils.js~createpalette",
+    "@meese-os/dialogs/src/color-utils.js~createpalette",
     "function/index.html#static-function-createPalette",
-    "<span>createPalette</span> <span class=\"search-result-import-path\">@meeseOS/dialogs/src/color-utils.js</span>",
+    "<span>createPalette</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/color-utils.js</span>",
     "function"
   ],
   [
-    "@meeseos/dialogs/src/color-utils.js~hextocomponent",
+    "@meese-os/dialogs/src/color-utils.js~hextocomponent",
     "function/index.html#static-function-hexToComponent",
-    "<span>hexToComponent</span> <span class=\"search-result-import-path\">@meeseOS/dialogs/src/color-utils.js</span>",
+    "<span>hexToComponent</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/color-utils.js</span>",
     "function"
   ],
   [
-    "@meeseos/dialogs/src/color-utils.js~rangecontainer",
+    "@meese-os/dialogs/src/color-utils.js~rangecontainer",
     "function/index.html#static-function-rangeContainer",
-    "<span>rangeContainer</span> <span class=\"search-result-import-path\">@meeseOS/dialogs/src/color-utils.js</span>",
+    "<span>rangeContainer</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/color-utils.js</span>",
     "function"
   ],
   [
