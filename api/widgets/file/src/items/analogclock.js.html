@@ -79,16 +79,17 @@ import Widget from &quot;../widget&quot;;
  * Analog Clock Colors Options
  * @typedef {Object} AnalogClockColors
  * @property {String} [number=&quot;#000000&quot;] Number color
- * @property {String} [hour=&quot;#000000&quot;] Hour color
- * @property {String} [minute=&quot;#000000&quot;] Minute color
- * @property {String} [second=&quot;#000000&quot;] Second color
+ * @property {String} [hourHand=&quot;#000000&quot;] Hour hand color
+ * @property {String} [minuteHand=&quot;#000000&quot;] Minute hand color
+ * @property {String} [secondHand=&quot;#000000&quot;] Second hand color
  */
 
 /**
  * Analog Clock Widget Options
  * @typedef {Object} AnalogClockOptions
  * @property {String} [fontFamily=&quot;Monospace&quot;] Font family
- * @property {AnalogClockColors} [color] Clock colors
+ * @property {AnalogClockColors} [colors] Clock colors
+ * @property {String[]} [labels] Color labels
  */
 
 export default class AnalogClockWidget extends Widget {
@@ -120,10 +121,10 @@ export default class AnalogClockWidget extends Widget {
 			{
 				fontFamily: &quot;Monospace&quot;,
 				colors: {
-					numberColor: &quot;#000000&quot;,
-					hourHandColor: &quot;#000000&quot;,
-					minuteHandColor: &quot;#000000&quot;,
-					secondHandColor: &quot;#000000&quot;,
+					&quot;Number Color&quot;: &quot;#000000&quot;,
+					&quot;Hour Hand Color&quot;: &quot;#000000&quot;,
+					&quot;Minute Hand Color&quot;: &quot;#000000&quot;,
+					&quot;Second Hand Color&quot;: &quot;#000000&quot;,
 				},
 			}
 		);
@@ -278,7 +279,7 @@ export default class AnalogClockWidget extends Widget {
 	 */
 	drawNumbers(ctx, radius) {
 		const fontSize = radius * 0.15;
-		ctx.fillStyle = this.options.colors.numberColor;
+		ctx.fillStyle = this.options.colors[&quot;Number Color&quot;];
 		ctx.font = `${fontSize}px ${this.options.fontFamily}`;
 		ctx.textBaseline = &quot;middle&quot;;
 		ctx.textAlign = &quot;center&quot;;
@@ -308,7 +309,7 @@ export default class AnalogClockWidget extends Widget {
 		let second = now.getSeconds();
 
 		// Hour hand
-		ctx.strokeStyle = this.options.colors.hourHandColor;
+		ctx.strokeStyle = this.options.colors[&quot;Hour Hand Color&quot;];
 		hour =
 			(hour * Math.PI) / 6 +
 			(minute * Math.PI) / (6 * 60) +
@@ -316,12 +317,12 @@ export default class AnalogClockWidget extends Widget {
 		this.drawHand(ctx, hour, radius * 0.5, radius * 0.07);
 
 		// Minutes hand
-		ctx.strokeStyle = this.options.colors.minuteHandColor;
+		ctx.strokeStyle = this.options.colors[&quot;Minute Hand Color&quot;];
 		minute = (minute * Math.PI) / 30 + (second * Math.PI) / (30 * 60);
 		this.drawHand(ctx, minute, radius * 0.8, radius * 0.07);
 
 		// Second hand
-		ctx.strokeStyle = this.options.colors.secondHandColor;
+		ctx.strokeStyle = this.options.colors[&quot;Second Hand Color&quot;];
 		second = (second * Math.PI) / 30;
 		this.drawHand(ctx, second, radius * 0.9, radius * 0.02);
 	}
