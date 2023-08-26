@@ -1,14 +1,14 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/common/src/core.js~corebase",
+    "@meese-os/common/src/core.js~corebase",
     "class/src/core.js~CoreBase.html",
-    "<span>CoreBase</span> <span class=\"search-result-import-path\">@meeseOS/common/src/core.js</span>",
+    "<span>CoreBase</span> <span class=\"search-result-import-path\">@meese-os/common/src/core.js</span>",
     "class"
   ],
   [
-    "@meeseos/common/src/service-provider.js~serviceprovider",
+    "@meese-os/common/src/service-provider.js~serviceprovider",
     "class/src/service-provider.js~ServiceProvider.html",
-    "<span>ServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/common/src/service-provider.js</span>",
+    "<span>ServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/common/src/service-provider.js</span>",
     "class"
   ],
   [

@@ -1,194 +1,194 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/server/src/auth.js~auth",
+    "@meese-os/server/src/auth.js~auth",
     "class/src/auth.js~Auth.html",
-    "<span>Auth</span> <span class=\"search-result-import-path\">@meeseOS/server/src/auth.js</span>",
+    "<span>Auth</span> <span class=\"search-result-import-path\">@meese-os/server/src/auth.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/providers/auth.js~authserviceprovider",
+    "@meese-os/server/src/providers/auth.js~authserviceprovider",
     "class/src/providers/auth.js~AuthServiceProvider.html",
-    "<span>AuthServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/auth.js</span>",
+    "<span>AuthServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/auth.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/core.js~core",
+    "@meese-os/server/src/core.js~core",
     "class/src/core.js~Core.html",
-    "<span>Core</span> <span class=\"search-result-import-path\">@meeseOS/server/src/core.js</span>",
+    "<span>Core</span> <span class=\"search-result-import-path\">@meese-os/server/src/core.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/core.js~corebase",
+    "@meese-os/server/src/core.js~corebase",
     "variable/index.html#static-variable-CoreBase",
-    "<span>CoreBase</span> <span class=\"search-result-import-path\">@meeseOS/server/src/core.js</span>",
+    "<span>CoreBase</span> <span class=\"search-result-import-path\">@meese-os/server/src/core.js</span>",
     "variable"
   ],
   [
-    "@meeseos/server/src/providers/core.js~coreserviceprovider",
+    "@meese-os/server/src/providers/core.js~coreserviceprovider",
     "class/src/providers/core.js~CoreServiceProvider.html",
-    "<span>CoreServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/core.js</span>",
+    "<span>CoreServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/core.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/filesystem.js~filesystem",
+    "@meese-os/server/src/filesystem.js~filesystem",
     "class/src/filesystem.js~Filesystem.html",
-    "<span>Filesystem</span> <span class=\"search-result-import-path\">@meeseOS/server/src/filesystem.js</span>",
+    "<span>Filesystem</span> <span class=\"search-result-import-path\">@meese-os/server/src/filesystem.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/package.js~package",
+    "@meese-os/server/src/package.js~package",
     "class/src/package.js~Package.html",
-    "<span>Package</span> <span class=\"search-result-import-path\">@meeseOS/server/src/package.js</span>",
+    "<span>Package</span> <span class=\"search-result-import-path\">@meese-os/server/src/package.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/providers/packages.js~packageserviceprovider",
+    "@meese-os/server/src/providers/packages.js~packageserviceprovider",
     "class/src/providers/packages.js~PackageServiceProvider.html",
-    "<span>PackageServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/packages.js</span>",
+    "<span>PackageServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/packages.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/packages.js~packages",
+    "@meese-os/server/src/packages.js~packages",
     "class/src/packages.js~Packages.html",
-    "<span>Packages</span> <span class=\"search-result-import-path\">@meeseOS/server/src/packages.js</span>",
+    "<span>Packages</span> <span class=\"search-result-import-path\">@meese-os/server/src/packages.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/providers/auth.js~serviceprovider",
+    "@meese-os/server/src/providers/auth.js~serviceprovider",
     "variable/index.html#static-variable-ServiceProvider",
-    "<span>ServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/auth.js</span>",
+    "<span>ServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/auth.js</span>",
     "variable"
   ],
   [
-    "@meeseos/server/src/settings.js~settings",
+    "@meese-os/server/src/settings.js~settings",
     "class/src/settings.js~Settings.html",
-    "<span>Settings</span> <span class=\"search-result-import-path\">@meeseOS/server/src/settings.js</span>",
+    "<span>Settings</span> <span class=\"search-result-import-path\">@meese-os/server/src/settings.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/providers/settings.js~settingsserviceprovider",
+    "@meese-os/server/src/providers/settings.js~settingsserviceprovider",
     "class/src/providers/settings.js~SettingsServiceProvider.html",
-    "<span>SettingsServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/settings.js</span>",
+    "<span>SettingsServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/settings.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/utils/token-factory.js~tokenfactory",
+    "@meese-os/server/src/utils/token-factory.js~tokenfactory",
     "class/src/utils/token-factory.js~TokenFactory.html",
-    "<span>TokenFactory</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/token-factory.js</span>",
+    "<span>TokenFactory</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/token-factory.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/providers/token-factory.js~tokenfactoryserviceprovider",
+    "@meese-os/server/src/providers/token-factory.js~tokenfactoryserviceprovider",
     "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html",
-    "<span>TokenFactoryServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/token-factory.js</span>",
+    "<span>TokenFactoryServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/token-factory.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/utils/token-storage.js~tokenstorage",
+    "@meese-os/server/src/utils/token-storage.js~tokenstorage",
     "class/src/utils/token-storage.js~TokenStorage.html",
-    "<span>TokenStorage</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/token-storage.js</span>",
+    "<span>TokenStorage</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/token-storage.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/providers/token-storage.js~tokenstorageserviceprovider",
+    "@meese-os/server/src/providers/token-storage.js~tokenstorageserviceprovider",
     "class/src/providers/token-storage.js~TokenStorageServiceProvider.html",
-    "<span>TokenStorageServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/token-storage.js</span>",
+    "<span>TokenStorageServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/token-storage.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/providers/vfs.js~vfsserviceprovider",
+    "@meese-os/server/src/providers/vfs.js~vfsserviceprovider",
     "class/src/providers/vfs.js~VFSServiceProvider.html",
-    "<span>VFSServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/server/src/providers/vfs.js</span>",
+    "<span>VFSServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/server/src/providers/vfs.js</span>",
     "class"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~checkmountpointpermission",
+    "@meese-os/server/src/utils/vfs.js~checkmountpointpermission",
     "function/index.html#static-function-checkMountpointPermission",
-    "<span>checkMountpointPermission</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>checkMountpointPermission</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~createerror",
+    "@meese-os/server/src/utils/vfs.js~createerror",
     "function/index.html#static-function-createError",
-    "<span>createError</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>createError</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~errorcodes",
+    "@meese-os/server/src/utils/vfs.js~errorcodes",
     "variable/index.html#static-variable-errorCodes",
-    "<span>errorCodes</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>errorCodes</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "variable"
   ],
   [
-    "@meeseos/server/src/adapters/settings/fs.js~fs",
+    "@meese-os/server/src/adapters/settings/fs.js~fs",
     "function/index.html#static-function-fs",
-    "<span>fs</span> <span class=\"search-result-import-path\">@meeseOS/server/src/adapters/settings/fs.js</span>",
+    "<span>fs</span> <span class=\"search-result-import-path\">@meese-os/server/src/adapters/settings/fs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~getprefix",
+    "@meese-os/server/src/utils/vfs.js~getprefix",
     "function/index.html#static-function-getPrefix",
-    "<span>getPrefix</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>getPrefix</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~methodarguments",
+    "@meese-os/server/src/utils/vfs.js~methodarguments",
     "variable/index.html#static-variable-methodArguments",
-    "<span>methodArguments</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>methodArguments</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "variable"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~mountpointresolver",
+    "@meese-os/server/src/utils/vfs.js~mountpointresolver",
     "function/index.html#static-function-mountpointResolver",
-    "<span>mountpointResolver</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>mountpointResolver</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/adapters/auth/null.js~null",
+    "@meese-os/server/src/adapters/auth/null.js~null",
     "function/index.html#static-function-null",
-    "<span>null</span> <span class=\"search-result-import-path\">@meeseOS/server/src/adapters/auth/null.js</span>",
+    "<span>null</span> <span class=\"search-result-import-path\">@meese-os/server/src/adapters/auth/null.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/adapters/settings/null.js~null",
+    "@meese-os/server/src/adapters/settings/null.js~null",
     "function/index.html#static-function-null",
-    "<span>null</span> <span class=\"search-result-import-path\">@meeseOS/server/src/adapters/settings/null.js</span>",
+    "<span>null</span> <span class=\"search-result-import-path\">@meese-os/server/src/adapters/settings/null.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~parsefields",
+    "@meese-os/server/src/utils/vfs.js~parsefields",
     "function/index.html#static-function-parseFields",
-    "<span>parseFields</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>parseFields</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~sanitize",
+    "@meese-os/server/src/utils/vfs.js~sanitize",
     "function/index.html#static-function-sanitize",
-    "<span>sanitize</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>sanitize</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~streamfromrequest",
+    "@meese-os/server/src/utils/vfs.js~streamfromrequest",
     "function/index.html#static-function-streamFromRequest",
-    "<span>streamFromRequest</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>streamFromRequest</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/adapters/vfs/system.js~system",
+    "@meese-os/server/src/adapters/vfs/system.js~system",
     "function/index.html#static-function-system",
-    "<span>system</span> <span class=\"search-result-import-path\">@meeseOS/server/src/adapters/vfs/system.js</span>",
+    "<span>system</span> <span class=\"search-result-import-path\">@meese-os/server/src/adapters/vfs/system.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/utils/vfs.js~validategroups",
+    "@meese-os/server/src/utils/vfs.js~validategroups",
     "function/index.html#static-function-validateGroups",
-    "<span>validateGroups</span> <span class=\"search-result-import-path\">@meeseOS/server/src/utils/vfs.js</span>",
+    "<span>validateGroups</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
     "function"
   ],
   [
-    "@meeseos/server/src/vfs.js~vfs",
+    "@meese-os/server/src/vfs.js~vfs",
     "function/index.html#static-function-vfs",
-    "<span>vfs</span> <span class=\"search-result-import-path\">@meeseOS/server/src/vfs.js</span>",
+    "<span>vfs</span> <span class=\"search-result-import-path\">@meese-os/server/src/vfs.js</span>",
     "function"
   ],
   [

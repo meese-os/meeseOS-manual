@@ -1,176 +1,176 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/gui/src/components/box.js~box",
+    "@meese-os/gui/src/components/box.js~box",
     "function/index.html#static-function-Box",
-    "<span>Box</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Box.js</span>",
+    "<span>Box</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Box.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/boxcontainer.js~boxcontainer",
+    "@meese-os/gui/src/components/boxcontainer.js~boxcontainer",
     "function/index.html#static-function-BoxContainer",
-    "<span>BoxContainer</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/BoxContainer.js</span>",
+    "<span>BoxContainer</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/BoxContainer.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/boxstyled.js~boxstyled",
+    "@meese-os/gui/src/components/boxstyled.js~boxstyled",
     "function/index.html#static-function-BoxStyled",
-    "<span>BoxStyled</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/BoxStyled.js</span>",
+    "<span>BoxStyled</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/BoxStyled.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/button.js~button",
+    "@meese-os/gui/src/components/button.js~button",
     "function/index.html#static-function-Button",
-    "<span>Button</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Button.js</span>",
+    "<span>Button</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Button.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/contextmenu.js~contextmenu",
+    "@meese-os/gui/src/contextmenu.js~contextmenu",
     "class/src/contextmenu.js~ContextMenu.html",
-    "<span>ContextMenu</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/contextmenu.js</span>",
+    "<span>ContextMenu</span> <span class=\"search-result-import-path\">@meese-os/gui/src/contextmenu.js</span>",
     "class"
   ],
   [
-    "@meeseos/gui/src/components/element.js~element",
+    "@meese-os/gui/src/components/element.js~element",
     "function/index.html#static-function-Element",
-    "<span>Element</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Element.js</span>",
+    "<span>Element</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Element.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/expander.js~expander",
+    "@meese-os/gui/src/components/expander.js~expander",
     "function/index.html#static-function-Expander",
-    "<span>Expander</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Expander.js</span>",
+    "<span>Expander</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Expander.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/provider.js~guiserviceprovider",
+    "@meese-os/gui/src/provider.js~guiserviceprovider",
     "class/src/provider.js~GUIServiceProvider.html",
-    "<span>GUIServiceProvider</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/provider.js</span>",
+    "<span>GUIServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/gui/src/provider.js</span>",
     "class"
   ],
   [
-    "@meeseos/gui/src/components/icon.js~icon",
+    "@meese-os/gui/src/components/icon.js~icon",
     "function/index.html#static-function-Icon",
-    "<span>Icon</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Icon.js</span>",
+    "<span>Icon</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Icon.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/iframe.js~iframe",
+    "@meese-os/gui/src/components/iframe.js~iframe",
     "function/index.html#static-function-Iframe",
-    "<span>Iframe</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Iframe.js</span>",
+    "<span>Iframe</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Iframe.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/image.js~image",
+    "@meese-os/gui/src/components/image.js~image",
     "function/index.html#static-function-Image",
-    "<span>Image</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Image.js</span>",
+    "<span>Image</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Image.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/label.js~label",
+    "@meese-os/gui/src/components/label.js~label",
     "function/index.html#static-function-Label",
-    "<span>Label</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Label.js</span>",
+    "<span>Label</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Label.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/menu.js~menu",
+    "@meese-os/gui/src/components/menu.js~menu",
     "function/index.html#static-function-Menu",
-    "<span>Menu</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Menu.js</span>",
+    "<span>Menu</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Menu.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/menubar.js~menubar",
+    "@meese-os/gui/src/components/menubar.js~menubar",
     "function/index.html#static-function-Menubar",
-    "<span>Menubar</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Menubar.js</span>",
+    "<span>Menubar</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Menubar.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/menubar.js~menubaritem",
+    "@meese-os/gui/src/components/menubar.js~menubaritem",
     "function/index.html#static-function-MenubarItem",
-    "<span>MenubarItem</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Menubar.js</span>",
+    "<span>MenubarItem</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Menubar.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/panes.js~panes",
+    "@meese-os/gui/src/components/panes.js~panes",
     "function/index.html#static-function-Panes",
-    "<span>Panes</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Panes.js</span>",
+    "<span>Panes</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Panes.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/progressbar.js~progressbar",
+    "@meese-os/gui/src/components/progressbar.js~progressbar",
     "function/index.html#static-function-Progressbar",
-    "<span>Progressbar</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Progressbar.js</span>",
+    "<span>Progressbar</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Progressbar.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/rangefield.js~rangefield",
+    "@meese-os/gui/src/components/rangefield.js~rangefield",
     "function/index.html#static-function-RangeField",
-    "<span>RangeField</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/RangeField.js</span>",
+    "<span>RangeField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/RangeField.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/selectfield.js~selectfield",
+    "@meese-os/gui/src/components/selectfield.js~selectfield",
     "function/index.html#static-function-SelectField",
-    "<span>SelectField</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/SelectField.js</span>",
+    "<span>SelectField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/SelectField.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/statusbar.js~statusbar",
+    "@meese-os/gui/src/components/statusbar.js~statusbar",
     "function/index.html#static-function-Statusbar",
-    "<span>Statusbar</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Statusbar.js</span>",
+    "<span>Statusbar</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Statusbar.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/tabs.js~tabs",
+    "@meese-os/gui/src/components/tabs.js~tabs",
     "function/index.html#static-function-Tabs",
-    "<span>Tabs</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Tabs.js</span>",
+    "<span>Tabs</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Tabs.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/textfield.js~textfield",
+    "@meese-os/gui/src/components/textfield.js~textfield",
     "function/index.html#static-function-TextField",
-    "<span>TextField</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/TextField.js</span>",
+    "<span>TextField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/TextField.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/textareafield.js~textareafield",
+    "@meese-os/gui/src/components/textareafield.js~textareafield",
     "function/index.html#static-function-TextareaField",
-    "<span>TextareaField</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/TextareaField.js</span>",
+    "<span>TextareaField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/TextareaField.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/togglefield.js~togglefield",
+    "@meese-os/gui/src/components/togglefield.js~togglefield",
     "function/index.html#static-function-ToggleField",
-    "<span>ToggleField</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/ToggleField.js</span>",
+    "<span>ToggleField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/ToggleField.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/toolbar.js~toolbar",
+    "@meese-os/gui/src/components/toolbar.js~toolbar",
     "function/index.html#static-function-Toolbar",
-    "<span>Toolbar</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Toolbar.js</span>",
+    "<span>Toolbar</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Toolbar.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/components/video.js~video",
+    "@meese-os/gui/src/components/video.js~video",
     "function/index.html#static-function-Video",
-    "<span>Video</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/components/Video.js</span>",
+    "<span>Video</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Video.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/element.js~createfield",
+    "@meese-os/gui/src/element.js~createfield",
     "function/index.html#static-function-createField",
-    "<span>createField</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/element.js</span>",
+    "<span>createField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/element.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/utils.js~doubletap",
+    "@meese-os/gui/src/utils.js~doubletap",
     "function/index.html#static-function-doubleTap",
-    "<span>doubleTap</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/utils.js</span>",
+    "<span>doubleTap</span> <span class=\"search-result-import-path\">@meese-os/gui/src/utils.js</span>",
     "function"
   ],
   [
-    "@meeseos/gui/src/utils.js~filteredprops",
+    "@meese-os/gui/src/utils.js~filteredprops",
     "function/index.html#static-function-filteredProps",
-    "<span>filteredProps</span> <span class=\"search-result-import-path\">@meeseOS/gui/src/utils.js</span>",
+    "<span>filteredProps</span> <span class=\"search-result-import-path\">@meese-os/gui/src/utils.js</span>",
     "function"
   ],
   [

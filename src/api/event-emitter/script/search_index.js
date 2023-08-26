@@ -1,8 +1,8 @@
 window.esdocSearchIndex = [
   [
-    "@meeseos/event-emitter/event-emitter/index.js~eventemitter",
+    "@meese-os/event-emitter/event-emitter/index.js~eventemitter",
     "class/event-emitter/index.js~EventEmitter.html",
-    "<span>EventEmitter</span> <span class=\"search-result-import-path\">@meeseOS/event-emitter/event-emitter/index.js</span>",
+    "<span>EventEmitter</span> <span class=\"search-result-import-path\">@meese-os/event-emitter/event-emitter/index.js</span>",
     "class"
   ],
   [
