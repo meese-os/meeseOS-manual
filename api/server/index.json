@@ -4995,7 +4995,7 @@
     "__docId__": 227,
     "kind": "file",
     "name": "src/providers/token-factory.js",
-    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenFactory = require(\"../utils/token-factory\");\n\n/**\n * MeeseOS Token Factory Service Provider\n */\nclass TokenFactoryServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactory}\n\t\t */\n\t\tthis.tokenFactory = new TokenFactory(this.core);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.tokenFactory.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-factory\", () => this.tokenFactory);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = TokenFactoryServiceProvider;\n",
+    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenFactory = require(\"../utils/token-factory\");\n\n/**\n * MeeseOS Token Factory Service Provider\n */\nclass TokenFactoryServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactory}\n\t\t */\n\t\tthis.tokenFactory = new TokenFactory(this.core);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.tokenFactory.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-factory\", () => this.tokenFactory);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = TokenFactoryServiceProvider;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/providers/token-factory.js",
     "access": "public",
@@ -5014,7 +5014,7 @@
     "importPath": "@meese-os/server/src/providers/token-factory.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 32,
+    "lineNumber": 35,
     "undocument": true,
     "type": {
       "types": [
@@ -5035,7 +5035,7 @@
     "importPath": "@meese-os/server/src/providers/token-factory.js",
     "importStyle": "TokenFactoryServiceProvider",
     "description": "MeeseOS Token Factory Service Provider",
-    "lineNumber": 38,
+    "lineNumber": 41,
     "interface": false,
     "extends": [
       "ServiceProvider"
@@ -5052,7 +5052,7 @@
     "longname": "src/providers/token-factory.js~TokenFactoryServiceProvider#constructor",
     "access": "public",
     "description": "Create new instance.",
-    "lineNumber": 43,
+    "lineNumber": 46,
     "params": [
       {
         "nullable": null,
@@ -5075,7 +5075,7 @@
     "longname": "src/providers/token-factory.js~TokenFactoryServiceProvider#core",
     "access": "public",
     "description": "",
-    "lineNumber": 49,
+    "lineNumber": 52,
     "type": {
       "nullable": null,
       "types": [
@@ -5094,7 +5094,7 @@
     "longname": "src/providers/token-factory.js~TokenFactoryServiceProvider#tokenFactory",
     "access": "public",
     "description": "",
-    "lineNumber": 54,
+    "lineNumber": 57,
     "type": {
       "nullable": null,
       "types": [
@@ -5115,7 +5115,7 @@
     "longname": "src/providers/token-factory.js~TokenFactoryServiceProvider#depends",
     "access": "public",
     "description": "A list of services this provider depends on.",
-    "lineNumber": 61,
+    "lineNumber": 64,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5143,7 +5143,7 @@
     "longname": "src/providers/token-factory.js~TokenFactoryServiceProvider#provides",
     "access": "public",
     "description": "Get a list of services this provider registers.",
-    "lineNumber": 69,
+    "lineNumber": 72,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5171,7 +5171,7 @@
     "longname": "src/providers/token-factory.js~TokenFactoryServiceProvider#init",
     "access": "public",
     "description": "Initializes provider.",
-    "lineNumber": 76,
+    "lineNumber": 79,
     "params": [],
     "return": null
   },
@@ -5186,7 +5186,7 @@
     "longname": "src/providers/token-factory.js~TokenFactoryServiceProvider#destroy",
     "access": "public",
     "description": "Destroys provider.",
-    "lineNumber": 85,
+    "lineNumber": 88,
     "params": [],
     "return": null
   },
@@ -5194,7 +5194,7 @@
     "__docId__": 237,
     "kind": "file",
     "name": "src/providers/token-storage.js",
-    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenStorage = require(\"../utils/token-storage\");\n\n/**\n * MeeseOS Token Storage Service Provider\n */\nclass TokenStorageServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\t\tthis.options = options;\n\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = new TokenStorage(this.core, this.options);\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.storage.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-storage\", () => this.storage);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tthis.storage.destroy();\n\t}\n}\n\nmodule.exports = TokenStorageServiceProvider;\n",
+    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenStorage = require(\"../utils/token-storage\");\n\n/**\n * MeeseOS Token Storage Service Provider\n */\nclass TokenStorageServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\t\tthis.options = options;\n\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = new TokenStorage(this.core, this.options);\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.storage.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-storage\", () => this.storage);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tthis.storage.destroy();\n\t}\n}\n\nmodule.exports = TokenStorageServiceProvider;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/providers/token-storage.js",
     "access": "public",
@@ -5213,7 +5213,7 @@
     "importPath": "@meese-os/server/src/providers/token-storage.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 32,
+    "lineNumber": 35,
     "undocument": true,
     "type": {
       "types": [
@@ -5234,7 +5234,7 @@
     "importPath": "@meese-os/server/src/providers/token-storage.js",
     "importStyle": "TokenStorageServiceProvider",
     "description": "MeeseOS Token Storage Service Provider",
-    "lineNumber": 38,
+    "lineNumber": 41,
     "interface": false,
     "extends": [
       "ServiceProvider"
@@ -5251,7 +5251,7 @@
     "longname": "src/providers/token-storage.js~TokenStorageServiceProvider#constructor",
     "access": "public",
     "description": "Create new instance.",
-    "lineNumber": 44,
+    "lineNumber": 47,
     "params": [
       {
         "nullable": null,
@@ -5286,7 +5286,7 @@
     "longname": "src/providers/token-storage.js~TokenStorageServiceProvider#core",
     "access": "public",
     "description": "",
-    "lineNumber": 50,
+    "lineNumber": 53,
     "type": {
       "nullable": null,
       "types": [
@@ -5305,7 +5305,7 @@
     "longname": "src/providers/token-storage.js~TokenStorageServiceProvider#options",
     "access": "public",
     "description": null,
-    "lineNumber": 51,
+    "lineNumber": 54,
     "undocument": true,
     "type": {
       "types": [
@@ -5323,7 +5323,7 @@
     "longname": "src/providers/token-storage.js~TokenStorageServiceProvider#storage",
     "access": "public",
     "description": "",
-    "lineNumber": 56,
+    "lineNumber": 59,
     "type": {
       "nullable": null,
       "types": [
@@ -5344,7 +5344,7 @@
     "longname": "src/providers/token-storage.js~TokenStorageServiceProvider#provides",
     "access": "public",
     "description": "Get a list of services this provider registers.",
-    "lineNumber": 63,
+    "lineNumber": 66,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5372,7 +5372,7 @@
     "longname": "src/providers/token-storage.js~TokenStorageServiceProvider#init",
     "access": "public",
     "description": "Initializes provider.",
-    "lineNumber": 70,
+    "lineNumber": 73,
     "params": [],
     "return": null
   },
@@ -5387,7 +5387,7 @@
     "longname": "src/providers/token-storage.js~TokenStorageServiceProvider#destroy",
     "access": "public",
     "description": "Destroys provider.",
-    "lineNumber": 79,
+    "lineNumber": 82,
     "params": [],
     "return": null
   },
@@ -6294,7 +6294,7 @@
     "__docId__": 282,
     "kind": "file",
     "name": "src/utils/token-storage.js",
-    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Simplified BSD License\n */\n\nconst loki = require(\"lokijs\");\n\n/**\n * Token Storage Options\n * @typedef {Object} TokenStorageOptions\n * @property {String} [databaseName]\n * @property {String} [collectionName]\n * @property {Object} [databaseOptions]\n */\n\n/**\n * Token Storage\n */\nclass TokenStorage {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenStorageOptions} [options={}] Token Storage arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenStorageOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\t...this.core.configuration.session.store,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes the instance.\n\t */\n\tinit() {\n\t\tthis.db = new loki(\n\t\t\tthis.options.databaseName,\n\t\t\t{\n\t\t\t\tautoloadCallback: () => {\n\t\t\t\t\t// Returns the collection if it exists, otherwise creates it\n\t\t\t\t\tlet collection = this.db.getCollection(this.options.collectionName);\n\t\t\t\t\tif (!collection) {\n\t\t\t\t\t\tcollection = this.db.addCollection(this.options.collectionName);\n\t\t\t\t\t}\n\n\t\t\t\t\tthis.collection = collection;\n\t\t\t\t},\n\t\t\t\t...this.options.databaseOptions,\n\t\t\t},\n\t\t);\n\t}\n\n\t/**\n\t * Looks for a refresh token in the database and returns it if found.\n\t * @param {String} refreshToken The refresh token to look for\n\t * @returns {Object|null} The token if found or `null` if not\n\t */\n\tfind(refreshToken) {\n\t\treturn this.collection.findOne({ refreshToken });\n\t}\n\n\t/**\n\t * Adds a refresh token to the database.\n\t * @param {String} refreshToken The refresh token to add\n\t */\n\tcreate(refreshToken) {\n\t\t// The timestamp is used to make pruning old data easier\n\t\tconst timestamp = new Date().getTime();\n\t\tthis.collection.insert({ refreshToken, timestamp });\n\t}\n\n\t/**\n\t * Removes a refresh token from the database.\n\t * @param {String} refreshToken The refresh token to remove\n\t * @returns {Promise<Boolean>} `true` if the token was removed, otherwise `false`\n\t */\n\tremove(refreshToken) {\n\t\tconst row = this.collection.findOne({ refreshToken });\n\t\tif (row) {\n\t\t\tthis.collection.remove(row);\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t */\n\tdestroy() {\n\t\tthis.db.close();\n\t}\n}\n\nmodule.exports = TokenStorage;\n",
+    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst loki = require(\"lokijs\");\n\n/**\n * Token Storage Options\n * @typedef {Object} TokenStorageOptions\n * @property {String} [databaseName]\n * @property {String} [collectionName]\n * @property {Object} [databaseOptions]\n */\n\n/**\n * Token Storage\n */\nclass TokenStorage {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenStorageOptions} [options={}] Token Storage arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenStorageOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\t...this.core.configuration.session.store,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes the instance.\n\t */\n\tinit() {\n\t\tthis.db = new loki(\n\t\t\tthis.options.databaseName,\n\t\t\t{\n\t\t\t\tautoloadCallback: () => {\n\t\t\t\t\t// Returns the collection if it exists, otherwise creates it\n\t\t\t\t\tlet collection = this.db.getCollection(this.options.collectionName);\n\t\t\t\t\tif (!collection) {\n\t\t\t\t\t\tcollection = this.db.addCollection(this.options.collectionName);\n\t\t\t\t\t}\n\n\t\t\t\t\tthis.collection = collection;\n\t\t\t\t},\n\t\t\t\t...this.options.databaseOptions,\n\t\t\t},\n\t\t);\n\t}\n\n\t/**\n\t * Looks for a refresh token in the database and returns it if found.\n\t * @param {String} refreshToken The refresh token to look for\n\t * @returns {Object|null} The token if found or `null` if not\n\t */\n\tfind(refreshToken) {\n\t\treturn this.collection.findOne({ refreshToken });\n\t}\n\n\t/**\n\t * Adds a refresh token to the database.\n\t * @param {String} refreshToken The refresh token to add\n\t */\n\tcreate(refreshToken) {\n\t\t// The timestamp is used to make pruning old data easier\n\t\tconst timestamp = new Date().getTime();\n\t\tthis.collection.insert({ refreshToken, timestamp });\n\t}\n\n\t/**\n\t * Removes a refresh token from the database.\n\t * @param {String} refreshToken The refresh token to remove\n\t * @returns {Promise<Boolean>} `true` if the token was removed, otherwise `false`\n\t */\n\tremove(refreshToken) {\n\t\tconst row = this.collection.findOne({ refreshToken });\n\t\tif (row) {\n\t\t\tthis.collection.remove(row);\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t */\n\tdestroy() {\n\t\tthis.db.close();\n\t}\n}\n\nmodule.exports = TokenStorage;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/utils/token-storage.js",
     "access": "public",
@@ -6362,7 +6362,7 @@
     "importPath": "@meese-os/server/src/utils/token-storage.js",
     "importStyle": "TokenStorage",
     "description": "Token Storage",
-    "lineNumber": 44,
+    "lineNumber": 47,
     "interface": false
   },
   {
@@ -6376,7 +6376,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#constructor",
     "access": "public",
     "description": "Creates a new instance.",
-    "lineNumber": 50,
+    "lineNumber": 53,
     "params": [
       {
         "nullable": null,
@@ -6411,7 +6411,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#core",
     "access": "public",
     "description": "",
-    "lineNumber": 54,
+    "lineNumber": 57,
     "type": {
       "nullable": null,
       "types": [
@@ -6430,7 +6430,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#options",
     "access": "public",
     "description": "",
-    "lineNumber": 59,
+    "lineNumber": 62,
     "type": {
       "nullable": null,
       "types": [
@@ -6451,7 +6451,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#init",
     "access": "public",
     "description": "Initializes the instance.",
-    "lineNumber": 68,
+    "lineNumber": 71,
     "params": [],
     "return": null
   },
@@ -6464,7 +6464,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#db",
     "access": "public",
     "description": null,
-    "lineNumber": 69,
+    "lineNumber": 72,
     "undocument": true,
     "type": {
       "types": [
@@ -6482,7 +6482,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#collection",
     "access": "public",
     "description": null,
-    "lineNumber": 79,
+    "lineNumber": 82,
     "undocument": true,
     "type": {
       "types": [
@@ -6502,7 +6502,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#find",
     "access": "public",
     "description": "Looks for a refresh token in the database and returns it if found.",
-    "lineNumber": 91,
+    "lineNumber": 94,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6542,7 +6542,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#create",
     "access": "public",
     "description": "Adds a refresh token to the database.",
-    "lineNumber": 99,
+    "lineNumber": 102,
     "params": [
       {
         "nullable": null,
@@ -6568,7 +6568,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#remove",
     "access": "public",
     "description": "Removes a refresh token from the database.",
-    "lineNumber": 110,
+    "lineNumber": 113,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6607,7 +6607,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#destroy",
     "access": "public",
     "description": "Destroys the instance.",
-    "lineNumber": 123,
+    "lineNumber": 126,
     "params": [],
     "return": null
   },

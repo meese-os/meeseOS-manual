@@ -1968,7 +1968,7 @@
     "__docId__": 99,
     "kind": "file",
     "name": "src/application.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\n/* eslint-disable no-unused-vars */\nimport { EventEmitter } from \"@meese-os/event-emitter\";\nimport { loadOptionsFromConfig } from \"./utils/windows\";\nimport logger from \"./logger\";\nimport merge from \"deepmerge\";\nimport Websocket from \"./websocket\";\nimport Window from \"./window\";\nimport Core from \"../src/core.js\";\n/* eslint-enable no-unused-vars */\n\nconst applications = [];\nlet applicationCount = 0;\n\nconst getSettingsKey = (metadata) => \"meeseOS/application/\" + metadata.name;\n\n/**\n * Application Options\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {Boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {Boolean} [sessionable=true] Allow session storage\n */\n\n/**\n * Application Data\n *\n * @typedef {Object} ApplicationData\n * @property {{foo: *}} args Launch arguments\n * @property {ApplicationOptions} [options] Options\n * @property {PackageMetadata} [metadata] Package Metadata\n */\n\n/**\n * Application Session\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {String} name\n * @property {WindowSession[]} windows\n */\n\n/**\n * Base class for an Application\n */\nexport default class Application extends EventEmitter {\n\t/**\n\t * Create application\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {ApplicationData} data Application data\n\t */\n\tconstructor(core, data) {\n\t\tdata = {\n\t\t\targs: {},\n\t\t\toptions: {},\n\t\t\tmetadata: {},\n\t\t\t...data,\n\t\t};\n\n\t\tlogger.debug(\"Application::constructor()\", data);\n\n\t\tconst defaultSettings = data.options.settings\n\t\t\t? { ...data.options.settings }\n\t\t\t: {};\n\n\t\tconst name = data.metadata && data.metadata.name\n\t\t\t? \"Application@\" + data.metadata.name\n\t\t\t: \"Application\" + String(applicationCount);\n\n\t\tsuper(name);\n\n\t\t/**\n\t\t * The Application ID\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.pid = applicationCount;\n\n\t\t/**\n\t\t * Core instance reference\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Application arguments\n\t\t * @type {{foo: *}}\n\t\t */\n\t\tthis.args = data.args;\n\n\t\t/**\n\t\t * Application options\n\t\t * @type {ApplicationOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tsessionable: true,\n\t\t\twindowAutoFocus: true,\n\t\t\t...data.options,\n\t\t};\n\n\t\t/**\n\t\t * Application metadata\n\t\t * @type {PackageMetadata}\n\t\t * @readonly\n\t\t */\n\t\tthis.metadata = data.metadata;\n\n\t\t/**\n\t\t * Window list\n\t\t * @type {Window[]}\n\t\t */\n\t\tthis.windows = [];\n\n\t\t/**\n\t\t * Worker instances\n\t\t * @type {Worker[]}\n\t\t */\n\t\tthis.workers = [];\n\n\t\t/**\n\t\t * Options for internal fetch/requests\n\t\t * @type {Object}\n\t\t */\n\t\tthis.requestOptions = {};\n\n\t\t/**\n\t\t * The application destruction state\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.destroyed = false;\n\n\t\t/**\n\t\t * Application settings\n\t\t * @type {{foo: *}}\n\t\t */\n\t\tthis.settings = core\n\t\t\t.make(\"meeseOS/settings\")\n\t\t\t.get(getSettingsKey(this.metadata), null, defaultSettings);\n\n\t\t/**\n\t\t * Application started time\n\t\t * @type {Date}\n\t\t * @readonly\n\t\t */\n\t\tthis.started = new Date();\n\n\t\t/**\n\t\t * Application WebSockets\n\t\t * @type {Websocket[]}\n\t\t */\n\t\tthis.sockets = [];\n\n\t\tapplications.push(this);\n\t\tapplicationCount++;\n\n\t\tthis.core.emit(\"meeseOS/application:create\", this);\n\t}\n\n\t/**\n\t * Destroy application\n\t */\n\tdestroy(remove = true) {\n\t\tif (this.destroyed) return;\n\n\t\tthis.destroyed = true;\n\t\tthis.emit(\"destroy\");\n\t\tthis.core.emit(\"meeseOS/application:destroy\", this);\n\n\t\tconst destroy = (list, fn) => {\n\t\t\ttry {\n\t\t\t\tlist.forEach(fn);\n\t\t\t} catch (e) {\n\t\t\t\tlogger.warn(\"Exception on application destruction\", e);\n\t\t\t}\n\n\t\t\treturn [];\n\t\t};\n\n\t\tthis.windows = destroy(this.windows, (window) => window.destroy());\n\t\tthis.sockets = destroy(this.sockets, (ws) => ws.close());\n\t\tthis.workers = destroy(this.workers, (worker) => worker.terminate());\n\n\t\tif (remove) {\n\t\t\tconst foundIndex = applications.findIndex((a) => a === this);\n\t\t\tif (foundIndex !== -1) {\n\t\t\t\tapplications.splice(foundIndex, 1);\n\t\t\t}\n\t\t}\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Re-launch this application\n\t */\n\trelaunch() {\n\t\tconst windows = this.windows.map((w) => w.getSession());\n\n\t\tthis.destroy();\n\n\t\tsetTimeout(() => {\n\t\t\tthis.core.run(\n\t\t\t\tthis.metadata.name,\n\t\t\t\t{ ...this.args },\n\t\t\t\t{\n\t\t\t\t\t...this.options,\n\t\t\t\t\tforcePreload: this.core.config(\"development\"),\n\t\t\t\t\trestore: { windows },\n\t\t\t\t}\n\t\t\t);\n\t\t}, 1);\n\t}\n\n\t/**\n\t * Gets a URI to a resource for this application\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {String} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {String} A complete URI\n\t */\n\tresource(path = \"/\", options = {}) {\n\t\treturn this.core.url(path, options, this.metadata);\n\t}\n\n\t/**\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {String} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t */\n\trequest(path = \"/\", options = {}, type = \"json\") {\n\t\tconst uri = this.resource(path);\n\n\t\treturn this.core.request(uri, options, type);\n\t}\n\n\t/**\n\t * Creates a new Websocket.\n\t * @param {String} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t */\n\tsocket(path = \"/socket\", options = {}) {\n\t\toptions = {\n\t\t\tsocket: {},\n\t\t\t...options,\n\t\t};\n\n\t\tconst uri = this.resource(path, { type: \"websocket\" });\n\t\tconst ws = new Websocket(this.metadata.name, uri, options.socket);\n\n\t\tthis.sockets.push(ws);\n\n\t\treturn ws;\n\t}\n\n\t/**\n\t * Sends a message over Websocket via the core connection.\n\t *\n\t * This does not create a new connection, but rather uses the core connection.\n\t * For subscribing to messages from the server use the 'ws:message' event\n\t *\n\t * @param {*} ...args Arguments to pass to message\n\t */\n\tsend(...args) {\n\t\tthis.core.send(\"meeseOS/application:socket:message\", {\n\t\t\tpid: this.pid,\n\t\t\tname: this.metadata.name,\n\t\t\targs,\n\t\t});\n\t}\n\n\t/**\n\t * Creates a new Worker\n\t * @param {String} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t */\n\tworker(filename, options = {}) {\n\t\tconst uri = this.resource(filename);\n\t\tconst worker = new Worker(uri, {\n\t\t\tcredentials: \"same-origin\",\n\t\t\t...options,\n\t\t});\n\n\t\tthis.workers.push(worker);\n\n\t\treturn worker;\n\t}\n\n\t/**\n\t * Create a new window belonging to this application\n\t * @param {WindowOptions} [options={}] Window options\n\t * @returns {Window}\n\t */\n\tcreateWindow(options = {}) {\n\t\tconst found = this.windows.find((window) => window.id === options.id);\n\t\tif (found) {\n\t\t\tconst msg = `Window with ID '${options.id}' already exists`;\n\t\t\tthrow new Error(msg);\n\t\t}\n\n\t\tconst configWindows = this.core.config(\"application.windows\", []);\n\t\tconst applyOptions = loadOptionsFromConfig(\n\t\t\tconfigWindows,\n\t\t\tthis.metadata.name,\n\t\t\toptions.id\n\t\t);\n\t\tconst instance = new Window(this.core, merge(options, applyOptions));\n\n\t\tif (this.options.restore) {\n\t\t\tconst windows = this.options.restore.windows || [];\n\t\t\tconst found = windows.findIndex((win) => win.id === instance.id);\n\n\t\t\tif (found !== -1) {\n\t\t\t\tconst restore = windows[found];\n\t\t\t\tinstance.setPosition(restore.position, true);\n\t\t\t\tinstance.setDimension(restore.dimension);\n\n\t\t\t\tif (restore.minimized) {\n\t\t\t\t\tinstance.minimize();\n\t\t\t\t} else if (restore.maximized) {\n\t\t\t\t\tinstance.maximize();\n\t\t\t\t}\n\n\t\t\t\tthis.options.restore.windows.splice(found, 1);\n\t\t\t}\n\t\t}\n\n\t\tinstance.init();\n\n\t\tthis.windows.push(instance);\n\n\t\tthis.emit(\"create-window\", instance);\n\t\tinstance.on(\"destroy\", () => {\n\t\t\tif (!this.destroyed) {\n\t\t\t\tconst foundIndex = this.windows.findIndex((win) => win === instance);\n\t\t\t\tif (foundIndex !== -1) {\n\t\t\t\t\tthis.windows.splice(foundIndex, 1);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tthis.emit(\"destroy-window\", instance);\n\t\t});\n\n\t\tif (this.options.windowAutoFocus) {\n\t\t\tinstance.focus();\n\t\t}\n\n\t\treturn instance;\n\t}\n\n\t/**\n\t * Removes window(s) based on given filter\n\t * @param {Function} filter Filter function\n\t */\n\tremoveWindow(filter) {\n\t\tconst found = this.windows.filter(filter);\n\t\tfound.forEach((win) => win.destroy());\n\t}\n\n\t/**\n\t * Gets a snapshot of the application session\n\t * @returns {ApplicationSession}\n\t */\n\tgetSession() {\n\t\tconst session = {\n\t\t\targs: { ...this.args },\n\t\t\tname: this.metadata.name,\n\t\t\twindows: this.windows\n\t\t\t\t.map((w) => w.getSession())\n\t\t\t\t.filter((s) => s !== null),\n\t\t};\n\n\t\treturn session;\n\t}\n\n\t/**\n\t * Saves settings\n\t * @returns {Promise<Boolean>}\n\t */\n\tsaveSettings() {\n\t\tconst service = this.core.make(\"meeseOS/settings\");\n\t\tconst name = getSettingsKey(this.metadata);\n\n\t\tservice.set(name, null, this.settings);\n\n\t\treturn service.save();\n\t}\n\n\t/**\n\t * Get a list of all running applications\n\t * @returns {Application[]}\n\t */\n\tstatic getApplications() {\n\t\treturn applications;\n\t}\n\n\t/**\n\t * Kills all running applications\n\t */\n\tstatic destroyAll() {\n\t\tapplications.forEach((proc) => {\n\t\t\ttry {\n\t\t\t\tproc.destroy(false);\n\t\t\t} catch (e) {\n\t\t\t\tlogger.warn(\"Exception on destroyAll\", e);\n\t\t\t}\n\t\t});\n\n\t\tapplications.splice(0, applications.length);\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @license Simplified BSD License\n */\n\n/* eslint-disable no-unused-vars */\nimport { EventEmitter } from \"@meese-os/event-emitter\";\nimport { loadOptionsFromConfig } from \"./utils/windows\";\nimport logger from \"./logger\";\nimport merge from \"deepmerge\";\nimport Websocket from \"./websocket\";\nimport Window from \"./window\";\nimport Core from \"../src/core.js\";\n/* eslint-enable no-unused-vars */\n\nconst applications = [];\nlet applicationCount = 0;\n\nconst getSettingsKey = (metadata) => \"meeseOS/application/\" + metadata.name;\n\n/**\n * Application Options.\n *\n * @typedef {Object} ApplicationOptions\n * @property {Object} [settings] Initial settings\n * @property {Object} [restore] Restore data\n * @property {Boolean} [windowAutoFocus=true] Auto-focus first created window\n * @property {Boolean} [sessionable=true] Allow session storage\n */\n\n/**\n * Application Data.\n *\n * @typedef {Object} ApplicationData\n * @property {{foo: *}} args Launch arguments\n * @property {ApplicationOptions} [options] Options\n * @property {PackageMetadata} [metadata] Package Metadata\n */\n\n/**\n * Application Session.\n *\n * @typedef {Object} ApplicationSession\n * @property {{foo: string}} args\n * @property {String} name\n * @property {WindowSession[]} windows\n */\n\n/**\n * Base class for an Application.\n */\nexport default class Application extends EventEmitter {\n\t/**\n\t * Create application.\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {ApplicationData} data Application data\n\t */\n\tconstructor(core, data) {\n\t\tdata = {\n\t\t\targs: {},\n\t\t\toptions: {},\n\t\t\tmetadata: {},\n\t\t\t...data,\n\t\t};\n\n\t\tlogger.debug(\"Application::constructor()\", data);\n\n\t\tconst defaultSettings = data.options.settings\n\t\t\t? { ...data.options.settings }\n\t\t\t: {};\n\n\t\tconst name = data.metadata && data.metadata.name\n\t\t\t? \"Application@\" + data.metadata.name\n\t\t\t: \"Application\" + String(applicationCount);\n\n\t\tsuper(name);\n\n\t\t/**\n\t\t * The Application ID.\n\t\t * @type {Number}\n\t\t * @readonly\n\t\t */\n\t\tthis.pid = applicationCount;\n\n\t\t/**\n\t\t * Core instance reference.\n\t\t * @type {Core}\n\t\t * @readonly\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * Application arguments.\n\t\t * @type {{foo: *}}\n\t\t */\n\t\tthis.args = data.args;\n\n\t\t/**\n\t\t * Application options.\n\t\t * @type {ApplicationOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tsessionable: true,\n\t\t\twindowAutoFocus: true,\n\t\t\t...data.options,\n\t\t};\n\n\t\t/**\n\t\t * Application metadata.\n\t\t * @type {PackageMetadata}\n\t\t * @readonly\n\t\t */\n\t\tthis.metadata = data.metadata;\n\n\t\t/**\n\t\t * Window list.\n\t\t * @type {Window[]}\n\t\t */\n\t\tthis.windows = [];\n\n\t\t/**\n\t\t * Worker instances.\n\t\t * @type {Worker[]}\n\t\t */\n\t\tthis.workers = [];\n\n\t\t/**\n\t\t * Options for internal fetch/requests.\n\t\t * @type {Object}\n\t\t */\n\t\tthis.requestOptions = {};\n\n\t\t/**\n\t\t * The application destruction state.\n\t\t * @type {Boolean}\n\t\t */\n\t\tthis.destroyed = false;\n\n\t\t/**\n\t\t * Application settings.\n\t\t * @type {{foo: *}}\n\t\t */\n\t\tthis.settings = core\n\t\t\t.make(\"meeseOS/settings\")\n\t\t\t.get(getSettingsKey(this.metadata), null, defaultSettings);\n\n\t\t/**\n\t\t * Application started time.\n\t\t * @type {Date}\n\t\t * @readonly\n\t\t */\n\t\tthis.started = new Date();\n\n\t\t/**\n\t\t * Application WebSockets.\n\t\t * @type {Websocket[]}\n\t\t */\n\t\tthis.sockets = [];\n\n\t\tapplications.push(this);\n\t\tapplicationCount++;\n\n\t\tthis.core.emit(\"meeseOS/application:create\", this);\n\t}\n\n\t/**\n\t * Destroy application.\n\t */\n\tdestroy(remove = true) {\n\t\tif (this.destroyed) return;\n\n\t\tthis.destroyed = true;\n\t\tthis.emit(\"destroy\");\n\t\tthis.core.emit(\"meeseOS/application:destroy\", this);\n\n\t\tconst destroy = (list, fn) => {\n\t\t\ttry {\n\t\t\t\tlist.forEach(fn);\n\t\t\t} catch (e) {\n\t\t\t\tlogger.warn(\"Exception on application destruction\", e);\n\t\t\t}\n\n\t\t\treturn [];\n\t\t};\n\n\t\tthis.windows = destroy(this.windows, (window) => window.destroy());\n\t\tthis.sockets = destroy(this.sockets, (ws) => ws.close());\n\t\tthis.workers = destroy(this.workers, (worker) => worker.terminate());\n\n\t\tif (remove) {\n\t\t\tconst foundIndex = applications.findIndex((a) => a === this);\n\t\t\tif (foundIndex !== -1) {\n\t\t\t\tapplications.splice(foundIndex, 1);\n\t\t\t}\n\t\t}\n\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Re-launch this application.\n\t */\n\trelaunch() {\n\t\tconst windows = this.windows.map((w) => w.getSession());\n\n\t\tthis.destroy();\n\n\t\tsetTimeout(() => {\n\t\t\tthis.core.run(\n\t\t\t\tthis.metadata.name,\n\t\t\t\t{ ...this.args },\n\t\t\t\t{\n\t\t\t\t\t...this.options,\n\t\t\t\t\tforcePreload: this.core.config(\"development\"),\n\t\t\t\t\trestore: { windows },\n\t\t\t\t}\n\t\t\t);\n\t\t}, 1);\n\t}\n\n\t/**\n\t * Gets a URI to a resource for this application.\n\t *\n\t * If given path is an URI it will just return itself.\n\t *\n\t * @param {String} path The path\n\t * @param {Object} [options] Options for url() in core\n\t * @returns {String} A complete URI\n\t */\n\tresource(path = \"/\", options = {}) {\n\t\treturn this.core.url(path, options, this.metadata);\n\t}\n\n\t/**\n\t * Performs a request to the MeeseOS server with the application\n\t * as the endpoint.\n\t * @param {String} [path=/] Append this to endpoint\n\t * @param {Options} [options] fetch options\n\t * @param {String} [type='json'] Request / Response type\n\t * @returns {Promise<*>} ArrayBuffer or JSON\n\t */\n\trequest(path = \"/\", options = {}, type = \"json\") {\n\t\tconst uri = this.resource(path);\n\n\t\treturn this.core.request(uri, options, type);\n\t}\n\n\t/**\n\t * Creates a new Websocket.\n\t * @param {String} [path=/socket] Append this to endpoint\n\t * @param {WebsocketOptions} [options={}] Connection options\n\t * @returns {Websocket}\n\t */\n\tsocket(path = \"/socket\", options = {}) {\n\t\toptions = {\n\t\t\tsocket: {},\n\t\t\t...options,\n\t\t};\n\n\t\tconst uri = this.resource(path, { type: \"websocket\" });\n\t\tconst ws = new Websocket(this.metadata.name, uri, options.socket);\n\n\t\tthis.sockets.push(ws);\n\n\t\treturn ws;\n\t}\n\n\t/**\n\t * Sends a message over Websocket via the core connection.\n\t *\n\t * This does not create a new connection, but rather uses the core connection.\n\t * For subscribing to messages from the server use the 'ws:message' event.\n\t *\n\t * @param {*} ...args Arguments to pass to message\n\t */\n\tsend(...args) {\n\t\tthis.core.send(\"meeseOS/application:socket:message\", {\n\t\t\tpid: this.pid,\n\t\t\tname: this.metadata.name,\n\t\t\targs,\n\t\t});\n\t}\n\n\t/**\n\t * Creates a new Worker.\n\t * @param {String} filename Worker filename\n\t * @param {Object} [options] Worker options\n\t * @returns {Worker}\n\t */\n\tworker(filename, options = {}) {\n\t\tconst uri = this.resource(filename);\n\t\tconst worker = new Worker(uri, {\n\t\t\tcredentials: \"same-origin\",\n\t\t\t...options,\n\t\t});\n\n\t\tthis.workers.push(worker);\n\n\t\treturn worker;\n\t}\n\n\t/**\n\t * Create a new window belonging to this application.\n\t * @param {WindowOptions} [options={}] Window options\n\t * @returns {Window}\n\t */\n\tcreateWindow(options = {}) {\n\t\tconst found = this.windows.find((window) => window.id === options.id);\n\t\tif (found) {\n\t\t\tconst msg = `Window with ID '${options.id}' already exists`;\n\t\t\tthrow new Error(msg);\n\t\t}\n\n\t\tconst configWindows = this.core.config(\"application.windows\", []);\n\t\tconst applyOptions = loadOptionsFromConfig(\n\t\t\tconfigWindows,\n\t\t\tthis.metadata.name,\n\t\t\toptions.id\n\t\t);\n\t\tconst instance = new Window(this.core, merge(options, applyOptions));\n\n\t\tif (this.options.restore) {\n\t\t\tconst windows = this.options.restore.windows || [];\n\t\t\tconst found = windows.findIndex((win) => win.id === instance.id);\n\n\t\t\tif (found !== -1) {\n\t\t\t\tconst restore = windows[found];\n\t\t\t\tinstance.setPosition(restore.position, true);\n\t\t\t\tinstance.setDimension(restore.dimension);\n\n\t\t\t\tif (restore.minimized) {\n\t\t\t\t\tinstance.minimize();\n\t\t\t\t} else if (restore.maximized) {\n\t\t\t\t\tinstance.maximize();\n\t\t\t\t}\n\n\t\t\t\tthis.options.restore.windows.splice(found, 1);\n\t\t\t}\n\t\t}\n\n\t\tinstance.init();\n\n\t\tthis.windows.push(instance);\n\n\t\tthis.emit(\"create-window\", instance);\n\t\tinstance.on(\"destroy\", () => {\n\t\t\tif (!this.destroyed) {\n\t\t\t\tconst foundIndex = this.windows.findIndex((win) => win === instance);\n\t\t\t\tif (foundIndex !== -1) {\n\t\t\t\t\tthis.windows.splice(foundIndex, 1);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tthis.emit(\"destroy-window\", instance);\n\t\t});\n\n\t\tif (this.options.windowAutoFocus) {\n\t\t\tinstance.focus();\n\t\t}\n\n\t\treturn instance;\n\t}\n\n\t/**\n\t * Removes window(s) based on given filter.\n\t * @param {Function} filter Filter function\n\t */\n\tremoveWindow(filter) {\n\t\tconst found = this.windows.filter(filter);\n\t\tfound.forEach((win) => win.destroy());\n\t}\n\n\t/**\n\t * Gets a snapshot of the application session\n\t * @returns {ApplicationSession}\n\t */\n\tgetSession() {\n\t\tconst session = {\n\t\t\targs: { ...this.args },\n\t\t\tname: this.metadata.name,\n\t\t\twindows: this.windows\n\t\t\t\t.map((w) => w.getSession())\n\t\t\t\t.filter((s) => s !== null),\n\t\t};\n\n\t\treturn session;\n\t}\n\n\t/**\n\t * Saves settings.\n\t * @returns {Promise<Boolean>}\n\t */\n\tsaveSettings() {\n\t\tconst service = this.core.make(\"meeseOS/settings\");\n\t\tconst name = getSettingsKey(this.metadata);\n\n\t\tservice.set(name, null, this.settings);\n\n\t\treturn service.save();\n\t}\n\n\t/**\n\t * Get a list of all running applications.\n\t * @returns {Application[]}\n\t */\n\tstatic getApplications() {\n\t\treturn applications;\n\t}\n\n\t/**\n\t * Kills all running applications.\n\t */\n\tstatic destroyAll() {\n\t\tapplications.forEach((proc) => {\n\t\t\ttry {\n\t\t\t\tproc.destroy(false);\n\t\t\t} catch (e) {\n\t\t\t\tlogger.warn(\"Exception on destroyAll\", e);\n\t\t\t}\n\t\t});\n\n\t\tapplications.splice(0, applications.length);\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/client/src/application.js",
     "access": "public",
@@ -2052,7 +2052,7 @@
     "static": true,
     "longname": "src/application.js~ApplicationOptions",
     "access": "public",
-    "description": "Application Options",
+    "description": "Application Options.",
     "properties": [
       {
         "nullable": null,
@@ -2115,7 +2115,7 @@
     "static": true,
     "longname": "src/application.js~ApplicationData",
     "access": "public",
-    "description": "Application Data",
+    "description": "Application Data.",
     "properties": [
       {
         "nullable": null,
@@ -2164,7 +2164,7 @@
     "static": true,
     "longname": "src/application.js~ApplicationSession",
     "access": "public",
-    "description": "Application Session",
+    "description": "Application Session.",
     "properties": [
       {
         "nullable": null,
@@ -2216,7 +2216,7 @@
     "export": true,
     "importPath": "@meese-os/client/src/application.js",
     "importStyle": "Application",
-    "description": "Base class for an Application",
+    "description": "Base class for an Application.",
     "lineNumber": 77,
     "interface": false,
     "extends": [
@@ -2233,7 +2233,7 @@
     "static": false,
     "longname": "src/application.js~Application#constructor",
     "access": "public",
-    "description": "Create application",
+    "description": "Create application.",
     "lineNumber": 84,
     "params": [
       {
@@ -2266,7 +2266,7 @@
     "static": false,
     "longname": "src/application.js~Application#pid",
     "access": "public",
-    "description": "The Application ID",
+    "description": "The Application ID.",
     "lineNumber": 109,
     "unknown": [
       {
@@ -2291,7 +2291,7 @@
     "static": false,
     "longname": "src/application.js~Application#core",
     "access": "public",
-    "description": "Core instance reference",
+    "description": "Core instance reference.",
     "lineNumber": 116,
     "unknown": [
       {
@@ -2316,7 +2316,7 @@
     "static": false,
     "longname": "src/application.js~Application#args",
     "access": "public",
-    "description": "Application arguments",
+    "description": "Application arguments.",
     "lineNumber": 122,
     "type": {
       "nullable": null,
@@ -2335,7 +2335,7 @@
     "static": false,
     "longname": "src/application.js~Application#options",
     "access": "public",
-    "description": "Application options",
+    "description": "Application options.",
     "lineNumber": 128,
     "type": {
       "nullable": null,
@@ -2354,7 +2354,7 @@
     "static": false,
     "longname": "src/application.js~Application#metadata",
     "access": "public",
-    "description": "Application metadata",
+    "description": "Application metadata.",
     "lineNumber": 139,
     "unknown": [
       {
@@ -2379,7 +2379,7 @@
     "static": false,
     "longname": "src/application.js~Application#windows",
     "access": "public",
-    "description": "Window list",
+    "description": "Window list.",
     "lineNumber": 145,
     "type": {
       "nullable": null,
@@ -2398,7 +2398,7 @@
     "static": false,
     "longname": "src/application.js~Application#workers",
     "access": "public",
-    "description": "Worker instances",
+    "description": "Worker instances.",
     "lineNumber": 151,
     "type": {
       "nullable": null,
@@ -2417,7 +2417,7 @@
     "static": false,
     "longname": "src/application.js~Application#requestOptions",
     "access": "public",
-    "description": "Options for internal fetch/requests",
+    "description": "Options for internal fetch/requests.",
     "lineNumber": 157,
     "type": {
       "nullable": null,
@@ -2436,7 +2436,7 @@
     "static": false,
     "longname": "src/application.js~Application#destroyed",
     "access": "public",
-    "description": "The application destruction state",
+    "description": "The application destruction state.",
     "lineNumber": 163,
     "type": {
       "nullable": null,
@@ -2455,7 +2455,7 @@
     "static": false,
     "longname": "src/application.js~Application#settings",
     "access": "public",
-    "description": "Application settings",
+    "description": "Application settings.",
     "lineNumber": 169,
     "type": {
       "nullable": null,
@@ -2474,7 +2474,7 @@
     "static": false,
     "longname": "src/application.js~Application#started",
     "access": "public",
-    "description": "Application started time",
+    "description": "Application started time.",
     "lineNumber": 178,
     "unknown": [
       {
@@ -2499,7 +2499,7 @@
     "static": false,
     "longname": "src/application.js~Application#sockets",
     "access": "public",
-    "description": "Application WebSockets",
+    "description": "Application WebSockets.",
     "lineNumber": 184,
     "type": {
       "nullable": null,
@@ -2520,7 +2520,7 @@
     "static": false,
     "longname": "src/application.js~Application#destroy",
     "access": "public",
-    "description": "Destroy application",
+    "description": "Destroy application.",
     "lineNumber": 195,
     "params": [
       {
@@ -2545,7 +2545,7 @@
     "static": false,
     "longname": "src/application.js~Application#relaunch",
     "access": "public",
-    "description": "Re-launch this application",
+    "description": "Re-launch this application.",
     "lineNumber": 229,
     "params": [],
     "return": null
@@ -2560,7 +2560,7 @@
     "static": false,
     "longname": "src/application.js~Application#resource",
     "access": "public",
-    "description": "Gets a URI to a resource for this application\n\nIf given path is an URI it will just return itself.",
+    "description": "Gets a URI to a resource for this application.\n\nIf given path is an URI it will just return itself.",
     "lineNumber": 256,
     "unknown": [
       {
@@ -2725,7 +2725,7 @@
     "static": false,
     "longname": "src/application.js~Application#send",
     "access": "public",
-    "description": "Sends a message over Websocket via the core connection.\n\nThis does not create a new connection, but rather uses the core connection.\nFor subscribing to messages from the server use the 'ws:message' event",
+    "description": "Sends a message over Websocket via the core connection.\n\nThis does not create a new connection, but rather uses the core connection.\nFor subscribing to messages from the server use the 'ws:message' event.",
     "lineNumber": 302,
     "params": [
       {
@@ -2751,7 +2751,7 @@
     "static": false,
     "longname": "src/application.js~Application#worker",
     "access": "public",
-    "description": "Creates a new Worker",
+    "description": "Creates a new Worker.",
     "lineNumber": 316,
     "unknown": [
       {
@@ -2800,7 +2800,7 @@
     "static": false,
     "longname": "src/application.js~Application#createWindow",
     "access": "public",
-    "description": "Create a new window belonging to this application",
+    "description": "Create a new window belonging to this application.",
     "lineNumber": 333,
     "unknown": [
       {
@@ -2841,7 +2841,7 @@
     "static": false,
     "longname": "src/application.js~Application#removeWindow",
     "access": "public",
-    "description": "Removes window(s) based on given filter",
+    "description": "Removes window(s) based on given filter.",
     "lineNumber": 394,
     "params": [
       {
@@ -2895,7 +2895,7 @@
     "static": false,
     "longname": "src/application.js~Application#saveSettings",
     "access": "public",
-    "description": "Saves settings",
+    "description": "Saves settings.",
     "lineNumber": 419,
     "unknown": [
       {
@@ -2923,7 +2923,7 @@
     "static": true,
     "longname": "src/application.js~Application.getApplications",
     "access": "public",
-    "description": "Get a list of all running applications",
+    "description": "Get a list of all running applications.",
     "lineNumber": 432,
     "unknown": [
       {
@@ -2951,7 +2951,7 @@
     "static": true,
     "longname": "src/application.js~Application.destroyAll",
     "access": "public",
-    "description": "Kills all running applications",
+    "description": "Kills all running applications.",
     "lineNumber": 439,
     "params": [],
     "return": null
