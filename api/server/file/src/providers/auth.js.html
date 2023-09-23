@@ -133,6 +133,7 @@ class AuthServiceProvider extends ServiceProvider {
 	}
 
 	async init() {
+		// eslint-disable-next-line no-unused-vars
 		const { route, routeAuthenticated } = this.core.make(&quot;meeseOS/express&quot;);
 
 		route(&quot;post&quot;, &quot;/register&quot;, (req, res) =&gt; this.auth.register(req, res));

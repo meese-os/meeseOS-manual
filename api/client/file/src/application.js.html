@@ -242,12 +242,15 @@
  * @license Simplified BSD License
  */
 
+/* eslint-disable no-unused-vars */
 import { EventEmitter } from &quot;@meese-os/event-emitter&quot;;
 import { loadOptionsFromConfig } from &quot;./utils/windows&quot;;
 import logger from &quot;./logger&quot;;
 import merge from &quot;deepmerge&quot;;
 import Websocket from &quot;./websocket&quot;;
 import Window from &quot;./window&quot;;
+import Core from &quot;../src/core.js&quot;;
+/* eslint-enable no-unused-vars */
 
 const applications = [];
 let applicationCount = 0;

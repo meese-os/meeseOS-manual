@@ -654,6 +654,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/provider.js~guiserviceprovider#destroy",
+    "class/src/provider.js~GUIServiceProvider.html#instance-method-destroy",
+    "src/provider.js~GUIServiceProvider#destroy",
+    "method"
+  ],
+  [
     "src/umd.js",
     "file/src/umd.js.html",
     "src/umd.js",
