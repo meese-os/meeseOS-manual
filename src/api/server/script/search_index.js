@@ -1152,6 +1152,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/providers/token-factory.js~tokenfactoryserviceprovider#destroy",
+    "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-method-destroy",
+    "src/providers/token-factory.js~TokenFactoryServiceProvider#destroy",
+    "method"
+  ],
+  [
     "src/providers/token-factory.js~tokenfactoryserviceprovider#init",
     "class/src/providers/token-factory.js~TokenFactoryServiceProvider.html#instance-method-init",
     "src/providers/token-factory.js~TokenFactoryServiceProvider#init",

@@ -75,7 +75,7 @@ import { EventEmitter } from &quot;@meese-os/event-emitter&quot;;
 import PanelItem from &quot;./panel-item&quot;;
 
 /**
- * Panel
+ * Panel.
  *
  * @desc Base Panel Class
  */
@@ -111,12 +111,10 @@ export default class Panel extends EventEmitter {
 	}
 
 	/**
-	 * Destroys the panel
+	 * Destroys the panel.
 	 */
 	destroy() {
-		if (this.destroyed) {
-			return;
-		}
+		if (this.destroyed) return;
 
 		this.items = this.items.filter((item) =&gt; {
 			try {
@@ -137,12 +135,10 @@ export default class Panel extends EventEmitter {
 	}
 
 	/**
-	 * Initializes the panel
+	 * Initializes the panel.
 	 */
 	init() {
-		if (this.inited) {
-			return;
-		}
+		if (this.inited) return;
 		this.destroyed = false;
 		this.inited = true;
 
@@ -156,9 +152,7 @@ export default class Panel extends EventEmitter {
 				this.core.config(&quot;desktop.lock&quot;) ||
 				this.core.config(&quot;desktop.disablePanelContextMenu&quot;);
 
-			if (disabled) {
-				return;
-			}
+			if (disabled) return;
 
 			this.core.make(&quot;meeseOS/contextmenu&quot;).show({
 				position: ev,
@@ -179,6 +173,7 @@ export default class Panel extends EventEmitter {
 				],
 			});
 		});
+
 		this.$element.setAttribute(&quot;data-position&quot;, this.options.position);
 		this.$element.setAttribute(&quot;data-ontop&quot;, String(this.options.ontop));
 
@@ -190,7 +185,7 @@ export default class Panel extends EventEmitter {
 	}
 
 	/**
-	 * Add an item to the panel
+	 * Add an item to the panel.
 	 * @param {PanelItem} item The panel item instance
 	 */
 	addItem(item) {

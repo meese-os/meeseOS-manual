@@ -1027,7 +1027,7 @@
     "__docId__": 70,
     "kind": "file",
     "name": "src/panel-item.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { app, h } from \"hyperapp\";\nimport { EventEmitter } from \"@meese-os/event-emitter\";\n\n/**\n * MeeseOS Panel Item\n * @see {Panel}\n */\nexport default class PanelItem extends EventEmitter {\n\t/**\n\t * Create panel item\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Panel} panel Panel reference\n\t * @param {Object} options Options\n\t */\n\tconstructor(core, panel, options = {}) {\n\t\tsuper(\"Panel\");\n\n\t\tthis.core = core;\n\t\tthis.panel = panel;\n\t\tthis.options = options;\n\t\tthis.state = {};\n\t\tthis.actions = {};\n\t\tthis.inited = false;\n\t}\n\n\t/**\n\t * Destroy panel item\n\t */\n\tdestroy() {\n\t\tthis.emit(\"destroy\", this);\n\t}\n\n\t/**\n\t * Initializes panel item\n\t * @param {Object} state State\n\t * @param {Object} actions Actions\n\t * @returns {Object} Bound actions\n\t */\n\tinit(state = {}, actions = {}) {\n\t\tif (this.inited) {\n\t\t\treturn false;\n\t\t}\n\n\t\tthis.inited = true;\n\t\tthis.emit(\"init\", this);\n\n\t\treturn app(\n\t\t\tstate,\n\t\t\tactions,\n\t\t\t(state, actions) => {\n\t\t\t\treturn this.render(state, actions);\n\t\t\t},\n\t\t\tthis.panel.$element\n\t\t);\n\t}\n\n\t/**\n\t * Renders the panel item\n\t * @param {String} name The panel item virtual name\n\t * @param {Object[]} children The panel item children\n\t * @returns {Node} A *virtual* node\n\t */\n\trender(name, children = []) {\n\t\treturn h(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclassName: \"meeseOS-panel-item\",\n\t\t\t\t\"data-name\": name,\n\t\t\t},\n\t\t\tchildren\n\t\t);\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { app, h } from \"hyperapp\";\nimport { EventEmitter } from \"@meese-os/event-emitter\";\n\n/**\n * MeeseOS Panel Item\n * @see {Panel}\n */\nexport default class PanelItem extends EventEmitter {\n\t/**\n\t * Create panel item.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Panel} panel Panel reference\n\t * @param {Object} options Options\n\t */\n\tconstructor(core, panel, options = {}) {\n\t\tsuper(\"Panel\");\n\n\t\tthis.core = core;\n\t\tthis.panel = panel;\n\t\tthis.options = options;\n\t\tthis.state = {};\n\t\tthis.actions = {};\n\t\tthis.inited = false;\n\t}\n\n\t/**\n\t * Destroys panel item.\n\t */\n\tdestroy() {\n\t\tthis.emit(\"destroy\", this);\n\t}\n\n\t/**\n\t * Initializes panel item.\n\t * @param {Object} state State\n\t * @param {Object} actions Actions\n\t * @returns {Object} Bound actions\n\t */\n\tinit(state = {}, actions = {}) {\n\t\tif (this.inited) {\n\t\t\treturn false;\n\t\t}\n\n\t\tthis.inited = true;\n\t\tthis.emit(\"init\", this);\n\n\t\treturn app(\n\t\t\tstate,\n\t\t\tactions,\n\t\t\t(state, actions) => {\n\t\t\t\treturn this.render(state, actions);\n\t\t\t},\n\t\t\tthis.panel.$element\n\t\t);\n\t}\n\n\t/**\n\t * Renders the panel item.\n\t * @param {String} name The panel item virtual name\n\t * @param {Object[]} children The panel item children\n\t * @returns {Node} A *virtual* node\n\t */\n\trender(name, children = []) {\n\t\treturn h(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclassName: \"meeseOS-panel-item\",\n\t\t\t\t\"data-name\": name,\n\t\t\t},\n\t\t\tchildren\n\t\t);\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/panels/src/panel-item.js",
     "access": "public",
@@ -1065,8 +1065,8 @@
     "static": false,
     "longname": "src/panel-item.js~PanelItem#constructor",
     "access": "public",
-    "description": "Create panel item",
-    "lineNumber": 46,
+    "description": "Create panel item.",
+    "lineNumber": 45,
     "params": [
       {
         "nullable": null,
@@ -1109,7 +1109,7 @@
     "longname": "src/panel-item.js~PanelItem#core",
     "access": "public",
     "description": null,
-    "lineNumber": 49,
+    "lineNumber": 48,
     "undocument": true,
     "type": {
       "types": [
@@ -1127,7 +1127,7 @@
     "longname": "src/panel-item.js~PanelItem#panel",
     "access": "public",
     "description": null,
-    "lineNumber": 50,
+    "lineNumber": 49,
     "undocument": true,
     "type": {
       "types": [
@@ -1145,7 +1145,7 @@
     "longname": "src/panel-item.js~PanelItem#options",
     "access": "public",
     "description": null,
-    "lineNumber": 51,
+    "lineNumber": 50,
     "undocument": true,
     "type": {
       "types": [
@@ -1163,7 +1163,7 @@
     "longname": "src/panel-item.js~PanelItem#state",
     "access": "public",
     "description": null,
-    "lineNumber": 52,
+    "lineNumber": 51,
     "undocument": true,
     "type": {
       "types": [
@@ -1181,7 +1181,7 @@
     "longname": "src/panel-item.js~PanelItem#actions",
     "access": "public",
     "description": null,
-    "lineNumber": 53,
+    "lineNumber": 52,
     "undocument": true,
     "type": {
       "types": [
@@ -1199,7 +1199,7 @@
     "longname": "src/panel-item.js~PanelItem#inited",
     "access": "public",
     "description": null,
-    "lineNumber": 54,
+    "lineNumber": 53,
     "undocument": true,
     "type": {
       "types": [
@@ -1218,8 +1218,8 @@
     "static": false,
     "longname": "src/panel-item.js~PanelItem#destroy",
     "access": "public",
-    "description": "Destroy panel item",
-    "lineNumber": 60,
+    "description": "Destroys panel item.",
+    "lineNumber": 59,
     "params": [],
     "return": null
   },
@@ -1233,8 +1233,8 @@
     "static": false,
     "longname": "src/panel-item.js~PanelItem#init",
     "access": "public",
-    "description": "Initializes panel item",
-    "lineNumber": 70,
+    "description": "Initializes panel item.",
+    "lineNumber": 69,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1282,8 +1282,8 @@
     "static": false,
     "longname": "src/panel-item.js~PanelItem#render",
     "access": "public",
-    "description": "Renders the panel item",
-    "lineNumber": 94,
+    "description": "Renders the panel item.",
+    "lineNumber": 93,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1325,7 +1325,7 @@
     "__docId__": 83,
     "kind": "file",
     "name": "src/panel.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { EventEmitter } from \"@meese-os/event-emitter\";\nimport PanelItem from \"./panel-item\";\n\n/**\n * Panel\n *\n * @desc Base Panel Class\n */\nexport default class Panel extends EventEmitter {\n\t/**\n\t * Create panel\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} options Options\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(\"Panel\");\n\n\t\tthis.core = core;\n\t\tthis.options = {\n\n\t\t\tontop: true,\n\t\t\tposition: \"top\",\n\t\t\tcontextmenu: true,\n\t\t\titems: [],\n\t\t\t...options\n\t\t};\n\n\t\tthis.items = [];\n\t\tthis.inited = false;\n\t\tthis.destroyed = false;\n\t\tthis.$element = null;\n\n\t\tthis.options.items.forEach(({ name, options }) => {\n\t\t\tconst c = core.make(\"meeseOS/panels\").get(name);\n\t\t\tthis.addItem(new c(this.core, this, options || {}));\n\t\t});\n\t}\n\n\t/**\n\t * Destroys the panel\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.items = this.items.filter((item) => {\n\t\t\ttry {\n\t\t\t\titem.destroy();\n\t\t\t} catch (e) {\n\t\t\t\tconsole.warn(e);\n\t\t\t}\n\t\t\treturn false;\n\t\t});\n\n\t\tthis.destroyed = true;\n\t\tthis.inited = false;\n\t\tthis.emit(\"destroy\");\n\t\tthis.core.emit(\"meeseOS/panel:destroy\", this);\n\n\t\tthis.$element.remove();\n\t\tthis.$element = null;\n\t}\n\n\t/**\n\t * Initializes the panel\n\t */\n\tinit() {\n\t\tif (this.inited) {\n\t\t\treturn;\n\t\t}\n\t\tthis.destroyed = false;\n\t\tthis.inited = true;\n\n\t\tthis.$element = document.createElement(\"div\");\n\t\tthis.$element.classList.add(\"meeseOS-panel\");\n\t\tthis.$element.classList.add(\"meeseOS__contextmenu\");\n\t\tthis.$element.addEventListener(\"contextmenu\", (ev) => {\n\t\t\tev.preventDefault();\n\n\t\t\tconst disabled =\n\t\t\t\tthis.core.config(\"desktop.lock\") ||\n\t\t\t\tthis.core.config(\"desktop.disablePanelContextMenu\");\n\n\t\t\tif (disabled) {\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\tthis.core.make(\"meeseOS/contextmenu\").show({\n\t\t\t\tposition: ev,\n\t\t\t\tmenu: [\n\t\t\t\t\t{\n\t\t\t\t\t\tlabel: \"Panel Position\",\n\t\t\t\t\t\titems: [\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tlabel: \"Top\",\n\t\t\t\t\t\t\t\tonclick: () => this.setPosition(\"top\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tlabel: \"Bottom\",\n\t\t\t\t\t\t\t\tonclick: () => this.setPosition(\"bottom\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t],\n\t\t\t\t\t},\n\t\t\t\t],\n\t\t\t});\n\t\t});\n\t\tthis.$element.setAttribute(\"data-position\", this.options.position);\n\t\tthis.$element.setAttribute(\"data-ontop\", String(this.options.ontop));\n\n\t\tthis.core.$root.appendChild(this.$element);\n\n\t\tthis.items.forEach((item) => item.init());\n\n\t\tthis.emit(\"create\");\n\t}\n\n\t/**\n\t * Add an item to the panel\n\t * @param {PanelItem} item The panel item instance\n\t */\n\taddItem(item) {\n\t\tif (!(item instanceof PanelItem)) {\n\t\t\tthrow new TypeError(\"Invalid panel item specified\");\n\t\t}\n\n\t\tthis.items.push(item);\n\n\t\tif (this.inited) {\n\t\t\titem.init();\n\t\t}\n\t}\n\n\tsetPosition(position) {\n\t\tthis.options.position = position;\n\n\t\treturn this.core\n\t\t\t.make(\"meeseOS/panels\")\n\t\t\t.save()\n\t\t\t.then(() => {\n\t\t\t\tconst desktop = this.core.make(\"meeseOS/desktop\");\n\t\t\t\treturn desktop.applySettings();\n\t\t\t});\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { EventEmitter } from \"@meese-os/event-emitter\";\nimport PanelItem from \"./panel-item\";\n\n/**\n * Panel.\n *\n * @desc Base Panel Class\n */\nexport default class Panel extends EventEmitter {\n\t/**\n\t * Create panel\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} options Options\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(\"Panel\");\n\n\t\tthis.core = core;\n\t\tthis.options = {\n\n\t\t\tontop: true,\n\t\t\tposition: \"top\",\n\t\t\tcontextmenu: true,\n\t\t\titems: [],\n\t\t\t...options\n\t\t};\n\n\t\tthis.items = [];\n\t\tthis.inited = false;\n\t\tthis.destroyed = false;\n\t\tthis.$element = null;\n\n\t\tthis.options.items.forEach(({ name, options }) => {\n\t\t\tconst c = core.make(\"meeseOS/panels\").get(name);\n\t\t\tthis.addItem(new c(this.core, this, options || {}));\n\t\t});\n\t}\n\n\t/**\n\t * Destroys the panel.\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) return;\n\n\t\tthis.items = this.items.filter((item) => {\n\t\t\ttry {\n\t\t\t\titem.destroy();\n\t\t\t} catch (e) {\n\t\t\t\tconsole.warn(e);\n\t\t\t}\n\t\t\treturn false;\n\t\t});\n\n\t\tthis.destroyed = true;\n\t\tthis.inited = false;\n\t\tthis.emit(\"destroy\");\n\t\tthis.core.emit(\"meeseOS/panel:destroy\", this);\n\n\t\tthis.$element.remove();\n\t\tthis.$element = null;\n\t}\n\n\t/**\n\t * Initializes the panel.\n\t */\n\tinit() {\n\t\tif (this.inited) return;\n\t\tthis.destroyed = false;\n\t\tthis.inited = true;\n\n\t\tthis.$element = document.createElement(\"div\");\n\t\tthis.$element.classList.add(\"meeseOS-panel\");\n\t\tthis.$element.classList.add(\"meeseOS__contextmenu\");\n\t\tthis.$element.addEventListener(\"contextmenu\", (ev) => {\n\t\t\tev.preventDefault();\n\n\t\t\tconst disabled =\n\t\t\t\tthis.core.config(\"desktop.lock\") ||\n\t\t\t\tthis.core.config(\"desktop.disablePanelContextMenu\");\n\n\t\t\tif (disabled) return;\n\n\t\t\tthis.core.make(\"meeseOS/contextmenu\").show({\n\t\t\t\tposition: ev,\n\t\t\t\tmenu: [\n\t\t\t\t\t{\n\t\t\t\t\t\tlabel: \"Panel Position\",\n\t\t\t\t\t\titems: [\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tlabel: \"Top\",\n\t\t\t\t\t\t\t\tonclick: () => this.setPosition(\"top\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tlabel: \"Bottom\",\n\t\t\t\t\t\t\t\tonclick: () => this.setPosition(\"bottom\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t],\n\t\t\t\t\t},\n\t\t\t\t],\n\t\t\t});\n\t\t});\n\n\t\tthis.$element.setAttribute(\"data-position\", this.options.position);\n\t\tthis.$element.setAttribute(\"data-ontop\", String(this.options.ontop));\n\n\t\tthis.core.$root.appendChild(this.$element);\n\n\t\tthis.items.forEach((item) => item.init());\n\n\t\tthis.emit(\"create\");\n\t}\n\n\t/**\n\t * Add an item to the panel.\n\t * @param {PanelItem} item The panel item instance\n\t */\n\taddItem(item) {\n\t\tif (!(item instanceof PanelItem)) {\n\t\t\tthrow new TypeError(\"Invalid panel item specified\");\n\t\t}\n\n\t\tthis.items.push(item);\n\n\t\tif (this.inited) {\n\t\t\titem.init();\n\t\t}\n\t}\n\n\tsetPosition(position) {\n\t\tthis.options.position = position;\n\n\t\treturn this.core\n\t\t\t.make(\"meeseOS/panels\")\n\t\t\t.save()\n\t\t\t.then(() => {\n\t\t\t\tconst desktop = this.core.make(\"meeseOS/desktop\");\n\t\t\t\treturn desktop.applySettings();\n\t\t\t});\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/panels/src/panel.js",
     "access": "public",
@@ -1503,7 +1503,7 @@
     "static": false,
     "longname": "src/panel.js~Panel#destroy",
     "access": "public",
-    "description": "Destroys the panel",
+    "description": "Destroys the panel.",
     "lineNumber": 73,
     "params": [],
     "return": null
@@ -1518,8 +1518,8 @@
     "static": false,
     "longname": "src/panel.js~Panel#init",
     "access": "public",
-    "description": "Initializes the panel",
-    "lineNumber": 99,
+    "description": "Initializes the panel.",
+    "lineNumber": 97,
     "params": [],
     "return": null
   },
@@ -1533,8 +1533,8 @@
     "static": false,
     "longname": "src/panel.js~Panel#addItem",
     "access": "public",
-    "description": "Add an item to the panel",
-    "lineNumber": 153,
+    "description": "Add an item to the panel.",
+    "lineNumber": 148,
     "params": [
       {
         "nullable": null,
@@ -1560,7 +1560,7 @@
     "longname": "src/panel.js~Panel#setPosition",
     "access": "public",
     "description": null,
-    "lineNumber": 165,
+    "lineNumber": 160,
     "undocument": true,
     "params": [
       {
@@ -1751,7 +1751,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meese-os/panels\",\n  \"version\": \"2.0.4\",\n  \"description\": \"meeseOS Panels\",\n  \"main\": \"dist/main.js\",\n  \"module\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"files\": [\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"eslint\": \"eslint index.js 'src/**/*.js'\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss --fix\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"@meese-os/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.19.3\",\n    \"@babel/plugin-transform-runtime\": \"^7.19.1\",\n    \"@babel/preset-env\": \"^7.19.3\",\n    \"@babel/runtime\": \"^7.19.0\",\n    \"babel-loader\": \"^8.2.5\",\n    \"copy-webpack-plugin\": \"^11.0.0\",\n    \"css-loader\": \"^6.7.1\",\n    \"css-minimizer-webpack-plugin\": \"^4.2.1\",\n    \"eslint\": \"^8.25.0\",\n    \"mini-css-extract-plugin\": \"^2.6.1\",\n    \"sass\": \"^1.55.0\",\n    \"sass-loader\": \"^13.1.0\",\n    \"stylelint\": \"^14.13.0\",\n    \"stylelint-config-standard\": \"^28.0.0\",\n    \"stylelint-config-standard-scss\": \"^5.0.0\",\n    \"webpack\": \"^5.74.0\",\n    \"webpack-cli\": \"^4.10.0\"\n  },\n  \"dependencies\": {\n    \"@meese-os/event-emitter\": \"workspace:*\",\n    \"dateformat\": \"^3.0.3\",\n    \"hyperapp\": \"^1.2.10\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true\n    },\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": \"@meese-os/eslint-config\"\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meese-os/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Panel API\",\n            \"description\": \"meeseOS Panel API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  }\n}\n",
+    "content": "{\n  \"name\": \"@meese-os/panels\",\n  \"version\": \"1.0.0\",\n  \"description\": \"meeseOS Panels\",\n  \"main\": \"dist/main.js\",\n  \"module\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"files\": [\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"dist/*.png\",\n    \"README.md\"\n  ],\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint\",\n    \"build\": \"webpack\",\n    \"watch\": \"webpack --watch\",\n    \"eslint\": \"eslint index.js src/**/*.js\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss --fix --quiet-deprecation-warnings\",\n    \"prepublishOnly\": \"npm run test && rm ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"@meese-os/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.22.11\",\n    \"@babel/plugin-transform-runtime\": \"^7.22.10\",\n    \"@babel/preset-env\": \"^7.22.10\",\n    \"@babel/runtime\": \"^7.22.11\",\n    \"babel-loader\": \"^9.1.3\",\n    \"copy-webpack-plugin\": \"^11.0.0\",\n    \"css-loader\": \"^6.8.1\",\n    \"css-minimizer-webpack-plugin\": \"^5.0.1\",\n    \"eslint\": \"^8.48.0\",\n    \"mini-css-extract-plugin\": \"^2.7.6\",\n    \"sass\": \"^1.66.1\",\n    \"sass-loader\": \"^13.3.2\",\n    \"stylelint\": \"^15.10.3\",\n    \"stylelint-config-standard\": \"^34.0.0\",\n    \"stylelint-config-standard-scss\": \"^10.0.0\",\n    \"webpack\": \"^5.88.2\",\n    \"webpack-cli\": \"^5.1.4\"\n  },\n  \"dependencies\": {\n    \"@meese-os/event-emitter\": \"workspace:*\",\n    \"dateformat\": \"^3.0.3\",\n    \"hyperapp\": \"^1.2.10\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true\n    },\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": \"@meese-os/eslint-config\"\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meese-os/stylelint-config\"]\n  },\n  \"babel\": {\n    \"presets\": [\n      \"@babel/preset-env\"\n    ],\n    \"plugins\": [\n      \"@babel/plugin-transform-runtime\"\n    ]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Panel API\",\n            \"description\": \"meeseOS Panel API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  }\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/panels/package.json",
     "name": "package.json",
     "static": true,
