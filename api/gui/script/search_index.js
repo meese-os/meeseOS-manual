@@ -42,12 +42,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/gui/src/provider.js~guiserviceprovider",
-    "class/src/provider.js~GUIServiceProvider.html",
-    "<span>GUIServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/gui/src/provider.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/gui/src/components/icon.js~icon",
     "function/index.html#static-function-Icon",
     "<span>Icon</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Icon.js</span>",
@@ -646,18 +640,6 @@ window.esdocSearchIndex = [
     "file/src/element.js.html",
     "src/element.js",
     "file"
-  ],
-  [
-    "src/provider.js",
-    "file/src/provider.js.html",
-    "src/provider.js",
-    "file"
-  ],
-  [
-    "src/provider.js~guiserviceprovider#destroy",
-    "class/src/provider.js~GUIServiceProvider.html#instance-method-destroy",
-    "src/provider.js~GUIServiceProvider#destroy",
-    "method"
   ],
   [
     "src/umd.js",

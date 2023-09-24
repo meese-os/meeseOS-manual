@@ -1,11 +1,5 @@
 window.esdocSearchIndex = [
   [
-    "@meese-os/client/src/application.js~application",
-    "class/src/application.js~Application.html",
-    "<span>Application</span> <span class=\"search-result-import-path\">@meese-os/client/src/application.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/client/src/auth.js~auth",
     "class/src/auth.js~Auth.html",
     "<span>Auth</span> <span class=\"search-result-import-path\">@meese-os/client/src/auth.js</span>",
@@ -39,18 +33,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/providers/core.js~coreserviceprovider",
     "class/src/providers/core.js~CoreServiceProvider.html",
     "<span>CoreServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/core.js</span>",
-    "class"
-  ],
-  [
-    "@meese-os/client/src/desktop.js~desktop",
-    "class/src/desktop.js~Desktop.html",
-    "<span>Desktop</span> <span class=\"search-result-import-path\">@meese-os/client/src/desktop.js</span>",
-    "class"
-  ],
-  [
-    "@meese-os/client/src/adapters/ui/iconview.js~desktopiconview",
-    "class/src/adapters/ui/iconview.js~DesktopIconView.html",
-    "<span>DesktopIconView</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/ui/iconview.js</span>",
     "class"
   ],
   [
@@ -186,18 +168,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/desktop.js~applybackgroundstyles",
-    "function/index.html#static-function-applyBackgroundStyles",
-    "<span>applyBackgroundStyles</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/desktop.js~applycursoreffect",
-    "function/index.html#static-function-applyCursorEffect",
-    "<span>applyCursorEffect</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/vfs.js~archive",
     "function/index.html#static-function-archive",
     "<span>archive</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
@@ -279,12 +249,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/utils/packages.js~createpackageavailabilitycheck",
     "function/index.html#static-function-createPackageAvailabilityCheck",
     "<span>createPackageAvailabilityCheck</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/packages.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/desktop.js~createpanelsubtraction",
-    "function/index.html#static-function-createPanelSubtraction",
-    "<span>createPanelSubtraction</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
@@ -393,12 +357,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/utils/colors.js~inverthex",
     "function/index.html#static-function-invertHex",
     "<span>invertHex</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/colors.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/desktop.js~isdroppingimage",
-    "function/index.html#static-function-isDroppingImage",
-    "<span>isDroppingImage</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
@@ -516,12 +474,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/desktop.js~resourceresolver",
-    "function/index.html#static-function-resourceResolver",
-    "<span>resourceResolver</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/utils/dom.js~script",
     "function/index.html#static-function-script",
     "<span>script</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
@@ -615,12 +567,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/utils/url.js~urlresolver",
     "function/index.html#static-function-urlResolver",
     "<span>urlResolver</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/url.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/desktop.js~validvfsdrop",
-    "function/index.html#static-function-validVfsDrop",
-    "<span>validVfsDrop</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/desktop.js</span>",
     "function"
   ],
   [
@@ -936,18 +882,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/adapters/ui/iconview.js",
-    "file/src/adapters/ui/iconview.js.html",
-    "src/adapters/ui/iconview.js",
-    "file"
-  ],
-  [
-    "src/adapters/ui/iconview.js~desktopiconview#constructor",
-    "class/src/adapters/ui/iconview.js~DesktopIconView.html#instance-constructor-constructor",
-    "src/adapters/ui/iconview.js~DesktopIconView#constructor",
-    "method"
-  ],
-  [
     "src/adapters/ui/login.js",
     "file/src/adapters/ui/login.js.html",
     "src/adapters/ui/login.js",
@@ -976,186 +910,6 @@ window.esdocSearchIndex = [
     "file/src/adapters/vfs/system.js.html",
     "src/adapters/vfs/system.js",
     "file"
-  ],
-  [
-    "src/application.js",
-    "file/src/application.js.html",
-    "src/application.js",
-    "file"
-  ],
-  [
-    "src/application.js~application#args",
-    "class/src/application.js~Application.html#instance-member-args",
-    "src/application.js~Application#args",
-    "member"
-  ],
-  [
-    "src/application.js~application#constructor",
-    "class/src/application.js~Application.html#instance-constructor-constructor",
-    "src/application.js~Application#constructor",
-    "method"
-  ],
-  [
-    "src/application.js~application#core",
-    "class/src/application.js~Application.html#instance-member-core",
-    "src/application.js~Application#core",
-    "member"
-  ],
-  [
-    "src/application.js~application#createwindow",
-    "class/src/application.js~Application.html#instance-method-createWindow",
-    "src/application.js~Application#createWindow",
-    "method"
-  ],
-  [
-    "src/application.js~application#destroy",
-    "class/src/application.js~Application.html#instance-method-destroy",
-    "src/application.js~Application#destroy",
-    "method"
-  ],
-  [
-    "src/application.js~application#destroyed",
-    "class/src/application.js~Application.html#instance-member-destroyed",
-    "src/application.js~Application#destroyed",
-    "member"
-  ],
-  [
-    "src/application.js~application#getsession",
-    "class/src/application.js~Application.html#instance-method-getSession",
-    "src/application.js~Application#getSession",
-    "method"
-  ],
-  [
-    "src/application.js~application#metadata",
-    "class/src/application.js~Application.html#instance-member-metadata",
-    "src/application.js~Application#metadata",
-    "member"
-  ],
-  [
-    "src/application.js~application#options",
-    "class/src/application.js~Application.html#instance-member-options",
-    "src/application.js~Application#options",
-    "member"
-  ],
-  [
-    "src/application.js~application#pid",
-    "class/src/application.js~Application.html#instance-member-pid",
-    "src/application.js~Application#pid",
-    "member"
-  ],
-  [
-    "src/application.js~application#relaunch",
-    "class/src/application.js~Application.html#instance-method-relaunch",
-    "src/application.js~Application#relaunch",
-    "method"
-  ],
-  [
-    "src/application.js~application#removewindow",
-    "class/src/application.js~Application.html#instance-method-removeWindow",
-    "src/application.js~Application#removeWindow",
-    "method"
-  ],
-  [
-    "src/application.js~application#request",
-    "class/src/application.js~Application.html#instance-method-request",
-    "src/application.js~Application#request",
-    "method"
-  ],
-  [
-    "src/application.js~application#requestoptions",
-    "class/src/application.js~Application.html#instance-member-requestOptions",
-    "src/application.js~Application#requestOptions",
-    "member"
-  ],
-  [
-    "src/application.js~application#resource",
-    "class/src/application.js~Application.html#instance-method-resource",
-    "src/application.js~Application#resource",
-    "method"
-  ],
-  [
-    "src/application.js~application#savesettings",
-    "class/src/application.js~Application.html#instance-method-saveSettings",
-    "src/application.js~Application#saveSettings",
-    "method"
-  ],
-  [
-    "src/application.js~application#send",
-    "class/src/application.js~Application.html#instance-method-send",
-    "src/application.js~Application#send",
-    "method"
-  ],
-  [
-    "src/application.js~application#settings",
-    "class/src/application.js~Application.html#instance-member-settings",
-    "src/application.js~Application#settings",
-    "member"
-  ],
-  [
-    "src/application.js~application#socket",
-    "class/src/application.js~Application.html#instance-method-socket",
-    "src/application.js~Application#socket",
-    "method"
-  ],
-  [
-    "src/application.js~application#sockets",
-    "class/src/application.js~Application.html#instance-member-sockets",
-    "src/application.js~Application#sockets",
-    "member"
-  ],
-  [
-    "src/application.js~application#started",
-    "class/src/application.js~Application.html#instance-member-started",
-    "src/application.js~Application#started",
-    "member"
-  ],
-  [
-    "src/application.js~application#windows",
-    "class/src/application.js~Application.html#instance-member-windows",
-    "src/application.js~Application#windows",
-    "member"
-  ],
-  [
-    "src/application.js~application#worker",
-    "class/src/application.js~Application.html#instance-method-worker",
-    "src/application.js~Application#worker",
-    "method"
-  ],
-  [
-    "src/application.js~application#workers",
-    "class/src/application.js~Application.html#instance-member-workers",
-    "src/application.js~Application#workers",
-    "member"
-  ],
-  [
-    "src/application.js~application.destroyall",
-    "class/src/application.js~Application.html#static-method-destroyAll",
-    "src/application.js~Application.destroyAll",
-    "method"
-  ],
-  [
-    "src/application.js~application.getapplications",
-    "class/src/application.js~Application.html#static-method-getApplications",
-    "src/application.js~Application.getApplications",
-    "method"
-  ],
-  [
-    "src/application.js~applicationdata",
-    "typedef/index.html#static-typedef-ApplicationData",
-    "src/application.js~ApplicationData",
-    "typedef"
-  ],
-  [
-    "src/application.js~applicationoptions",
-    "typedef/index.html#static-typedef-ApplicationOptions",
-    "src/application.js~ApplicationOptions",
-    "typedef"
-  ],
-  [
-    "src/application.js~applicationsession",
-    "typedef/index.html#static-typedef-ApplicationSession",
-    "src/application.js~ApplicationSession",
-    "typedef"
   ],
   [
     "src/auth.js",
@@ -1635,264 +1389,6 @@ window.esdocSearchIndex = [
     "src/core.js~coreuserdata",
     "typedef/index.html#static-typedef-CoreUserData",
     "src/core.js~CoreUserData",
-    "typedef"
-  ],
-  [
-    "src/desktop.js",
-    "file/src/desktop.js.html",
-    "src/desktop.js",
-    "file"
-  ],
-  [
-    "src/desktop.js~deskopoptions",
-    "typedef/index.html#static-typedef-DeskopOptions",
-    "src/desktop.js~DeskopOptions",
-    "typedef"
-  ],
-  [
-    "src/desktop.js~desktop#$icons",
-    "class/src/desktop.js~Desktop.html#instance-member-$icons",
-    "src/desktop.js~Desktop#$icons",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#$theme",
-    "class/src/desktop.js~Desktop.html#instance-member-$theme",
-    "src/desktop.js~Desktop#$theme",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#_applysettingsbykey",
-    "class/src/desktop.js~Desktop.html#instance-method-_applySettingsByKey",
-    "src/desktop.js~Desktop#_applySettingsByKey",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#_applytheme",
-    "class/src/desktop.js~Desktop.html#instance-method-_applyTheme",
-    "src/desktop.js~Desktop#_applyTheme",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#_removeicons",
-    "class/src/desktop.js~Desktop.html#instance-method-_removeIcons",
-    "src/desktop.js~Desktop#_removeIcons",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#_removetheme",
-    "class/src/desktop.js~Desktop.html#instance-method-_removeTheme",
-    "src/desktop.js~Desktop#_removeTheme",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#_updatecss",
-    "class/src/desktop.js~Desktop.html#instance-method-_updateCSS",
-    "src/desktop.js~Desktop#_updateCSS",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#addcontextmenu",
-    "class/src/desktop.js~Desktop.html#instance-method-addContextMenu",
-    "src/desktop.js~Desktop#addContextMenu",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#applyiconview",
-    "class/src/desktop.js~Desktop.html#instance-method-applyIconView",
-    "src/desktop.js~Desktop#applyIconView",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#applyicons",
-    "class/src/desktop.js~Desktop.html#instance-method-applyIcons",
-    "src/desktop.js~Desktop#applyIcons",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#applysettings",
-    "class/src/desktop.js~Desktop.html#instance-method-applySettings",
-    "src/desktop.js~Desktop#applySettings",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#applytheme",
-    "class/src/desktop.js~Desktop.html#instance-method-applyTheme",
-    "src/desktop.js~Desktop#applyTheme",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#constructor",
-    "class/src/desktop.js~Desktop.html#instance-constructor-constructor",
-    "src/desktop.js~Desktop#constructor",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#contextmenuentries",
-    "class/src/desktop.js~Desktop.html#instance-member-contextmenuEntries",
-    "src/desktop.js~Desktop#contextmenuEntries",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#core",
-    "class/src/desktop.js~Desktop.html#instance-member-core",
-    "src/desktop.js~Desktop#core",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#createdropcontextmenu",
-    "class/src/desktop.js~Desktop.html#instance-method-createDropContextMenu",
-    "src/desktop.js~Desktop#createDropContextMenu",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#destroy",
-    "class/src/desktop.js~Desktop.html#instance-method-destroy",
-    "src/desktop.js~Desktop#destroy",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#getrect",
-    "class/src/desktop.js~Desktop.html#instance-method-getRect",
-    "src/desktop.js~Desktop#getRect",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#iconview",
-    "class/src/desktop.js~Desktop.html#instance-member-iconview",
-    "src/desktop.js~Desktop#iconview",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#init",
-    "class/src/desktop.js~Desktop.html#instance-method-init",
-    "src/desktop.js~Desktop#init",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#initbaseevents",
-    "class/src/desktop.js~Desktop.html#instance-method-initBaseEvents",
-    "src/desktop.js~Desktop#initBaseEvents",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#initconnectionevents",
-    "class/src/desktop.js~Desktop.html#instance-method-initConnectionEvents",
-    "src/desktop.js~Desktop#initConnectionEvents",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#initdevelopertray",
-    "class/src/desktop.js~Desktop.html#instance-method-initDeveloperTray",
-    "src/desktop.js~Desktop#initDeveloperTray",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#initdragevents",
-    "class/src/desktop.js~Desktop.html#instance-method-initDragEvents",
-    "src/desktop.js~Desktop#initDragEvents",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#initglobalkeyboardevents",
-    "class/src/desktop.js~Desktop.html#instance-method-initGlobalKeyboardEvents",
-    "src/desktop.js~Desktop#initGlobalKeyboardEvents",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#initkeyboardevents",
-    "class/src/desktop.js~Desktop.html#instance-method-initKeyboardEvents",
-    "src/desktop.js~Desktop#initKeyboardEvents",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#initmouseevents",
-    "class/src/desktop.js~Desktop.html#instance-method-initMouseEvents",
-    "src/desktop.js~Desktop#initMouseEvents",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#inituievents",
-    "class/src/desktop.js~Desktop.html#instance-method-initUIEvents",
-    "src/desktop.js~Desktop#initUIEvents",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#keyboardcontext",
-    "class/src/desktop.js~Desktop.html#instance-member-keyboardContext",
-    "src/desktop.js~Desktop#keyboardContext",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#oncontextmenu",
-    "class/src/desktop.js~Desktop.html#instance-method-onContextMenu",
-    "src/desktop.js~Desktop#onContextMenu",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#ondevelopermenu",
-    "class/src/desktop.js~Desktop.html#instance-method-onDeveloperMenu",
-    "src/desktop.js~Desktop#onDeveloperMenu",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#ondropcontextmenu",
-    "class/src/desktop.js~Desktop.html#instance-method-onDropContextMenu",
-    "src/desktop.js~Desktop#onDropContextMenu",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#options",
-    "class/src/desktop.js~Desktop.html#instance-member-options",
-    "src/desktop.js~Desktop#options",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#search",
-    "class/src/desktop.js~Desktop.html#instance-member-search",
-    "src/desktop.js~Desktop#search",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktop#setkeyboardcontext",
-    "class/src/desktop.js~Desktop.html#instance-method-setKeyboardContext",
-    "src/desktop.js~Desktop#setKeyboardContext",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#start",
-    "class/src/desktop.js~Desktop.html#instance-method-start",
-    "src/desktop.js~Desktop#start",
-    "method"
-  ],
-  [
-    "src/desktop.js~desktop#subtract",
-    "class/src/desktop.js~Desktop.html#instance-member-subtract",
-    "src/desktop.js~Desktop#subtract",
-    "member"
-  ],
-  [
-    "src/desktop.js~desktopcontextmenuentry",
-    "typedef/index.html#static-typedef-DesktopContextMenuEntry",
-    "src/desktop.js~DesktopContextMenuEntry",
-    "typedef"
-  ],
-  [
-    "src/desktop.js~desktopiconviewsettings",
-    "typedef/index.html#static-typedef-DesktopIconViewSettings",
-    "src/desktop.js~DesktopIconViewSettings",
-    "typedef"
-  ],
-  [
-    "src/desktop.js~desktopsettings",
-    "typedef/index.html#static-typedef-DesktopSettings",
-    "src/desktop.js~DesktopSettings",
-    "typedef"
-  ],
-  [
-    "src/desktop.js~desktopviewportrectangle",
-    "typedef/index.html#static-typedef-DesktopViewportRectangle",
-    "src/desktop.js~DesktopViewportRectangle",
     "typedef"
   ],
   [
@@ -3237,12 +2733,6 @@ window.esdocSearchIndex = [
     "src/utils/colors.js",
     "file/src/utils/colors.js.html",
     "src/utils/colors.js",
-    "file"
-  ],
-  [
-    "src/utils/desktop.js",
-    "file/src/utils/desktop.js.html",
-    "src/utils/desktop.js",
     "file"
   ],
   [
