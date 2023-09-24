@@ -3704,162 +3704,6 @@
   {
     "__docId__": 145,
     "kind": "file",
-    "name": "src/provider.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { ContextMenu } from \"./contextmenu.js\";\n\n/**\n * Check if a target allows for context menu\n */\nconst validContextMenuTarget = (ev) => {\n\tconst target = ev.target;\n\tlet isValid = target.tagName === \"TEXTAREA\";\n\tif (!isValid && target.tagName === \"INPUT\") {\n\t\tisValid =\n\t\t\t[\"text\", \"password\", \"number\", \"email\"].indexOf(target.type) !== -1;\n\t}\n\n\treturn isValid;\n};\n\n/**\n * MeeseOS GUI Service Provider\n * @desc Provides wrapper services around GUI features\n */\nexport class GUIServiceProvider {\n\tconstructor(core) {\n\t\tthis.core = core;\n\t\tthis.contextmenu = new ContextMenu(core);\n\t}\n\n\tinit() {\n\t\tconst contextmenuApi = {\n\t\t\tshow: (...args) => this.contextmenu.show(...args),\n\t\t\thide: (...args) => this.contextmenu.hide(...args),\n\t\t};\n\n\t\tthis.core.instance(\"meeseOS/contextmenu\", (...args) => {\n\t\t\tif (args.length) {\n\t\t\t\treturn contextmenuApi.show(...args);\n\t\t\t}\n\n\t\t\treturn contextmenuApi;\n\t\t});\n\n\t\tthis.core.$root.addEventListener(\"contextmenu\", (ev) => {\n\t\t\tif (validContextMenuTarget(ev)) {\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\tev.stopPropagation();\n\t\t\tev.preventDefault();\n\t\t});\n\t}\n\n\t/**\n\t * Destroys the provider.\n\t */\n\tdestroy() {\n\t\tconst menu = document.getElementById(\"meeseOS-context-menu\");\n\t\tif (menu) {\n\t\t\tmenu.remove();\n\t\t}\n\n\t\tthis.contextmenu.destroy();\n\t}\n\n\tstart() {\n\t\tconst callback = (ev) => {\n\t\t\tconst menu = document.getElementById(\"meeseOS-context-menu\");\n\t\t\tconst hit = menu && menu.contains(ev.target);\n\n\t\t\tif (!hit && this.contextmenu) {\n\t\t\t\tthis.contextmenu.hide();\n\t\t\t}\n\t\t};\n\n\t\tthis.core.$root.addEventListener(\"click\", callback, true);\n\t\tthis.core.once(\"destroy\", () => {\n\t\t\tthis.core.$root.removeEventListener(\"click\", callback, true);\n\t\t});\n\n\t\tthis.contextmenu.init();\n\t}\n}\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/gui/src/provider.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 146,
-    "kind": "function",
-    "name": "validContextMenuTarget",
-    "memberof": "src/provider.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/provider.js~validContextMenuTarget",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/provider.js",
-    "importStyle": null,
-    "description": "Check if a target allows for context menu",
-    "lineNumber": 36,
-    "params": [
-      {
-        "name": "ev",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 147,
-    "kind": "class",
-    "name": "GUIServiceProvider",
-    "memberof": "src/provider.js",
-    "static": true,
-    "longname": "src/provider.js~GUIServiceProvider",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/gui/src/provider.js",
-    "importStyle": "{GUIServiceProvider}",
-    "description": "Provides wrapper services around GUI features",
-    "lineNumber": 51,
-    "interface": false
-  },
-  {
-    "__docId__": 148,
-    "kind": "constructor",
-    "name": "constructor",
-    "memberof": "src/provider.js~GUIServiceProvider",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/provider.js~GUIServiceProvider#constructor",
-    "access": "public",
-    "description": null,
-    "lineNumber": 52,
-    "undocument": true,
-    "ignore": true
-  },
-  {
-    "__docId__": 149,
-    "kind": "member",
-    "name": "core",
-    "memberof": "src/provider.js~GUIServiceProvider",
-    "static": false,
-    "longname": "src/provider.js~GUIServiceProvider#core",
-    "access": "public",
-    "description": null,
-    "lineNumber": 53,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 150,
-    "kind": "member",
-    "name": "contextmenu",
-    "memberof": "src/provider.js~GUIServiceProvider",
-    "static": false,
-    "longname": "src/provider.js~GUIServiceProvider#contextmenu",
-    "access": "public",
-    "description": null,
-    "lineNumber": 54,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 151,
-    "kind": "method",
-    "name": "init",
-    "memberof": "src/provider.js~GUIServiceProvider",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/provider.js~GUIServiceProvider#init",
-    "access": "public",
-    "description": null,
-    "lineNumber": 57,
-    "undocument": true,
-    "params": [],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 152,
-    "kind": "method",
-    "name": "destroy",
-    "memberof": "src/provider.js~GUIServiceProvider",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/provider.js~GUIServiceProvider#destroy",
-    "access": "public",
-    "description": "Destroys the provider.",
-    "lineNumber": 84,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 153,
-    "kind": "method",
-    "name": "start",
-    "memberof": "src/provider.js~GUIServiceProvider",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/provider.js~GUIServiceProvider#start",
-    "access": "public",
-    "description": null,
-    "lineNumber": 93,
-    "undocument": true,
-    "params": [],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 154,
-    "kind": "file",
     "name": "src/umd.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport \"../index.scss\";\nexport * from \"../index.js\";\n",
     "static": true,
@@ -3869,7 +3713,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 155,
+    "__docId__": 146,
     "kind": "file",
     "name": "src/utils.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\n/**\n * Filter an object based on keys\n * @param {Object} props Props\n * @param {String[]} filterKeys List of keys to filter\n * @returns {Object}\n */\nexport const filteredProps = (props, filterKeys) => {\n\tconst keys = Object.keys(props);\n\tconst filter = (k) => filterKeys.indexOf(k) === -1;\n\n\treturn keys.filter(filter).reduce(\n\t\t(result, k) =>\n\t\t\t({\n\t\t\t\t[k]: props[k],\n\t\t\t\t...result\n\t\t\t}),\n\t\t{}\n\t);\n};\n\n/**\n * Creates a double-tap event handler\n * @param {Number} [timeout=250] Timeout\n * @returns {Function} Handler with => (ev, cb)\n */\nexport const doubleTap = (timeout = 250) => {\n\tlet tapped = false;\n\tlet timer;\n\n\treturn (ev, cb) => {\n\t\ttimer = clearTimeout(timer);\n\t\ttimer = setTimeout(() => (tapped = false), timeout);\n\n\t\tif (tapped) {\n\t\t\tev.preventDefault();\n\t\t\treturn cb(ev);\n\t\t}\n\n\t\ttapped = true;\n\n\t\treturn false;\n\t};\n};\n",
@@ -3880,7 +3724,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 156,
+    "__docId__": 147,
     "kind": "function",
     "name": "filteredProps",
     "memberof": "src/utils.js",
@@ -3932,7 +3776,7 @@
     }
   },
   {
-    "__docId__": 157,
+    "__docId__": 148,
     "kind": "function",
     "name": "doubleTap",
     "memberof": "src/utils.js",
