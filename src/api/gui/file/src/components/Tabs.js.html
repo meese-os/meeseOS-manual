@@ -134,7 +134,7 @@ const view = nestable(
 		init: (props) =&gt; ({
 			selectedIndex: props.selectedIndex || 0,
 		}),
-		setSelectedIndex: (selectedIndex) =&gt; (state) =&gt; ({ selectedIndex }),
+		setSelectedIndex: (selectedIndex) =&gt; (_state) =&gt; ({ selectedIndex }),
 	},
 	(state, actions) =&gt; (props, children) =&gt;
 		h(
@@ -155,7 +155,7 @@ const view = nestable(
 );
 
 /**
- * A tab container
+ * A tab container.
  * @param {Object} props Properties
  * @param {String[]} props.labels Labels
  * @param {h[]} children Tabs

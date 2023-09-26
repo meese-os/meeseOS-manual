@@ -307,7 +307,7 @@ const methods = (core, request) =&gt; {
 		exists: passthrough(&quot;exists&quot;),
 		stat: passthrough(&quot;stat&quot;),
 
-		url: ({ path }, options) =&gt;
+		url: ({ path }, _options) =&gt;
 			Promise.resolve(
 				core.url(`/vfs/readfile?path=${encodeURIComponent(path)}`)
 			),

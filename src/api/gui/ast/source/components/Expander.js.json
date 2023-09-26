@@ -1,7 +1,7 @@
 {
   "type": "File",
   "start": 0,
-  "end": 3102,
+  "end": 3103,
   "loc": {
     "start": {
       "line": 1,
@@ -15,7 +15,7 @@
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 3102,
+    "end": 3103,
     "loc": {
       "start": {
         "line": 1,
@@ -3054,9 +3054,9 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * A status bar\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
+            "value": "*\n * A status bar.\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
             "start": 2714,
-            "end": 2978,
+            "end": 2979,
             "loc": {
               "start": {
                 "line": 97,
@@ -3072,8 +3072,8 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 2979,
-        "end": 3101,
+        "start": 2980,
+        "end": 3102,
         "loc": {
           "start": {
             "line": 105,
@@ -3088,8 +3088,8 @@
         "source": null,
         "declaration": {
           "type": "VariableDeclaration",
-          "start": 2986,
-          "end": 3101,
+          "start": 2987,
+          "end": 3102,
           "loc": {
             "start": {
               "line": 105,
@@ -3103,8 +3103,8 @@
           "declarations": [
             {
               "type": "VariableDeclarator",
-              "start": 2992,
-              "end": 3100,
+              "start": 2993,
+              "end": 3101,
               "loc": {
                 "start": {
                   "line": 105,
@@ -3117,8 +3117,8 @@
               },
               "id": {
                 "type": "Identifier",
-                "start": 2992,
-                "end": 3000,
+                "start": 2993,
+                "end": 3001,
                 "loc": {
                   "start": {
                     "line": 105,
@@ -3135,8 +3135,8 @@
               },
               "init": {
                 "type": "ArrowFunctionExpression",
-                "start": 3003,
-                "end": 3100,
+                "start": 3004,
+                "end": 3101,
                 "loc": {
                   "start": {
                     "line": 105,
@@ -3149,8 +3149,8 @@
                 },
                 "id": {
                   "type": "Identifier",
-                  "start": 2992,
-                  "end": 3000,
+                  "start": 2993,
+                  "end": 3001,
                   "loc": {
                     "start": {
                       "line": 105,
@@ -3171,8 +3171,8 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 3004,
-                    "end": 3009,
+                    "start": 3005,
+                    "end": 3010,
                     "loc": {
                       "start": {
                         "line": 105,
@@ -3188,8 +3188,8 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 3011,
-                    "end": 3019,
+                    "start": 3012,
+                    "end": 3020,
                     "loc": {
                       "start": {
                         "line": 105,
@@ -3206,8 +3206,8 @@
                 ],
                 "body": {
                   "type": "CallExpression",
-                  "start": 3025,
-                  "end": 3100,
+                  "start": 3026,
+                  "end": 3101,
                   "loc": {
                     "start": {
                       "line": 106,
@@ -3220,8 +3220,8 @@
                   },
                   "callee": {
                     "type": "Identifier",
-                    "start": 3025,
-                    "end": 3026,
+                    "start": 3026,
+                    "end": 3027,
                     "loc": {
                       "start": {
                         "line": 106,
@@ -3238,8 +3238,8 @@
                   "arguments": [
                     {
                       "type": "Identifier",
-                      "start": 3027,
-                      "end": 3032,
+                      "start": 3028,
+                      "end": 3033,
                       "loc": {
                         "start": {
                           "line": 106,
@@ -3255,8 +3255,8 @@
                     },
                     {
                       "type": "ObjectExpression",
-                      "start": 3034,
-                      "end": 3089,
+                      "start": 3035,
+                      "end": 3090,
                       "loc": {
                         "start": {
                           "line": 106,
@@ -3270,8 +3270,8 @@
                       "properties": [
                         {
                           "type": "SpreadProperty",
-                          "start": 3036,
-                          "end": 3044,
+                          "start": 3037,
+                          "end": 3045,
                           "loc": {
                             "start": {
                               "line": 106,
@@ -3284,8 +3284,8 @@
                           },
                           "argument": {
                             "type": "Identifier",
-                            "start": 3039,
-                            "end": 3044,
+                            "start": 3040,
+                            "end": 3045,
                             "loc": {
                               "start": {
                                 "line": 106,
@@ -3302,8 +3302,8 @@
                         },
                         {
                           "type": "ObjectProperty",
-                          "start": 3046,
-                          "end": 3087,
+                          "start": 3047,
+                          "end": 3088,
                           "loc": {
                             "start": {
                               "line": 106,
@@ -3319,8 +3319,8 @@
                           "computed": false,
                           "key": {
                             "type": "Identifier",
-                            "start": 3046,
-                            "end": 3051,
+                            "start": 3047,
+                            "end": 3052,
                             "loc": {
                               "start": {
                                 "line": 106,
@@ -3336,8 +3336,8 @@
                           },
                           "value": {
                             "type": "StringLiteral",
-                            "start": 3053,
-                            "end": 3087,
+                            "start": 3054,
+                            "end": 3088,
                             "loc": {
                               "start": {
                                 "line": 106,
@@ -3359,8 +3359,8 @@
                     },
                     {
                       "type": "Identifier",
-                      "start": 3091,
-                      "end": 3099,
+                      "start": 3092,
+                      "end": 3100,
                       "loc": {
                         "start": {
                           "line": 106,
@@ -3384,9 +3384,9 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * A status bar\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
+              "value": "*\n * A status bar.\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
               "start": 2714,
-              "end": 2978,
+              "end": 2979,
               "loc": {
                 "start": {
                   "line": 97,
@@ -3404,9 +3404,9 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * A status bar\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
+            "value": "*\n * A status bar.\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
             "start": 2714,
-            "end": 2978,
+            "end": 2979,
             "loc": {
               "start": {
                 "line": 97,
@@ -3442,9 +3442,9 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * A status bar\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
+      "value": "*\n * A status bar.\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
       "start": 2714,
-      "end": 2978,
+      "end": 2979,
       "loc": {
         "start": {
           "line": 97,
@@ -10040,9 +10040,9 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * A status bar\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
+      "value": "*\n * A status bar.\n * @param {Object} props Properties\n * @param {Boolean} [props.active] Active state\n * @param {Function} [props.ontoggle] Toggle callback => (ev, active)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n ",
       "start": 2714,
-      "end": 2978,
+      "end": 2979,
       "loc": {
         "start": {
           "line": 97,
@@ -10069,8 +10069,8 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 2979,
-      "end": 2985,
+      "start": 2980,
+      "end": 2986,
       "loc": {
         "start": {
           "line": 105,
@@ -10097,8 +10097,8 @@
         "updateContext": null
       },
       "value": "const",
-      "start": 2986,
-      "end": 2991,
+      "start": 2987,
+      "end": 2992,
       "loc": {
         "start": {
           "line": 105,
@@ -10123,8 +10123,8 @@
         "binop": null
       },
       "value": "Expander",
-      "start": 2992,
-      "end": 3000,
+      "start": 2993,
+      "end": 3001,
       "loc": {
         "start": {
           "line": 105,
@@ -10150,8 +10150,8 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 3001,
-      "end": 3002,
+      "start": 3002,
+      "end": 3003,
       "loc": {
         "start": {
           "line": 105,
@@ -10175,8 +10175,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3003,
-      "end": 3004,
+      "start": 3004,
+      "end": 3005,
       "loc": {
         "start": {
           "line": 105,
@@ -10201,8 +10201,8 @@
         "binop": null
       },
       "value": "props",
-      "start": 3004,
-      "end": 3009,
+      "start": 3005,
+      "end": 3010,
       "loc": {
         "start": {
           "line": 105,
@@ -10227,8 +10227,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3009,
-      "end": 3010,
+      "start": 3010,
+      "end": 3011,
       "loc": {
         "start": {
           "line": 105,
@@ -10253,8 +10253,8 @@
         "binop": null
       },
       "value": "children",
-      "start": 3011,
-      "end": 3019,
+      "start": 3012,
+      "end": 3020,
       "loc": {
         "start": {
           "line": 105,
@@ -10278,8 +10278,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3019,
-      "end": 3020,
+      "start": 3020,
+      "end": 3021,
       "loc": {
         "start": {
           "line": 105,
@@ -10304,8 +10304,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3021,
-      "end": 3023,
+      "start": 3022,
+      "end": 3024,
       "loc": {
         "start": {
           "line": 105,
@@ -10330,8 +10330,8 @@
         "binop": null
       },
       "value": "h",
-      "start": 3025,
-      "end": 3026,
+      "start": 3026,
+      "end": 3027,
       "loc": {
         "start": {
           "line": 106,
@@ -10355,8 +10355,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3026,
-      "end": 3027,
+      "start": 3027,
+      "end": 3028,
       "loc": {
         "start": {
           "line": 106,
@@ -10381,8 +10381,8 @@
         "binop": null
       },
       "value": "inner",
-      "start": 3027,
-      "end": 3032,
+      "start": 3028,
+      "end": 3033,
       "loc": {
         "start": {
           "line": 106,
@@ -10407,8 +10407,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3032,
-      "end": 3033,
+      "start": 3033,
+      "end": 3034,
       "loc": {
         "start": {
           "line": 106,
@@ -10432,8 +10432,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3034,
-      "end": 3035,
+      "start": 3035,
+      "end": 3036,
       "loc": {
         "start": {
           "line": 106,
@@ -10458,8 +10458,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3036,
-      "end": 3039,
+      "start": 3037,
+      "end": 3040,
       "loc": {
         "start": {
           "line": 106,
@@ -10484,8 +10484,8 @@
         "binop": null
       },
       "value": "props",
-      "start": 3039,
-      "end": 3044,
+      "start": 3040,
+      "end": 3045,
       "loc": {
         "start": {
           "line": 106,
@@ -10510,8 +10510,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3044,
-      "end": 3045,
+      "start": 3045,
+      "end": 3046,
       "loc": {
         "start": {
           "line": 106,
@@ -10538,8 +10538,8 @@
         "updateContext": null
       },
       "value": "class",
-      "start": 3046,
-      "end": 3051,
+      "start": 3047,
+      "end": 3052,
       "loc": {
         "start": {
           "line": 106,
@@ -10564,8 +10564,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3051,
-      "end": 3052,
+      "start": 3052,
+      "end": 3053,
       "loc": {
         "start": {
           "line": 106,
@@ -10591,8 +10591,8 @@
         "updateContext": null
       },
       "value": "meeseOS-gui meeseOS-gui-expander",
-      "start": 3053,
-      "end": 3087,
+      "start": 3054,
+      "end": 3088,
       "loc": {
         "start": {
           "line": 106,
@@ -10616,8 +10616,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3088,
-      "end": 3089,
+      "start": 3089,
+      "end": 3090,
       "loc": {
         "start": {
           "line": 106,
@@ -10642,8 +10642,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3089,
-      "end": 3090,
+      "start": 3090,
+      "end": 3091,
       "loc": {
         "start": {
           "line": 106,
@@ -10668,8 +10668,8 @@
         "binop": null
       },
       "value": "children",
-      "start": 3091,
-      "end": 3099,
+      "start": 3092,
+      "end": 3100,
       "loc": {
         "start": {
           "line": 106,
@@ -10693,8 +10693,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3099,
-      "end": 3100,
+      "start": 3100,
+      "end": 3101,
       "loc": {
         "start": {
           "line": 106,
@@ -10719,8 +10719,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3100,
-      "end": 3101,
+      "start": 3101,
+      "end": 3102,
       "loc": {
         "start": {
           "line": 106,
@@ -10745,8 +10745,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3102,
-      "end": 3102,
+      "start": 3103,
+      "end": 3103,
       "loc": {
         "start": {
           "line": 107,

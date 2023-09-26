@@ -98,7 +98,7 @@ import { app, h } from &quot;hyperapp&quot;;
 import { Menu } from &quot;./components/Menu&quot;;
 
 /**
- * Makes sure sub-menus stay within the viewport
+ * Makes sure sub-menus stay within the viewport.
  */
 const clampSubMenu = (root, ev) =&gt; {
 	let ul = ev.target.querySelector(&quot;ul&quot;);
@@ -122,7 +122,7 @@ const clampSubMenu = (root, ev) =&gt; {
 };
 
 /**
- * Makes sure menu stays within the viewport
+ * Makes sure menu stays within the viewport.
  */
 const clampMenu = (root, el, currentPosition) =&gt; {
 	const result = {};
@@ -147,7 +147,7 @@ const clampMenu = (root, el, currentPosition) =&gt; {
 };
 
 /**
- * Context Menu view
+ * Context Menu view.
  */
 const view = (callback) =&gt; (props, actions) =&gt;
 	h(Menu, {
@@ -164,7 +164,7 @@ const timeout = (fn) =&gt; {
 };
 
 /**
- * ContextMenu Class
+ * ContextMenu Class.
  *
  * @desc Handles a Menu/ContextMenu globally for MeeseOS
  */
@@ -182,7 +182,7 @@ export class ContextMenu {
 	}
 
 	/**
-	 * Initializes the Menu Hyperapp
+	 * Initializes the Menu Hyperapp.
 	 */
 	init() {
 		let clampTimeout;
@@ -213,10 +213,10 @@ export class ContextMenu {
 						return { position: newPosition };
 					}
 				},
-				onshow: (ev) =&gt; (props) =&gt; {
+				onshow: (ev) =&gt; (_props) =&gt; {
 					clampTimeout = timeout(() =&gt; clampSubMenu(this.core.$root, ev));
 				},
-				show: (options) =&gt; (props, actions) =&gt; {
+				show: (options) =&gt; (_props, actions) =&gt; {
 					let { menu, position, toggle } = options;
 					if (toggle &amp;&amp; isActive) {
 						return actions.hide();
@@ -251,7 +251,7 @@ export class ContextMenu {
 						position: position || { top: 0, left: 0 },
 					};
 				},
-				hide: () =&gt; (props) =&gt; {
+				hide: () =&gt; (_props) =&gt; {
 					if (isActive) {
 						setTimeout(() =&gt; (isActive = false), 0);
 					}
@@ -276,14 +276,14 @@ export class ContextMenu {
 	}
 
 	/**
-	 * Show the menu
+	 * Show the menu.
 	 */
 	show(...args) {
 		return this.actions ? this.actions.show(...args) : null;
 	}
 
 	/**
-	 * Hide the menu
+	 * Hide the menu.
 	 */
 	hide(...args) {
 		return this.actions ? this.actions.hide(...args) : null;

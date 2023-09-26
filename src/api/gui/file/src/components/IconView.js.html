@@ -194,8 +194,8 @@ export const iconView = {
 			contextmenu: () =&gt; () =&gt; ({}),
 			created: () =&gt; () =&gt; ({}),
 			setEntries: (entries) =&gt; () =&gt; ({ entries }),
-			setScrollTop: (scrollTop) =&gt; (state) =&gt; ({ scrollTop }),
-			setSelectedIndex: (selectedIndex) =&gt; (state) =&gt; ({ selectedIndex }),
+			setScrollTop: (scrollTop) =&gt; (_state) =&gt; ({ scrollTop }),
+			setSelectedIndex: (selectedIndex) =&gt; (_state) =&gt; ({ selectedIndex }),
 			...actions || {}
 		}),
 };
