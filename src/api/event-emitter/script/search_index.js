@@ -280,11 +280,5 @@ window.esdocSearchIndex = [
     "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
     "event-emitter/.external-ecmascript.js~undefined",
     "external"
-  ],
-  [
-    "event-emitter/webpack.config.js",
-    "file/event-emitter/webpack.config.js.html",
-    "event-emitter/webpack.config.js",
-    "file"
   ]
 ]

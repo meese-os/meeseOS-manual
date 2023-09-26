@@ -564,59 +564,6 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 48,
-    "kind": "file",
-    "name": "event-emitter/webpack.config.js",
-    "content": "const path = require(\"path\");\nconst mode = process.env.NODE_ENV || \"development\";\n\nmodule.exports = {\n\tmode,\n\tdevtool: \"source-map\",\n\ttarget: \"node\",\n\tentry: [path.resolve(__dirname, \"index.js\")],\n\toutput: {\n\t\tlibrary: \"meeseOSEventEmitter\",\n\t\tlibraryTarget: \"umd\",\n\t},\n\toptimization: {\n\t\tminimize: mode === \"production\",\n\t},\n\tmodule: {\n\t\trules: [\n\t\t\t{\n\t\t\t\ttest: /\\.js$/,\n\t\t\t\tuse: {\n\t\t\t\t\tloader: \"babel-loader\",\n\t\t\t\t},\n\t\t\t},\n\t\t],\n\t},\n};\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/backend/event-emitter/webpack.config.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 49,
-    "kind": "variable",
-    "name": "path",
-    "memberof": "event-emitter/webpack.config.js",
-    "static": true,
-    "longname": "event-emitter/webpack.config.js~path",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/event-emitter/event-emitter/webpack.config.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 1,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 50,
-    "kind": "variable",
-    "name": "mode",
-    "memberof": "event-emitter/webpack.config.js",
-    "static": true,
-    "longname": "event-emitter/webpack.config.js~mode",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/event-emitter/event-emitter/webpack.config.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 2,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
     "kind": "index",
     "content": "# MeeseOS EventEmitter\n\nThis is a EventEmitter implementation for MeeseOS.\n\n## API\n\n```javascript\non(\"event-name\", () => {}); // Fired every time event is emitted\nonce(\"event-name\", () => {}); // Fires only once and is forgotten\noff(\"event-name\", () => {}); // Removes listener\noff(\"event-name\"); // Removes all listeners of this type\noff(); // Removes all listeners\n\non(\"event-name\", () => {}, { persist: true }); // Will not be removed unless forced\noff(\"event-name\", () => {}, true); // Force removal\n```\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/event-emitter/README.md",
