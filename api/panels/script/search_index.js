@@ -408,6 +408,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/panel.js~panel#setposition",
+    "class/src/panel.js~Panel.html#instance-method-setPosition",
+    "src/panel.js~Panel#setPosition",
+    "method"
+  ],
+  [
     "src/provider.js",
     "file/src/provider.js.html",
     "src/provider.js",

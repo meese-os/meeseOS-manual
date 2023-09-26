@@ -339,8 +339,8 @@ module.exports = (core) =&gt; {
 		 * @param {Object} [options={}] Options
 		 * @return {Object[]}
 		 */
-		capabilities: (vfs) =&gt;
-			(file, options = {}) =&gt;
+		capabilities: (_vfs) =&gt;
+			(_file, _options = {}) =&gt;
 				Promise.resolve({
 					sort: false,
 					pagination: false

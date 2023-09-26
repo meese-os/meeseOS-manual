@@ -340,5 +340,11 @@ window.esdocSearchIndex = [
     "file/src/provider.js.html",
     "src/provider.js",
     "file"
+  ],
+  [
+    "src/widget.js",
+    "file/src/widget.js.html",
+    "src/widget.js",
+    "file"
   ]
 ]

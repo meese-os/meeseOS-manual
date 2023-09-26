@@ -231,26 +231,26 @@
  * @param {Object} [options] Adapter options
  */
 const nullAdapter = {
-	capabilities: (path, options) =&gt; Promise.resolve({}),
-	readdir: (path, options) =&gt; Promise.resolve([]),
-	readfile: (path, type, options) =&gt;
+	capabilities: (_path, _options) =&gt; Promise.resolve({}),
+	readdir: (_path, _options) =&gt; Promise.resolve([]),
+	readfile: (_path, _type, _options) =&gt;
 		Promise.resolve({
 			body: new ArrayBuffer(),
 			mime: &quot;application/octet-stream&quot;,
 		}),
-	writefile: (path, data, options) =&gt; Promise.resolve(-1),
-	copy: (from, to, options) =&gt; Promise.resolve(false),
-	rename: (from, to, options) =&gt; Promise.resolve(false),
-	mkdir: (path, options) =&gt; Promise.resolve(false),
-	unlink: (path, options) =&gt; Promise.resolve(false),
-	exists: (path, options) =&gt; Promise.resolve(false),
-	stat: (path, options) =&gt; Promise.resolve({}),
-	url: (path, options) =&gt; Promise.resolve(null),
-	mount: (options) =&gt; Promise.resolve(true),
-	unmount: (options) =&gt; Promise.resolve(true),
-	search: (root, pattern, options) =&gt; Promise.resolve([]),
-	touch: (path, options) =&gt; Promise.resolve(false),
-	archive: (selection, options) =&gt; Promise.resolve(false),
+	writefile: (_path, _data, _options) =&gt; Promise.resolve(-1),
+	copy: (_from, _to, _options) =&gt; Promise.resolve(false),
+	rename: (_from, _to, _options) =&gt; Promise.resolve(false),
+	mkdir: (_path, _options) =&gt; Promise.resolve(false),
+	unlink: (_path, _options) =&gt; Promise.resolve(false),
+	exists: (_path, _options) =&gt; Promise.resolve(false),
+	stat: (_path, _options) =&gt; Promise.resolve({}),
+	url: (_path, _options) =&gt; Promise.resolve(null),
+	mount: (_options) =&gt; Promise.resolve(true),
+	unmount: (_options) =&gt; Promise.resolve(true),
+	search: (_root, _pattern, _options) =&gt; Promise.resolve([]),
+	touch: (_path, _options) =&gt; Promise.resolve(false),
+	archive: (_selection, _options) =&gt; Promise.resolve(false),
 };
 
 export default nullAdapter;

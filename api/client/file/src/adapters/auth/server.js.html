@@ -230,7 +230,7 @@
  * @param {Core} core MeeseOS Core instance reference
  * @param {Object} [options] Adapter options
  */
-const serverAuth = (core, options) =&gt; {
+const serverAuth = (core, _options) =&gt; {
 	const request = (endpoint, params = {}) =&gt;
 		core.request(
 			endpoint,

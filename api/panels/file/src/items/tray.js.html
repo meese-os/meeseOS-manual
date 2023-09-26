@@ -75,7 +75,7 @@ import { h } from &quot;hyperapp&quot;;
 import PanelItem from &quot;../panel-item&quot;;
 
 /**
- * Tray
+ * Tray.
  *
  * @desc Tray Panel Item
  */
@@ -95,7 +95,7 @@ export default class TrayPanelItem extends PanelItem {
 		this.core.on(&quot;meeseOS/tray:update&quot;, (list) =&gt; actions.setTray(list));
 	}
 
-	render(state, actions) {
+	render(state, _actions) {
 		const child = (entry) =&gt;
 			h(
 				&quot;div&quot;,

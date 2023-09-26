@@ -234,7 +234,7 @@ const adapter = (core) =&gt; {
 	const pkgs = core.make(&quot;meeseOS/packages&quot;);
 
 	return {
-		readdir: ({ path }, options) =&gt; {
+		readdir: ({ path }, _options) =&gt; {
 			return Promise.resolve(pkgs.getPackages()).then((pkgs) =&gt;
 				pkgs.map((pkg) =&gt; ({
 					isDirectory: false,

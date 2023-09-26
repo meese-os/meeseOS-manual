@@ -360,7 +360,7 @@ const parseFormData = (req, { maxFieldsSize, maxFileSize }) =&gt; {
  * @returns {Promise&lt;any&gt;}
  */
 const parseFields = (config) =&gt;
-	(req, res) =&gt; {
+	(req, _res) =&gt; {
 		if ([&quot;get&quot;, &quot;head&quot;].indexOf(req.method.toLowerCase()) !== -1) {
 			return Promise.resolve(parseGet(req));
 		}
