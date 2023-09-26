@@ -60,12 +60,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/gui/src/components/label.js~label",
-    "function/index.html#static-function-Label",
-    "<span>Label</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Label.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/gui/src/components/menu.js~menu",
     "function/index.html#static-function-Menu",
     "<span>Menu</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Menu.js</span>",
@@ -81,12 +75,6 @@ window.esdocSearchIndex = [
     "@meese-os/gui/src/components/menubar.js~menubaritem",
     "function/index.html#static-function-MenubarItem",
     "<span>MenubarItem</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Menubar.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/gui/src/components/panes.js~panes",
-    "function/index.html#static-function-Panes",
-    "<span>Panes</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Panes.js</span>",
     "function"
   ],
   [
@@ -114,27 +102,9 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/gui/src/components/tabs.js~tabs",
-    "function/index.html#static-function-Tabs",
-    "<span>Tabs</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/Tabs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/gui/src/components/textfield.js~textfield",
-    "function/index.html#static-function-TextField",
-    "<span>TextField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/TextField.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/gui/src/components/textareafield.js~textareafield",
     "function/index.html#static-function-TextareaField",
     "<span>TextareaField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/TextareaField.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/gui/src/components/togglefield.js~togglefield",
-    "function/index.html#static-function-ToggleField",
-    "<span>ToggleField</span> <span class=\"search-result-import-path\">@meese-os/gui/src/components/ToggleField.js</span>",
     "function"
   ],
   [
@@ -516,12 +486,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/components/label.js",
-    "file/src/components/Label.js.html",
-    "src/components/Label.js",
-    "file"
-  ],
-  [
     "src/components/listview.js",
     "file/src/components/ListView.js.html",
     "src/components/ListView.js",
@@ -543,12 +507,6 @@ window.esdocSearchIndex = [
     "src/components/menubar.js",
     "file/src/components/Menubar.js.html",
     "src/components/Menubar.js",
-    "file"
-  ],
-  [
-    "src/components/panes.js",
-    "file/src/components/Panes.js.html",
-    "src/components/Panes.js",
     "file"
   ],
   [
@@ -576,27 +534,9 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/components/tabs.js",
-    "file/src/components/Tabs.js.html",
-    "src/components/Tabs.js",
-    "file"
-  ],
-  [
-    "src/components/textfield.js",
-    "file/src/components/TextField.js.html",
-    "src/components/TextField.js",
-    "file"
-  ],
-  [
     "src/components/textareafield.js",
     "file/src/components/TextareaField.js.html",
     "src/components/TextareaField.js",
-    "file"
-  ],
-  [
-    "src/components/togglefield.js",
-    "file/src/components/ToggleField.js.html",
-    "src/components/ToggleField.js",
     "file"
   ],
   [

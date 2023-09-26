@@ -6,12 +6,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "@meese-os/panels/src/items/menu.js~menupanelitem",
-    "class/src/items/menu.js~MenuPanelItem.html",
-    "<span>MenuPanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/items/menu.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/panels/src/panel.js~panel",
     "class/src/panel.js~Panel.html",
     "<span>Panel</span> <span class=\"search-result-import-path\">@meese-os/panels/src/panel.js</span>",
@@ -33,12 +27,6 @@ window.esdocSearchIndex = [
     "@meese-os/panels/src/items/tray.js~traypanelitem",
     "class/src/items/tray.js~TrayPanelItem.html",
     "<span>TrayPanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/items/tray.js</span>",
-    "class"
-  ],
-  [
-    "@meese-os/panels/src/items/windows.js~windowspanelitem",
-    "class/src/items/windows.js~WindowsPanelItem.html",
-    "<span>WindowsPanelItem</span> <span class=\"search-result-import-path\">@meese-os/panels/src/items/windows.js</span>",
     "class"
   ],
   [
@@ -330,21 +318,9 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/items/menu.js",
-    "file/src/items/menu.js.html",
-    "src/items/menu.js",
-    "file"
-  ],
-  [
     "src/items/tray.js",
     "file/src/items/tray.js.html",
     "src/items/tray.js",
-    "file"
-  ],
-  [
-    "src/items/windows.js",
-    "file/src/items/windows.js.html",
-    "src/items/windows.js",
     "file"
   ],
   [

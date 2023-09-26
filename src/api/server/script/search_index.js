@@ -162,12 +162,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/server/src/adapters/vfs/system.js~system",
-    "function/index.html#static-function-system",
-    "<span>system</span> <span class=\"search-result-import-path\">@meese-os/server/src/adapters/vfs/system.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/server/src/utils/vfs.js~validategroups",
     "function/index.html#static-function-validateGroups",
     "<span>validateGroups</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
@@ -471,12 +465,6 @@ window.esdocSearchIndex = [
     "src/adapters/settings/null.js",
     "file/src/adapters/settings/null.js.html",
     "src/adapters/settings/null.js",
-    "file"
-  ],
-  [
-    "src/adapters/vfs/system.js",
-    "file/src/adapters/vfs/system.js.html",
-    "src/adapters/vfs/system.js",
     "file"
   ],
   [
