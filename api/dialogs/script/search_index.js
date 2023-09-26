@@ -1,17 +1,5 @@
 window.esdocSearchIndex = [
   [
-    "@meese-os/dialogs/src/dialogs/confirm.js~confirmdialog",
-    "class/src/dialogs/confirm.js~ConfirmDialog.html",
-    "<span>ConfirmDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/confirm.js</span>",
-    "class"
-  ],
-  [
-    "@meese-os/dialogs/src/dialogs/progress.js~progressdialog",
-    "class/src/dialogs/progress.js~ProgressDialog.html",
-    "<span>ProgressDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/progress.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/dialogs/src/color-utils.js~colorfromclick",
     "function/index.html#static-function-colorFromClick",
     "<span>colorFromClick</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/color-utils.js</span>",
@@ -328,41 +316,5 @@ window.esdocSearchIndex = [
     "file/src/color-utils.js.html",
     "src/color-utils.js",
     "file"
-  ],
-  [
-    "src/dialogs/confirm.js",
-    "file/src/dialogs/confirm.js.html",
-    "src/dialogs/confirm.js",
-    "file"
-  ],
-  [
-    "src/dialogs/confirm.js~confirmdialog#constructor",
-    "class/src/dialogs/confirm.js~ConfirmDialog.html#instance-constructor-constructor",
-    "src/dialogs/confirm.js~ConfirmDialog#constructor",
-    "method"
-  ],
-  [
-    "src/dialogs/progress.js",
-    "file/src/dialogs/progress.js.html",
-    "src/dialogs/progress.js",
-    "file"
-  ],
-  [
-    "src/dialogs/progress.js~progressdialog#constructor",
-    "class/src/dialogs/progress.js~ProgressDialog.html#instance-constructor-constructor",
-    "src/dialogs/progress.js~ProgressDialog#constructor",
-    "method"
-  ],
-  [
-    "src/dialogs/progress.js~progressdialog#setprogress",
-    "class/src/dialogs/progress.js~ProgressDialog.html#instance-method-setProgress",
-    "src/dialogs/progress.js~ProgressDialog#setProgress",
-    "method"
-  ],
-  [
-    "src/dialogs/progress.js~progressdialog#setstatus",
-    "class/src/dialogs/progress.js~ProgressDialog.html#instance-method-setStatus",
-    "src/dialogs/progress.js~ProgressDialog#setStatus",
-    "method"
   ]
 ]

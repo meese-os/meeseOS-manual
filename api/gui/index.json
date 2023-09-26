@@ -1557,100 +1557,6 @@
   {
     "__docId__": 75,
     "kind": "file",
-    "name": "src/components/Label.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Element } from \"./Element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A label element.\n * @param {Object} props Properties\n * @param {String} [props.text] Label Text\n * @param {String} [props.placement] Placement\n * @param {String} [props.for] The \"for\" attribute\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const Label = (props = {}, children = []) => {\n\tconst placement = props.placement || \"top\";\n\tconst text = props.text || \"\";\n\n\tconst elementProps = {\n\t\tclass: [\n\t\t\t\"meeseOS-gui-field-label\",\n\t\t\t\"meeseOS-gui-field-label-on-\" + placement,\n\t\t],\n\t\t...props.box || {}\n\t};\n\n\treturn h(Element, elementProps, [\n\t\th(\"label\", { for: props.for }, text),\n\t\tchildren,\n\t]);\n};\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/gui/src/components/Label.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 76,
-    "kind": "function",
-    "name": "Label",
-    "memberof": "src/components/Label.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Label.js~Label",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/gui/src/components/Label.js",
-    "importStyle": "{Label}",
-    "description": "A label element.",
-    "lineNumber": 43,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "props",
-        "description": "Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.text",
-        "description": "Label Text"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.placement",
-        "description": "Placement"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.for",
-        "description": "The \"for\" attribute"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "BoxProperties"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.box",
-        "description": "Box Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "h[]"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "children",
-        "description": "Children"
-      }
-    ],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 77,
-    "kind": "file",
     "name": "src/components/ListView.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { doubleTap, filteredProps } from \"../utils\";\nimport { Element } from \"./Element\";\nimport { Icon } from \"./Icon\";\nimport { h } from \"hyperapp\";\n\nconst tapper = doubleTap();\n\nconst createView = (props) => {\n\tlet debounceScroll;\n\n\tconst cols = (paneIndex) => (row, rowIndex) => {\n\t\tconst col = row.columns[paneIndex] || {};\n\t\tconst colIcon = col.icon ? h(Icon, col.icon) : null;\n\t\tconst children = [\n\t\t\th(\"span\", {}, [typeof col === \"object\" ? col.label : col]),\n\t\t];\n\t\tconst selected = props.multiselect\n\t\t\t? props.selectedIndex.indexOf(rowIndex) !== -1\n\t\t\t: props.selectedIndex === rowIndex;\n\n\t\tif (colIcon) {\n\t\t\tchildren.unshift(colIcon);\n\t\t}\n\n\t\treturn h(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tkey: row.key,\n\t\t\t\t\"data-has-icon\": col.icon ? true : undefined,\n\t\t\t\tclass:\n\t\t\t\t\t\"meeseOS-gui-list-view-cell\" + (selected ? \" meeseOS__active\" : \"\"),\n\t\t\t\tontouchstart: (ev) =>\n\t\t\t\t\ttapper(ev, () =>\n\t\t\t\t\t\tprops.onactivate({ index: rowIndex, ev })\n\t\t\t\t\t),\n\t\t\t\tondblclick: (ev) => props.onactivate({ index: rowIndex, ev }),\n\t\t\t\tonclick: (ev) => props.onselect({ index: rowIndex, ev }),\n\t\t\t\toncontextmenu: (ev) => props.oncontextmenu({ index: rowIndex, ev }),\n\t\t\t\toncreate: (el) => props.oncreate({ index: rowIndex, el }),\n\t\t\t},\n\t\t\tchildren\n\t\t);\n\t};\n\n\t// TODO: Allow horizontal resizing here\n\t// IDEA: https://stackoverflow.com/a/53220241/6456163\n\t// or https://stackoverflow.com/a/63195505/6456163\n\t// or https://stackoverflow.com/a/33523184/6456163\n\tconst pane = (index, col) => h(\n\t\t\"div\",\n\t\t{\n\t\t\tclass: \"meeseOS-gui-list-view-pane\",\n\t\t\tstyle: col.style || {},\n\t\t},\n\t\t[\n\t\t\th(\n\t\t\t\t\"div\",\n\t\t\t\t{\n\t\t\t\t\tclass: \"meeseOS-gui-list-view-header\",\n\t\t\t\t\tstyle: {\n\t\t\t\t\t\tdisplay: props.hideColumns ? \"none\" : undefined,\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\th(\"span\", {}, typeof col === \"object\" ? col.label : col)\n\t\t\t),\n\t\t\th(\n\t\t\t\t\"div\",\n\t\t\t\t{\n\t\t\t\t\tclass: \"rows\",\n\t\t\t\t\t\"data-zebra\": String(props.zebra),\n\t\t\t\t},\n\t\t\t\tprops.rows.map(cols(index))\n\t\t\t),\n\t\t]\n\t);\n\n\treturn h(\n\t\t\"div\",\n\t\t{\n\t\t\t// TODO: Allow clicking the column name to sort by that column\n\t\t\tclass: \"meeseOS-gui-list-view-wrapper\",\n\t\t\tonscroll: (ev) => {\n\t\t\t\tdebounceScroll = clearTimeout(debounceScroll);\n\t\t\t\tdebounceScroll = setTimeout(() => {\n\t\t\t\t\tprops.onscroll(ev);\n\t\t\t\t}, 100);\n\t\t\t},\n\t\t\toncreate: (el) => (el.scrollTop = props.scrollTop),\n\t\t\tonupdate: (el) => {\n\t\t\t\tconst notSelected = props.multiselect\n\t\t\t\t\t? props.selectedIndex.length === 0\n\t\t\t\t\t: props.selectedIndex < 0;\n\n\t\t\t\tif (notSelected) {\n\t\t\t\t\tel.scrollTop = props.scrollTop;\n\t\t\t\t}\n\t\t\t},\n\t\t},\n\t\tprops.columns.map((col, index) => pane(index, col))\n\t);\n};\n\nexport const ListView = (props) => h(\n\tElement,\n\t{\n\t\tclass: \"meeseOS-gui-list-view\",\n\t\t...props.box || {}\n\t},\n\tcreateView(filteredProps(props, [\"box\"]))\n);\n\nexport const listView = {\n\tcomponent: (state, actions) => {\n\t\tconst createSelection = (index) => {\n\t\t\tif (!state.multiselect) return state.selectedIndex;\n\n\t\t\tconst foundIndex = state.selectedIndex.indexOf(index);\n\t\t\tconst newSelection = [...state.selectedIndex];\n\t\t\tif (foundIndex === -1) {\n\t\t\t\tnewSelection.push(index);\n\t\t\t} else {\n\t\t\t\tnewSelection.splice(foundIndex, 1);\n\t\t\t}\n\n\t\t\treturn newSelection;\n\t\t};\n\n\t\t/**\n\t\t * Creates a range of indexes from start to end.\n\t\t * @param {Number} start\n\t\t * @param {Number} end\n\t\t * @returns {Array}\n\t\t */\n\t\tconst createSelectionRange = (start, end) => {\n\t\t\t// Swaps start and end if start is greater than end\n\t\t\tif (start > end) [start, end] = [end, start];\n\n\t\t\tconst indices = [\n\t\t\t\t...state.selectedIndex,\n\t\t\t\t// Generates a range of indexes from start to end\n\t\t\t\t...Array.from({ length: end - start + 1 }, (_, i) => i + start)\n\t\t\t];\n\n\t\t\t// Remove duplicates from the array\n\t\t\treturn [...new Set(indices)];\n\t\t};\n\n\t\t/**\n\t\t * Creates an updated selection based on the user's most recent selection.\n\t\t * 'ctrl' and 'shift' keys are used to create a range of indexes.\n\t\t * @param {Number} index The index to add to the selection\n\t\t * @param {Object} ev The event object\n\t\t * @returns {Object}\n\t\t */\n\t\tconst getSelection = (index, ev) => {\n\t\t\tconst selected = state.multiselect\n\t\t\t\t? (ev.shiftKey\n\t\t\t\t\t? createSelectionRange(state.previousSelectedIndex, index)\n\t\t\t\t\t: ev.ctrlKey\n\t\t\t\t\t\t? createSelection(index)\n\t\t\t\t\t\t: [index])\n\t\t\t\t: index;\n\n\t\t\tconst data = state.multiselect\n\t\t\t\t? selected.map((item) => state.rows[item].data)\n\t\t\t\t: state.rows[selected].data;\n\n\t\t\t// Store the previous index in the state to use for calculating the\n\t\t\t// range if the shift key is pressed\n\t\t\tif (state.multiselect) actions.setPreviousSelectedIndex(index);\n\t\t\treturn { selected, data };\n\t\t};\n\n\t\tconst clearCurrentSelection = (index) => {\n\t\t\tconst selected = state.multiselect ? [] : -1;\n\n\t\t\tconst data = state.multiselect\n\t\t\t\t? state.selectedIndex.map((item) => state.rows[item].data)\n\t\t\t\t: state.rows[index].data;\n\n\t\t\treturn { selected, data };\n\t\t};\n\n\t\tconst newProps = {\n\t\t\tmultiselect: false,\n\t\t\tzebra: true,\n\t\t\tcolumns: [],\n\t\t\trows: [],\n\t\t\tonselect: ({ index, ev }) => {\n\t\t\t\tconst { selected, data } = getSelection(index, ev);\n\t\t\t\tactions.select({ data, index, ev, selected });\n\t\t\t\tactions.setSelectedIndex(selected);\n\t\t\t},\n\t\t\tonactivate: ({ index, ev }) => {\n\t\t\t\tconst { selected, data } = clearCurrentSelection(index);\n\t\t\t\tactions.activate({ data, index, ev, selected });\n\t\t\t\tactions.setSelectedIndex(selected);\n\t\t\t},\n\t\t\toncontextmenu: ({ index, ev }) => {\n\t\t\t\tconst { selected, data } = getSelection(index, ev);\n\n\t\t\t\tactions.select({ data, index, ev });\n\t\t\t\tactions.contextmenu({ data, index, ev, selected });\n\t\t\t\tactions.setSelectedIndex(selected);\n\t\t\t},\n\t\t\toncreate: ({ index, el }) => {\n\t\t\t\tconst data = state.rows[index].data;\n\t\t\t\tactions.created({ index, el, data });\n\t\t\t},\n\t\t\tonscroll: (ev) => {\n\t\t\t\tactions.scroll(ev);\n\t\t\t},\n\t\t\t...state\n\t\t};\n\n\t\treturn (props = {}) => ListView(Object.assign(newProps, props));\n\t},\n\n\tstate: (state) => ({\n\t\tselectedIndex: state.multiselect ? [] : -1,\n\t\tscrollTop: 0,\n\t\t...state\n\t}),\n\n\tactions: (actions) => ({\n\t\tselect: () => () => ({}),\n\t\tactivate: () => () => ({}),\n\t\tcontextmenu: () => () => ({}),\n\t\tcreated: () => () => ({}),\n\t\tscroll: () => (state) => state,\n\t\tsetRows: (rows) => ({ rows }),\n\t\tsetColumns: (columns) => ({ columns }),\n\t\tsetScrollTop: (scrollTop) => ({ scrollTop }),\n\t\tsetSelectedIndex: (selectedIndex) => ({ selectedIndex }),\n\t\tsetPreviousSelectedIndex: (previousSelectedIndex) => ({ previousSelectedIndex }),\n\t\t...actions || {}\n\t}),\n};\n",
     "static": true,
@@ -1660,7 +1566,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 78,
+    "__docId__": 76,
     "kind": "variable",
     "name": "tapper",
     "memberof": "src/components/ListView.js",
@@ -1681,7 +1587,7 @@
     "ignore": true
   },
   {
-    "__docId__": 79,
+    "__docId__": 77,
     "kind": "function",
     "name": "createView",
     "memberof": "src/components/ListView.js",
@@ -1712,7 +1618,7 @@
     "ignore": true
   },
   {
-    "__docId__": 80,
+    "__docId__": 78,
     "kind": "function",
     "name": "ListView",
     "memberof": "src/components/ListView.js",
@@ -1739,7 +1645,7 @@
     "ignore": true
   },
   {
-    "__docId__": 81,
+    "__docId__": 79,
     "kind": "variable",
     "name": "listView",
     "memberof": "src/components/ListView.js",
@@ -1760,7 +1666,7 @@
     "ignore": true
   },
   {
-    "__docId__": 82,
+    "__docId__": 80,
     "kind": "file",
     "name": "src/components/Menu.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Icon } from \"./Icon\";\nimport { h } from \"hyperapp\";\n\nconst ul = (props, children = [], level = 0) => {\n\tconst label = (child) => {\n\t\tconst children = [];\n\n\t\tif (child.type === \"checkbox\" || typeof child.checked === \"boolean\") {\n\t\t\tchildren.push(\n\t\t\t\th(\"span\", {\n\t\t\t\t\tclass: \"meeseOS-gui-menu-checkbox \" + (child.checked ? \"active\" : \"\"),\n\t\t\t\t})\n\t\t\t);\n\t\t} else if (child.icon) {\n\t\t\tchildren.push(h(Icon, child.icon));\n\t\t}\n\n\t\tchildren.push(h(\"span\", {}, child.label));\n\n\t\treturn children;\n\t};\n\n\tconst inner = (props, child) => {\n\t\tif (typeof child.element === \"function\") {\n\t\t\treturn child.element();\n\t\t}\n\n\t\tconst className = child.type === \"separator\"\n\t\t\t? \"meeseOS-gui-menu-separator\"\n\t\t\t: \"meeseOS-gui-menu-label \" +\n\t\t\t\t(child.disabled ? \"meeseOS__disabled\" : \"\");\n\n\t\tconst children = [h(\"span\", { class: className }, label(child))];\n\n\t\tif (child.items) {\n\t\t\tchildren.push(ul(props, child.items, level + 1));\n\t\t}\n\n\t\treturn children;\n\t};\n\n\treturn h(\n\t\t\"ul\",\n\t\t{\n\t\t\tclass: \"\",\n\t\t},\n\t\tchildren.map((child) =>\n\t\t\th(\n\t\t\t\t\"li\",\n\t\t\t\t{\n\t\t\t\t\tclass: \"meeseOS-gui-menu-entry\",\n\t\t\t\t},\n\t\t\t\t[\n\t\t\t\t\th(\n\t\t\t\t\t\t\"div\",\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tclass: \"meeseOS-gui-menu-container\",\n\t\t\t\t\t\t\tid: child.id,\n\t\t\t\t\t\t\t...child.attributes,\n\t\t\t\t\t\t\t\"data-has-image\": child.icon ? true : undefined,\n\t\t\t\t\t\t\t\"data-has-children\": child.items ? true : undefined,\n\t\t\t\t\t\t\tonmouseover: child.items ? props.onshow : undefined,\n\t\t\t\t\t\t\tontouchend: child.items ? props.onshow : undefined,\n\t\t\t\t\t\t\t// TODO: Figure out how to open an app for\n\t\t\t\t\t\t\t// frontend/client/src/desktop.js\n\t\t\t\t\t\t\tonclick: (ev) => {\n\t\t\t\t\t\t\t\tif (child.items) return;\n\n\t\t\t\t\t\t\t\tif (child.onclick) {\n\t\t\t\t\t\t\t\t\tchild.onclick(child, ev);\n\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\tif (props.onclick) {\n\t\t\t\t\t\t\t\t\tprops.onclick(child, ev, child);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t\tinner(props, child)\n\t\t\t\t\t),\n\t\t\t\t]\n\t\t\t)\n\t\t)\n\t);\n};\n\n/**\n * Menu tree.\n * @property {String} label Label\n * @property {String} [icon] Icon source\n * @property {Boolean} [disabled] Disabled state\n * @property {Boolean} [closeable] Disable close on click\n * @property {Function} [element] A callback that returns a virtual DOM element (ex. Hyperapp)\n * @property {Function} onclick Click callback\n * @property {MenuItems} [items] Child items\n * @typedef MenuItems\n */\n\n/**\n * A menu.\n * @param {Object} props Properties\n * @param {Boolean} [props.visible=true] Visible property\n * @param {Object} [posprops.ition] Position\n * @param {MenuItems} [props.menu] Menu items\n */\nexport const Menu = (props) =>\n\th(\n\t\t\"div\",\n\t\t{\n\t\t\tid: \"meeseOS-context-menu\",\n\t\t\tclassName: \"meeseOS-gui meeseOS-gui-menu\",\n\t\t\toncreate: props.oncreate,\n\t\t\tonupdate: props.onupdate,\n\t\t\tstyle: {\n\t\t\t\tdisplay: props.visible !== false ? \"block\" : \"none\",\n\t\t\t\ttop: props.position ? String(props.position.top) + \"px\" : 0,\n\t\t\t\tleft: props.position ? String(props.position.left) + \"px\" : 0,\n\t\t\t},\n\t\t},\n\t\tul(props, props.menu)\n\t);\n",
@@ -1771,7 +1677,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 83,
+    "__docId__": 81,
     "kind": "function",
     "name": "ul",
     "memberof": "src/components/Menu.js",
@@ -1820,7 +1726,7 @@
     "ignore": true
   },
   {
-    "__docId__": 84,
+    "__docId__": 82,
     "kind": "typedef",
     "name": "MenuItems",
     "memberof": "src/components/Menu.js",
@@ -1909,7 +1815,7 @@
     }
   },
   {
-    "__docId__": 85,
+    "__docId__": 83,
     "kind": "function",
     "name": "Menu",
     "memberof": "src/components/Menu.js",
@@ -1970,7 +1876,7 @@
     "return": null
   },
   {
-    "__docId__": 86,
+    "__docId__": 84,
     "kind": "file",
     "name": "src/components/Menubar.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Element } from \"./Element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A menubar item.\n * @param {Object} props Properties\n * @param {h[]} children Children\n */\nexport const MenubarItem = (props, children = []) => {\n\tconst { onclick, data } = props;\n\n\treturn h(\n\t\t\"div\",\n\t\t{\n\t\t\tonclick: (ev) => {\n\t\t\t\tif (typeof onclick === \"function\") {\n\t\t\t\t\tconst parentNode = ev.target.parentNode;\n\t\t\t\t\tconst index = Array.prototype.indexOf.call(\n\t\t\t\t\t\tparentNode.children,\n\t\t\t\t\t\tev.target\n\t\t\t\t\t);\n\n\t\t\t\t\tonclick(ev, data || {}, index);\n\t\t\t\t}\n\t\t\t},\n\t\t},\n\t\th(\"span\", {}, children)\n\t);\n};\n\n/**\n * A menubar container.\n * @param {BoxProperties} [props] Box Properties\n * @param {MenubarItem[]} [props.items] Array of object\n * @param {h[]} children Children\n */\nexport const Menubar = (props, children = []) =>\n\th(\n\t\tElement,\n\t\t{ ...props, class: [\"meeseOS-gui-menubar\", props.class], },\n\t\t[\n\t\t\t...(props.items || []).map((item) =>\n\t\t\t\th(\n\t\t\t\t\tMenubarItem,\n\t\t\t\t\t{\n\t\t\t\t\t\tdata: item.data,\n\t\t\t\t\t\tonclick: item.onclick || props.onclick,\n\t\t\t\t\t},\n\t\t\t\t\titem.label\n\t\t\t\t)\n\t\t\t),\n\t\t\t...children,\n\t\t]\n\t);\n",
@@ -1981,7 +1887,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 87,
+    "__docId__": 85,
     "kind": "function",
     "name": "MenubarItem",
     "memberof": "src/components/Menubar.js",
@@ -2024,7 +1930,7 @@
     }
   },
   {
-    "__docId__": 88,
+    "__docId__": 86,
     "kind": "function",
     "name": "Menubar",
     "memberof": "src/components/Menubar.js",
@@ -2073,225 +1979,7 @@
     "return": null
   },
   {
-    "__docId__": 89,
-    "kind": "file",
-    "name": "src/components/Panes.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Element } from \"./Element\";\nimport { h } from \"hyperapp\";\nimport nestable from \"hyperapp-nestable\";\n\nconst onmousedown = (ev, actions, orientation) => {\n\tconst { target, clientX, clientY } = ev;\n\tconst pane = target.previousSibling;\n\tconst { offsetWidth, offsetHeight } = pane;\n\tconst index = Array.from(target.parentNode.children).indexOf(pane);\n\tconst maxWidth = pane.parentNode.offsetWidth * 0.8;\n\tconst maxHeight = pane.parentNode.offsetHeight * 0.8;\n\n\tif (index < 0) {\n\t\treturn;\n\t}\n\n\tconst mousemove = (ev) => {\n\t\tev.preventDefault();\n\n\t\tlet size = orientation === \"vertical\" ? offsetWidth : offsetHeight;\n\n\t\tif (orientation === \"vertical\") {\n\t\t\tconst diffX = ev.clientX - clientX;\n\t\t\tsize = Math.min(maxWidth, size + diffX);\n\t\t} else {\n\t\t\tconst diffY = ev.clientY - clientY;\n\t\t\tsize = Math.min(maxHeight, size + diffY);\n\t\t}\n\n\t\tactions.setSize({ index, size });\n\t};\n\n\tconst mouseup = (ev) => {\n\t\tev.preventDefault();\n\t\tdocument.removeEventListener(\"mousemove\", mousemove);\n\t\tdocument.removeEventListener(\"mouseup\", mouseup);\n\t};\n\n\tev.preventDefault();\n\tdocument.addEventListener(\"mousemove\", mousemove);\n\tdocument.addEventListener(\"mouseup\", mouseup);\n};\n\nconst panes = (state, actions, children, orientation) => {\n\tconst spacers = Array(Math.ceil(children.length / 2))\n\t\t.fill(null)\n\t\t.map(() =>\n\t\t\th(\"div\", {\n\t\t\t\tclass: \"meeseOS-gui-panes-spacer\",\n\t\t\t\tonmousedown: (ev) => onmousedown(ev, actions, orientation),\n\t\t\t})\n\t\t);\n\n\tconst child = (c, i) => {\n\t\tconst w = state.sizes[i] ? String(state.sizes[i]) + \"px\" : undefined;\n\n\t\treturn h(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclass: \"meeseOS-gui-panes-pane\",\n\t\t\t\tstyle: {\n\t\t\t\t\tflex: w ? `0 0 ${w}` : w,\n\t\t\t\t},\n\t\t\t},\n\t\t\tc\n\t\t);\n\t};\n\n\treturn children\n\t\t.map(child)\n\t\t.map((v, i) => [v, spacers[i]])\n\t\t.reduce((a, b) => a.concat(b))\n\t\t.filter((v) => typeof v !== \"undefined\");\n};\n\nconst view = (state, actions) => (props, children) => {\n\tconst orientation = props.orientation || \"vertical\";\n\n\treturn h(\n\t\tElement,\n\t\t{\n\t\t\torientation,\n\t\t\tclass: \"meeseOS-gui-panes-inner\",\n\t\t},\n\t\tpanes(state, actions, children, orientation)\n\t);\n};\n\nconst inner = nestable(\n\t{\n\t\tsizes: [],\n\t},\n\t{\n\t\tinit: (props) => ({ sizes: props.sizes || [150] }),\n\t\tsetSize:\n\t\t\t({ index, size }) =>\n\t\t\t\t(state) => {\n\t\t\t\t\tconst sizes = [].concat(state.sizes);\n\t\t\t\t\tsizes[index] = size;\n\t\t\t\t\treturn { sizes };\n\t\t\t\t},\n\t},\n\tview,\n\t\"div\"\n);\n\n/**\n * Resizable panes.\n * @param {Object} props Properties\n * @param {String} [props.orientation='vertical'] Pane orientation\n * @param {Number[]} [props.sizes] Pane sizes\n * @param {h[]} children Children\n */\nexport const Panes = (props, children) =>\n\th(\n\t\tinner,\n\t\t{\n\t\t\tclass: \"meeseOS-gui-panes\",\n\t\t},\n\t\tchildren\n\t);\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/gui/src/components/Panes.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 90,
-    "kind": "function",
-    "name": "onmousedown",
-    "memberof": "src/components/Panes.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Panes.js~onmousedown",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/Panes.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 35,
-    "undocument": true,
-    "params": [
-      {
-        "name": "ev",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "actions",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "orientation",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 91,
-    "kind": "function",
-    "name": "panes",
-    "memberof": "src/components/Panes.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Panes.js~panes",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/Panes.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 74,
-    "undocument": true,
-    "params": [
-      {
-        "name": "state",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "actions",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "children",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "orientation",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 92,
-    "kind": "function",
-    "name": "view",
-    "memberof": "src/components/Panes.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Panes.js~view",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/Panes.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 106,
-    "undocument": true,
-    "params": [
-      {
-        "name": "state",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "actions",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 93,
-    "kind": "variable",
-    "name": "inner",
-    "memberof": "src/components/Panes.js",
-    "static": true,
-    "longname": "src/components/Panes.js~inner",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/Panes.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 119,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 94,
-    "kind": "function",
-    "name": "Panes",
-    "memberof": "src/components/Panes.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Panes.js~Panes",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/gui/src/components/Panes.js",
-    "importStyle": "{Panes}",
-    "description": "Resizable panes.",
-    "lineNumber": 144,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "props",
-        "description": "Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "defaultValue": "'vertical'",
-        "defaultRaw": "'vertical'",
-        "name": "props.orientation",
-        "description": "Pane orientation"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Number[]"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.sizes",
-        "description": "Pane sizes"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "h[]"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "children",
-        "description": "Children"
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 95,
+    "__docId__": 87,
     "kind": "file",
     "name": "src/components/Progressbar.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Element } from \"./Element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A progress bar.\n * @param {Object} props Properties\n * @param {Number} [props.value] The value (percentage)\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const Progressbar = (props, children = []) => {\n\tconst value = typeof props.value === \"number\"\n\t\t? Math.min(100, Math.max(0, Math.abs(props.value)))\n\t\t: 0;\n\n\tconst c = h(\"div\", { class: \"meeseOS-gui-progressbar-wrapper\" }, [\n\t\th(\"div\", {\n\t\t\tclassName: \"meeseOS-gui-progressbar-value\",\n\t\t\tstyle: {\n\t\t\t\twidth: String(value) + \"%\",\n\t\t\t},\n\t\t}),\n\t\th(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclassName: \"meeseOS-gui-progressbar-label\",\n\t\t\t},\n\t\t\t[h(\"span\", {}, [String(value) + \"%\"])]\n\t\t),\n\t]);\n\n\treturn h(\n\t\tElement,\n\t\t{ ...props.box || {}, class: [\"meeseOS-gui-progressbar\", props.class], },\n\t\t[c, ...children]\n\t);\n};\n",
@@ -2302,7 +1990,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 96,
+    "__docId__": 88,
     "kind": "function",
     "name": "Progressbar",
     "memberof": "src/components/Progressbar.js",
@@ -2365,7 +2053,7 @@
     }
   },
   {
-    "__docId__": 97,
+    "__docId__": 89,
     "kind": "file",
     "name": "src/components/RangeField.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { createField } from \"../element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A range field.\n * @param {Object} props Properties\n * @param {String} [props.min] Minimum value\n * @param {String} [props.max] Maximum value\n * @param {String} [props.value] Value\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const RangeField = (props = {}, _children = []) =>\n\tcreateField(\n\t\t\"range-field\",\n\t\tprops,\n\t\t{\n\t\t\ttype: \"range\",\n\t\t},\n\t\t(fieldProps) => h(\"input\", fieldProps)\n\t);\n",
@@ -2376,7 +2064,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 98,
+    "__docId__": 90,
     "kind": "function",
     "name": "RangeField",
     "memberof": "src/components/RangeField.js",
@@ -2455,7 +2143,7 @@
     "return": null
   },
   {
-    "__docId__": 99,
+    "__docId__": 91,
     "kind": "file",
     "name": "src/components/SelectField.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { createField } from \"../element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A text field.\n * @param {Object} props Properties\n * @param {String} [props.value] Value\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const SelectField = (props = {}, children = []) => {\n\tconst getChoices = (choices) =>\n\t\tchoices instanceof Array\n\t\t\t? choices.map((value) =>\n\t\t\t\ttypeof value === \"object\" ? value : { value, label: value }\n\t\t\t  )\n\t\t\t: Object.keys(props.choices || {}).map((value) => ({\n\t\t\t\tvalue,\n\t\t\t\tlabel: props.choices[value],\n\t\t\t  }));\n\n\tconst choices = getChoices(props.choices).map(({ value, label }) => {\n\t\treturn h(\n\t\t\t\"option\",\n\t\t\t{\n\t\t\t\tvalue,\n\t\t\t\tselected: props.value === value,\n\t\t\t},\n\t\t\tlabel\n\t\t);\n\t});\n\n\tconst getValue = (ev) => [ev.target.value, ev.target.textContent];\n\tconst createSelect = (fieldProps) =>\n\t\th(\"div\", {}, h(\"select\", fieldProps, [...choices, ...children]));\n\n\treturn createField(\n\t\t\"select-field\",\n\t\tprops,\n\t\t{\n\t\t\tselectedIndex: undefined,\n\t\t},\n\t\tcreateSelect,\n\t\tgetValue\n\t);\n};\n",
@@ -2466,7 +2154,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 100,
+    "__docId__": 92,
     "kind": "function",
     "name": "SelectField",
     "memberof": "src/components/SelectField.js",
@@ -2529,7 +2217,7 @@
     }
   },
   {
-    "__docId__": 101,
+    "__docId__": 93,
     "kind": "file",
     "name": "src/components/Statusbar.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Element } from \"./Element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A status bar.\n * @param {Object} props Properties\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const Statusbar = (props, children) =>\n\th(\n\t\tElement,\n\t\t{ ...props.box || {}, class: [\"meeseOS-gui-statusbar\", props.class], },\n\t\tchildren\n\t);\n",
@@ -2540,7 +2228,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 102,
+    "__docId__": 94,
     "kind": "function",
     "name": "Statusbar",
     "memberof": "src/components/Statusbar.js",
@@ -2589,248 +2277,7 @@
     "return": null
   },
   {
-    "__docId__": 103,
-    "kind": "file",
-    "name": "src/components/Tabs.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { h } from \"hyperapp\";\nimport nestable from \"hyperapp-nestable\";\n\nconst headers = ({ labels, onchange, oncontextmenu }, state, actions) =>\n\t(labels || []).map((label, index) =>\n\t\th(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclass: state.selectedIndex === index ? \"meeseOS__active\" : \"\",\n\t\t\t\toncontextmenu: (ev) => {\n\t\t\t\t\t(oncontextmenu || function() {})(ev, index, label);\n\t\t\t\t},\n\t\t\t\tonclick: (ev) => {\n\t\t\t\t\tactions.setSelectedIndex(index);\n\t\t\t\t\t(onchange || function() {})(ev, index, label);\n\t\t\t\t},\n\t\t\t},\n\t\t\th(\"span\", {}, label)\n\t\t)\n\t);\n\nconst panes = (state, children) =>\n\tchildren.map((child, index) =>\n\t\th(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclass: state.selectedIndex === index ? \"meeseOS__active\" : \"\",\n\t\t\t},\n\t\t\tchild\n\t\t)\n\t);\n\nconst view = nestable(\n\t{\n\t\tselectedIndex: 0,\n\t},\n\t{\n\t\tinit: (props) => ({\n\t\t\tselectedIndex: props.selectedIndex || 0,\n\t\t}),\n\t\tsetSelectedIndex: (selectedIndex) => (_state) => ({ selectedIndex }),\n\t},\n\t(state, actions) => (props, children) =>\n\t\th(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclass: \"meeseOS-gui-tabs-wrapper\",\n\t\t\t},\n\t\t\t[\n\t\t\t\th(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ class: \"meeseOS-gui-tabs-header\" },\n\t\t\t\t\theaders(props, state, actions)\n\t\t\t\t),\n\t\t\t\th(\"div\", { class: \"meeseOS-gui-tabs-panes\" }, panes(state, children)),\n\t\t\t]\n\t\t),\n\t\"div\"\n);\n\n/**\n * A tab container.\n * @param {Object} props Properties\n * @param {String[]} props.labels Labels\n * @param {h[]} children Tabs\n */\nexport const Tabs = (props, children) =>\n\th(\n\t\tview,\n\t\t{\n\t\t\tclass: \"meeseOS-gui meeseOS-gui-tabs \" + (props.class || \"\"),\n\t\t\t...props,\n\t\t},\n\t\tchildren\n\t);\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/gui/src/components/Tabs.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 104,
-    "kind": "function",
-    "name": "headers",
-    "memberof": "src/components/Tabs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Tabs.js~headers",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/Tabs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 34,
-    "undocument": true,
-    "params": [
-      {
-        "name": "objectPattern",
-        "types": [
-          "{\"labels\": *, \"onchange\": *, \"oncontextmenu\": *}"
-        ],
-        "defaultRaw": {
-          "labels": null,
-          "onchange": null,
-          "oncontextmenu": null
-        },
-        "defaultValue": "{\"labels\":null,\"onchange\":null,\"oncontextmenu\":null}"
-      },
-      {
-        "name": "state",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "actions",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 105,
-    "kind": "function",
-    "name": "panes",
-    "memberof": "src/components/Tabs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Tabs.js~panes",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/Tabs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 52,
-    "undocument": true,
-    "params": [
-      {
-        "name": "state",
-        "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "children",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 106,
-    "kind": "variable",
-    "name": "view",
-    "memberof": "src/components/Tabs.js",
-    "static": true,
-    "longname": "src/components/Tabs.js~view",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/Tabs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 63,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 107,
-    "kind": "function",
-    "name": "Tabs",
-    "memberof": "src/components/Tabs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/Tabs.js~Tabs",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/gui/src/components/Tabs.js",
-    "importStyle": "{Tabs}",
-    "description": "A tab container.",
-    "lineNumber": 97,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "props",
-        "description": "Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String[]"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "props.labels",
-        "description": "Labels"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "h[]"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "children",
-        "description": "Tabs"
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 108,
-    "kind": "file",
-    "name": "src/components/TextField.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { createField } from \"../element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A text field.\n * @param {Object} props Properties\n * @param {String} [props.value] Value\n * @param {String} [props.type=text] Type\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const TextField = (props = {}, _children = []) =>\n\tcreateField(\n\t\t\"text-field\",\n\t\tprops,\n\t\t{\n\t\t\tautocomplete: \"off\",\n\t\t\tautocorrect: \"off\",\n\t\t\tautocapitalize: \"off\",\n\t\t\tspellcheck: \"false\",\n\t\t\ttype: props.type || \"text\",\n\t\t},\n\t\t(fieldProps) => h(\"input\", fieldProps)\n\t);\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/gui/src/components/TextField.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 109,
-    "kind": "function",
-    "name": "TextField",
-    "memberof": "src/components/TextField.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/TextField.js~TextField",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/gui/src/components/TextField.js",
-    "importStyle": "{TextField}",
-    "description": "A text field.",
-    "lineNumber": 42,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "props",
-        "description": "Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.value",
-        "description": "Value"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "defaultValue": "text",
-        "defaultRaw": "text",
-        "name": "props.type",
-        "description": "Type"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "BoxProperties"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.box",
-        "description": "Box Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "h[]"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "children",
-        "description": "Children"
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 110,
+    "__docId__": 95,
     "kind": "file",
     "name": "src/components/TextareaField.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { createField } from \"../element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A textarea field.\n * @param {Object} props Properties\n * @param {String} [props.value] Value\n * @param {Number} [props.rows=4] Number of rows\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const TextareaField = (props = {}, children = []) =>\n\tcreateField(\n\t\t\"textarea-field\",\n\t\tprops,\n\t\t{\n\t\t\trows: 4,\n\t\t},\n\t\t(fieldProps) => h(\"textarea\", fieldProps, children)\n\t);\n",
@@ -2841,7 +2288,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 111,
+    "__docId__": 96,
     "kind": "function",
     "name": "TextareaField",
     "memberof": "src/components/TextareaField.js",
@@ -2912,119 +2359,7 @@
     "return": null
   },
   {
-    "__docId__": 112,
-    "kind": "file",
-    "name": "src/components/ToggleField.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { createField } from \"../element\";\nimport { h } from \"hyperapp\";\n\n/**\n * Parses option value.\n */\nconst parseValue = (value) => {\n\ttry {\n\t\treturn JSON.parse(value);\n\t} catch (e) {\n\t\treturn value;\n\t}\n};\n\n/**\n * A toggle field.\n * @param {Object} props Properties\n * @param {String} [props.checked] Value\n * @param {String} [props.type=checkbox] Type\n * @param {BoxProperties} [props.box] Box Properties\n * @param {h[]} children Children\n */\nexport const ToggleField = (props = {}, children = []) =>\n\tcreateField(\n\t\t\"toggle-field\",\n\t\tprops,\n\t\t{\n\t\t\ttype: \"checkbox\",\n\t\t\tchecked: false,\n\t\t},\n\t\t(fieldProps) =>\n\t\t\th(\"label\", {}, [\n\t\t\t\th(\"input\", fieldProps),\n\t\t\t\th(\"span\", {\n\t\t\t\t\tclass: \"meeseOS-toggle-input\",\n\t\t\t\t}),\n\t\t\t\th(\n\t\t\t\t\t\"span\",\n\t\t\t\t\t{\n\t\t\t\t\t\tclass: \"meeseOS-toggle-label\",\n\t\t\t\t\t},\n\t\t\t\t\t[props.label || \"\", ...children]\n\t\t\t\t),\n\t\t\t]),\n\t\t(ev) => [\n\t\t\tprops.type === \"radio\"\n\t\t\t\t? parseValue(ev.target.value)\n\t\t\t\t: Boolean(ev.target.checked),\n\t\t]\n\t);\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/gui/src/components/ToggleField.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 113,
-    "kind": "function",
-    "name": "parseValue",
-    "memberof": "src/components/ToggleField.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/ToggleField.js~parseValue",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/gui/src/components/ToggleField.js",
-    "importStyle": null,
-    "description": "Parses option value.",
-    "lineNumber": 37,
-    "params": [
-      {
-        "name": "value",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 114,
-    "kind": "function",
-    "name": "ToggleField",
-    "memberof": "src/components/ToggleField.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/components/ToggleField.js~ToggleField",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/gui/src/components/ToggleField.js",
-    "importStyle": "{ToggleField}",
-    "description": "A toggle field.",
-    "lineNumber": 53,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "props",
-        "description": "Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.checked",
-        "description": "Value"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "defaultValue": "checkbox",
-        "defaultRaw": "checkbox",
-        "name": "props.type",
-        "description": "Type"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "BoxProperties"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "props.box",
-        "description": "Box Properties"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "h[]"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "children",
-        "description": "Children"
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 115,
+    "__docId__": 97,
     "kind": "file",
     "name": "src/components/Toolbar.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Element } from \"./Element\";\nimport { h } from \"hyperapp\";\n\n/**\n * A toolbar.\n * @desc Contains entries with spacing\n * @param {BoxProperties} props Properties\n * @param {String} [props.orientation='vertical'] Box orientation\n * @param {h[]} children Children\n */\nexport const Toolbar = (props, children) =>\n\th(\n\t\tElement,\n\t\t{\n\t\t\torientation: \"vertical\",\n\t\t\t...props,\n\t\t\tclass: [\"meeseOS-gui-toolbar\", props.class],\n\t\t},\n\t\tchildren\n\t);\n",
@@ -3035,7 +2370,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 116,
+    "__docId__": 98,
     "kind": "function",
     "name": "Toolbar",
     "memberof": "src/components/Toolbar.js",
@@ -3086,7 +2421,7 @@
     "return": null
   },
   {
-    "__docId__": 117,
+    "__docId__": 99,
     "kind": "file",
     "name": "src/components/Video.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { h } from \"hyperapp\";\n\nconst sources = (list) => list.map((item) => h(\"source\", item));\n\nconst isTrue = (v) => typeof v === \"undefined\" || v === true;\n\n/**\n * A video element.\n * @param {Object} props Properties\n * @param {String} [props.class] Append this className\n * @param {Object} [props.style] CSS Style object\n * @param {String} props.src The video source\n * @param {Number} [props.width] Video width\n * @param {Number} [props.height] Video height\n * @param {String} [props.poster] Poster image source\n * @param {Boolean} [props.loop] Loop video\n * @param {Boolean} [props.autoplay] Autoplay video\n * @param {Boolean} [props.controls] Show controls\n * @param {Function} [props.onloadeddata] On loaded data event\n */\nexport const Video = (props, children) =>\n\th(\n\t\t\"div\",\n\t\t{\n\t\t\tclass: \"meeseOS-gui meeseOS-gui-video\",\n\t\t\tstyle: {\n\t\t\t\twidth: props.width ? String(props.width) + \"px\" : undefined,\n\t\t\t\theight: props.height ? String(props.height) + \"px\" : undefined,\n\t\t\t},\n\t\t},\n\t\t[\n\t\t\th(\n\t\t\t\t\"video\",\n\t\t\t\t{\n\t\t\t\t\tsrc: props.src,\n\t\t\t\t\twidth: props.width,\n\t\t\t\t\theight: props.height,\n\t\t\t\t\tposter: props.poster,\n\t\t\t\t\tloop: props.loop ? \"loop\" : undefined,\n\t\t\t\t\tmuted: props.muted ? \"muted\" : undefined,\n\t\t\t\t\tcontrols: isTrue(props.controls) ? \"controls\" : undefined,\n\t\t\t\t\tautoplay: isTrue(props.autoplay) ? \"autoplay\" : undefined,\n\t\t\t\t\tonloadeddata: props.onload,\n\t\t\t\t\toncreate: props.oncreate,\n\t\t\t\t\tonupdate: props.onupdate,\n\t\t\t\t\tondestroy: props.ondestroy,\n\t\t\t\t},\n\t\t\t\tsources(props.sources || [])\n\t\t\t),\n\t\t]\n\t);\n",
@@ -3097,7 +2432,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 118,
+    "__docId__": 100,
     "kind": "function",
     "name": "sources",
     "memberof": "src/components/Video.js",
@@ -3124,7 +2459,7 @@
     "ignore": true
   },
   {
-    "__docId__": 119,
+    "__docId__": 101,
     "kind": "function",
     "name": "isTrue",
     "memberof": "src/components/Video.js",
@@ -3151,7 +2486,7 @@
     "ignore": true
   },
   {
-    "__docId__": 120,
+    "__docId__": 102,
     "kind": "function",
     "name": "Video",
     "memberof": "src/components/Video.js",
@@ -3280,7 +2615,7 @@
     "return": null
   },
   {
-    "__docId__": 121,
+    "__docId__": 103,
     "kind": "file",
     "name": "src/contextmenu.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { app, h } from \"hyperapp\";\nimport { Menu } from \"./components/Menu\";\n\n/**\n * Makes sure sub-menus stay within the viewport.\n */\nconst clampSubMenu = (root, ev) => {\n\tlet ul = ev.target.querySelector(\"ul\");\n\tif (!ul) return;\n\n\t// FIXME: Safari reports wrong item\n\tif (ul.classList.contains(\"meeseOS-gui-menu-container\")) {\n\t\tul = ul.parentNode.parentNode;\n\t}\n\n\tif (!ul || !ul.offsetParent) {\n\t\treturn;\n\t}\n\n\tul.classList.remove(\"clamp-right\");\n\n\tconst rect = ul.getBoundingClientRect();\n\tif (rect.right > root.offsetWidth) {\n\t\tul.classList.add(\"clamp-right\");\n\t}\n};\n\n/**\n * Makes sure menu stays within the viewport.\n */\nconst clampMenu = (root, el, currentPosition) => {\n\tconst result = {};\n\tconst bottom = currentPosition.top + el.offsetHeight;\n\tconst right = currentPosition.left + el.offsetWidth;\n\tconst offY = root.offsetHeight - currentPosition.top;\n\tconst offX = root.offsetWidth - currentPosition.left;\n\tconst overflowRight = right > root.offsetWidth;\n\tconst overflowBottom = bottom > root.offsetHeight;\n\n\tif (overflowBottom) {\n\t\tif (root.offsetHeight > el.offsetHeight) {\n\t\t\tresult.top = root.offsetHeight - el.offsetHeight - offY;\n\t\t}\n\t}\n\n\tif (overflowRight) {\n\t\tresult.left = root.offsetWidth - el.offsetWidth - offX;\n\t}\n\n\treturn overflowBottom || overflowRight ? result : null;\n};\n\n/**\n * Context Menu view.\n */\nconst view = (callback) => (props, actions) =>\n\th(Menu, {\n\t\tposition: props.position,\n\t\tvisible: props.visible,\n\t\tmenu: props.menu,\n\t\tonclick: callback,\n\t\tonshow: actions.onshow,\n\t});\n\nconst timeout = (fn) => {\n\tfn();\n\treturn setTimeout(fn, 100);\n};\n\n/**\n * ContextMenu Class.\n *\n * @desc Handles a Menu/ContextMenu globally for MeeseOS\n */\nexport class ContextMenu {\n\tconstructor(core) {\n\t\tthis.core = core;\n\t\tthis.callback = () => {};\n\t\tthis.actions = null;\n\t\tthis.$element = document.createElement(\"div\");\n\t}\n\n\tdestroy() {\n\t\tthis.callback = null;\n\t\tthis.actions = null;\n\t}\n\n\t/**\n\t * Initializes the Menu Hyperapp.\n\t */\n\tinit() {\n\t\tlet clampTimeout;\n\n\t\tthis.$element.className = \"meeseOS-system-context-menu\";\n\t\tthis.core.$root.appendChild(this.$element);\n\n\t\tlet isActive = false;\n\n\t\tthis.actions = app(\n\t\t\t{\n\t\t\t\tvisible: false,\n\t\t\t\tmenu: [],\n\t\t\t\tposition: {\n\t\t\t\t\ttop: 0,\n\t\t\t\t\tleft: 0,\n\t\t\t\t},\n\t\t\t},\n\t\t\t{\n\t\t\t\tclamp: (el) => (props) => {\n\t\t\t\t\tel = el || document.querySelector(\"#meeseOS-context-menu\");\n\t\t\t\t\tclearTimeout(clampTimeout);\n\n\t\t\t\t\tif (!el) return {};\n\t\t\t\t\tconst root = this.core.$root;\n\t\t\t\t\tconst newPosition = clampMenu(root, el, props.position);\n\t\t\t\t\tif (newPosition) {\n\t\t\t\t\t\treturn { position: newPosition };\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tonshow: (ev) => (_props) => {\n\t\t\t\t\tclampTimeout = timeout(() => clampSubMenu(this.core.$root, ev));\n\t\t\t\t},\n\t\t\t\tshow: (options) => (_props, actions) => {\n\t\t\t\t\tlet { menu, position, toggle } = options;\n\t\t\t\t\tif (toggle && isActive) {\n\t\t\t\t\t\treturn actions.hide();\n\t\t\t\t\t} else if (position instanceof Event) {\n\t\t\t\t\t\tposition = { left: position.clientX, top: position.clientY };\n\t\t\t\t\t} else if (position instanceof Element) {\n\t\t\t\t\t\tconst box = position.getBoundingClientRect();\n\t\t\t\t\t\tposition = {\n\t\t\t\t\t\t\tleft: box.left,\n\t\t\t\t\t\t\ttop: box.top + box.height,\n\t\t\t\t\t\t};\n\t\t\t\t\t}\n\n\t\t\t\t\tthis.callback = (child, ev, iter) => {\n\t\t\t\t\t\tif (options.callback) {\n\t\t\t\t\t\t\toptions.callback(child, ev);\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tif (iter.closeable !== false) {\n\t\t\t\t\t\t\tactions.hide();\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\n\t\t\t\t\tisActive = true;\n\t\t\t\t\tthis.onclose = options.onclose;\n\n\t\t\t\t\ttimeout(() => actions.clamp());\n\n\t\t\t\t\treturn {\n\t\t\t\t\t\tvisible: true,\n\t\t\t\t\t\tmenu: menu || [],\n\t\t\t\t\t\tposition: position || { top: 0, left: 0 },\n\t\t\t\t\t};\n\t\t\t\t},\n\t\t\t\thide: () => (_props) => {\n\t\t\t\t\tif (isActive) {\n\t\t\t\t\t\tsetTimeout(() => (isActive = false), 0);\n\t\t\t\t\t}\n\t\t\t\t\tif (this.onclose) {\n\t\t\t\t\t\tthis.onclose();\n\t\t\t\t\t}\n\t\t\t\t\tthis.onclose = null;\n\t\t\t\t\tthis.callback = null;\n\n\t\t\t\t\treturn { visible: false };\n\t\t\t\t},\n\t\t\t},\n\t\t\tview((...args) => {\n\t\t\t\tif (!this.core.destroyed) {\n\t\t\t\t\tif (this.callback) {\n\t\t\t\t\t\tthis.callback(...args);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}),\n\t\t\tthis.$element\n\t\t);\n\t}\n\n\t/**\n\t * Show the menu.\n\t */\n\tshow(...args) {\n\t\treturn this.actions ? this.actions.show(...args) : null;\n\t}\n\n\t/**\n\t * Hide the menu.\n\t */\n\thide(...args) {\n\t\treturn this.actions ? this.actions.hide(...args) : null;\n\t}\n}\n",
@@ -3291,7 +2626,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 122,
+    "__docId__": 104,
     "kind": "function",
     "name": "clampSubMenu",
     "memberof": "src/contextmenu.js",
@@ -3323,7 +2658,7 @@
     "ignore": true
   },
   {
-    "__docId__": 123,
+    "__docId__": 105,
     "kind": "function",
     "name": "clampMenu",
     "memberof": "src/contextmenu.js",
@@ -3365,7 +2700,7 @@
     "ignore": true
   },
   {
-    "__docId__": 124,
+    "__docId__": 106,
     "kind": "function",
     "name": "view",
     "memberof": "src/contextmenu.js",
@@ -3391,7 +2726,7 @@
     "ignore": true
   },
   {
-    "__docId__": 125,
+    "__docId__": 107,
     "kind": "function",
     "name": "timeout",
     "memberof": "src/contextmenu.js",
@@ -3422,7 +2757,7 @@
     "ignore": true
   },
   {
-    "__docId__": 126,
+    "__docId__": 108,
     "kind": "class",
     "name": "ContextMenu",
     "memberof": "src/contextmenu.js",
@@ -3437,7 +2772,7 @@
     "interface": false
   },
   {
-    "__docId__": 127,
+    "__docId__": 109,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3452,7 +2787,7 @@
     "ignore": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 110,
     "kind": "member",
     "name": "core",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3470,7 +2805,7 @@
     "ignore": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 111,
     "kind": "member",
     "name": "callback",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3488,7 +2823,7 @@
     "ignore": true
   },
   {
-    "__docId__": 130,
+    "__docId__": 112,
     "kind": "member",
     "name": "actions",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3506,7 +2841,7 @@
     "ignore": true
   },
   {
-    "__docId__": 131,
+    "__docId__": 113,
     "kind": "member",
     "name": "$element",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3524,7 +2859,7 @@
     "ignore": true
   },
   {
-    "__docId__": 132,
+    "__docId__": 114,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3541,7 +2876,7 @@
     "ignore": true
   },
   {
-    "__docId__": 135,
+    "__docId__": 117,
     "kind": "method",
     "name": "init",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3556,7 +2891,7 @@
     "return": null
   },
   {
-    "__docId__": 138,
+    "__docId__": 120,
     "kind": "member",
     "name": "onclose",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3574,7 +2909,7 @@
     "ignore": true
   },
   {
-    "__docId__": 141,
+    "__docId__": 123,
     "kind": "method",
     "name": "show",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3601,7 +2936,7 @@
     }
   },
   {
-    "__docId__": 142,
+    "__docId__": 124,
     "kind": "method",
     "name": "hide",
     "memberof": "src/contextmenu.js~ContextMenu",
@@ -3628,7 +2963,7 @@
     }
   },
   {
-    "__docId__": 143,
+    "__docId__": 125,
     "kind": "file",
     "name": "src/element.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Element } from \"./components/Element\";\nimport { filteredProps } from \"./utils\";\nimport { h } from \"hyperapp\";\n\n/**\n * Creates a new field Element wrapper.\n * @param {String} name Field name\n * @param {Object} props Field props\n * @param {Function} cb Callback to create inner element => (props)\n * @param {Function} cb Callback to get value => (event)\n */\nexport const createField = (name, props, defaultProps, cb, cbInput) => {\n\tconst oninput = props.oninput || function() {};\n\tconst onchange = props.onchange || function() {};\n\tconst onkeydown = props.onkeydown || function() {};\n\n\tconst getValue = cbInput || ((ev) => [ev.target.value]);\n\tconst fieldProps = {\n\t\toninput: (ev) => oninput(ev, ...getValue(ev)),\n\t\tonchange: (ev) => onchange(ev, ...getValue(ev)),\n\t\tonkeydown: (ev) => {\n\t\t\tif (ev.keyCode === 13 && props.onenter) {\n\t\t\t\tprops.onenter(ev, ...getValue(ev));\n\t\t\t}\n\t\t\tonkeydown(ev);\n\t\t},\n\t\t...defaultProps,\n\t\t...filteredProps(props, [\"choices\", \"label\", \"box\", \"oninput\", \"onchange\"])\n\t};\n\n\treturn h(\n\t\tElement,\n\t\t{ ...props.box || {}, class: \"meeseOS-gui-field meeseOS-gui-\" + name, },\n\t\tcb(fieldProps)\n\t);\n};\n",
@@ -3639,7 +2974,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 144,
+    "__docId__": 126,
     "kind": "function",
     "name": "createField",
     "memberof": "src/element.js",
@@ -3702,7 +3037,7 @@
     }
   },
   {
-    "__docId__": 145,
+    "__docId__": 127,
     "kind": "file",
     "name": "src/umd.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport \"../index.scss\";\nexport * from \"../index.js\";\n",
@@ -3713,7 +3048,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 146,
+    "__docId__": 128,
     "kind": "file",
     "name": "src/utils.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\n/**\n * Filter an object based on keys.\n * @param {Object} props Props\n * @param {String[]} filterKeys List of keys to filter\n * @returns {Object}\n */\nexport const filteredProps = (props, filterKeys) => {\n\tconst keys = Object.keys(props);\n\tconst filter = (k) => filterKeys.indexOf(k) === -1;\n\n\treturn keys.filter(filter).reduce(\n\t\t(result, k) =>\n\t\t\t({\n\t\t\t\t[k]: props[k],\n\t\t\t\t...result\n\t\t\t}),\n\t\t{}\n\t);\n};\n\n/**\n * Creates a double-tap event handler.\n * @param {Number} [timeout=250] Timeout\n * @returns {Function} Handler with => (ev, cb)\n */\nexport const doubleTap = (timeout = 250) => {\n\tlet tapped = false;\n\tlet timer;\n\n\treturn (ev, cb) => {\n\t\ttimer = clearTimeout(timer);\n\t\ttimer = setTimeout(() => (tapped = false), timeout);\n\n\t\tif (tapped) {\n\t\t\tev.preventDefault();\n\t\t\treturn cb(ev);\n\t\t}\n\n\t\ttapped = true;\n\n\t\treturn false;\n\t};\n};\n",
@@ -3724,7 +3059,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 147,
+    "__docId__": 129,
     "kind": "function",
     "name": "filteredProps",
     "memberof": "src/utils.js",
@@ -3776,7 +3111,7 @@
     }
   },
   {
-    "__docId__": 148,
+    "__docId__": 130,
     "kind": "function",
     "name": "doubleTap",
     "memberof": "src/utils.js",

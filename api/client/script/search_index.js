@@ -1,11 +1,5 @@
 window.esdocSearchIndex = [
   [
-    "@meese-os/client/src/auth.js~auth",
-    "class/src/auth.js~Auth.html",
-    "<span>Auth</span> <span class=\"search-result-import-path\">@meese-os/client/src/auth.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/client/src/providers/auth.js~authserviceprovider",
     "class/src/providers/auth.js~AuthServiceProvider.html",
     "<span>AuthServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/auth.js</span>",
@@ -102,12 +96,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "@meese-os/client/src/settings.js~settings",
-    "class/src/settings.js~Settings.html",
-    "<span>Settings</span> <span class=\"search-result-import-path\">@meese-os/client/src/settings.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/client/src/providers/settings.js~settingsserviceprovider",
     "class/src/providers/settings.js~SettingsServiceProvider.html",
     "<span>SettingsServiceProvider</span> <span class=\"search-result-import-path\">@meese-os/client/src/providers/settings.js</span>",
@@ -156,21 +144,9 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/adapters/vfs/system.js~adapter",
-    "function/index.html#static-function-adapter",
-    "<span>adapter</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/vfs/system.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/vfs.js~archive",
     "function/index.html#static-function-archive",
     "<span>archive</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~basename",
-    "function/index.html#static-function-basename",
-    "<span>basename</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
@@ -186,12 +162,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/adapters/ui/login.js~create",
-    "function/index.html#static-function-create",
-    "<span>create</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/ui/login.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/adapters/ui/search.js~create",
     "function/index.html#static-function-create",
     "<span>create</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/ui/search.js</span>",
@@ -204,12 +174,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/vfs.js~createfileiter",
-    "function/index.html#static-function-createFileIter",
-    "<span>createFileIter</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/utils/dom.js~createnativenotification",
     "function/index.html#static-function-createNativeNotification",
     "<span>createNativeNotification</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
@@ -219,12 +183,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/utils/packages.js~createpackageavailabilitycheck",
     "function/index.html#static-function-createPackageAvailabilityCheck",
     "<span>createPackageAvailabilityCheck</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/packages.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~createwatchevents",
-    "function/index.html#static-function-createWatchEvents",
-    "<span>createWatchEvents</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
@@ -264,39 +222,15 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/fetch.js~fetch",
-    "function/index.html#static-function-fetch",
-    "<span>fetch</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/fetch.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~filtermountbygroups",
-    "function/index.html#static-function-filterMountByGroups",
-    "<span>filterMountByGroups</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/utils/input.js~getevent",
     "function/index.html#static-function-getEvent",
     "<span>getEvent</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/input.js</span>",
     "function"
   ],
   [
-    "@meese-os/client/src/utils/vfs.js~getfileicon",
-    "function/index.html#static-function-getFileIcon",
-    "<span>getFileIcon</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/utils/dom.js~handletabontextarea",
     "function/index.html#static-function-handleTabOnTextarea",
     "<span>handleTabOnTextarea</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~humanfilesize",
-    "function/index.html#static-function-humanFileSize",
-    "<span>humanFileSize</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
@@ -340,30 +274,6 @@ window.esdocSearchIndex = [
     "variable/index.html#static-variable-nullAdapter",
     "<span>nullAdapter</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/vfs/null.js</span>",
     "variable"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~parentdirectory",
-    "function/index.html#static-function-parentDirectory",
-    "<span>parentDirectory</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~parsemountpointprefix",
-    "function/index.html#static-function-parseMountpointPrefix",
-    "<span>parseMountpointPrefix</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~pathjoin",
-    "function/index.html#static-function-pathJoin",
-    "<span>pathJoin</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~pathname",
-    "function/index.html#static-function-pathname",
-    "<span>pathname</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
   ],
   [
     "@meese-os/client/src/utils/dom.js~playsound",
@@ -447,18 +357,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/vfs.js~touch",
     "function/index.html#static-function-touch",
     "<span>touch</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~transformarraybuffer",
-    "function/index.html#static-function-transformArrayBuffer",
-    "<span>transformArrayBuffer</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/vfs.js~transformreaddir",
-    "function/index.html#static-function-transformReaddir",
-    "<span>transformReaddir</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
     "function"
   ],
   [
@@ -792,12 +690,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/adapters/ui/login.js",
-    "file/src/adapters/ui/login.js.html",
-    "src/adapters/ui/login.js",
-    "file"
-  ],
-  [
     "src/adapters/ui/search.js",
     "file/src/adapters/ui/search.js.html",
     "src/adapters/ui/search.js",
@@ -814,114 +706,6 @@ window.esdocSearchIndex = [
     "file/src/adapters/vfs/null.js.html",
     "src/adapters/vfs/null.js",
     "file"
-  ],
-  [
-    "src/adapters/vfs/system.js",
-    "file/src/adapters/vfs/system.js.html",
-    "src/adapters/vfs/system.js",
-    "file"
-  ],
-  [
-    "src/auth.js",
-    "file/src/auth.js.html",
-    "src/auth.js",
-    "file"
-  ],
-  [
-    "src/auth.js~auth#adapter",
-    "class/src/auth.js~Auth.html#instance-member-adapter",
-    "src/auth.js~Auth#adapter",
-    "member"
-  ],
-  [
-    "src/auth.js~auth#constructor",
-    "class/src/auth.js~Auth.html#instance-constructor-constructor",
-    "src/auth.js~Auth#constructor",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#core",
-    "class/src/auth.js~Auth.html#instance-member-core",
-    "src/auth.js~Auth#core",
-    "member"
-  ],
-  [
-    "src/auth.js~auth#destroy",
-    "class/src/auth.js~Auth.html#instance-method-destroy",
-    "src/auth.js~Auth#destroy",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#init",
-    "class/src/auth.js~Auth.html#instance-method-init",
-    "src/auth.js~Auth#init",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#login",
-    "class/src/auth.js~Auth.html#instance-method-login",
-    "src/auth.js~Auth#login",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#logout",
-    "class/src/auth.js~Auth.html#instance-method-logout",
-    "src/auth.js~Auth#logout",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#register",
-    "class/src/auth.js~Auth.html#instance-method-register",
-    "src/auth.js~Auth#register",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#show",
-    "class/src/auth.js~Auth.html#instance-method-show",
-    "src/auth.js~Auth#show",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#shutdown",
-    "class/src/auth.js~Auth.html#instance-method-shutdown",
-    "src/auth.js~Auth#shutdown",
-    "method"
-  ],
-  [
-    "src/auth.js~auth#ui",
-    "class/src/auth.js~Auth.html#instance-member-ui",
-    "src/auth.js~Auth#ui",
-    "member"
-  ],
-  [
-    "src/auth.js~authadapter",
-    "typedef/index.html#static-typedef-AuthAdapter",
-    "src/auth.js~AuthAdapter",
-    "typedef"
-  ],
-  [
-    "src/auth.js~authadapterconfig",
-    "typedef/index.html#static-typedef-AuthAdapterConfig",
-    "src/auth.js~AuthAdapterConfig",
-    "typedef"
-  ],
-  [
-    "src/auth.js~authform",
-    "typedef/index.html#static-typedef-AuthForm",
-    "src/auth.js~AuthForm",
-    "typedef"
-  ],
-  [
-    "src/auth.js~authsettings",
-    "typedef/index.html#static-typedef-AuthSettings",
-    "src/auth.js~AuthSettings",
-    "typedef"
-  ],
-  [
-    "src/auth.js~refreshtoken",
-    "typedef/index.html#static-typedef-RefreshToken",
-    "src/auth.js~RefreshToken",
-    "typedef"
   ],
   [
     "src/basic-application.js",
@@ -1095,18 +879,6 @@ window.esdocSearchIndex = [
     "src/clipboard.js~clipboarddata",
     "typedef/index.html#static-typedef-ClipboardData",
     "src/clipboard.js~ClipboardData",
-    "typedef"
-  ],
-  [
-    "src/config.js",
-    "file/src/config.js.html",
-    "src/config.js",
-    "file"
-  ],
-  [
-    "src/config.js~coreconfig",
-    "typedef/index.html#static-typedef-CoreConfig",
-    "src/config.js~CoreConfig",
     "typedef"
   ],
   [
@@ -2346,96 +2118,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/settings.js",
-    "file/src/settings.js.html",
-    "src/settings.js",
-    "file"
-  ],
-  [
-    "src/settings.js~settings#adapter",
-    "class/src/settings.js~Settings.html#instance-member-adapter",
-    "src/settings.js~Settings#adapter",
-    "member"
-  ],
-  [
-    "src/settings.js~settings#clear",
-    "class/src/settings.js~Settings.html#instance-method-clear",
-    "src/settings.js~Settings#clear",
-    "method"
-  ],
-  [
-    "src/settings.js~settings#constructor",
-    "class/src/settings.js~Settings.html#instance-constructor-constructor",
-    "src/settings.js~Settings#constructor",
-    "method"
-  ],
-  [
-    "src/settings.js~settings#core",
-    "class/src/settings.js~Settings.html#instance-member-core",
-    "src/settings.js~Settings#core",
-    "member"
-  ],
-  [
-    "src/settings.js~settings#debounce",
-    "class/src/settings.js~Settings.html#instance-member-debounce",
-    "src/settings.js~Settings#debounce",
-    "member"
-  ],
-  [
-    "src/settings.js~settings#get",
-    "class/src/settings.js~Settings.html#instance-method-get",
-    "src/settings.js~Settings#get",
-    "method"
-  ],
-  [
-    "src/settings.js~settings#init",
-    "class/src/settings.js~Settings.html#instance-method-init",
-    "src/settings.js~Settings#init",
-    "method"
-  ],
-  [
-    "src/settings.js~settings#load",
-    "class/src/settings.js~Settings.html#instance-method-load",
-    "src/settings.js~Settings#load",
-    "method"
-  ],
-  [
-    "src/settings.js~settings#save",
-    "class/src/settings.js~Settings.html#instance-method-save",
-    "src/settings.js~Settings#save",
-    "method"
-  ],
-  [
-    "src/settings.js~settings#set",
-    "class/src/settings.js~Settings.html#instance-method-set",
-    "src/settings.js~Settings#set",
-    "method"
-  ],
-  [
-    "src/settings.js~settings#settings",
-    "class/src/settings.js~Settings.html#instance-member-settings",
-    "src/settings.js~Settings#settings",
-    "member"
-  ],
-  [
-    "src/settings.js~settingsadapter",
-    "typedef/index.html#static-typedef-SettingsAdapter",
-    "src/settings.js~SettingsAdapter",
-    "typedef"
-  ],
-  [
-    "src/settings.js~settingsadapterconfiguration",
-    "typedef/index.html#static-typedef-SettingsAdapterConfiguration",
-    "src/settings.js~SettingsAdapterConfiguration",
-    "typedef"
-  ],
-  [
-    "src/settings.js~settingsoptions",
-    "typedef/index.html#static-typedef-SettingsOptions",
-    "src/settings.js~SettingsOptions",
-    "typedef"
-  ],
-  [
     "src/splash.js",
     "file/src/splash.js.html",
     "src/splash.js",
@@ -2616,12 +2298,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/utils/fetch.js",
-    "file/src/utils/fetch.js.html",
-    "src/utils/fetch.js",
-    "file"
-  ],
-  [
     "src/utils/input.js",
     "file/src/utils/input.js.html",
     "src/utils/input.js",
@@ -2698,12 +2374,6 @@ window.esdocSearchIndex = [
     "typedef/index.html#static-typedef-URLResolverOptions",
     "src/utils/url.js~URLResolverOptions",
     "typedef"
-  ],
-  [
-    "src/utils/vfs.js",
-    "file/src/utils/vfs.js.html",
-    "src/utils/vfs.js",
-    "file"
   ],
   [
     "src/vfs.js",
