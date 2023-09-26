@@ -24,12 +24,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "@meese-os/server/src/filesystem.js~filesystem",
-    "class/src/filesystem.js~Filesystem.html",
-    "<span>Filesystem</span> <span class=\"search-result-import-path\">@meese-os/server/src/filesystem.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/server/src/package.js~package",
     "class/src/package.js~Package.html",
     "<span>Package</span> <span class=\"search-result-import-path\">@meese-os/server/src/package.js</span>",
@@ -177,12 +171,6 @@ window.esdocSearchIndex = [
     "@meese-os/server/src/utils/vfs.js~validategroups",
     "function/index.html#static-function-validateGroups",
     "<span>validateGroups</span> <span class=\"search-result-import-path\">@meese-os/server/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/server/src/vfs.js~vfs",
-    "function/index.html#static-function-vfs",
-    "<span>vfs</span> <span class=\"search-result-import-path\">@meese-os/server/src/vfs.js</span>",
     "function"
   ],
   [
@@ -586,132 +574,6 @@ window.esdocSearchIndex = [
     "class/src/core.js~Core.html#static-method-getInstance",
     "src/core.js~Core.getInstance",
     "method"
-  ],
-  [
-    "src/filesystem.js",
-    "file/src/filesystem.js.html",
-    "src/filesystem.js",
-    "file"
-  ],
-  [
-    "src/filesystem.js~filesystem#_watch",
-    "class/src/filesystem.js~Filesystem.html#instance-method-_watch",
-    "src/filesystem.js~Filesystem#_watch",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#adapters",
-    "class/src/filesystem.js~Filesystem.html#instance-member-adapters",
-    "src/filesystem.js~Filesystem#adapters",
-    "member"
-  ],
-  [
-    "src/filesystem.js~filesystem#call",
-    "class/src/filesystem.js~Filesystem.html#instance-method-call",
-    "src/filesystem.js~Filesystem#call",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#constructor",
-    "class/src/filesystem.js~Filesystem.html#instance-constructor-constructor",
-    "src/filesystem.js~Filesystem#constructor",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#core",
-    "class/src/filesystem.js~Filesystem.html#instance-member-core",
-    "src/filesystem.js~Filesystem#core",
-    "member"
-  ],
-  [
-    "src/filesystem.js~filesystem#destroy",
-    "class/src/filesystem.js~Filesystem.html#instance-method-destroy",
-    "src/filesystem.js~Filesystem#destroy",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#init",
-    "class/src/filesystem.js~Filesystem.html#instance-method-init",
-    "src/filesystem.js~Filesystem#init",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#mime",
-    "class/src/filesystem.js~Filesystem.html#instance-method-mime",
-    "src/filesystem.js~Filesystem#mime",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#mount",
-    "class/src/filesystem.js~Filesystem.html#instance-method-mount",
-    "src/filesystem.js~Filesystem#mount",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#mountpoints",
-    "class/src/filesystem.js~Filesystem.html#instance-member-mountpoints",
-    "src/filesystem.js~Filesystem#mountpoints",
-    "member"
-  ],
-  [
-    "src/filesystem.js~filesystem#options",
-    "class/src/filesystem.js~Filesystem.html#instance-member-options",
-    "src/filesystem.js~Filesystem#options",
-    "member"
-  ],
-  [
-    "src/filesystem.js~filesystem#realpath",
-    "class/src/filesystem.js~Filesystem.html#instance-method-realpath",
-    "src/filesystem.js~Filesystem#realpath",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#request",
-    "class/src/filesystem.js~Filesystem.html#instance-method-request",
-    "src/filesystem.js~Filesystem#request",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#unmount",
-    "class/src/filesystem.js~Filesystem.html#instance-method-unmount",
-    "src/filesystem.js~Filesystem#unmount",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystem#watch",
-    "class/src/filesystem.js~Filesystem.html#instance-method-watch",
-    "src/filesystem.js~Filesystem#watch",
-    "method"
-  ],
-  [
-    "src/filesystem.js~filesystemadapter",
-    "typedef/index.html#static-typedef-FilesystemAdapter",
-    "src/filesystem.js~FilesystemAdapter",
-    "typedef"
-  ],
-  [
-    "src/filesystem.js~filesystemadaptermap",
-    "typedef/index.html#static-typedef-FilesystemAdapterMap",
-    "src/filesystem.js~FilesystemAdapterMap",
-    "typedef"
-  ],
-  [
-    "src/filesystem.js~filesystemcalloptions",
-    "typedef/index.html#static-typedef-FilesystemCallOptions",
-    "src/filesystem.js~FilesystemCallOptions",
-    "typedef"
-  ],
-  [
-    "src/filesystem.js~filesystemoptions",
-    "typedef/index.html#static-typedef-FilesystemOptions",
-    "src/filesystem.js~FilesystemOptions",
-    "typedef"
-  ],
-  [
-    "src/filesystem.js~mountpoint",
-    "typedef/index.html#static-typedef-Mountpoint",
-    "src/filesystem.js~Mountpoint",
-    "typedef"
   ],
   [
     "src/package.js",
@@ -1299,12 +1161,6 @@ window.esdocSearchIndex = [
     "src/utils/vfs.js",
     "file/src/utils/vfs.js.html",
     "src/utils/vfs.js",
-    "file"
-  ],
-  [
-    "src/vfs.js",
-    "file/src/vfs.js.html",
-    "src/vfs.js",
     "file"
   ]
 ]
