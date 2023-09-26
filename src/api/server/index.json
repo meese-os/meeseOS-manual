@@ -1719,831 +1719,6 @@
   {
     "__docId__": 87,
     "kind": "file",
-    "name": "src/filesystem.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { methodArguments } = require(\"./utils/vfs\");\nconst systemAdapter = require(\"./adapters/vfs/system\");\nconst { v1: uuid } = require(\"uuid\");\nconst mime = require(\"mime\");\nconst path = require(\"path\");\nconst vfs = require(\"./vfs\");\nconst { closeWatches } = require(\"./utils/core.js\");\nconst consola = require(\"consola\");\nconst logger = consola.withTag(\"Filesystem\");\n\n/**\n * @typedef {Object} Mountpoint\n * @property {String} [uuid]\n * @property {String} [root]\n * @property {Object} [attributes]\n */\n\n/**\n * TODO: typedef\n * @typedef {Object} FilesystemAdapter\n */\n\n/**\n * Filesystem Service Adapter Option Map\n * @typedef {{name: FilesystemAdapter}} FilesystemAdapterMap\n */\n\n/**\n * Filesystem Service Options\n * @typedef {Object} FilesystemOptions\n * @property {FilesystemAdapterMap} [adapters]\n */\n\n/**\n * Filesystem Internal Call Options\n * @typedef {Object} FilesystemCallOptions\n * @property {String} method VFS Method name\n * @property {Object} [user] User session data\n * @property {Object} [session] Session data\n */\n\n/**\n * MeeseOS Virtual Filesystem\n */\nclass Filesystem {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {FilesystemOptions} [options] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {Mountpoint[]}\n\t\t */\n\t\tthis.mountpoints = [];\n\n\t\t/**\n\t\t * @type {FilesystemAdapterMap}\n\t\t */\n\t\tthis.adapters = {};\n\n\t\tthis.watches = [];\n\n\t\tthis.router = null;\n\n\t\tthis.methods = {};\n\n\t\t/**\n\t\t * @type {FilesystemOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tadapters: {},\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy() {\n\t\tconst watches = this.watches\n\t\t\t.filter(({ watch }) => {\n\t\t\t\treturn watch && typeof watch.close === \"function\";\n\t\t\t})\n\t\t\t.map(({ watch }) => watch);\n\n\t\tawait closeWatches(watches);\n\n\t\tthis.watches = [];\n\t}\n\n\t/**\n\t * Initializes the Filesystem.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync init() {\n\t\tconst adapters = {\n\t\t\tsystem: systemAdapter,\n\t\t\t...this.options.adapters,\n\t\t};\n\n\t\tthis.adapters = Object.keys(adapters).reduce((result, iter) => ({\n\t\t\t[iter]: adapters[iter](this.core),\n\t\t\t...result,\n\t\t}), {});\n\n\t\t// Routes\n\t\tconst { router, methods } = vfs(this.core);\n\t\tthis.router = router;\n\t\tthis.methods = methods;\n\n\t\t// Mimes\n\t\tconst { define } = this.core.config(\"mime\", { define: {}, filenames: {} });\n\t\tmime.define(define, { force: true });\n\n\t\t// Mountpoints\n\t\tawait Promise.all(\n\t\t\tthis.core.config(\"vfs.mountpoints\").map((mount) => this.mount(mount))\n\t\t);\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Gets the MIME type of a file.\n\t * @param {String} filename Input filename or path\n\t * @returns {String}\n\t */\n\tmime(filename) {\n\t\tconst { filenames } = this.core.config(\"mime\", {\n\t\t\tdefine: {},\n\t\t\tfilenames: {},\n\t\t});\n\n\t\treturn filenames[path.basename(filename)]\n\t\t\t? filenames[path.basename(filename)]\n\t\t\t: mime.getType(filename) || \"application/octet-stream\";\n\t}\n\n\t/**\n\t * Crates a VFS request.\n\t * @param {Request|Object} req HTTP Request object\n\t * @param {Response|Object} [res] HTTP Response object\n\t * @returns {Promise<*>}\n\t */\n\trequest(name, req, res = {}) {\n\t\treturn this.methods[name](req, res);\n\t}\n\n\t/**\n\t * Performs a VFS request with simulated HTTP request.\n\t * @param {FilesystemCallOptions} options Request options\n\t * @param {*} ...args Arguments to pass to VFS method\n\t * @returns {Promise<*>}\n\t */\n\tcall(options, ...args) {\n\t\tconst { method, user, session } = {\n\t\t\tuser: {},\n\t\t\tsession: null,\n\t\t\t...options,\n\t\t};\n\n\t\tconst req = methodArguments[method].reduce(\n\t\t\t({ fields, files }, key, index) => {\n\t\t\t\tconst arg = args[index];\n\t\t\t\tif (typeof key === \"function\") {\n\t\t\t\t\tfiles = Object.assign(key(arg), files);\n\t\t\t\t} else {\n\t\t\t\t\tfields = {\n\t\t\t\t\t\t[key]: arg,\n\t\t\t\t\t\t...fields,\n\t\t\t\t\t};\n\t\t\t\t}\n\n\t\t\t\treturn { fields, files };\n\t\t\t},\n\t\t\t{ fields: {}, files: {} }\n\t\t);\n\n\t\treq.session = session || { user };\n\n\t\treturn this.request(method, req);\n\t}\n\n\t/**\n\t * Creates realpath VFS request.\n\t * @param {String} filename The path\n\t * @param {AuthUserProfile} [user] User session object\n\t * @returns {Promise<String>}\n\t */\n\trealpath(filename, user = {}) {\n\t\treturn this.methods.realpath({\n\t\t\tsession: {\n\t\t\t\tuser: {\n\t\t\t\t\tgroups: [],\n\t\t\t\t\t...user,\n\t\t\t\t},\n\t\t\t},\n\t\t\tfields: {\n\t\t\t\tpath: filename,\n\t\t\t},\n\t\t});\n\t}\n\n\t/**\n\t * Mounts given mountpoint.\n\t * @param {Mountpoint} mount Mountpoint\n\t * @returns {Mountpoint} the mountpoint\n\t */\n\tasync mount(mount) {\n\t\tconst mountpoint = {\n\t\t\tid: uuid(),\n\t\t\troot: `${mount.name}:/`,\n\t\t\tattributes: {},\n\t\t\t...mount,\n\t\t};\n\n\t\tthis.mountpoints.push(mountpoint);\n\n\t\tlogger.success(\"Mounted\", mountpoint.name);\n\n\t\tawait this.watch(mountpoint);\n\n\t\treturn mountpoint;\n\t}\n\n\t/**\n\t * Unmounts given mountpoint.\n\t * @param {Mountpoint} mount Mountpoint\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync unmount(mountpoint) {\n\t\tconst found = this.watches.find((w) => w.id === mountpoint.id);\n\n\t\tif (found && found.watch) {\n\t\t\tawait found.watch.close();\n\t\t}\n\n\t\tconst index = this.mountpoints.indexOf(mountpoint);\n\n\t\tif (index !== -1) {\n\t\t\tthis.mountpoints.splice(index, 1);\n\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Set up a watch for given mountpoint.\n\t * @param {Mountpoint} mountpoint The mountpoint\n\t * @returns {Promise<undefined>}\n\t */\n\tasync watch(mountpoint) {\n\t\tif (\n\t\t\t!mountpoint.attributes.watch ||\n\t\t\tthis.core.config(\"vfs.watch\") === false ||\n\t\t\t!mountpoint.attributes.root\n\t\t) {\n\t\t\treturn;\n\t\t}\n\n\t\tconst adapter = await (mountpoint.adapter\n\t\t\t? this.adapters[mountpoint.adapter]\n\t\t\t: this.adapters.system);\n\n\t\tif (typeof adapter.watch === \"function\") {\n\t\t\tawait this._watch(mountpoint, adapter);\n\t\t}\n\t}\n\n\t/**\n\t * Internal method for setting up watch for given mountpoint adapter.\n\t * @param {Mountpoint} mountpoint The mountpoint\n\t * @param {FilesystemAdapter} adapter The adapter\n\t * @returns {Promise<undefined>}\n\t */\n\tasync _watch(mountpoint, adapter) {\n\t\tconst watch = await adapter.watch(mountpoint, (args, dir, type) => {\n\t\t\tconst target = mountpoint.name + \":/\" + dir;\n\t\t\tconst keys = Object.keys(args);\n\t\t\tconst filter = keys.length === 0\n\t\t\t\t? () => true\n\t\t\t\t: (ws) => keys.every((k) => ws._meeseOS_client[k] === args[k]);\n\n\t\t\tthis.core.emit(\"meeseOS/vfs:watch:change\", {\n\t\t\t\tmountpoint,\n\t\t\t\ttarget,\n\t\t\t\ttype,\n\t\t\t});\n\n\t\t\tthis.core.broadcast(\n\t\t\t\t\"meeseOS/vfs:watch:change\",\n\t\t\t\t[\n\t\t\t\t\t{\n\t\t\t\t\t\tpath: target,\n\t\t\t\t\t\ttype,\n\t\t\t\t\t},\n\t\t\t\t\targs,\n\t\t\t\t],\n\t\t\t\tfilter\n\t\t\t);\n\t\t});\n\n\t\twatch.on(\"error\", (error) => logger.warn(\"Mountpoint watch error\", error));\n\n\t\tthis.watches.push({\n\t\t\tid: mountpoint.id,\n\t\t\twatch,\n\t\t});\n\n\t\tlogger.info(\"Watching mountpoint\", mountpoint.name);\n\t}\n}\n\nmodule.exports = Filesystem;\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/filesystem.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 88,
-    "kind": "variable",
-    "name": "methodArguments",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~methodArguments",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/filesystem.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 32,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 89,
-    "kind": "variable",
-    "name": "closeWatches",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~closeWatches",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/filesystem.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 39,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 90,
-    "kind": "variable",
-    "name": "logger",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~logger",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/filesystem.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 41,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 91,
-    "kind": "typedef",
-    "name": "Mountpoint",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~Mountpoint",
-    "access": "public",
-    "description": "",
-    "properties": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "uuid",
-        "description": ""
-      },
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "root",
-        "description": ""
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "attributes",
-        "description": ""
-      }
-    ],
-    "type": {
-      "types": [
-        "Object"
-      ],
-      "optional": false,
-      "name": "Mountpoint"
-    }
-  },
-  {
-    "__docId__": 92,
-    "kind": "typedef",
-    "name": "FilesystemAdapter",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~FilesystemAdapter",
-    "access": "public",
-    "description": "TODO: typedef",
-    "type": {
-      "types": [
-        "Object"
-      ],
-      "optional": false,
-      "name": "FilesystemAdapter"
-    }
-  },
-  {
-    "__docId__": 93,
-    "kind": "typedef",
-    "name": "FilesystemAdapterMap",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~FilesystemAdapterMap",
-    "access": "public",
-    "description": "Filesystem Service Adapter Option Map",
-    "type": {
-      "types": [
-        "{name: FilesystemAdapter}"
-      ],
-      "optional": false,
-      "name": "FilesystemAdapterMap"
-    }
-  },
-  {
-    "__docId__": 94,
-    "kind": "typedef",
-    "name": "FilesystemOptions",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~FilesystemOptions",
-    "access": "public",
-    "description": "Filesystem Service Options",
-    "properties": [
-      {
-        "nullable": null,
-        "types": [
-          "FilesystemAdapterMap"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "adapters",
-        "description": ""
-      }
-    ],
-    "type": {
-      "types": [
-        "Object"
-      ],
-      "optional": false,
-      "name": "FilesystemOptions"
-    }
-  },
-  {
-    "__docId__": 95,
-    "kind": "typedef",
-    "name": "FilesystemCallOptions",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~FilesystemCallOptions",
-    "access": "public",
-    "description": "Filesystem Internal Call Options",
-    "properties": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "method",
-        "description": "VFS Method name"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "user",
-        "description": "User session data"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "session",
-        "description": "Session data"
-      }
-    ],
-    "type": {
-      "types": [
-        "Object"
-      ],
-      "optional": false,
-      "name": "FilesystemCallOptions"
-    }
-  },
-  {
-    "__docId__": 96,
-    "kind": "class",
-    "name": "Filesystem",
-    "memberof": "src/filesystem.js",
-    "static": true,
-    "longname": "src/filesystem.js~Filesystem",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/server/src/filesystem.js",
-    "importStyle": "Filesystem",
-    "description": "MeeseOS Virtual Filesystem",
-    "lineNumber": 77,
-    "interface": false
-  },
-  {
-    "__docId__": 97,
-    "kind": "constructor",
-    "name": "constructor",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#constructor",
-    "access": "public",
-    "description": "Creates a new instance.",
-    "lineNumber": 83,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Core"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "core",
-        "description": "MeeseOS Core instance reference"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "FilesystemOptions"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "options",
-        "description": "Instance options"
-      }
-    ]
-  },
-  {
-    "__docId__": 98,
-    "kind": "member",
-    "name": "core",
-    "memberof": "src/filesystem.js~Filesystem",
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#core",
-    "access": "public",
-    "description": "",
-    "lineNumber": 87,
-    "type": {
-      "nullable": null,
-      "types": [
-        "Core"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 99,
-    "kind": "member",
-    "name": "mountpoints",
-    "memberof": "src/filesystem.js~Filesystem",
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#mountpoints",
-    "access": "public",
-    "description": "",
-    "lineNumber": 92,
-    "type": {
-      "nullable": null,
-      "types": [
-        "Mountpoint[]"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 100,
-    "kind": "member",
-    "name": "adapters",
-    "memberof": "src/filesystem.js~Filesystem",
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#adapters",
-    "access": "public",
-    "description": "",
-    "lineNumber": 97,
-    "type": {
-      "nullable": null,
-      "types": [
-        "FilesystemAdapterMap"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 101,
-    "kind": "member",
-    "name": "watches",
-    "memberof": "src/filesystem.js~Filesystem",
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#watches",
-    "access": "public",
-    "description": null,
-    "lineNumber": 99,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*[]"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 102,
-    "kind": "member",
-    "name": "router",
-    "memberof": "src/filesystem.js~Filesystem",
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#router",
-    "access": "public",
-    "description": null,
-    "lineNumber": 101,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 103,
-    "kind": "member",
-    "name": "methods",
-    "memberof": "src/filesystem.js~Filesystem",
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#methods",
-    "access": "public",
-    "description": null,
-    "lineNumber": 103,
-    "undocument": true,
-    "type": {
-      "types": [
-        "{}"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 104,
-    "kind": "member",
-    "name": "options",
-    "memberof": "src/filesystem.js~Filesystem",
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#options",
-    "access": "public",
-    "description": "",
-    "lineNumber": 108,
-    "type": {
-      "nullable": null,
-      "types": [
-        "FilesystemOptions"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 105,
-    "kind": "method",
-    "name": "destroy",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": true,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#destroy",
-    "access": "public",
-    "description": "Destroys the instance.",
-    "lineNumber": 118,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<undefined>}"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<undefined>"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "params": []
-  },
-  {
-    "__docId__": 107,
-    "kind": "method",
-    "name": "init",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": true,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#init",
-    "access": "public",
-    "description": "Initializes the Filesystem.",
-    "lineNumber": 134,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<Boolean>}"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<Boolean>"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "params": []
-  },
-  {
-    "__docId__": 111,
-    "kind": "method",
-    "name": "mime",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#mime",
-    "access": "public",
-    "description": "Gets the MIME type of a file.",
-    "lineNumber": 167,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{String}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "filename",
-        "description": "Input filename or path"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "String"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 112,
-    "kind": "method",
-    "name": "request",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#request",
-    "access": "public",
-    "description": "Crates a VFS request.",
-    "lineNumber": 184,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<*>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Request",
-          "Object"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "req",
-        "description": "HTTP Request object"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Response",
-          "Object"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "res",
-        "description": "HTTP Response object"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<*>"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 113,
-    "kind": "method",
-    "name": "call",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#call",
-    "access": "public",
-    "description": "Performs a VFS request with simulated HTTP request.",
-    "lineNumber": 194,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<*>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "FilesystemCallOptions"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "options",
-        "description": "Request options"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "*"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "...args",
-        "description": "Arguments to pass to VFS method"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<*>"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 114,
-    "kind": "method",
-    "name": "realpath",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#realpath",
-    "access": "public",
-    "description": "Creates realpath VFS request.",
-    "lineNumber": 229,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<String>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "filename",
-        "description": "The path"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "AuthUserProfile"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "user",
-        "description": "User session object"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<String>"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 115,
-    "kind": "method",
-    "name": "mount",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": true,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#mount",
-    "access": "public",
-    "description": "Mounts given mountpoint.",
-    "lineNumber": 248,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Mountpoint} the mountpoint"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Mountpoint"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "mount",
-        "description": "Mountpoint"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Mountpoint"
-      ],
-      "spread": false,
-      "description": "the mountpoint"
-    }
-  },
-  {
-    "__docId__": 116,
-    "kind": "method",
-    "name": "unmount",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": true,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#unmount",
-    "access": "public",
-    "description": "Unmounts given mountpoint.",
-    "lineNumber": 270,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<Boolean>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Mountpoint"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "mount",
-        "description": "Mountpoint"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<Boolean>"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 117,
-    "kind": "method",
-    "name": "watch",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": true,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#watch",
-    "access": "public",
-    "description": "Set up a watch for given mountpoint.",
-    "lineNumber": 293,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<undefined>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Mountpoint"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "mountpoint",
-        "description": "The mountpoint"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<undefined>"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 118,
-    "kind": "method",
-    "name": "_watch",
-    "memberof": "src/filesystem.js~Filesystem",
-    "generator": false,
-    "async": true,
-    "static": false,
-    "longname": "src/filesystem.js~Filesystem#_watch",
-    "access": "private",
-    "description": "Internal method for setting up watch for given mountpoint adapter.",
-    "lineNumber": 317,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<undefined>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Mountpoint"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "mountpoint",
-        "description": "The mountpoint"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "FilesystemAdapter"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "adapter",
-        "description": "The adapter"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<undefined>"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 119,
-    "kind": "file",
     "name": "src/package.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst path = require(\"path\");\nconst chokidar = require(\"chokidar\");\n\n/**\n * TODO: typedef\n * @typedef {Object} PackageMetadata\n */\n\n/**\n * Package Options\n * @typedef {Object} PackageOptions\n * @property {String} filename\n * @property {PackageMetadata} metadata\n */\n\n/**\n * MeeseOS Package Abstraction\n */\nclass Package {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {PackageOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.script = options.metadata.server\n\t\t\t? path.resolve(path.dirname(options.filename), options.metadata.server)\n\t\t\t: null;\n\n\t\t/**\n\t\t * @type {String}\n\t\t */\n\t\tthis.filename = options.filename;\n\n\t\t/**\n\t\t * @type {PackageMetadata}\n\t\t */\n\t\tthis.metadata = options.metadata;\n\n\t\tthis.handler = null;\n\n\t\tthis.watcher = null;\n\t}\n\n\t/**\n\t * Destroys instance.\n\t */\n\tasync destroy() {\n\t\tthis.action(\"destroy\");\n\n\t\tif (this.watcher) {\n\t\t\tawait this.watcher.close();\n\t\t\tthis.watcher = null;\n\t\t}\n\t}\n\n\t/**\n\t * Run method on package script.\n\t * @param {String} method Method name\n\t * @param {*} [...args] Pass arguments\n\t * @returns {Boolean}\n\t */\n\taction(method, ...args) {\n\t\ttry {\n\t\t\tif (this.handler && typeof this.handler[method] === \"function\") {\n\t\t\t\tthis.handler[method](...args);\n\n\t\t\t\treturn true;\n\t\t\t}\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Validates this package.\n\t * @param {PackageMetadata[]} manifest Global manifest\n\t * @returns {Boolean}\n\t */\n\tvalidate(manifest) {\n\t\treturn (\n\t\t\tthis.script &&\n\t\t\tthis.metadata &&\n\t\t\tBoolean(manifest.find((iter) => iter.name === this.metadata.name))\n\t\t);\n\t}\n\n\t/**\n\t * Initializes this package.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tconst mod = require(this.script);\n\t\tconst handler = typeof mod.default === \"function\" ? mod.default : mod;\n\n\t\tthis.handler = handler(this.core, this);\n\n\t\tif (typeof this.handler.init === \"function\") {\n\t\t\treturn this.handler.init();\n\t\t}\n\n\t\treturn Promise.resolve();\n\t}\n\n\t/**\n\t * Starts server scripts.\n\t * @returns {Promise<undefined>}\n\t */\n\tstart() {\n\t\treturn this.action(\"start\");\n\t}\n\n\t/**\n\t * Creates a watch in package dist.\n\t * @param {Function} cb Callback function on watch changes\n\t * @returns {String} Watched path\n\t */\n\twatch(cb) {\n\t\tconst pub = this.core.config(\"public\");\n\t\tconst dist = path.join(pub, \"apps\", this.metadata.name);\n\n\t\tthis.watcher = chokidar.watch(dist);\n\t\tthis.watcher.on(\"change\", () => cb(this.metadata));\n\n\t\treturn dist;\n\t}\n\n\t/**\n\t * Resolve an URL for resource.\n\t * @param {String} path Input path\n\t * @returns {String}\n\t */\n\tresource(path) {\n\t\tif (path.charAt(0) !== \"/\") {\n\t\t\tpath = `/${path}`;\n\t\t}\n\n\t\treturn `/apps/${this.metadata.name}${path}`;\n\t}\n}\n\nmodule.exports = Package;\n",
     "static": true,
@@ -2553,7 +1728,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 120,
+    "__docId__": 88,
     "kind": "typedef",
     "name": "PackageMetadata",
     "memberof": "src/package.js",
@@ -2570,7 +1745,7 @@
     }
   },
   {
-    "__docId__": 121,
+    "__docId__": 89,
     "kind": "typedef",
     "name": "PackageOptions",
     "memberof": "src/package.js",
@@ -2609,7 +1784,7 @@
     }
   },
   {
-    "__docId__": 122,
+    "__docId__": 90,
     "kind": "class",
     "name": "Package",
     "memberof": "src/package.js",
@@ -2624,7 +1799,7 @@
     "interface": false
   },
   {
-    "__docId__": 123,
+    "__docId__": 91,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/package.js~Package",
@@ -2661,7 +1836,7 @@
     ]
   },
   {
-    "__docId__": 124,
+    "__docId__": 92,
     "kind": "member",
     "name": "core",
     "memberof": "src/package.js~Package",
@@ -2680,7 +1855,7 @@
     }
   },
   {
-    "__docId__": 125,
+    "__docId__": 93,
     "kind": "member",
     "name": "script",
     "memberof": "src/package.js~Package",
@@ -2698,7 +1873,7 @@
     "ignore": true
   },
   {
-    "__docId__": 126,
+    "__docId__": 94,
     "kind": "member",
     "name": "filename",
     "memberof": "src/package.js~Package",
@@ -2717,7 +1892,7 @@
     }
   },
   {
-    "__docId__": 127,
+    "__docId__": 95,
     "kind": "member",
     "name": "metadata",
     "memberof": "src/package.js~Package",
@@ -2736,7 +1911,7 @@
     }
   },
   {
-    "__docId__": 128,
+    "__docId__": 96,
     "kind": "member",
     "name": "handler",
     "memberof": "src/package.js~Package",
@@ -2754,7 +1929,7 @@
     "ignore": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 97,
     "kind": "member",
     "name": "watcher",
     "memberof": "src/package.js~Package",
@@ -2772,7 +1947,7 @@
     "ignore": true
   },
   {
-    "__docId__": 130,
+    "__docId__": 98,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/package.js~Package",
@@ -2787,7 +1962,7 @@
     "return": null
   },
   {
-    "__docId__": 132,
+    "__docId__": 100,
     "kind": "method",
     "name": "action",
     "memberof": "src/package.js~Package",
@@ -2836,7 +2011,7 @@
     }
   },
   {
-    "__docId__": 133,
+    "__docId__": 101,
     "kind": "method",
     "name": "validate",
     "memberof": "src/package.js~Package",
@@ -2875,7 +2050,7 @@
     }
   },
   {
-    "__docId__": 134,
+    "__docId__": 102,
     "kind": "method",
     "name": "init",
     "memberof": "src/package.js~Package",
@@ -2903,7 +2078,7 @@
     "params": []
   },
   {
-    "__docId__": 136,
+    "__docId__": 104,
     "kind": "method",
     "name": "start",
     "memberof": "src/package.js~Package",
@@ -2931,7 +2106,7 @@
     "params": []
   },
   {
-    "__docId__": 137,
+    "__docId__": 105,
     "kind": "method",
     "name": "watch",
     "memberof": "src/package.js~Package",
@@ -2970,7 +2145,7 @@
     }
   },
   {
-    "__docId__": 139,
+    "__docId__": 107,
     "kind": "method",
     "name": "resource",
     "memberof": "src/package.js~Package",
@@ -3009,7 +2184,7 @@
     }
   },
   {
-    "__docId__": 140,
+    "__docId__": 108,
     "kind": "file",
     "name": "src/packages.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst fg = require(\"fast-glob\");\nconst path = require(\"path\");\nconst Package = require(\"./package.js\");\nconst consola = require(\"consola\");\nconst logger = consola.withTag(\"Packages\");\n\nconst relative = (filename) => filename.replace(process.cwd(), \"\");\n\nconst readOrDefault = (filename) =>\n\tfs.existsSync(filename) ? fs.readJsonSync(filename) : [];\n\n/**\n * Package Service Options\n * @typedef {Object} PackagesOptions\n * @property {String} [manifestFile] Manifest filename\n * @property {String} [discoveredFile] Discovery output file\n */\n\n/**\n * MeeseOS Package Management\n */\nclass Packages {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {PackagesOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {Package[]}\n\t\t */\n\t\tthis.packages = [];\n\n\t\tthis.hotReloading = {};\n\n\t\t/**\n\t\t * @type {PackagesOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tmanifestFile: null,\n\t\t\tdiscoveredFile: null,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes packages.\n\t */\n\tinit() {\n\t\tthis.core.on(\"meeseOS/application:socket:message\", (ws, ...params) => {\n\t\t\tthis.handleMessage(ws, params);\n\t\t});\n\n\t\treturn this.load();\n\t}\n\n\t/**\n\t * Loads package manager.\n\t * @returns {Promise<Boolean>}\n\t */\n\tload() {\n\t\treturn this.createLoader().then((packages) => {\n\t\t\tthis.packages = this.packages.concat(packages);\n\n\t\t\treturn true;\n\t\t});\n\t}\n\n\t/**\n\t * Loads all packages.\n\t * @returns {Promise<Package[]>}\n\t */\n\tcreateLoader() {\n\t\tconst result = [];\n\t\tconst { discoveredFile, manifestFile } = this.options;\n\t\tconst discovered = readOrDefault(discoveredFile);\n\t\tconst manifest = readOrDefault(manifestFile);\n\t\tconst sources = discovered.map((d) => path.join(d, \"metadata.json\"));\n\n\t\tlogger.info(\"Using package discovery file\", relative(discoveredFile));\n\t\tlogger.info(\"Using package manifest file\", relative(manifestFile));\n\n\t\tconst stream = fg.stream(sources, {\n\t\t\textension: false,\n\t\t\tbrace: false,\n\t\t\tdeep: 1,\n\t\t\tcase: false,\n\t\t});\n\n\t\tstream.on(\"error\", (error) => logger.error(error));\n\t\tstream.on(\"data\", (filename) => {\n\t\t\tresult.push(this.loadPackage(filename, manifest));\n\t\t});\n\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tstream.once(\"end\", () => {\n\t\t\t\tPromise.all(result)\n\t\t\t\t\t.then((result) => result.filter((iter) => Boolean(iter.handler)))\n\t\t\t\t\t.then(resolve)\n\t\t\t\t\t.catch(reject);\n\t\t\t});\n\t\t});\n\t}\n\n\t/**\n\t * When a package dist has changed.\n\t * @param {Package} pkg Package instance\n\t */\n\tonPackageChanged(pkg) {\n\t\tclearTimeout(this.hotReloading[pkg.metadata.name]);\n\n\t\tthis.hotReloading[pkg.metadata.name] = setTimeout(() => {\n\t\t\tlogger.debug(\"Sending reload signal for\", pkg.metadata.name);\n\t\t\tthis.core.broadcast(\"meeseOS/packages:package:changed\", [\n\t\t\t\tpkg.metadata.name,\n\t\t\t]);\n\t\t}, 500);\n\t}\n\n\t/**\n\t * Loads package data.\n\t * @param {String} filename Filename\n\t * @param {PackageMetadata} manifest Manifest\n\t * @returns {Promise<Package>}\n\t */\n\tloadPackage(filename, manifest) {\n\t\tconst done = (pkg, error) => {\n\t\t\tif (error) {\n\t\t\t\tlogger.warn(error);\n\t\t\t}\n\n\t\t\treturn Promise.resolve(pkg);\n\t\t};\n\n\t\treturn fs.readJson(filename).then((metadata) => {\n\t\t\tconst pkg = new Package(this.core, {\n\t\t\t\tfilename,\n\t\t\t\tmetadata,\n\t\t\t});\n\n\t\t\treturn this.initializePackage(pkg, manifest, done);\n\t\t});\n\t}\n\n\t/**\n\t * Initializes a package.\n\t * @returns {Promise<Package>}\n\t */\n\tinitializePackage(pkg, manifest, done) {\n\t\tif (pkg.validate(manifest)) {\n\t\t\tlogger.info(`Loading ${relative(pkg.script)}`);\n\n\t\t\ttry {\n\t\t\t\tif (this.core.configuration.development) {\n\t\t\t\t\tpkg.watch(() => {\n\t\t\t\t\t\tthis.onPackageChanged(pkg);\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\treturn pkg\n\t\t\t\t\t.init()\n\t\t\t\t\t.then(() => done(pkg))\n\t\t\t\t\t.catch((e) => done(pkg, e));\n\t\t\t} catch (e) {\n\t\t\t\treturn done(pkg, e);\n\t\t\t}\n\t\t}\n\n\t\treturn done(pkg);\n\t}\n\n\t/**\n\t * Starts packages.\n\t */\n\tstart() {\n\t\tthis.packages.forEach((pkg) => pkg.start());\n\t}\n\n\t/**\n\t * Destroys packages.\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy() {\n\t\tawait Promise.all(this.packages.map((pkg) => pkg.destroy()));\n\n\t\tthis.packages = [];\n\t}\n\n\t/**\n\t * Handles an incoming message and signals an application.\n\t *\n\t * This will call the 'onmessage' event in your application server script.\n\t *\n\t * @param {WebSocket} ws Websocket Connection client\n\t * @param {Array} params A list of incoming parameters\n\t */\n\thandleMessage(ws, params) {\n\t\tconst { pid, name, args } = params[0];\n\t\tconst found = this.packages.findIndex(\n\t\t\t({ metadata }) => metadata.name === name\n\t\t);\n\n\t\tif (found !== -1) {\n\t\t\tconst { handler } = this.packages[found];\n\t\t\tif (handler && typeof handler.onmessage === \"function\") {\n\t\t\t\tconst respond = (...respondParams) =>\n\t\t\t\t\tws.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tname: \"meeseOS/application:socket:message\",\n\t\t\t\t\t\t\tparams: [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\tpid,\n\t\t\t\t\t\t\t\t\targs: respondParams,\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t],\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\n\t\t\t\thandler.onmessage(ws, respond, args);\n\t\t\t}\n\t\t}\n\t}\n}\n\nmodule.exports = Packages;\n",
@@ -3020,7 +2195,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 141,
+    "__docId__": 109,
     "kind": "variable",
     "name": "logger",
     "memberof": "src/packages.js",
@@ -3041,7 +2216,7 @@
     "ignore": true
   },
   {
-    "__docId__": 142,
+    "__docId__": 110,
     "kind": "function",
     "name": "relative",
     "memberof": "src/packages.js",
@@ -3068,7 +2243,7 @@
     "ignore": true
   },
   {
-    "__docId__": 143,
+    "__docId__": 111,
     "kind": "function",
     "name": "readOrDefault",
     "memberof": "src/packages.js",
@@ -3095,7 +2270,7 @@
     "ignore": true
   },
   {
-    "__docId__": 144,
+    "__docId__": 112,
     "kind": "typedef",
     "name": "PackagesOptions",
     "memberof": "src/packages.js",
@@ -3134,7 +2309,7 @@
     }
   },
   {
-    "__docId__": 145,
+    "__docId__": 113,
     "kind": "class",
     "name": "Packages",
     "memberof": "src/packages.js",
@@ -3149,7 +2324,7 @@
     "interface": false
   },
   {
-    "__docId__": 146,
+    "__docId__": 114,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/packages.js~Packages",
@@ -3186,7 +2361,7 @@
     ]
   },
   {
-    "__docId__": 147,
+    "__docId__": 115,
     "kind": "member",
     "name": "core",
     "memberof": "src/packages.js~Packages",
@@ -3205,7 +2380,7 @@
     }
   },
   {
-    "__docId__": 148,
+    "__docId__": 116,
     "kind": "member",
     "name": "packages",
     "memberof": "src/packages.js~Packages",
@@ -3224,7 +2399,7 @@
     }
   },
   {
-    "__docId__": 149,
+    "__docId__": 117,
     "kind": "member",
     "name": "hotReloading",
     "memberof": "src/packages.js~Packages",
@@ -3242,7 +2417,7 @@
     "ignore": true
   },
   {
-    "__docId__": 150,
+    "__docId__": 118,
     "kind": "member",
     "name": "options",
     "memberof": "src/packages.js~Packages",
@@ -3261,7 +2436,7 @@
     }
   },
   {
-    "__docId__": 151,
+    "__docId__": 119,
     "kind": "method",
     "name": "init",
     "memberof": "src/packages.js~Packages",
@@ -3280,7 +2455,7 @@
     }
   },
   {
-    "__docId__": 152,
+    "__docId__": 120,
     "kind": "method",
     "name": "load",
     "memberof": "src/packages.js~Packages",
@@ -3308,7 +2483,7 @@
     "params": []
   },
   {
-    "__docId__": 154,
+    "__docId__": 122,
     "kind": "method",
     "name": "createLoader",
     "memberof": "src/packages.js~Packages",
@@ -3336,7 +2511,7 @@
     "params": []
   },
   {
-    "__docId__": 155,
+    "__docId__": 123,
     "kind": "method",
     "name": "onPackageChanged",
     "memberof": "src/packages.js~Packages",
@@ -3362,7 +2537,7 @@
     "return": null
   },
   {
-    "__docId__": 156,
+    "__docId__": 124,
     "kind": "method",
     "name": "loadPackage",
     "memberof": "src/packages.js~Packages",
@@ -3411,7 +2586,7 @@
     }
   },
   {
-    "__docId__": 157,
+    "__docId__": 125,
     "kind": "method",
     "name": "initializePackage",
     "memberof": "src/packages.js~Packages",
@@ -3458,7 +2633,7 @@
     ]
   },
   {
-    "__docId__": 158,
+    "__docId__": 126,
     "kind": "method",
     "name": "start",
     "memberof": "src/packages.js~Packages",
@@ -3473,7 +2648,7 @@
     "return": null
   },
   {
-    "__docId__": 159,
+    "__docId__": 127,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/packages.js~Packages",
@@ -3501,7 +2676,7 @@
     "params": []
   },
   {
-    "__docId__": 161,
+    "__docId__": 129,
     "kind": "method",
     "name": "handleMessage",
     "memberof": "src/packages.js~Packages",
@@ -3537,7 +2712,7 @@
     "return": null
   },
   {
-    "__docId__": 162,
+    "__docId__": 130,
     "kind": "file",
     "name": "src/providers/auth.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Auth = require(\"../auth.js\");\n\n/**\n * MeeseOS Auth Service Provider\n */\nclass AuthServiceProvider extends ServiceProvider {\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.auth = new Auth(core, options);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\tasync init() {\n\t\t// eslint-disable-next-line no-unused-vars\n\t\tconst { route, routeAuthenticated } = this.core.make(\"meeseOS/express\");\n\n\t\troute(\"post\", \"/register\", (req, res) => this.auth.register(req, res));\n\t\troute(\"post\", \"/login\", (req, res) => this.auth.login(req, res));\n\t\t// TODO: fix the issue of this not working when `routeAuthenticated` is used\n\t\troute(\"post\", \"/logout\", (req, res) => this.auth.logout(req, res));\n\n\t\tawait this.auth.init();\n\t}\n\n\tdestroy() {\n\t\tthis.auth.destroy();\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = AuthServiceProvider;\n",
@@ -3548,7 +2723,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 163,
+    "__docId__": 131,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/auth.js",
@@ -3569,7 +2744,7 @@
     "ignore": true
   },
   {
-    "__docId__": 164,
+    "__docId__": 132,
     "kind": "class",
     "name": "AuthServiceProvider",
     "memberof": "src/providers/auth.js",
@@ -3587,7 +2762,7 @@
     ]
   },
   {
-    "__docId__": 165,
+    "__docId__": 133,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -3602,7 +2777,7 @@
     "ignore": true
   },
   {
-    "__docId__": 166,
+    "__docId__": 134,
     "kind": "member",
     "name": "auth",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -3620,7 +2795,7 @@
     "ignore": true
   },
   {
-    "__docId__": 167,
+    "__docId__": 135,
     "kind": "method",
     "name": "depends",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -3648,7 +2823,7 @@
     "params": []
   },
   {
-    "__docId__": 168,
+    "__docId__": 136,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -3665,7 +2840,7 @@
     "ignore": true
   },
   {
-    "__docId__": 169,
+    "__docId__": 137,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -3682,7 +2857,7 @@
     "ignore": true
   },
   {
-    "__docId__": 170,
+    "__docId__": 138,
     "kind": "file",
     "name": "src/providers/core.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst path = require(\"path\");\nconst express = require(\"express\");\nconst chokidar = require(\"chokidar\");\nconst bodyParser = require(\"body-parser\");\nconst proxy = require(\"express-http-proxy\");\nconst nocache = require(\"nocache\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst {\n\tuseWebTokens,\n\tisAuthenticated,\n\tcloseWatches\n} = require(\"../utils/core.js\");\n\n/**\n * MeeseOS Core Service Provider\n */\nclass CoreServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options] Arguments\n\t */\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Array}\n\t\t */\n\t\tthis.watches = [];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tinit() {\n\t\tthis.initService();\n\t\tthis.initExtensions();\n\t\tthis.initResourceRoutes();\n\t\tthis.initSocketRoutes();\n\t\tthis.initProxies();\n\t}\n\n\t/**\n\t * Starts provider.\n\t */\n\tstart() {\n\t\tif (this.core.configuration.development) {\n\t\t\tthis.initDeveloperTools();\n\t\t}\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tstatic provides() {\n\t\treturn [\"meeseOS/express\"];\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tasync destroy() {\n\t\tawait closeWatches(this.watches);\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initializes the service APIs.\n\t */\n\tinitService() {\n\t\tconst { app } = this.core;\n\t\tconst { requireAllGroups } = this.core.configuration.auth;\n\n\t\tconst middleware = {\n\t\t\troute: [],\n\t\t\trouteAuthenticated: [],\n\t\t};\n\n\t\tthis.core.singleton(\"meeseOS/express\", () => ({\n\t\t\tuseWebTokens,\n\t\t\tisAuthenticated,\n\n\t\t\tcall: (method, ...args) => app[method](...args),\n\t\t\tuse: (arg) => app.use(arg),\n\n\t\t\twebsocket: (p, cb) => app.ws(p, cb),\n\n\t\t\tmiddleware: (authentication, cb) => {\n\t\t\t\tmiddleware[authentication ? \"routeAuthenticated\" : \"route\"].push(cb);\n\t\t\t},\n\n\t\t\troute: (method, uri, cb) =>\n\t\t\t\tapp[method.toLowerCase()](uri, [...middleware.route], cb),\n\n\t\t\trouteAuthenticated: (\n\t\t\t\tmethod,\n\t\t\t\turi,\n\t\t\t\tcb,\n\t\t\t\tgroups = [],\n\t\t\t\tstrict = requireAllGroups\n\t\t\t) =>\n\t\t\t\tapp[method.toLowerCase()](\n\t\t\t\t\turi,\n\t\t\t\t\t[\n\t\t\t\t\t\t...middleware.routeAuthenticated,\n\t\t\t\t\t\tuseWebTokens(app),\n\t\t\t\t\t\tisAuthenticated(groups, strict)\n\t\t\t\t\t],\n\t\t\t\t\tcb\n\t\t\t\t),\n\n\t\t\trouter: () => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.route);\n\t\t\t\treturn router;\n\t\t\t},\n\n\t\t\trouterAuthenticated: (groups = [], strict = requireAllGroups) => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.routeAuthenticated);\n\t\t\t\trouter.use(useWebTokens(app));\n\t\t\t\trouter.use(isAuthenticated(groups, strict));\n\t\t\t\treturn router;\n\t\t\t},\n\t\t}));\n\t}\n\n\t/**\n\t * Initializes Express extensions.\n\t */\n\tinitExtensions() {\n\t\tconst { app, session, configuration } = this.core;\n\t\tconst limit = configuration.express.maxBodySize;\n\n\t\tif (configuration.development) {\n\t\t\tapp.use(nocache());\n\t\t} else {\n\t\t\tapp.disable(\"x-powered-by\");\n\t\t}\n\n\t\t// Handle sessions\n\t\tapp.use(session);\n\n\t\t// Handle bodies\n\t\tapp.use(\n\t\t\tbodyParser.urlencoded({\n\t\t\t\textended: false,\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.json({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.raw({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\t}\n\n\t/**\n\t * Initializes Express base routes, etc.\n\t */\n\tinitResourceRoutes() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst indexFile = path.join(configuration.public, configuration.index);\n\n\t\tapp.get(\"/\", (req, res) => res.sendFile(indexFile));\n\t\tapp.use(\"/\", express.static(configuration.public));\n\n\t\t// Internal ping\n\t\tapp.get(\"/ping\", (req, res) => {\n\t\t\tthis.core.emit(\"meeseOS/core:ping\", req);\n\n\t\t\ttry {\n\t\t\t\treq.session.touch();\n\t\t\t} catch (e) {\n\t\t\t\tthis.core.logger.warn(e);\n\t\t\t}\n\n\t\t\tres.status(200).send(\"ok\");\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Socket routes.\n\t */\n\tinitSocketRoutes() {\n\t\tconst { app } = this.core;\n\n\t\tapp.ws(\"/\", (ws, req) => {\n\t\t\tws.upgradeReq = ws.upgradeReq || req;\n\t\t\tws._meeseOS_client = { ...req.session.user };\n\n\t\t\tconst interval = this.core.config(\"ws.ping\", 0);\n\n\t\t\tconst pingInterval = interval\n\t\t\t\t? setInterval(() => {\n\t\t\t\t\tws.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tname: \"meeseOS/core:ping\",\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t  }, interval)\n\t\t\t\t: undefined;\n\n\t\t\tws.on(\"close\", () => {\n\t\t\t\tclearInterval(pingInterval);\n\t\t\t});\n\n\t\t\tws.on(\"message\", (msg) => {\n\t\t\t\ttry {\n\t\t\t\t\tconst { name, params } = JSON.parse(msg);\n\n\t\t\t\t\tif (typeof name === \"string\" && params instanceof Array) {\n\t\t\t\t\t\t// We don't wanna allow any internal signals from the outside!\n\t\t\t\t\t\tif (\n\t\t\t\t\t\t\tname.match(/^meeseOS/) &&\n\t\t\t\t\t\t\tname !== \"meeseOS/application:socket:message\"\n\t\t\t\t\t\t) {\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tthis.core.emit(name, ws, ...params);\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {\n\t\t\t\t\tthis.core.logger.warn(e);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tws.send(\n\t\t\t\tJSON.stringify({\n\t\t\t\t\tname: \"meeseOS/core:connected\",\n\t\t\t\t\tparams: [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tcookie: {\n\t\t\t\t\t\t\t\tmaxAge: this.core.config(\"session.options.cookie.maxAge\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t],\n\t\t\t\t})\n\t\t\t);\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Express proxies.\n\t */\n\tinitProxies() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst proxies = (configuration.proxy || [])\n\t\t\t.map((item) => ({\n\t\t\t\tsource: null,\n\t\t\t\tdestination: null,\n\t\t\t\toptions: {},\n\t\t\t\t...item,\n\t\t\t}))\n\t\t\t.filter((item) => item.source && item.destination);\n\n\t\tproxies.forEach((item) => {\n\t\t\tthis.core.logger.info(`Proxying ${item.source} -> ${item.destination}`);\n\t\t\tapp.use(item.source, proxy(item.destination, item.options));\n\t\t});\n\t}\n\n\t/**\n\t * Initializes some developer features.\n\t */\n\tinitDeveloperTools() {\n\t\ttry {\n\t\t\tconst watchdir = path.resolve(this.core.configuration.public);\n\t\t\tconst watcher = chokidar.watch(watchdir);\n\n\t\t\twatcher.on(\"change\", (filename) => {\n\t\t\t\t// NOTE: 'ignored' does not work as expected with callback\n\t\t\t\t// ignored: str => str.match(/\\.(js|css)$/) === null\n\t\t\t\t// for unknown reasons\n\t\t\t\tif (!filename.match(/\\.(js|css)$/)) {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\tconst relative = filename.replace(watchdir, \"\");\n\t\t\t\tthis.core.broadcast(\"meeseOS/dist:changed\", [relative]);\n\t\t\t});\n\n\t\t\tthis.watches.push(watcher);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n}\n\nmodule.exports = CoreServiceProvider;\n",
@@ -3693,7 +2868,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 171,
+    "__docId__": 139,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/core.js",
@@ -3714,7 +2889,7 @@
     "ignore": true
   },
   {
-    "__docId__": 172,
+    "__docId__": 140,
     "kind": "variable",
     "name": "useWebTokens",
     "memberof": "src/providers/core.js",
@@ -3735,7 +2910,7 @@
     "ignore": true
   },
   {
-    "__docId__": 173,
+    "__docId__": 141,
     "kind": "class",
     "name": "CoreServiceProvider",
     "memberof": "src/providers/core.js",
@@ -3753,7 +2928,7 @@
     ]
   },
   {
-    "__docId__": 174,
+    "__docId__": 142,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3788,7 +2963,7 @@
     ]
   },
   {
-    "__docId__": 175,
+    "__docId__": 143,
     "kind": "member",
     "name": "watches",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3807,7 +2982,7 @@
     }
   },
   {
-    "__docId__": 176,
+    "__docId__": 144,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3822,7 +2997,7 @@
     "return": null
   },
   {
-    "__docId__": 177,
+    "__docId__": 145,
     "kind": "method",
     "name": "start",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3837,7 +3012,7 @@
     "return": null
   },
   {
-    "__docId__": 178,
+    "__docId__": 146,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3865,7 +3040,7 @@
     "params": []
   },
   {
-    "__docId__": 179,
+    "__docId__": 147,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3880,7 +3055,7 @@
     "return": null
   },
   {
-    "__docId__": 180,
+    "__docId__": 148,
     "kind": "method",
     "name": "initService",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3895,7 +3070,7 @@
     "return": null
   },
   {
-    "__docId__": 181,
+    "__docId__": 149,
     "kind": "method",
     "name": "initExtensions",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3910,7 +3085,7 @@
     "return": null
   },
   {
-    "__docId__": 182,
+    "__docId__": 150,
     "kind": "method",
     "name": "initResourceRoutes",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3925,7 +3100,7 @@
     "return": null
   },
   {
-    "__docId__": 183,
+    "__docId__": 151,
     "kind": "method",
     "name": "initSocketRoutes",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3940,7 +3115,7 @@
     "return": null
   },
   {
-    "__docId__": 184,
+    "__docId__": 152,
     "kind": "method",
     "name": "initProxies",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3955,7 +3130,7 @@
     "return": null
   },
   {
-    "__docId__": 185,
+    "__docId__": 153,
     "kind": "method",
     "name": "initDeveloperTools",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -3970,7 +3145,7 @@
     "return": null
   },
   {
-    "__docId__": 186,
+    "__docId__": 154,
     "kind": "file",
     "name": "src/providers/packages.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst path = require(\"path\");\nconst chokidar = require(\"chokidar\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Packages = require(\"../packages\");\nconst { closeWatches } = require(\"../utils/core\");\n\n/**\n * MeeseOS Package Service Provider\n */\nclass PackageServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\tconst { configuration } = this.core;\n\t\tconst manifestFile = path.join(\n\t\t\tconfiguration.public,\n\t\t\tconfiguration.packages.metadata\n\t\t);\n\t\tconst discoveredFile = path.resolve(\n\t\t\tconfiguration.root,\n\t\t\tconfiguration.packages.discovery\n\t\t);\n\n\t\tthis.watches = [];\n\t\tthis.packages = new Packages(core, {\n\t\t\tmanifestFile,\n\t\t\tdiscoveredFile,\n\t\t});\n\t}\n\n\tstatic provides() {\n\t\treturn [\"meeseOS/packages\"];\n\t}\n\n\tinit() {\n\t\tthis.core.singleton(\"meeseOS/packages\", () => this.packages);\n\n\t\treturn this.packages.init();\n\t}\n\n\tstart() {\n\t\tthis.packages.start();\n\n\t\tif (this.core.configuration.development) {\n\t\t\tthis.initDeveloperTools();\n\t\t}\n\t}\n\n\tasync destroy() {\n\t\tawait closeWatches(this.watches);\n\t\tawait this.packages.destroy();\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initializes some developer features.\n\t */\n\tinitDeveloperTools() {\n\t\tconst { manifestFile } = this.packages.options;\n\n\t\tif (fs.existsSync(manifestFile)) {\n\t\t\tconst watcher = chokidar.watch(manifestFile);\n\t\t\twatcher.on(\"change\", () => {\n\t\t\t\tthis.core.broadcast(\"meeseOS/packages:metadata:changed\");\n\t\t\t});\n\n\t\t\tthis.watches.push(watcher);\n\t\t}\n\t}\n}\n\nmodule.exports = PackageServiceProvider;\n",
@@ -3981,7 +3156,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 187,
+    "__docId__": 155,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/packages.js",
@@ -4002,7 +3177,7 @@
     "ignore": true
   },
   {
-    "__docId__": 188,
+    "__docId__": 156,
     "kind": "variable",
     "name": "closeWatches",
     "memberof": "src/providers/packages.js",
@@ -4023,7 +3198,7 @@
     "ignore": true
   },
   {
-    "__docId__": 189,
+    "__docId__": 157,
     "kind": "class",
     "name": "PackageServiceProvider",
     "memberof": "src/providers/packages.js",
@@ -4041,7 +3216,7 @@
     ]
   },
   {
-    "__docId__": 190,
+    "__docId__": 158,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4066,7 +3241,7 @@
     ]
   },
   {
-    "__docId__": 191,
+    "__docId__": 159,
     "kind": "member",
     "name": "watches",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4084,7 +3259,7 @@
     "ignore": true
   },
   {
-    "__docId__": 192,
+    "__docId__": 160,
     "kind": "member",
     "name": "packages",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4102,7 +3277,7 @@
     "ignore": true
   },
   {
-    "__docId__": 193,
+    "__docId__": 161,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4123,7 +3298,7 @@
     "ignore": true
   },
   {
-    "__docId__": 194,
+    "__docId__": 162,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4144,7 +3319,7 @@
     "ignore": true
   },
   {
-    "__docId__": 195,
+    "__docId__": 163,
     "kind": "method",
     "name": "start",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4161,7 +3336,7 @@
     "ignore": true
   },
   {
-    "__docId__": 196,
+    "__docId__": 164,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4178,7 +3353,7 @@
     "ignore": true
   },
   {
-    "__docId__": 197,
+    "__docId__": 165,
     "kind": "method",
     "name": "initDeveloperTools",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -4193,7 +3368,7 @@
     "return": null
   },
   {
-    "__docId__": 198,
+    "__docId__": 166,
     "kind": "file",
     "name": "src/providers/settings.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst Settings = require(\"../settings\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\n\n/**\n * MeeseOS Settings Service Provider\n */\nclass SettingsServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options] Arguments\n\t */\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.settings = new Settings(core, options);\n\t}\n\n\tdestroy() {\n\t\tthis.settings.destroy();\n\t\tsuper.destroy();\n\t}\n\n\tinit() {\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"post\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.save(req, res)\n\t\t\t);\n\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"get\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.load(req, res)\n\t\t\t);\n\n\t\treturn this.settings.init();\n\t}\n}\n\nmodule.exports = SettingsServiceProvider;\n",
@@ -4204,7 +3379,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 199,
+    "__docId__": 167,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/settings.js",
@@ -4225,7 +3400,7 @@
     "ignore": true
   },
   {
-    "__docId__": 200,
+    "__docId__": 168,
     "kind": "class",
     "name": "SettingsServiceProvider",
     "memberof": "src/providers/settings.js",
@@ -4243,7 +3418,7 @@
     ]
   },
   {
-    "__docId__": 201,
+    "__docId__": 169,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -4278,7 +3453,7 @@
     ]
   },
   {
-    "__docId__": 202,
+    "__docId__": 170,
     "kind": "member",
     "name": "settings",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -4296,7 +3471,7 @@
     "ignore": true
   },
   {
-    "__docId__": 203,
+    "__docId__": 171,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -4313,7 +3488,7 @@
     "ignore": true
   },
   {
-    "__docId__": 204,
+    "__docId__": 172,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -4334,7 +3509,7 @@
     "ignore": true
   },
   {
-    "__docId__": 205,
+    "__docId__": 173,
     "kind": "file",
     "name": "src/providers/token-factory.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenFactory = require(\"../utils/token-factory\");\n\n/**\n * MeeseOS Token Factory Service Provider\n */\nclass TokenFactoryServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactory}\n\t\t */\n\t\tthis.tokenFactory = new TokenFactory(this.core);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.tokenFactory.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-factory\", () => this.tokenFactory);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = TokenFactoryServiceProvider;\n",
@@ -4345,7 +3520,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 206,
+    "__docId__": 174,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/token-factory.js",
@@ -4366,7 +3541,7 @@
     "ignore": true
   },
   {
-    "__docId__": 207,
+    "__docId__": 175,
     "kind": "class",
     "name": "TokenFactoryServiceProvider",
     "memberof": "src/providers/token-factory.js",
@@ -4384,7 +3559,7 @@
     ]
   },
   {
-    "__docId__": 208,
+    "__docId__": 176,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -4409,7 +3584,7 @@
     ]
   },
   {
-    "__docId__": 209,
+    "__docId__": 177,
     "kind": "member",
     "name": "core",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -4428,7 +3603,7 @@
     }
   },
   {
-    "__docId__": 210,
+    "__docId__": 178,
     "kind": "member",
     "name": "tokenFactory",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -4447,7 +3622,7 @@
     }
   },
   {
-    "__docId__": 211,
+    "__docId__": 179,
     "kind": "method",
     "name": "depends",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -4475,7 +3650,7 @@
     "params": []
   },
   {
-    "__docId__": 212,
+    "__docId__": 180,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -4503,7 +3678,7 @@
     "params": []
   },
   {
-    "__docId__": 213,
+    "__docId__": 181,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -4518,7 +3693,7 @@
     "return": null
   },
   {
-    "__docId__": 214,
+    "__docId__": 182,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -4533,7 +3708,7 @@
     "return": null
   },
   {
-    "__docId__": 215,
+    "__docId__": 183,
     "kind": "file",
     "name": "src/providers/token-storage.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenStorage = require(\"../utils/token-storage\");\n\n/**\n * MeeseOS Token Storage Service Provider\n */\nclass TokenStorageServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\t\tthis.options = options;\n\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = new TokenStorage(this.core, this.options);\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.storage.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-storage\", () => this.storage);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tthis.storage.destroy();\n\t}\n}\n\nmodule.exports = TokenStorageServiceProvider;\n",
@@ -4544,7 +3719,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 216,
+    "__docId__": 184,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/token-storage.js",
@@ -4565,7 +3740,7 @@
     "ignore": true
   },
   {
-    "__docId__": 217,
+    "__docId__": 185,
     "kind": "class",
     "name": "TokenStorageServiceProvider",
     "memberof": "src/providers/token-storage.js",
@@ -4583,7 +3758,7 @@
     ]
   },
   {
-    "__docId__": 218,
+    "__docId__": 186,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -4620,7 +3795,7 @@
     ]
   },
   {
-    "__docId__": 219,
+    "__docId__": 187,
     "kind": "member",
     "name": "core",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -4639,7 +3814,7 @@
     }
   },
   {
-    "__docId__": 220,
+    "__docId__": 188,
     "kind": "member",
     "name": "options",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -4657,7 +3832,7 @@
     "ignore": true
   },
   {
-    "__docId__": 221,
+    "__docId__": 189,
     "kind": "member",
     "name": "storage",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -4676,7 +3851,7 @@
     }
   },
   {
-    "__docId__": 222,
+    "__docId__": 190,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -4704,7 +3879,7 @@
     "params": []
   },
   {
-    "__docId__": 223,
+    "__docId__": 191,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -4719,7 +3894,7 @@
     "return": null
   },
   {
-    "__docId__": 224,
+    "__docId__": 192,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -4734,7 +3909,7 @@
     "return": null
   },
   {
-    "__docId__": 225,
+    "__docId__": 193,
     "kind": "file",
     "name": "src/providers/vfs.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Filesystem = require(\"../filesystem\");\n\n/**\n * MeeseOS Virtual Filesystem Service Provider\n */\nclass VFSServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\tthis.filesystem = new Filesystem(core, options);\n\t}\n\n\tasync destroy() {\n\t\tawait this.filesystem.destroy();\n\t\tsuper.destroy();\n\t}\n\n\tstatic depends() {\n\t\treturn [\"meeseOS/express\"];\n\t}\n\n\tstatic provides() {\n\t\treturn [\"meeseOS/fs\", \"meeseOS/vfs\"];\n\t}\n\n\tasync init() {\n\t\tconst filesystem = this.filesystem;\n\n\t\tawait filesystem.init();\n\n\t\tthis.core.singleton(\"meeseOS/fs\", () => this.filesystem);\n\n\t\tthis.core.singleton(\"meeseOS/vfs\", () => ({\n\t\t\trealpath: (...args) => this.filesystem.realpath(...args),\n\t\t\trequest: (...args) => this.filesystem.request(...args),\n\t\t\tcall: (...args) => this.filesystem.call(...args),\n\t\t\tmime: (...args) => this.filesystem.mime(...args),\n\n\t\t\tget adapters() {\n\t\t\t\treturn filesystem.adapters;\n\t\t\t},\n\n\t\t\tget mountpoints() {\n\t\t\t\treturn filesystem.mountpoints;\n\t\t\t},\n\t\t}));\n\n\t\tthis.core.app.use(\"/vfs\", filesystem.router);\n\t}\n}\n\nmodule.exports = VFSServiceProvider;\n",
@@ -4745,7 +3920,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 226,
+    "__docId__": 194,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/vfs.js",
@@ -4766,7 +3941,7 @@
     "ignore": true
   },
   {
-    "__docId__": 227,
+    "__docId__": 195,
     "kind": "class",
     "name": "VFSServiceProvider",
     "memberof": "src/providers/vfs.js",
@@ -4784,7 +3959,7 @@
     ]
   },
   {
-    "__docId__": 228,
+    "__docId__": 196,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -4821,7 +3996,7 @@
     ]
   },
   {
-    "__docId__": 229,
+    "__docId__": 197,
     "kind": "member",
     "name": "filesystem",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -4839,7 +4014,7 @@
     "ignore": true
   },
   {
-    "__docId__": 230,
+    "__docId__": 198,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -4856,7 +4031,7 @@
     "ignore": true
   },
   {
-    "__docId__": 231,
+    "__docId__": 199,
     "kind": "method",
     "name": "depends",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -4877,7 +4052,7 @@
     "ignore": true
   },
   {
-    "__docId__": 232,
+    "__docId__": 200,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -4898,7 +4073,7 @@
     "ignore": true
   },
   {
-    "__docId__": 233,
+    "__docId__": 201,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -4915,7 +4090,7 @@
     "ignore": true
   },
   {
-    "__docId__": 234,
+    "__docId__": 202,
     "kind": "file",
     "name": "src/settings.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst nullAdapter = require(\"./adapters/settings/null\");\nconst fsAdapter = require(\"./adapters/settings/fs\");\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapter\n */\n\n/**\n * Settings Service Options\n * @typedef {Object} SettingsOptions\n * @property {SettingsAdapter|string} [adapter]\n */\n\n/**\n * MeeseOS Settings Manager\n */\nclass Settings {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.options = {\n\t\t\tadapter: nullAdapter,\n\t\t\t...options,\n\t\t};\n\n\t\tif (this.options.adapter === \"fs\") {\n\t\t\tthis.options.adapter = fsAdapter;\n\t\t}\n\n\t\tthis.adapter = nullAdapter(core, this.options.config);\n\n\t\ttry {\n\t\t\tthis.adapter = this.options.adapter(core, this.options.config);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n\n\t/**\n\t * Destroy instance.\n\t */\n\tdestroy() {\n\t\tif (this.adapter.destroy) {\n\t\t\tthis.adapter.destroy();\n\t\t}\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tinit() {\n\t\tif (this.adapter.init) {\n\t\t\treturn this.adapter.init();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Sends save request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync save(req, res) {\n\t\tconst result = await this.adapter.save(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Sends load request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync load(req, res) {\n\t\tconst result = await this.adapter.load(req, res);\n\t\tres.json(result);\n\t}\n}\n\nmodule.exports = Settings;\n",
@@ -4926,7 +4101,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 235,
+    "__docId__": 203,
     "kind": "typedef",
     "name": "SettingsAdapter",
     "memberof": "src/settings.js",
@@ -4943,7 +4118,7 @@
     }
   },
   {
-    "__docId__": 236,
+    "__docId__": 204,
     "kind": "typedef",
     "name": "SettingsOptions",
     "memberof": "src/settings.js",
@@ -4973,7 +4148,7 @@
     }
   },
   {
-    "__docId__": 237,
+    "__docId__": 205,
     "kind": "class",
     "name": "Settings",
     "memberof": "src/settings.js",
@@ -4988,7 +4163,7 @@
     "interface": false
   },
   {
-    "__docId__": 238,
+    "__docId__": 206,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/settings.js~Settings",
@@ -5025,7 +4200,7 @@
     ]
   },
   {
-    "__docId__": 239,
+    "__docId__": 207,
     "kind": "member",
     "name": "core",
     "memberof": "src/settings.js~Settings",
@@ -5044,7 +4219,7 @@
     }
   },
   {
-    "__docId__": 240,
+    "__docId__": 208,
     "kind": "member",
     "name": "options",
     "memberof": "src/settings.js~Settings",
@@ -5062,7 +4237,7 @@
     "ignore": true
   },
   {
-    "__docId__": 241,
+    "__docId__": 209,
     "kind": "member",
     "name": "adapter",
     "memberof": "src/settings.js~Settings",
@@ -5080,7 +4255,7 @@
     "ignore": true
   },
   {
-    "__docId__": 243,
+    "__docId__": 211,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/settings.js~Settings",
@@ -5095,7 +4270,7 @@
     "return": null
   },
   {
-    "__docId__": 244,
+    "__docId__": 212,
     "kind": "method",
     "name": "init",
     "memberof": "src/settings.js~Settings",
@@ -5123,7 +4298,7 @@
     "params": []
   },
   {
-    "__docId__": 245,
+    "__docId__": 213,
     "kind": "method",
     "name": "save",
     "memberof": "src/settings.js~Settings",
@@ -5172,7 +4347,7 @@
     }
   },
   {
-    "__docId__": 246,
+    "__docId__": 214,
     "kind": "method",
     "name": "load",
     "memberof": "src/settings.js~Settings",
@@ -5221,7 +4396,7 @@
     }
   },
   {
-    "__docId__": 247,
+    "__docId__": 215,
     "kind": "file",
     "name": "src/utils/token-factory.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\n/* eslint-disable no-unused-vars */\nconst jwt = require(\"jsonwebtoken\");\nconst TokenStorage = require(\"../utils/token-storage\");\n/* eslint-enable no-unused-vars */\n\n/**\n * Token Factory Options\n * @typedef {Object} TokenFactoryOptions\n * @property {String} [accessTokenSecret]\n * @property {String} [refreshTokenSecret]\n * @property {String} [accessTokenDuration]\n */\n\n/**\n * JWT Token Factory\n */\nclass TokenFactory {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenFactoryOptions} [options={}] Token Factory arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tconst {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration\n\t\t} = core.configuration.session.jwt;\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactoryOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync init() {\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = this.core.make(\"meeseOS/token-storage\");\n\n\t\tawait this.storage.init();\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Creates an access token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The access token\n\t */\n\tcreateAccessToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.accessTokenSecret,\n\t\t\t{ expiresIn: this.options.accessTokenDuration }\n\t\t);\n\t}\n\n\t/**\n\t * Validates an access token.\n\t * @param {String} accessToken The access token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateAccessToken(accessToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(accessToken, this.options.accessTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Access token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Creates a refresh token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The refresh token\n\t */\n\tcreateRefreshToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.refreshTokenSecret\n\t\t);\n\t}\n\n\t/**\n\t * Validates a refresh token.\n\t * @param {String} refreshToken The refresh token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateRefreshToken(refreshToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(refreshToken, this.options.refreshTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Refresh token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Uses a refresh token to create a new access token, then returns the\n\t * associated user profile along with the new access token.\n\t * @param {String} refreshToken Refresh token\n\t * @returns {Promise<*>}\n\t */\n\trefreshToAccessToken(refreshToken) {\n\t\t// Need to ensure that the refreshToken hasn't been revoked\n\t\tif (!refreshToken || !this.storage.find(refreshToken)) {\n\t\t\treturn false;\n\t\t}\n\n\t\t/* eslint-disable no-async-promise-executor */\n\t\treturn new Promise(async (resolve, reject) => {\n\t\t\tconst tokenInStorage = this.storage.find(refreshToken);\n\t\t\tif (!tokenInStorage) {\n\t\t\t\treturn reject(new Error(\"Token not found\"));\n\t\t\t}\n\n\t\t\tconst user = await this.validateRefreshToken(refreshToken);\n\t\t\tif (!user) {\n\t\t\t\tthis.storage.remove(refreshToken);\n\t\t\t\treturn reject(new Error(\"Token not valid\"));\n\t\t\t}\n\n\t\t\tconst accessToken = this.createAccessToken(\n\t\t\t\tuser.username,\n\t\t\t\tuser.groups\n\t\t\t);\n\n\t\t\tresolve({ ...user, accessToken });\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.error(error);\n\t\t\treturn false;\n\t\t});\n\t\t/* eslint-enable no-async-promise-executor */\n\t}\n}\n\nmodule.exports = TokenFactory;\n",
@@ -5232,7 +4407,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 248,
+    "__docId__": 216,
     "kind": "typedef",
     "name": "TokenFactoryOptions",
     "memberof": "src/utils/token-factory.js",
@@ -5281,7 +4456,7 @@
     }
   },
   {
-    "__docId__": 249,
+    "__docId__": 217,
     "kind": "class",
     "name": "TokenFactory",
     "memberof": "src/utils/token-factory.js",
@@ -5296,7 +4471,7 @@
     "interface": false
   },
   {
-    "__docId__": 250,
+    "__docId__": 218,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5333,7 +4508,7 @@
     ]
   },
   {
-    "__docId__": 251,
+    "__docId__": 219,
     "kind": "member",
     "name": "core",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5352,7 +4527,7 @@
     }
   },
   {
-    "__docId__": 252,
+    "__docId__": 220,
     "kind": "member",
     "name": "options",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5371,7 +4546,7 @@
     }
   },
   {
-    "__docId__": 253,
+    "__docId__": 221,
     "kind": "method",
     "name": "init",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5399,7 +4574,7 @@
     "params": []
   },
   {
-    "__docId__": 254,
+    "__docId__": 222,
     "kind": "member",
     "name": "storage",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5418,7 +4593,7 @@
     }
   },
   {
-    "__docId__": 255,
+    "__docId__": 223,
     "kind": "method",
     "name": "createAccessToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5467,7 +4642,7 @@
     }
   },
   {
-    "__docId__": 256,
+    "__docId__": 224,
     "kind": "method",
     "name": "validateAccessToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5506,7 +4681,7 @@
     }
   },
   {
-    "__docId__": 257,
+    "__docId__": 225,
     "kind": "method",
     "name": "createRefreshToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5555,7 +4730,7 @@
     }
   },
   {
-    "__docId__": 258,
+    "__docId__": 226,
     "kind": "method",
     "name": "validateRefreshToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5594,7 +4769,7 @@
     }
   },
   {
-    "__docId__": 259,
+    "__docId__": 227,
     "kind": "method",
     "name": "refreshToAccessToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -5633,7 +4808,7 @@
     }
   },
   {
-    "__docId__": 260,
+    "__docId__": 228,
     "kind": "file",
     "name": "src/utils/token-storage.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst loki = require(\"lokijs\");\n\n/**\n * Token Storage Options\n * @typedef {Object} TokenStorageOptions\n * @property {String} [databaseName]\n * @property {String} [collectionName]\n * @property {Object} [databaseOptions]\n */\n\n/**\n * Token Storage\n */\nclass TokenStorage {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenStorageOptions} [options={}] Token Storage arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenStorageOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\t...this.core.configuration.session.store,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes the instance.\n\t */\n\tinit() {\n\t\tthis.db = new loki(\n\t\t\tthis.options.databaseName,\n\t\t\t{\n\t\t\t\tautoloadCallback: () => {\n\t\t\t\t\t// Returns the collection if it exists, otherwise creates it\n\t\t\t\t\tlet collection = this.db.getCollection(this.options.collectionName);\n\t\t\t\t\tif (!collection) {\n\t\t\t\t\t\tcollection = this.db.addCollection(this.options.collectionName);\n\t\t\t\t\t}\n\n\t\t\t\t\tthis.collection = collection;\n\t\t\t\t},\n\t\t\t\t...this.options.databaseOptions,\n\t\t\t},\n\t\t);\n\t}\n\n\t/**\n\t * Looks for a refresh token in the database and returns it if found.\n\t * @param {String} refreshToken The refresh token to look for\n\t * @returns {Object|null} The token if found or `null` if not\n\t */\n\tfind(refreshToken) {\n\t\treturn this.collection.findOne({ refreshToken });\n\t}\n\n\t/**\n\t * Adds a refresh token to the database.\n\t * @param {String} refreshToken The refresh token to add\n\t */\n\tcreate(refreshToken) {\n\t\t// The timestamp is used to make pruning old data easier\n\t\tconst timestamp = new Date().getTime();\n\t\tthis.collection.insert({ refreshToken, timestamp });\n\t}\n\n\t/**\n\t * Removes a refresh token from the database.\n\t * @param {String} refreshToken The refresh token to remove\n\t * @returns {Promise<Boolean>} `true` if the token was removed, otherwise `false`\n\t */\n\tremove(refreshToken) {\n\t\tconst row = this.collection.findOne({ refreshToken });\n\t\tif (row) {\n\t\t\tthis.collection.remove(row);\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t */\n\tdestroy() {\n\t\tthis.db.close();\n\t}\n}\n\nmodule.exports = TokenStorage;\n",
@@ -5644,7 +4819,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 261,
+    "__docId__": 229,
     "kind": "typedef",
     "name": "TokenStorageOptions",
     "memberof": "src/utils/token-storage.js",
@@ -5693,7 +4868,7 @@
     }
   },
   {
-    "__docId__": 262,
+    "__docId__": 230,
     "kind": "class",
     "name": "TokenStorage",
     "memberof": "src/utils/token-storage.js",
@@ -5708,7 +4883,7 @@
     "interface": false
   },
   {
-    "__docId__": 263,
+    "__docId__": 231,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5745,7 +4920,7 @@
     ]
   },
   {
-    "__docId__": 264,
+    "__docId__": 232,
     "kind": "member",
     "name": "core",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5764,7 +4939,7 @@
     }
   },
   {
-    "__docId__": 265,
+    "__docId__": 233,
     "kind": "member",
     "name": "options",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5783,7 +4958,7 @@
     }
   },
   {
-    "__docId__": 266,
+    "__docId__": 234,
     "kind": "method",
     "name": "init",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5798,7 +4973,7 @@
     "return": null
   },
   {
-    "__docId__": 267,
+    "__docId__": 235,
     "kind": "member",
     "name": "db",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5816,7 +4991,7 @@
     "ignore": true
   },
   {
-    "__docId__": 268,
+    "__docId__": 236,
     "kind": "member",
     "name": "collection",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5834,7 +5009,7 @@
     "ignore": true
   },
   {
-    "__docId__": 269,
+    "__docId__": 237,
     "kind": "method",
     "name": "find",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5874,7 +5049,7 @@
     }
   },
   {
-    "__docId__": 270,
+    "__docId__": 238,
     "kind": "method",
     "name": "create",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5900,7 +5075,7 @@
     "return": null
   },
   {
-    "__docId__": 271,
+    "__docId__": 239,
     "kind": "method",
     "name": "remove",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5939,7 +5114,7 @@
     }
   },
   {
-    "__docId__": 272,
+    "__docId__": 240,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -5954,7 +5129,7 @@
     "return": null
   },
   {
-    "__docId__": 273,
+    "__docId__": 241,
     "kind": "file",
     "name": "src/utils/vfs.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst url = require(\"url\");\nconst sanitizeFilename = require(\"sanitize-filename\");\nconst formidable = require(\"formidable\");\nconst { Stream } = require(\"stream\");\n\n/**\n * A map of error codes.\n */\nconst errorCodes = {\n\tENOENT: 404,\n\tEACCES: 401,\n};\n\n/**\n * Gets prefix of a VFS path.\n * @param {String} path\n * @returns {String}\n */\nconst getPrefix = (path) => String(path).split(\":\")[0];\n\n/**\n * Sanitizes a path.\n * @param {String} path\n * @returns {String}\n */\nconst sanitize = (path) => {\n\tconst [name, str] = (\n\t\tpath.replace(/\\/+/g, \"/\").match(/^([\\w-_]+):+(.*)/) || []\n\t).slice(1);\n\n\tconst sane = str\n\t\t.split(\"/\")\n\t\t.map((s) => sanitizeFilename(s))\n\t\t.join(\"/\")\n\t\t.replace(/\\/+/g, \"/\");\n\n\treturn name + \":\" + sane;\n};\n\n/**\n * Gets the stream from an HTTP request.\n * @param {Request} req\n */\nconst streamFromRequest = (req) => {\n\tconst isStream = req.files.upload instanceof Stream;\n\tif (isStream) return req.files.upload;\n\n\tconst filePath = req.files.upload.filepath || req.files.upload.path;\n\tif (!filePath) {\n\t\tthrow new Error(\"File path is empty or undefined.\");\n\t}\n\n\treturn fs.createReadStream(filePath);\n};\n\n/**\n * @param {Array} arr\n * @param {Array} compare\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateAll = (arr, compare, strict = true) =>\n\tarr[strict ? \"every\" : \"some\"]((g) => compare.indexOf(g) !== -1);\n\n/**\n * Validates array groups.\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateNamedGroups = (groups, userGroups, strict) => {\n\tconst namedGroups = groups.filter((g) => typeof g === \"string\");\n\n\treturn namedGroups.length\n\t\t? validateAll(namedGroups, userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates map of groups based on method:[group,...]\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {String} method\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateMethodGroups = (groups, userGroups, method, strict) => {\n\tconst methodGroups = groups.find((g) =>\n\t\ttypeof g === \"string\" ? false : method in g\n\t);\n\n\treturn methodGroups\n\t\t? validateAll(methodGroups[method], userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates groups.\n *\n * @param {Array} userGroups\n * @param {String} method\n * @param {Object} mountpoint\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateGroups = (userGroups, method, mountpoint, strict) => {\n\tconst groups = mountpoint.attributes.groups || [];\n\tif (groups.length) {\n\t\tconst namedValid = validateNamedGroups(groups, userGroups, strict);\n\t\tconst methodValid = validateMethodGroups(\n\t\t\tgroups,\n\t\t\tuserGroups,\n\t\t\tmethod,\n\t\t\tstrict\n\t\t);\n\n\t\treturn namedValid && methodValid;\n\t}\n\n\treturn true;\n};\n\n/**\n * Checks permissions for given mountpoint.\n *\n * @param {Request} req\n * @param {Response} res\n * @param {String} method\n * @param {Boolean} readOnly\n * @param {Boolean} strict\n */\nconst checkMountpointPermission = (req, res, method, readOnly, strict) => {\n\tconst userGroups = req.session.user.groups;\n\n\treturn ({ mount }) => {\n\t\tif (readOnly) {\n\t\t\tconst { attributes, name } = mount;\n\n\t\t\tif (attributes.readOnly) {\n\t\t\t\tconst failed = typeof readOnly === \"function\"\n\t\t\t\t\t? getPrefix(readOnly(req, res)) === name\n\t\t\t\t\t: readOnly;\n\n\t\t\t\tif (failed) {\n\t\t\t\t\treturn Promise.reject(\n\t\t\t\t\t\tcreateError(403, `Mountpoint '${name}' is read-only`)\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\tif (validateGroups(userGroups, method, mount, strict)) {\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.reject(\n\t\t\tcreateError(\n\t\t\t\t403,\n\t\t\t\t`Permission was denied for '${method}' in '${mount.name}'`\n\t\t\t)\n\t\t);\n\t};\n};\n\n/**\n * Creates a new custom Error.\n * @param {Number} code\n * @param {String} message\n * @return {Error}\n */\nconst createError = (code, message) => {\n\tconst error = new Error(message);\n\terror.code = code;\n\treturn error;\n};\n\n/**\n * Resolves a mountpoint.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst mountpointResolver = (core) =>\n\tasync (path) => {\n\t\tconst { adapters, mountpoints } = core.make(\"meeseOS/vfs\");\n\t\tconst prefix = getPrefix(path);\n\t\tconst mount = mountpoints.find((m) => m.name === prefix);\n\n\t\tif (!mount) {\n\t\t\tthrow createError(403, `Mountpoint not found for '${prefix}'`);\n\t\t}\n\n\t\tconst adapter = await (mount.adapter\n\t\t\t? adapters[mount.adapter]\n\t\t\t: adapters.system);\n\n\t\treturn Object.freeze({ mount, adapter });\n\t};\n\n/**\n * Parses URL body.\n * @param {Request} req\n * @returns {Promise<Object>}\n */\nconst parseGet = (req) => {\n\t// skipcq: JS-0272\n\tconst { query } = url.parse(req.url, true);\n\n\treturn Promise.resolve({ fields: query, files: {} });\n};\n\n/**\n * Parses JSON body.\n * @param {Request} req\n * @returns {Object|Boolean}\n */\nconst parseJson = (req) => {\n\tconst isJson = req.headers[\"content-type\"] &&\n\t\treq.headers[\"content-type\"].indexOf(\"application/json\") !== -1;\n\n\tif (isJson) {\n\t\treturn { fields: req.body, files: {} };\n\t}\n\n\treturn false;\n};\n\n/**\n * Parses form body.\n *\n * @param {Request} req\n * @param {Number} config.maxFieldsSize\n * @param {Number} config.maxFileSize\n * @returns {Promise<any>}\n */\nconst parseFormData = (req, { maxFieldsSize, maxFileSize }) => {\n\tconst form = formidable({\n\t\tmultiples: true,\n\t\tmaxFieldsSize,\n\t\tmaxFileSize,\n\t});\n\n\treturn new Promise((resolve, reject) => {\n\t\tform.parse(req, (err, fields, files) => {\n\t\t\treturn err ? reject(err) : resolve({ fields, files });\n\t\t});\n\t});\n};\n\n/**\n * Middleware for handling HTTP requests.\n * @param {Object} config\n * @returns {Promise<any>}\n */\nconst parseFields = (config) =>\n\t(req, _res) => {\n\t\tif ([\"get\", \"head\"].indexOf(req.method.toLowerCase()) !== -1) {\n\t\t\treturn Promise.resolve(parseGet(req));\n\t\t}\n\n\t\tconst json = parseJson(req);\n\t\tif (json) return Promise.resolve(json);\n\n\t\treturn parseFormData(req, config);\n\t};\n\n/**\n * A map of methods and their arguments.\n * Used for direct access via API.\n */\nconst methodArguments = {\n\trealpath: [\"path\"],\n\texists: [\"path\"],\n\tstat: [\"path\"],\n\treaddir: [\"path\"],\n\treadfile: [\"path\"],\n\twritefile: [\"path\", (upload) => ({ upload })],\n\tmkdir: [\"path\"],\n\tunlink: [\"path\"],\n\ttouch: [\"path\"],\n\tsearch: [\"root\", \"pattern\"],\n\tcopy: [\"from\", \"to\"],\n\trename: [\"from\", \"to\"],\n\tarchive: [\"selection\"],\n};\n\nmodule.exports = {\n\tmountpointResolver,\n\tcreateError,\n\tcheckMountpointPermission,\n\tvalidateGroups,\n\tstreamFromRequest,\n\tsanitize,\n\tgetPrefix,\n\tparseFields,\n\terrorCodes,\n\tmethodArguments,\n};\n",
@@ -5965,7 +5140,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 274,
+    "__docId__": 242,
     "kind": "variable",
     "name": "Stream",
     "memberof": "src/utils/vfs.js",
@@ -5986,7 +5161,7 @@
     "ignore": true
   },
   {
-    "__docId__": 275,
+    "__docId__": 243,
     "kind": "function",
     "name": "validateAll",
     "memberof": "src/utils/vfs.js",
@@ -6049,7 +5224,7 @@
     "ignore": true
   },
   {
-    "__docId__": 276,
+    "__docId__": 244,
     "kind": "function",
     "name": "validateNamedGroups",
     "memberof": "src/utils/vfs.js",
@@ -6112,7 +5287,7 @@
     "ignore": true
   },
   {
-    "__docId__": 277,
+    "__docId__": 245,
     "kind": "function",
     "name": "validateMethodGroups",
     "memberof": "src/utils/vfs.js",
@@ -6185,7 +5360,7 @@
     "ignore": true
   },
   {
-    "__docId__": 278,
+    "__docId__": 246,
     "kind": "function",
     "name": "parseGet",
     "memberof": "src/utils/vfs.js",
@@ -6228,7 +5403,7 @@
     "ignore": true
   },
   {
-    "__docId__": 279,
+    "__docId__": 247,
     "kind": "function",
     "name": "parseJson",
     "memberof": "src/utils/vfs.js",
@@ -6272,7 +5447,7 @@
     "ignore": true
   },
   {
-    "__docId__": 280,
+    "__docId__": 248,
     "kind": "function",
     "name": "parseFormData",
     "memberof": "src/utils/vfs.js",
@@ -6335,7 +5510,7 @@
     "ignore": true
   },
   {
-    "__docId__": 281,
+    "__docId__": 249,
     "kind": "function",
     "name": "mountpointResolver",
     "memberof": "src/utils/vfs.js",
@@ -6377,7 +5552,7 @@
     }
   },
   {
-    "__docId__": 282,
+    "__docId__": 250,
     "kind": "function",
     "name": "createError",
     "memberof": "src/utils/vfs.js",
@@ -6423,7 +5598,7 @@
     }
   },
   {
-    "__docId__": 283,
+    "__docId__": 251,
     "kind": "function",
     "name": "checkMountpointPermission",
     "memberof": "src/utils/vfs.js",
@@ -6496,7 +5671,7 @@
     }
   },
   {
-    "__docId__": 284,
+    "__docId__": 252,
     "kind": "function",
     "name": "validateGroups",
     "memberof": "src/utils/vfs.js",
@@ -6568,7 +5743,7 @@
     }
   },
   {
-    "__docId__": 285,
+    "__docId__": 253,
     "kind": "function",
     "name": "streamFromRequest",
     "memberof": "src/utils/vfs.js",
@@ -6601,7 +5776,7 @@
     }
   },
   {
-    "__docId__": 286,
+    "__docId__": 254,
     "kind": "function",
     "name": "sanitize",
     "memberof": "src/utils/vfs.js",
@@ -6643,7 +5818,7 @@
     }
   },
   {
-    "__docId__": 287,
+    "__docId__": 255,
     "kind": "function",
     "name": "getPrefix",
     "memberof": "src/utils/vfs.js",
@@ -6685,7 +5860,7 @@
     }
   },
   {
-    "__docId__": 288,
+    "__docId__": 256,
     "kind": "function",
     "name": "parseFields",
     "memberof": "src/utils/vfs.js",
@@ -6727,7 +5902,7 @@
     }
   },
   {
-    "__docId__": 289,
+    "__docId__": 257,
     "kind": "variable",
     "name": "errorCodes",
     "memberof": "src/utils/vfs.js",
@@ -6746,7 +5921,7 @@
     }
   },
   {
-    "__docId__": 290,
+    "__docId__": 258,
     "kind": "variable",
     "name": "methodArguments",
     "memberof": "src/utils/vfs.js",
@@ -6762,606 +5937,6 @@
       "types": [
         "{\"realpath\": *, \"exists\": *, \"stat\": *, \"readdir\": *, \"readfile\": *, \"writefile\": *, \"mkdir\": *, \"unlink\": *, \"touch\": *, \"search\": *, \"copy\": *, \"rename\": *, \"archive\": *}"
       ]
-    }
-  },
-  {
-    "__docId__": 291,
-    "kind": "file",
-    "name": "src/vfs.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst path = require(\"path\");\nconst express = require(\"express\");\nconst { Stream } = require(\"stream\");\nconst {\n\tmountpointResolver,\n\tcheckMountpointPermission,\n\tstreamFromRequest,\n\tsanitize,\n\tparseFields,\n\terrorCodes,\n} = require(\"./utils/vfs\");\n\nconst respondNumber = (result) => (typeof result === \"number\" ? result : -1);\nconst respondBoolean = (result) =>\n\ttypeof result === \"boolean\" ? result : Boolean(result);\nconst requestPath = (req) => [sanitize(req.fields.path)];\nconst requestSelection = (req) => [req.fields.selection];\nconst requestSearch = (req) => [sanitize(req.fields.root), req.fields.pattern];\nconst requestCross = (req) => [\n\tsanitize(req.fields.from),\n\tsanitize(req.fields.to),\n];\nconst requestFile = (req) => [\n\tsanitize(req.fields.path),\n\tstreamFromRequest(req),\n];\n\n/**\n * Parses the range request headers.\n * @param {String} range\n * @returns {Array}\n */\nconst parseRangeHeader = (range) => {\n\tconst [pstart, pend] = range.replace(/bytes=/, \"\").split(\"-\");\n\tconst start = parseInt(pstart, 10);\n\tconst end = pend ? parseInt(pend, 10) : undefined;\n\treturn [start, end];\n};\n\n/**\n * A \"finally\" for our chain.\n * @param {Request} req\n * @param {Response} res\n */\nconst onDone = (req, _res) => {\n\tif (req.files) {\n\t\tfor (const fieldname in req.files) {\n\t\t\tfs.unlink(req.files[fieldname].filepath, () => ({}));\n\t\t}\n\t}\n};\n\n/**\n * Wraps a VFS adapter request.\n * @param {Function} fn The wrapper function to apply\n */\nconst wrapper = (fn) =>\n\t(req, res, next) =>\n\t\tfn(req, res)\n\t\t\t.then((result) => {\n\t\t\t\tif (result instanceof Stream) {\n\t\t\t\t\tresult.pipe(res);\n\t\t\t\t} else {\n\t\t\t\t\tres.json(result);\n\t\t\t\t}\n\n\t\t\t\tonDone(req, res);\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tonDone(req, res);\n\t\t\t\tnext(error);\n\t\t\t});\n\n/**\n * Creates the middleware.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Function}\n */\nconst createMiddleware = (core) => {\n\tconst parse = parseFields(core.config(\"express\"));\n\n\treturn (req, res, next) =>\n\t\tparse(req, res)\n\t\t\t.then(({ fields, files }) => {\n\t\t\t\treq.fields = fields;\n\t\t\t\treq.files = files;\n\n\t\t\t\tnext();\n\t\t\t})\n\t\t\t.catch((error) => {\n\t\t\t\tcore.logger.warn(error);\n\t\t\t\treq.fields = {};\n\t\t\t\treq.files = {};\n\n\t\t\t\tnext(error);\n\t\t\t});\n};\n\nconst createOptions = (req) => {\n\tconst options = req.fields.options;\n\tconst range = req.headers && req.headers.range;\n\tconst session = { ...(req.session || {}) };\n\tlet result = options || {};\n\n\tif (typeof options === \"string\") {\n\t\ttry {\n\t\t\tresult = JSON.parse(options) || {};\n\t\t} catch (e) {\n\t\t\t// Allow to fall through\n\t\t}\n\t}\n\n\tif (range) {\n\t\tresult.range = parseRangeHeader(req.headers.range);\n\t}\n\n\treturn {\n\t\t...result,\n\t\tsession,\n\t};\n};\n\n/**\n * Standard request with only a target.\n * @param {Function} findMountpoint\n * @returns {Function}\n */\nconst createRequestFactory = (findMountpoint) =>\n\t(getter, method, readOnly, respond) =>\n\t\tasync (req, res) => {\n\t\t\tconst options = createOptions(req);\n\t\t\tconst args = [...getter(req, res), options];\n\n\t\t\tconst found = await findMountpoint(args[0]);\n\t\t\tif (method === \"search\") {\n\t\t\t\tif (\n\t\t\t\t\tfound.mount.attributes &&\n\t\t\t\t\tfound.mount.attributes.searchable === false\n\t\t\t\t) {\n\t\t\t\t\treturn [];\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tconst { attributes } = found.mount;\n\t\t\tconst strict = attributes.strictGroups !== false;\n\t\t\tconst ranges = !attributes.adapter ||\n\t\t\t\tattributes.adapter === \"system\" ||\n\t\t\t\tattributes.ranges === true;\n\n\t\t\tconst vfsMethodWrapper = (method) =>\n\t\t\t\tfound.adapter[method]\n\t\t\t\t\t? found.adapter[method](found)(...args)\n\t\t\t\t\t: Promise.reject(new Error(`Adapter does not support ${method}`));\n\n\t\t\tconst readstat = () => vfsMethodWrapper(\"stat\").catch(() => ({}));\n\t\t\tawait checkMountpointPermission(req, res, method, readOnly, strict)(found);\n\n\t\t\tconst result = await vfsMethodWrapper(method);\n\t\t\tif (method === \"readfile\") {\n\t\t\t\tconst stat = await readstat();\n\n\t\t\t\tif (ranges && options.range) {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tif (stat.size) {\n\t\t\t\t\t\t\tconst size = stat.size;\n\t\t\t\t\t\t\tconst [start, end] = options.range;\n\t\t\t\t\t\t\tconst realEnd = end || size - 1;\n\t\t\t\t\t\t\tconst chunksize = realEnd - start + 1;\n\n\t\t\t\t\t\t\tres.writeHead(206, {\n\t\t\t\t\t\t\t\t\"Content-Range\": `bytes ${start}-${realEnd}/${size}`,\n\t\t\t\t\t\t\t\t\"Accept-Ranges\": \"bytes\",\n\t\t\t\t\t\t\t\t\"Content-Length\": chunksize,\n\t\t\t\t\t\t\t\t\"Content-Type\": stat.mime,\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\tconsole.warn(\"Failed to send a ranged response\", e);\n\t\t\t\t\t}\n\t\t\t\t} else if (stat.mime) {\n\t\t\t\t\tres.append(\"Content-Type\", stat.mime);\n\t\t\t\t}\n\n\t\t\t\tif (options.download) {\n\t\t\t\t\tconst filename = encodeURIComponent(path.basename(args[0]));\n\t\t\t\t\tres.append(\n\t\t\t\t\t\t\"Content-Disposition\",\n\t\t\t\t\t\t`attachment; filename*=utf-8''${filename}`\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn respond ? respond(result) : result;\n\t\t};\n\n/**\n * Request that has a source and target.\n * @param {Function} findMountpoint\n * @returns {Boolean}\n */\nconst createCrossRequestFactory = (findMountpoint) =>\n\t(getter, method, _respond) =>\n\t\tasync (req, res) => {\n\t\t\tconst [from, to, options] = [...getter(req, res), createOptions(req)];\n\n\t\t\tconst srcMount = await findMountpoint(from);\n\t\t\tconst destMount = await findMountpoint(to);\n\t\t\tconst sameAdapter = srcMount.adapter === destMount.adapter;\n\n\t\t\tconst srcStrict = srcMount.mount.attributes.strictGroups !== false;\n\t\t\tconst destStrict = destMount.mount.attributes.strictGroups !== false;\n\n\t\t\tawait checkMountpointPermission(\n\t\t\t\treq,\n\t\t\t\tres,\n\t\t\t\t\"readfile\",\n\t\t\t\tfalse,\n\t\t\t\tsrcStrict\n\t\t\t)(srcMount);\n\n\t\t\tawait checkMountpointPermission(\n\t\t\t\treq,\n\t\t\t\tres,\n\t\t\t\t\"writefile\",\n\t\t\t\ttrue,\n\t\t\t\tdestStrict\n\t\t\t)(destMount);\n\n\t\t\tif (sameAdapter) {\n\t\t\t\tconst result = await srcMount.adapter[method](srcMount, destMount)(\n\t\t\t\t\tfrom,\n\t\t\t\t\tto,\n\t\t\t\t\toptions\n\t\t\t\t);\n\n\t\t\t\treturn Boolean(result);\n\t\t\t}\n\n\t\t\t// Simulates a copy/move\n\t\t\tconst stream = await srcMount.adapter.readfile(srcMount)(from, options);\n\n\t\t\tconst result = await destMount.adapter.writefile(destMount)(\n\t\t\t\tto,\n\t\t\t\tstream,\n\t\t\t\toptions\n\t\t\t);\n\n\t\t\tif (method === \"rename\") {\n\t\t\t\tawait srcMount.adapter.unlink(srcMount)(from, options);\n\t\t\t}\n\n\t\t\treturn Boolean(result);\n\t\t};\n\n/**\n * VFS Methods\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst vfs = (core) => {\n\tconst findMountpoint = mountpointResolver(core);\n\tconst createRequest = createRequestFactory(findMountpoint);\n\tconst createCrossRequest = createCrossRequestFactory(findMountpoint);\n\n\t// Wire up all available VFS events\n\treturn {\n\t\tcapabilities: createRequest(requestPath, \"capabilities\", false),\n\t\trealpath: createRequest(requestPath, \"realpath\", false),\n\t\texists: createRequest(requestPath, \"exists\", false, respondBoolean),\n\t\tstat: createRequest(requestPath, \"stat\", false),\n\t\treaddir: createRequest(requestPath, \"readdir\", false),\n\t\treadfile: createRequest(requestPath, \"readfile\", false),\n\t\twritefile: createRequest(requestFile, \"writefile\", true, respondNumber),\n\t\tmkdir: createRequest(requestPath, \"mkdir\", true, respondBoolean),\n\t\tunlink: createRequest(requestPath, \"unlink\", true, respondBoolean),\n\t\ttouch: createRequest(requestPath, \"touch\", true, respondBoolean),\n\t\tsearch: createRequest(requestSearch, \"search\", false),\n\t\tcopy: createCrossRequest(requestCross, \"copy\"),\n\t\trename: createCrossRequest(requestCross, \"rename\"),\n\t\tarchive: createRequest(requestSelection, \"archive\", false),\n\t};\n};\n\n/**\n * Creates a new VFS Express router.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nmodule.exports = (core) => {\n\tconst router = express.Router();\n\tconst methods = vfs(core);\n\tconst middleware = createMiddleware(core);\n\tconst { useWebTokens, isAuthenticated } = core.make(\"meeseOS/express\");\n\tconst vfsGroups = core.config(\"auth.vfsGroups\", []);\n\tconst logEnabled = core.config(\"development\");\n\n\t// Middleware first\n\trouter.use(useWebTokens(core));\n\trouter.use(isAuthenticated(vfsGroups));\n\trouter.use(middleware);\n\n\t// Then all VFS routes (needs implementation above)\n\trouter.get(\"/capabilities\", wrapper(methods.capabilities));\n\trouter.get(\"/exists\", wrapper(methods.exists));\n\trouter.get(\"/stat\", wrapper(methods.stat));\n\trouter.get(\"/readdir\", wrapper(methods.readdir));\n\trouter.get(\"/readfile\", wrapper(methods.readfile));\n\trouter.post(\"/writefile\", wrapper(methods.writefile));\n\trouter.post(\"/rename\", wrapper(methods.rename));\n\trouter.post(\"/copy\", wrapper(methods.copy));\n\trouter.post(\"/mkdir\", wrapper(methods.mkdir));\n\trouter.post(\"/unlink\", wrapper(methods.unlink));\n\trouter.post(\"/touch\", wrapper(methods.touch));\n\trouter.post(\"/search\", wrapper(methods.search));\n\trouter.post(\"/archive\", wrapper(methods.archive));\n\n\t// Finally catch promise exceptions\n\trouter.use((error, _req, res, _next) => {\n\t\tconst code = typeof error.code === \"number\"\n\t\t\t? error.code\n\t\t\t: errorCodes[error.code] || 400;\n\n\t\tif (logEnabled) {\n\t\t\tcore.logger.error(error);\n\t\t}\n\n\t\tres.status(code).json({\n\t\t\terror: error.toString(),\n\t\t\tstack: logEnabled ? error.stack : undefined,\n\t\t});\n\t});\n\n\treturn { router, methods };\n};\n",
-    "static": true,
-    "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/vfs.js",
-    "access": "public",
-    "description": null,
-    "lineNumber": 1
-  },
-  {
-    "__docId__": 292,
-    "kind": "variable",
-    "name": "Stream",
-    "memberof": "src/vfs.js",
-    "static": true,
-    "longname": "src/vfs.js~Stream",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 35,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 293,
-    "kind": "variable",
-    "name": "mountpointResolver",
-    "memberof": "src/vfs.js",
-    "static": true,
-    "longname": "src/vfs.js~mountpointResolver",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 37,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 294,
-    "kind": "function",
-    "name": "respondNumber",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~respondNumber",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 46,
-    "undocument": true,
-    "params": [
-      {
-        "name": "result",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 295,
-    "kind": "function",
-    "name": "respondBoolean",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~respondBoolean",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 47,
-    "undocument": true,
-    "params": [
-      {
-        "name": "result",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 296,
-    "kind": "function",
-    "name": "requestPath",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~requestPath",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 49,
-    "undocument": true,
-    "params": [
-      {
-        "name": "req",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 297,
-    "kind": "function",
-    "name": "requestSelection",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~requestSelection",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 50,
-    "undocument": true,
-    "params": [
-      {
-        "name": "req",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 298,
-    "kind": "function",
-    "name": "requestSearch",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~requestSearch",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 51,
-    "undocument": true,
-    "params": [
-      {
-        "name": "req",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 299,
-    "kind": "function",
-    "name": "requestCross",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~requestCross",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 52,
-    "undocument": true,
-    "params": [
-      {
-        "name": "req",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 300,
-    "kind": "function",
-    "name": "requestFile",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~requestFile",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 56,
-    "undocument": true,
-    "params": [
-      {
-        "name": "req",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 301,
-    "kind": "function",
-    "name": "parseRangeHeader",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~parseRangeHeader",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": "Parses the range request headers.",
-    "lineNumber": 66,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Array}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "range",
-        "description": ""
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Array"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 302,
-    "kind": "function",
-    "name": "onDone",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~onDone",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": "A \"finally\" for our chain.",
-    "lineNumber": 78,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Request"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "req",
-        "description": ""
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Response"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "res",
-        "description": ""
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 303,
-    "kind": "function",
-    "name": "wrapper",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~wrapper",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": "Wraps a VFS adapter request.",
-    "lineNumber": 90,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Function"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "fn",
-        "description": "The wrapper function to apply"
-      }
-    ],
-    "return": null,
-    "ignore": true
-  },
-  {
-    "__docId__": 304,
-    "kind": "function",
-    "name": "createMiddleware",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~createMiddleware",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": "Creates the middleware.",
-    "lineNumber": 112,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Function}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Core"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "core",
-        "description": "MeeseOS Core instance reference"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Function"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 305,
-    "kind": "function",
-    "name": "createOptions",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~createOptions",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 132,
-    "undocument": true,
-    "params": [
-      {
-        "name": "req",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": {
-      "types": [
-        "{...result: Object, \"session\": *}"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 306,
-    "kind": "function",
-    "name": "createRequestFactory",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~createRequestFactory",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": "Standard request with only a target.",
-    "lineNumber": 161,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Function}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Function"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "findMountpoint",
-        "description": ""
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Function"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 307,
-    "kind": "function",
-    "name": "createCrossRequestFactory",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~createCrossRequestFactory",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": "Request that has a source and target.",
-    "lineNumber": 234,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Boolean}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Function"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "findMountpoint",
-        "description": ""
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Boolean"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 308,
-    "kind": "function",
-    "name": "vfs",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~vfs",
-    "access": "public",
-    "export": false,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": null,
-    "description": "VFS Methods",
-    "lineNumber": 293,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Object}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Core"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "core",
-        "description": "MeeseOS Core instance reference"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Object"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 309,
-    "kind": "function",
-    "name": "vfs",
-    "memberof": "src/vfs.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/vfs.js~vfs",
-    "access": "public",
-    "export": true,
-    "importPath": "@meese-os/server/src/vfs.js",
-    "importStyle": "vfs",
-    "description": "Creates a new VFS Express router.",
-    "lineNumber": 322,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Object}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Core"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "core",
-        "description": "MeeseOS Core instance reference"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Object"
-      ],
-      "spread": false,
-      "description": ""
     }
   },
   {

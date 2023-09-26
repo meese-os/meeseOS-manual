@@ -1,11 +1,5 @@
 window.esdocSearchIndex = [
   [
-    "@meese-os/event-emitter/event-emitter/index.js~eventemitter",
-    "class/event-emitter/index.js~EventEmitter.html",
-    "<span>EventEmitter</span> <span class=\"search-result-import-path\">@meese-os/event-emitter/event-emitter/index.js</span>",
-    "class"
-  ],
-  [
     "event-emitter/.external-ecmascript.js~array",
     "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
     "event-emitter/.external-ecmascript.js~Array",
@@ -286,60 +280,6 @@ window.esdocSearchIndex = [
     "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
     "event-emitter/.external-ecmascript.js~undefined",
     "external"
-  ],
-  [
-    "event-emitter/index.js",
-    "file/event-emitter/index.js.html",
-    "event-emitter/index.js",
-    "file"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#constructor",
-    "class/event-emitter/index.js~EventEmitter.html#instance-constructor-constructor",
-    "event-emitter/index.js~EventEmitter#constructor",
-    "method"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#destroy",
-    "class/event-emitter/index.js~EventEmitter.html#instance-method-destroy",
-    "event-emitter/index.js~EventEmitter#destroy",
-    "method"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#emit",
-    "class/event-emitter/index.js~EventEmitter.html#instance-method-emit",
-    "event-emitter/index.js~EventEmitter#emit",
-    "method"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#events",
-    "class/event-emitter/index.js~EventEmitter.html#instance-member-events",
-    "event-emitter/index.js~EventEmitter#events",
-    "member"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#name",
-    "class/event-emitter/index.js~EventEmitter.html#instance-member-name",
-    "event-emitter/index.js~EventEmitter#name",
-    "member"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#off",
-    "class/event-emitter/index.js~EventEmitter.html#instance-method-off",
-    "event-emitter/index.js~EventEmitter#off",
-    "method"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#on",
-    "class/event-emitter/index.js~EventEmitter.html#instance-method-on",
-    "event-emitter/index.js~EventEmitter#on",
-    "method"
-  ],
-  [
-    "event-emitter/index.js~eventemitter#once",
-    "class/event-emitter/index.js~EventEmitter.html#instance-method-once",
-    "event-emitter/index.js~EventEmitter#once",
-    "method"
   ],
   [
     "event-emitter/webpack.config.js",

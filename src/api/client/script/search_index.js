@@ -96,12 +96,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "@meese-os/client/src/search.js~search",
-    "class/src/search.js~Search.html",
-    "<span>Search</span> <span class=\"search-result-import-path\">@meese-os/client/src/search.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/client/src/session.js~session",
     "class/src/session.js~Session.html",
     "<span>Session</span> <span class=\"search-result-import-path\">@meese-os/client/src/session.js</span>",
@@ -186,12 +180,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/windows.js~clampposition",
-    "function/index.html#static-function-clampPosition",
-    "<span>clampPosition</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/vfs.js~copy",
     "function/index.html#static-function-copy",
     "<span>copy</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
@@ -210,27 +198,9 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/windows.js~createattributes",
-    "function/index.html#static-function-createAttributes",
-    "<span>createAttributes</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/utils/dom.js~createcsstext",
     "function/index.html#static-function-createCssText",
     "<span>createCssText</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/dom.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~createdomattributes",
-    "function/index.html#static-function-createDOMAttributes",
-    "<span>createDOMAttributes</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~createdomstyles",
-    "function/index.html#static-function-createDOMStyles",
-    "<span>createDOMStyles</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -252,21 +222,9 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/windows.js~createstate",
-    "function/index.html#static-function-createState",
-    "<span>createState</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/utils/vfs.js~createwatchevents",
     "function/index.html#static-function-createWatchEvents",
     "<span>createWatchEvents</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~dimensionfromelement",
-    "function/index.html#static-function-dimensionFromElement",
-    "<span>dimensionFromElement</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -318,12 +276,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/windows.js~getcascadeposition",
-    "function/index.html#static-function-getCascadePosition",
-    "<span>getCascadePosition</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/utils/input.js~getevent",
     "function/index.html#static-function-getEvent",
     "<span>getEvent</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/input.js</span>",
@@ -333,12 +285,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/utils/vfs.js~getfileicon",
     "function/index.html#static-function-getFileIcon",
     "<span>getFileIcon</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~getmediaqueryname",
-    "function/index.html#static-function-getMediaQueryName",
-    "<span>getMediaQueryName</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -357,12 +303,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/utils/colors.js~inverthex",
     "function/index.html#static-function-invertHex",
     "<span>invertHex</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/colors.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~loadoptionsfromconfig",
-    "function/index.html#static-function-loadOptionsFromConfig",
-    "<span>loadOptionsFromConfig</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -394,12 +334,6 @@ window.esdocSearchIndex = [
     "variable/index.html#static-variable-move",
     "<span>move</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
     "variable"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~mover",
-    "function/index.html#static-function-mover",
-    "<span>mover</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
   ],
   [
     "@meese-os/client/src/adapters/vfs/null.js~nulladapter",
@@ -438,12 +372,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "@meese-os/client/src/utils/windows.js~positionfromgravity",
-    "function/index.html#static-function-positionFromGravity",
-    "<span>positionFromGravity</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
-  ],
-  [
     "@meese-os/client/src/vfs.js~readdir",
     "function/index.html#static-function-readdir",
     "<span>readdir</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
@@ -459,18 +387,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/vfs.js~rename",
     "function/index.html#static-function-rename",
     "<span>rename</span> <span class=\"search-result-import-path\">@meese-os/client/src/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~rendercallback",
-    "function/index.html#static-function-renderCallback",
-    "<span>renderCallback</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~resizer",
-    "function/index.html#static-function-resizer",
-    "<span>resizer</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -543,12 +459,6 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/utils/vfs.js~transformreaddir",
     "function/index.html#static-function-transformReaddir",
     "<span>transformReaddir</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/vfs.js</span>",
-    "function"
-  ],
-  [
-    "@meese-os/client/src/utils/windows.js~transformvectors",
-    "function/index.html#static-function-transformVectors",
-    "<span>transformVectors</span> <span class=\"search-result-import-path\">@meese-os/client/src/utils/windows.js</span>",
     "function"
   ],
   [
@@ -2400,78 +2310,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/search.js",
-    "file/src/search.js.html",
-    "src/search.js",
-    "file"
-  ],
-  [
-    "src/search.js~search#$element",
-    "class/src/search.js~Search.html#instance-member-$element",
-    "src/search.js~Search#$element",
-    "member"
-  ],
-  [
-    "src/search.js~search#constructor",
-    "class/src/search.js~Search.html#instance-constructor-constructor",
-    "src/search.js~Search#constructor",
-    "method"
-  ],
-  [
-    "src/search.js~search#core",
-    "class/src/search.js~Search.html#instance-member-core",
-    "src/search.js~Search#core",
-    "member"
-  ],
-  [
-    "src/search.js~search#destroy",
-    "class/src/search.js~Search.html#instance-method-destroy",
-    "src/search.js~Search#destroy",
-    "method"
-  ],
-  [
-    "src/search.js~search#focus",
-    "class/src/search.js~Search.html#instance-method-focus",
-    "src/search.js~Search#focus",
-    "method"
-  ],
-  [
-    "src/search.js~search#focuslastwindow",
-    "class/src/search.js~Search.html#instance-member-focusLastWindow",
-    "src/search.js~Search#focusLastWindow",
-    "member"
-  ],
-  [
-    "src/search.js~search#hide",
-    "class/src/search.js~Search.html#instance-method-hide",
-    "src/search.js~Search#hide",
-    "method"
-  ],
-  [
-    "src/search.js~search#init",
-    "class/src/search.js~Search.html#instance-method-init",
-    "src/search.js~Search#init",
-    "method"
-  ],
-  [
-    "src/search.js~search#search",
-    "class/src/search.js~Search.html#instance-method-search",
-    "src/search.js~Search#search",
-    "method"
-  ],
-  [
-    "src/search.js~search#show",
-    "class/src/search.js~Search.html#instance-method-show",
-    "src/search.js~Search#show",
-    "method"
-  ],
-  [
-    "src/search.js~search#ui",
-    "class/src/search.js~Search.html#instance-member-ui",
-    "src/search.js~Search#ui",
-    "member"
-  ],
-  [
     "src/session.js",
     "file/src/session.js.html",
     "src/session.js",
@@ -2865,12 +2703,6 @@ window.esdocSearchIndex = [
     "src/utils/vfs.js",
     "file/src/utils/vfs.js.html",
     "src/utils/vfs.js",
-    "file"
-  ],
-  [
-    "src/utils/windows.js",
-    "file/src/utils/windows.js.html",
-    "src/utils/windows.js",
     "file"
   ],
   [
