@@ -382,9 +382,7 @@ class CoreServiceProvider extends ServiceProvider {
 				// NOTE: &apos;ignored&apos; does not work as expected with callback
 				// ignored: str =&gt; str.match(/\.(js|css)$/) === null
 				// for unknown reasons
-				if (!filename.match(/\.(js|css)$/)) {
-					return;
-				}
+				if (!/\.(js|css)$/i.test(filename)) return;
 
 				const relative = filename.replace(watchdir, &quot;&quot;);
 				this.core.broadcast(&quot;meeseOS/dist:changed&quot;, [relative]);

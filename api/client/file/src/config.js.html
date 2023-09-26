@@ -222,7 +222,7 @@ const createUri = (str) =&gt;
 
 const pathname = createUri(window.location.pathname);
 const href = createUri(window.location.href);
-const development = !(process.env.NODE_ENV || &quot;&quot;).match(/^prod/i);
+const development = !/^prod/i.test(process.env.NODE_ENV || &quot;&quot;);
 
 export const defaultConfiguration = {
 	development: development,

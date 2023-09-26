@@ -232,7 +232,7 @@ export const urlResolver = (configuration) =&gt; {
 	return (endpoint = &quot;/&quot;, options = {}, metadata = {}) =&gt; {
 		if (typeof endpoint !== &quot;string&quot;) {
 			return http.public;
-		} else if (endpoint.match(/^(http|ws|ftp)s?:/i)) {
+		} else if (/^(http|ws|ftp)s?:/i.test(endpoint)) {
 			return endpoint;
 		}
 
