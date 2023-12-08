@@ -40,4 +40,5 @@ See the [Official Manuals](https://manual.aaronmeese.com/) for articles, tutoria
 * [Homepage](https://meese.enterprises/)
 * [Twitter](https://twitter.com/MeeseLLC) ([author](https://twitter.com/ajmeese7))
 * [Docker Hub](https://hub.docker.com/u/osjs/)
-* <!--* [Community Forums and Announcements](https://community.os-js.org/)-->
+
+<!--* [Community Forums and Announcements](https://community.os-js.org/)-->
