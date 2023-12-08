@@ -1,8 +1,8 @@
 <p align="center">
-  <img alt="OS.js Logo" src="https://raw.githubusercontent.com/os-js/gfx/master/logo-big.png" />
+  <img alt="MeeseOS Logo" src="https://raw.githubusercontent.com/meese-os/meeseOS/master/website/src/client/social_transparent.png" />
 </p>
 
-[MeeseOS](https://www.os-js.org/) is an [open-source](https://raw.githubusercontent.com/os-js/OS.js/master/LICENSE) web desktop platform with a window manager, application APIs, GUI toolkit, filesystem abstractions and much more.
+[MeeseOS]([https://www.os-js.org/](https://github.com/meese-os)) is an [open-source](https://raw.githubusercontent.com/meese-os/meeseOS/master/LICENSE) web desktop platform with a window manager, application APIs, GUI toolkit, filesystem abstractions and much more.
 
 [![Support](https://img.shields.io/badge/opencollective-donate-red.svg)](https://opencollective.com/meeseos)
 [![Donate](https://img.shields.io/badge/liberapay-donate-yellowgreen.svg)](https://liberapay.com/meeseOS)
@@ -28,7 +28,7 @@ npm run serve
 
 * **Sponsor on [GitHub](https://github.com/sponsors/ajmeese7)**
 * **Support on [Open Collective](https://opencollective.com/meeseos)**
-* [Contribution Guide](https://github.com/os-js/OS.js/blob/master/CONTRIBUTING.md)
+* [Contribution Guide](https://github.com/meese-os/meeseOS/blob/master/CONTRIBUTING.md)
 
 ## Documentation
 
@@ -37,7 +37,7 @@ See the [Official Manuals](https://manual.aaronmeese.com/) for articles, tutoria
 ## Links
 
 * [Official Chat](https://gitter.im/meeseOS/community)
-<!--* [Community Forums and Announcements](https://community.os-js.org/)-->
 * [Homepage](https://meese.enterprises/)
 * [Twitter](https://twitter.com/MeeseLLC) ([author](https://twitter.com/ajmeese7))
 * [Docker Hub](https://hub.docker.com/u/osjs/)
+* <!--* [Community Forums and Announcements](https://community.os-js.org/)-->
