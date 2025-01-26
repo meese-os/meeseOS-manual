@@ -102,12 +102,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "@meese-os/client/src/splash.js~splash",
-    "class/src/splash.js~Splash.html",
-    "<span>Splash</span> <span class=\"search-result-import-path\">@meese-os/client/src/splash.js</span>",
-    "class"
-  ],
-  [
     "@meese-os/client/src/tray.js~tray",
     "class/src/tray.js~Tray.html",
     "<span>Tray</span> <span class=\"search-result-import-path\">@meese-os/client/src/tray.js</span>",
@@ -141,6 +135,12 @@ window.esdocSearchIndex = [
     "@meese-os/client/src/adapters/vfs/apps.js~adapter",
     "function/index.html#static-function-adapter",
     "<span>adapter</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/vfs/apps.js</span>",
+    "function"
+  ],
+  [
+    "@meese-os/client/src/adapters/vfs/system.js~adapter",
+    "function/index.html#static-function-adapter",
+    "<span>adapter</span> <span class=\"search-result-import-path\">@meese-os/client/src/adapters/vfs/system.js</span>",
     "function"
   ],
   [
@@ -678,6 +678,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/adapters/search/vfs.js",
+    "file/src/adapters/search/vfs.js.html",
+    "src/adapters/search/vfs.js",
+    "file"
+  ],
+  [
     "src/adapters/settings/localstorage.js",
     "file/src/adapters/settings/localstorage.js.html",
     "src/adapters/settings/localstorage.js",
@@ -705,6 +711,12 @@ window.esdocSearchIndex = [
     "src/adapters/vfs/null.js",
     "file/src/adapters/vfs/null.js.html",
     "src/adapters/vfs/null.js",
+    "file"
+  ],
+  [
+    "src/adapters/vfs/system.js",
+    "file/src/adapters/vfs/system.js.html",
+    "src/adapters/vfs/system.js",
     "file"
   ],
   [
@@ -2116,72 +2128,6 @@ window.esdocSearchIndex = [
     "class/src/session.js~Session.html#instance-method-save",
     "src/session.js~Session#save",
     "method"
-  ],
-  [
-    "src/splash.js",
-    "file/src/splash.js.html",
-    "src/splash.js",
-    "file"
-  ],
-  [
-    "src/splash.js~splash#$loading",
-    "class/src/splash.js~Splash.html#instance-member-$loading",
-    "src/splash.js~Splash#$loading",
-    "member"
-  ],
-  [
-    "src/splash.js~splash#constructor",
-    "class/src/splash.js~Splash.html#instance-constructor-constructor",
-    "src/splash.js~Splash#constructor",
-    "method"
-  ],
-  [
-    "src/splash.js~splash#core",
-    "class/src/splash.js~Splash.html#instance-member-core",
-    "src/splash.js~Splash#core",
-    "member"
-  ],
-  [
-    "src/splash.js~splash#destroy",
-    "class/src/splash.js~Splash.html#instance-method-destroy",
-    "src/splash.js~Splash#destroy",
-    "method"
-  ],
-  [
-    "src/splash.js~splash#init",
-    "class/src/splash.js~Splash.html#instance-method-init",
-    "src/splash.js~Splash#init",
-    "method"
-  ],
-  [
-    "src/splash.js~splash#pagetransitiontime",
-    "class/src/splash.js~Splash.html#instance-member-pageTransitionTime",
-    "src/splash.js~Splash#pageTransitionTime",
-    "member"
-  ],
-  [
-    "src/splash.js~splash#quips",
-    "class/src/splash.js~Splash.html#instance-member-quips",
-    "src/splash.js~Splash#quips",
-    "member"
-  ],
-  [
-    "src/splash.js~splash#show",
-    "class/src/splash.js~Splash.html#instance-method-show",
-    "src/splash.js~Splash#show",
-    "method"
-  ],
-  [
-    "src/splash.js~splash#start",
-    "class/src/splash.js~Splash.html#instance-method-start",
-    "src/splash.js~Splash#start",
-    "method"
-  ],
-  [
-    "src/splash.js~splash#timeperquip",
-    "class/src/splash.js~Splash.html#instance-member-timePerQuip",
-    "src/splash.js~Splash#timePerQuip",
-    "member"
   ],
   [
     "src/tray.js",

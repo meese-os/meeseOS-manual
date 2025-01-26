@@ -39,7 +39,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/notifications.js~Notifications.html">Notifications</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/packages.js~Packages.html">Packages</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/session.js~Session.html">Session</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/splash.js~Splash.html">Splash</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/tray.js~Tray.html">Tray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
@@ -94,6 +93,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-serverSettings">serverSettings</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-ui">adapters/ui</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-vfs">adapters/vfs</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-nullAdapter">nullAdapter</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#providers">providers</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/auth.js~AuthServiceProvider.html">AuthServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
@@ -210,6 +210,35 @@
         
         
         <div data-ice="description"><p>Application VFS adapter</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>System VFS adapter.</p>
 </div>
       </div>
     </td>
@@ -1406,6 +1435,86 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-function-adapter">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">adapter</span><span class="code" data-ice="signature">(core: <span><a href="class/src/core.js~Core.html">Core</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/adapters/vfs/system.js.html#lineNumber153">source</a></span></span>
+    </span>
+  </h3>
+
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import adapter from &apos;<span><a href="file/src/adapters/vfs/system.js.html#lineNumber153">@meese-os/client/src/adapters/vfs/system.js</a></span>&apos;</code></pre></div>
+  
+  
+  <div data-ice="description"><p>System VFS adapter.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">core</td>
+      <td data-ice="type" class="code"><span><a href="class/src/core.js~Core.html">Core</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>MeeseOS Core instance reference</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">options</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>Adapter options</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="static-function-archive">
     <span class="access" data-ice="access">public</span>
     
@@ -1417,11 +1526,11 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber315">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber321">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {archive} from &apos;<span><a href="file/src/vfs.js.html#lineNumber315">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {archive} from &apos;<span><a href="file/src/vfs.js.html#lineNumber321">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Compresses or decompresses a selection of files.</p>
@@ -1579,11 +1688,11 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber174">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber180">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {copy} from &apos;<span><a href="file/src/vfs.js.html#lineNumber174">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {copy} from &apos;<span><a href="file/src/vfs.js.html#lineNumber180">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Copies a file or directory (move)</p>
@@ -2070,11 +2179,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber258">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber264">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {download} from &apos;<span><a href="file/src/vfs.js.html#lineNumber258">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {download} from &apos;<span><a href="file/src/vfs.js.html#lineNumber264">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Initiates a native browser download of the file.</p>
@@ -2151,11 +2260,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/utils/dnd.js.html#lineNumber155">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/utils/dnd.js.html#lineNumber157">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {draggable} from &apos;<span><a href="file/src/utils/dnd.js.html#lineNumber155">@meese-os/client/src/utils/dnd.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {draggable} from &apos;<span><a href="file/src/utils/dnd.js.html#lineNumber157">@meese-os/client/src/utils/dnd.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Creates a &quot;draggable&quot; element</p>
@@ -2232,11 +2341,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/utils/dnd.js.html#lineNumber202">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/utils/dnd.js.html#lineNumber204">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {droppable} from &apos;<span><a href="file/src/utils/dnd.js.html#lineNumber202">@meese-os/client/src/utils/dnd.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {droppable} from &apos;<span><a href="file/src/utils/dnd.js.html#lineNumber204">@meese-os/client/src/utils/dnd.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Creates a &quot;droppable&quot; element</p>
@@ -2386,11 +2495,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber226">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber232">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {exists} from &apos;<span><a href="file/src/vfs.js.html#lineNumber226">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {exists} from &apos;<span><a href="file/src/vfs.js.html#lineNumber232">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Checks if path exists.</p>
@@ -2903,11 +3012,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber206">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber212">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {mkdir} from &apos;<span><a href="file/src/vfs.js.html#lineNumber206">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {mkdir} from &apos;<span><a href="file/src/vfs.js.html#lineNumber212">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Creates a directory.</p>
@@ -3236,11 +3345,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber186">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber192">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {rename} from &apos;<span><a href="file/src/vfs.js.html#lineNumber186">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {rename} from &apos;<span><a href="file/src/vfs.js.html#lineNumber192">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Renames a file or directory (move)</p>
@@ -3412,11 +3521,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber288">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber294">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {search} from &apos;<span><a href="file/src/vfs.js.html#lineNumber288">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {search} from &apos;<span><a href="file/src/vfs.js.html#lineNumber294">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Searches for files and folders.</p>
@@ -3649,11 +3758,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber236">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber242">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {stat} from &apos;<span><a href="file/src/vfs.js.html#lineNumber236">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {stat} from &apos;<span><a href="file/src/vfs.js.html#lineNumber242">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Gets the stats of the file or directory.</p>
@@ -3866,11 +3975,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber305">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber311">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {touch} from &apos;<span><a href="file/src/vfs.js.html#lineNumber305">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {touch} from &apos;<span><a href="file/src/vfs.js.html#lineNumber311">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Touches a file.</p>
@@ -3947,11 +4056,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber216">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber222">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {unlink} from &apos;<span><a href="file/src/vfs.js.html#lineNumber216">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {unlink} from &apos;<span><a href="file/src/vfs.js.html#lineNumber222">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Removes a file or directory.</p>
@@ -4028,11 +4137,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber248">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber254">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {url} from &apos;<span><a href="file/src/vfs.js.html#lineNumber248">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {url} from &apos;<span><a href="file/src/vfs.js.html#lineNumber254">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Gets an URL to a resource defined by file.</p>
@@ -4181,11 +4290,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber157">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/vfs.js.html#lineNumber163">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {writefile} from &apos;<span><a href="file/src/vfs.js.html#lineNumber157">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {writefile} from &apos;<span><a href="file/src/vfs.js.html#lineNumber163">@meese-os/client/src/vfs.js</a></span>&apos;</code></pre></div>
   
   
   <div data-ice="description"><p>Writes a file.</p>

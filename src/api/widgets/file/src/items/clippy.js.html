@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/items/digitalclock.js | meeseOS Widget API</title>
+  <title data-ice="title">src/items/clippy.js | meeseOS Widget API</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -40,21 +40,24 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/items/digitalclock.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/items/clippy.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
- * OS.js - JavaScript Cloud/Web Desktop Platform
+ * MeeseOS - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * Copyright (c) 2022-Present, Aaron Meese &lt;aaron@meese.dev&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer
+ *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution
+ * 	 and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ * 	 without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -67,49 +70,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
- * @licence Simplified BSD License
+ * @author  Aaron Meese &lt;aaron@meese.dev&gt;
+ * @licence Modified BSD License
  */
 
 import Widget from &quot;../widget&quot;;
+import clippy from &quot;@meese-os/clippy&quot;;
 
 /**
- * Digital Clock Widget Options
- * @typedef {Object} DigitalClockOptions
- * @property {String} [fontFamily=&quot;Monospace&quot;] Font family
- * @property {String} [color=&quot;#ffffff&quot;] Font color
+ * Clippyts Widget Options
+ * @typedef {Object} ClippyOptions
+ * // Define any specific options for your Clippy widget here
  */
 
-const getFont = (fontFamily, size) =&gt; String(size) + &quot;px &quot; + fontFamily;
-
-const getTime = (now) =&gt;
-	[now.getHours(), now.getMinutes(), now.getSeconds()]
-		.map((int) =&gt; String(int).padStart(2, &quot;0&quot;))
-		.join(&quot;:&quot;);
-
-const getFontSize = (fontFamily, initialSize, maxWidth, context) =&gt; {
-	const txt = &quot;99:99:99&quot;;
-
-	let size = initialSize;
-	while (size &gt; 0) {
-		context.font = getFont(fontFamily, size);
-
-		const measuredWidth = context.measureText(txt).width;
-		if (measuredWidth &lt; maxWidth) {
-			break;
-		}
-
-		size--;
-	}
-
-	return size;
-};
-
-export default class DigitalClockWidget extends Widget {
+export default class ClippyWidget extends Widget {
 	/**
 	 * Creates a new instance.
 	 * @param {Core} core MeeseOS Core instance reference
-	 * @param {DigitalClockOptions} [options] Instance options
+	 * @param {ClippyOptions} [options] Instance options
 	 */
 	constructor(core, options) {
 		super(
@@ -118,106 +96,48 @@ export default class DigitalClockWidget extends Widget {
 			{
 				dimension: {
 					width: 300,
-					height: 50,
+					height: 300
 				},
+				minDimension: {
+					width: 100,
+					height: 100
+				},
+				canvas: false
 			},
 			{
-				fontFamily: &quot;Monospace&quot;,
-				fontColor: &quot;#ffffff&quot;,
+				// Default options
 			}
 		);
 
-		this.$tmpCanvas = document.createElement(&quot;canvas&quot;);
-		this.tmpContext = this.$tmpCanvas.getContext(&quot;2d&quot;);
-	}
+		this.clippyElem = document.createElement(&quot;div&quot;);
+		this.clippyElem.className = &quot;clippy-container&quot;;
+		this.$element.appendChild(this.clippyElem);
 
-	compute() {
-		const { fontFamily, fontColor } = this.options;
-		const { width, height } = this.$canvas;
-		const { $tmpCanvas, tmpContext } = this;
-		const size = getFontSize(fontFamily, height, width, tmpContext);
+		console.log(&quot;Clippy:&quot;, clippy);
 
-		$tmpCanvas.width = width;
-		$tmpCanvas.height = size;
-
-		tmpContext.font = getFont(fontFamily, size);
-		tmpContext.fillStyle = fontColor;
-		tmpContext.textAlign = &quot;center&quot;;
-		tmpContext.textBaseline = &quot;middle&quot;;
-	}
-
-	onResize() {
-		this.compute();
-	}
-
-	render({ context, width, height }) {
-		const { $tmpCanvas, tmpContext } = this;
-		const tmpWidth = $tmpCanvas.width;
-		const tmpHeight = $tmpCanvas.height;
-		const x = width / 2 - tmpWidth / 2;
-		const y = height / 2 - tmpHeight / 2;
-		const text = getTime(new Date());
-
-		tmpContext.clearRect(0, 0, tmpWidth, tmpHeight);
-		tmpContext.fillText(text, tmpWidth / 2, tmpHeight / 2);
-		if (context) {
-			context.clearRect(0, 0, width, height);
-			context.drawImage($tmpCanvas, x, y, tmpWidth, tmpHeight);
-		}
-	}
-
-	getContextMenu() {
-		return [
-			{
-				label: &quot;Set Color&quot;,
-				onclick: () =&gt; this.createColorDialog(),
-			},
-			{
-				label: &quot;Set Font&quot;,
-				onclick: () =&gt; this.createFontDialog(),
-			},
-		];
-	}
-
-	createFontDialog() {
-		this.core.make(
-			&quot;meeseOS/dialog&quot;,
-			&quot;font&quot;,
-			{
-				name: this.options.fontFamily,
-				controls: [&quot;name&quot;],
-			},
-			(btn, value) =&gt; {
-				if (btn === &quot;ok&quot;) {
-					this.options.fontFamily = value.name;
-					this.compute();
-					this.saveSettings();
-				}
+		// Initialize Clippy
+		clippy.load({
+			name: &quot;Clippy&quot;,
+			selector: this.clippyElem,
+			successCb: agent =&gt; {
+				this.clippyAgent = agent;
+				agent.show();
 			}
-		);
+		});
 	}
 
-	createColorDialog() {
-		this.core.make(
-			&quot;meeseOS/dialog&quot;,
-			&quot;color&quot;,
-			{
-				color: this.options.fontColor,
-			},
-			(btn, value) =&gt; {
-				if (btn === &quot;ok&quot;) {
-					this.options.fontColor = value.hex;
-					this.compute();
-					this.saveSettings();
-				}
-			}
-		);
+	applySettings() {
+		// Apply any settings that may have changed
+	}
+
+	render() {
+		// Additional rendering logic if needed
 	}
 
 	static metadata() {
 		return {
 			...super.metadata(),
-			title: &quot;Digital Clock&quot;,
+			title: &quot;Clippy&quot;
 		};
 	}
 }

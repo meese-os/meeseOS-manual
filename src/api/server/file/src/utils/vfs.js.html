@@ -122,10 +122,16 @@ const getPrefix = (path) =&gt; String(path).split(&quot;:&quot;)[0];
 
 /**
  * Sanitizes a path.
- * @param {String} path
+ * @param {String|Array} path
  * @returns {String}
  */
 const sanitize = (path) =&gt; {
+	// Handle an array of strings
+	if (Array.isArray(path)) {
+		return path.map((singlePath) =&gt; sanitize(singlePath));
+	}
+
+	// Handle a single string
 	const [name, str] = (
 		path.replace(/\/+/g, &quot;/&quot;).match(/^([\w-_]+):+(.*)/) || []
 	).slice(1);

@@ -32,6 +32,7 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/provider.js~WidgetServiceProvider.html">WidgetServiceProvider</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#items">items</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AnalogClockColors">AnalogClockColors</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AnalogClockOptions">AnalogClockOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClippyOptions">ClippyOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DigitalClockOptions">DigitalClockOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Quote">Quote</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-QuoteDisplayOptions">QuoteDisplayOptions</a></span></span></li>
@@ -46,7 +47,7 @@
 <li><a href="https://manual.os-js.org/v3/tutorial/widget/">https://manual.os-js.org/v3/tutorial/widget/</a></li>
 </ul>
 <h2 id="usage">Usage</h2><p>In your client bootstrap (<code>src/client/index.js</code>):</p>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">import { WidgetServiceProvider } from &quot;@aaronmeese.com/widgets&quot;;
+<pre><code class="lang-js"><code class="source-code prettyprint">import { WidgetServiceProvider } from &quot;@aaronmeese.com/widgets&quot;;
 
 meeseOS.register(WidgetServiceProvider);</code>
 </code></pre>
@@ -54,7 +55,7 @@ meeseOS.register(WidgetServiceProvider);</code>
 <pre><code class="lang-css"><code class="source-code prettyprint">@import &quot;~@aaronmeese.com/widgets/dist/main.css&quot;;</code>
 </code></pre>
 <p>To set up a default set of widgets in the user settings, modify your client configuration file (<code>src/client/config.js</code>):</p>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">{
+<pre><code class="lang-js"><code class="source-code prettyprint">{
     desktop: {
         settings: {
             widgets: [
