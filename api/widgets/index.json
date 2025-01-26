@@ -696,6 +696,35 @@
   {
     "__docId__": 51,
     "kind": "file",
+    "name": "src/items/clippy.js",
+    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nimport Widget from \"../widget\";\nimport clippy from \"@meese-os/clippy\";\n\n/**\n * Clippyts Widget Options\n * @typedef {Object} ClippyOptions\n * // Define any specific options for your Clippy widget here\n */\n\nexport default class ClippyWidget extends Widget {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {ClippyOptions} [options] Instance options\n\t */\n\tconstructor(core, options) {\n\t\tsuper(\n\t\t\tcore,\n\t\t\toptions,\n\t\t\t{\n\t\t\t\tdimension: {\n\t\t\t\t\twidth: 300,\n\t\t\t\t\theight: 300\n\t\t\t\t},\n\t\t\t\tminDimension: {\n\t\t\t\t\twidth: 100,\n\t\t\t\t\theight: 100\n\t\t\t\t},\n\t\t\t\tcanvas: false\n\t\t\t},\n\t\t\t{\n\t\t\t\t// Default options\n\t\t\t}\n\t\t);\n\n\t\tthis.clippyElem = document.createElement(\"div\");\n\t\tthis.clippyElem.className = \"clippy-container\";\n\t\tthis.$element.appendChild(this.clippyElem);\n\n\t\tconsole.log(\"Clippy:\", clippy);\n\n\t\t// Initialize Clippy\n\t\tclippy.load({\n\t\t\tname: \"Clippy\",\n\t\t\tselector: this.clippyElem,\n\t\t\tsuccessCb: agent => {\n\t\t\t\tthis.clippyAgent = agent;\n\t\t\t\tagent.show();\n\t\t\t}\n\t\t});\n\t}\n\n\tapplySettings() {\n\t\t// Apply any settings that may have changed\n\t}\n\n\trender() {\n\t\t// Additional rendering logic if needed\n\t}\n\n\tstatic metadata() {\n\t\treturn {\n\t\t\t...super.metadata(),\n\t\t\ttitle: \"Clippy\"\n\t\t};\n\t}\n}\n",
+    "static": true,
+    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/widgets/src/items/clippy.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 52,
+    "kind": "typedef",
+    "name": "ClippyOptions",
+    "memberof": "src/items/clippy.js",
+    "static": true,
+    "longname": "src/items/clippy.js~ClippyOptions",
+    "access": "public",
+    "description": "Clippyts Widget Options",
+    "lineNumber": 43,
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "ClippyOptions"
+    }
+  },
+  {
+    "__docId__": 53,
+    "kind": "file",
     "name": "src/items/digitalclock.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport Widget from \"../widget\";\n\n/**\n * Digital Clock Widget Options\n * @typedef {Object} DigitalClockOptions\n * @property {String} [fontFamily=\"Monospace\"] Font family\n * @property {String} [color=\"#ffffff\"] Font color\n */\n\nconst getFont = (fontFamily, size) => String(size) + \"px \" + fontFamily;\n\nconst getTime = (now) =>\n\t[now.getHours(), now.getMinutes(), now.getSeconds()]\n\t\t.map((int) => String(int).padStart(2, \"0\"))\n\t\t.join(\":\");\n\nconst getFontSize = (fontFamily, initialSize, maxWidth, context) => {\n\tconst txt = \"99:99:99\";\n\n\tlet size = initialSize;\n\twhile (size > 0) {\n\t\tcontext.font = getFont(fontFamily, size);\n\n\t\tconst measuredWidth = context.measureText(txt).width;\n\t\tif (measuredWidth < maxWidth) {\n\t\t\tbreak;\n\t\t}\n\n\t\tsize--;\n\t}\n\n\treturn size;\n};\n\nexport default class DigitalClockWidget extends Widget {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {DigitalClockOptions} [options] Instance options\n\t */\n\tconstructor(core, options) {\n\t\tsuper(\n\t\t\tcore,\n\t\t\toptions,\n\t\t\t{\n\t\t\t\tdimension: {\n\t\t\t\t\twidth: 300,\n\t\t\t\t\theight: 50,\n\t\t\t\t},\n\t\t\t},\n\t\t\t{\n\t\t\t\tfontFamily: \"Monospace\",\n\t\t\t\tfontColor: \"#ffffff\",\n\t\t\t}\n\t\t);\n\n\t\tthis.$tmpCanvas = document.createElement(\"canvas\");\n\t\tthis.tmpContext = this.$tmpCanvas.getContext(\"2d\");\n\t}\n\n\tcompute() {\n\t\tconst { fontFamily, fontColor } = this.options;\n\t\tconst { width, height } = this.$canvas;\n\t\tconst { $tmpCanvas, tmpContext } = this;\n\t\tconst size = getFontSize(fontFamily, height, width, tmpContext);\n\n\t\t$tmpCanvas.width = width;\n\t\t$tmpCanvas.height = size;\n\n\t\ttmpContext.font = getFont(fontFamily, size);\n\t\ttmpContext.fillStyle = fontColor;\n\t\ttmpContext.textAlign = \"center\";\n\t\ttmpContext.textBaseline = \"middle\";\n\t}\n\n\tonResize() {\n\t\tthis.compute();\n\t}\n\n\trender({ context, width, height }) {\n\t\tconst { $tmpCanvas, tmpContext } = this;\n\t\tconst tmpWidth = $tmpCanvas.width;\n\t\tconst tmpHeight = $tmpCanvas.height;\n\t\tconst x = width / 2 - tmpWidth / 2;\n\t\tconst y = height / 2 - tmpHeight / 2;\n\t\tconst text = getTime(new Date());\n\n\t\ttmpContext.clearRect(0, 0, tmpWidth, tmpHeight);\n\t\ttmpContext.fillText(text, tmpWidth / 2, tmpHeight / 2);\n\t\tif (context) {\n\t\t\tcontext.clearRect(0, 0, width, height);\n\t\t\tcontext.drawImage($tmpCanvas, x, y, tmpWidth, tmpHeight);\n\t\t}\n\t}\n\n\tgetContextMenu() {\n\t\treturn [\n\t\t\t{\n\t\t\t\tlabel: \"Set Color\",\n\t\t\t\tonclick: () => this.createColorDialog(),\n\t\t\t},\n\t\t\t{\n\t\t\t\tlabel: \"Set Font\",\n\t\t\t\tonclick: () => this.createFontDialog(),\n\t\t\t},\n\t\t];\n\t}\n\n\tcreateFontDialog() {\n\t\tthis.core.make(\n\t\t\t\"meeseOS/dialog\",\n\t\t\t\"font\",\n\t\t\t{\n\t\t\t\tname: this.options.fontFamily,\n\t\t\t\tcontrols: [\"name\"],\n\t\t\t},\n\t\t\t(btn, value) => {\n\t\t\t\tif (btn === \"ok\") {\n\t\t\t\t\tthis.options.fontFamily = value.name;\n\t\t\t\t\tthis.compute();\n\t\t\t\t\tthis.saveSettings();\n\t\t\t\t}\n\t\t\t}\n\t\t);\n\t}\n\n\tcreateColorDialog() {\n\t\tthis.core.make(\n\t\t\t\"meeseOS/dialog\",\n\t\t\t\"color\",\n\t\t\t{\n\t\t\t\tcolor: this.options.fontColor,\n\t\t\t},\n\t\t\t(btn, value) => {\n\t\t\t\tif (btn === \"ok\") {\n\t\t\t\t\tthis.options.fontColor = value.hex;\n\t\t\t\t\tthis.compute();\n\t\t\t\t\tthis.saveSettings();\n\t\t\t\t}\n\t\t\t}\n\t\t);\n\t}\n\n\tstatic metadata() {\n\t\treturn {\n\t\t\t...super.metadata(),\n\t\t\ttitle: \"Digital Clock\",\n\t\t};\n\t}\n}\n",
     "static": true,
@@ -705,7 +734,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 52,
+    "__docId__": 54,
     "kind": "typedef",
     "name": "DigitalClockOptions",
     "memberof": "src/items/digitalclock.js",
@@ -749,7 +778,7 @@
     }
   },
   {
-    "__docId__": 53,
+    "__docId__": 55,
     "kind": "function",
     "name": "getTime",
     "memberof": "src/items/digitalclock.js",
@@ -776,7 +805,7 @@
     "ignore": true
   },
   {
-    "__docId__": 54,
+    "__docId__": 56,
     "kind": "function",
     "name": "getFontSize",
     "memberof": "src/items/digitalclock.js",
@@ -825,7 +854,7 @@
     "ignore": true
   },
   {
-    "__docId__": 55,
+    "__docId__": 57,
     "kind": "class",
     "name": "DigitalClockWidget",
     "memberof": "src/items/digitalclock.js",
@@ -845,7 +874,7 @@
     "ignore": true
   },
   {
-    "__docId__": 56,
+    "__docId__": 58,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -880,7 +909,7 @@
     ]
   },
   {
-    "__docId__": 57,
+    "__docId__": 59,
     "kind": "member",
     "name": "$tmpCanvas",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -898,7 +927,7 @@
     "ignore": true
   },
   {
-    "__docId__": 58,
+    "__docId__": 60,
     "kind": "member",
     "name": "tmpContext",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -916,7 +945,7 @@
     "ignore": true
   },
   {
-    "__docId__": 59,
+    "__docId__": 61,
     "kind": "method",
     "name": "compute",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -933,7 +962,7 @@
     "ignore": true
   },
   {
-    "__docId__": 60,
+    "__docId__": 62,
     "kind": "method",
     "name": "onResize",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -950,7 +979,7 @@
     "ignore": true
   },
   {
-    "__docId__": 61,
+    "__docId__": 63,
     "kind": "method",
     "name": "render",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -980,7 +1009,7 @@
     "ignore": true
   },
   {
-    "__docId__": 62,
+    "__docId__": 64,
     "kind": "method",
     "name": "getContextMenu",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -1001,7 +1030,7 @@
     "ignore": true
   },
   {
-    "__docId__": 63,
+    "__docId__": 65,
     "kind": "method",
     "name": "createFontDialog",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -1018,7 +1047,7 @@
     "ignore": true
   },
   {
-    "__docId__": 64,
+    "__docId__": 66,
     "kind": "method",
     "name": "createColorDialog",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -1035,7 +1064,7 @@
     "ignore": true
   },
   {
-    "__docId__": 65,
+    "__docId__": 67,
     "kind": "method",
     "name": "metadata",
     "memberof": "src/items/digitalclock.js~DigitalClockWidget",
@@ -1056,7 +1085,7 @@
     "ignore": true
   },
   {
-    "__docId__": 66,
+    "__docId__": 68,
     "kind": "file",
     "name": "src/items/quotedisplay.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nimport Widget from \"../widget\";\n\nArray.prototype.random = function() {\n\treturn this[Math.floor((Math.random() * this.length))];\n};\n\n/**\n * Quote Object\n * @typedef {Object} Quote\n * @property {String} quote\n * @property {String} author\n */\n\n/**\n * Quote Display Widget Options\n * @typedef {Object} QuoteDisplayOptions\n * @property {String} [fontFamily=\"Monospace\"] Font family\n * @property {String} [color=\"#ffffff\"] Font color\n * @property {Quote[]} [quotes] Quotes to display\n * @property {String} [theme=\"quote-theme-light\"] Theme to use\n */\n\nexport default class QuoteDisplayWidget extends Widget {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {QuoteDisplayOptions} [options] Instance options\n\t */\n\tconstructor(core, options) {\n\t\tsuper(\n\t\t\tcore,\n\t\t\toptions,\n\t\t\t{\n\t\t\t\tdimension: {\n\t\t\t\t\twidth: 400,\n\t\t\t\t\theight: 150,\n\t\t\t\t},\n\t\t\t\tminDimension: {\n\t\t\t\t\twidth: 200,\n\t\t\t\t\theight: 100,\n\t\t\t\t},\n\t\t\t\tcanvas: false,\n\t\t\t},\n\t\t\t{\n\t\t\t\tfontFamily: \"Monospace\",\n\t\t\t\tfontColor: \"#ffffff\",\n\t\t\t\tquotes: core.config(\"quotes\", [\n\t\t\t\t\t{\n\t\t\t\t\t\tquote: \"You should override this with your own quotes in your config file.\",\n\t\t\t\t\t\tauthor: \"Aaron Meese\",\n\t\t\t\t\t},\n\t\t\t\t]),\n\t\t\t\ttheme: \"quote-theme-light\",\n\t\t\t}\n\t\t);\n\n\t\tthis.quoteDisplayElem = document.createElement(\"div\");\n\t\tthis.quoteDisplayElem.classList.add(\"quote-display\");\n\t\tthis.$element.appendChild(this.quoteDisplayElem);\n\t}\n\n\tapplySettings() {\n\t\tthis.quoteDisplayElem.style.fontFamily = this.options.fontFamily;\n\t\tthis.quoteDisplayElem.style.color = this.options.fontColor;\n\t\tthis.$element.classList.remove(\"quote-theme-light\", \"quote-theme-dark\");\n\t\tthis.$element.classList.add(this.options.theme);\n\t}\n\n\trender() {\n\t\t// Load and display a random quote\n\t\tconst quote = this.options.quotes.random() || {};\n\t\tthis.quoteDisplayElem.innerHTML = `\n\t\t\t<blockquote>${quote.quote}</blockquote>\n\t\t\t<div class=\"author\">${quote.author}</div>\n\t\t\t<div class=\"refresh-quote\" title=\"Load a new quote\"></div>\n\t\t`;\n\n\t\t// Add event listener to refresh button to load a new quote\n\t\tthis.quoteDisplayElem.querySelector(\".refresh-quote\")\n\t\t  .addEventListener(\"click\", () => this.render());\n\n\t\t// Apply the current settings to the widget\n\t\tthis.applySettings();\n\t}\n\n\tgetContextMenu() {\n\t\treturn [\n\t\t\t{\n\t\t\t\tlabel: \"Set Color\",\n\t\t\t\tonclick: () => this.createColorDialog(),\n\t\t\t},\n\t\t\t{\n\t\t\t\tlabel: \"Set Font\",\n\t\t\t\tonclick: () => this.createFontDialog(),\n\t\t\t},\n\t\t\t// IDEA: Add a way to add quotes to the list\n\t\t];\n\t}\n\n\tcreateFontDialog() {\n\t\tthis.core.make(\n\t\t\t\"meeseOS/dialog\",\n\t\t\t\"font\",\n\t\t\t{\n\t\t\t\tname: this.options.fontFamily,\n\t\t\t\tcontrols: [\"name\"],\n\t\t\t},\n\t\t\t(btn, value) => {\n\t\t\t\tif (btn === \"ok\") {\n\t\t\t\t\tthis.options.fontFamily = value.name;\n\t\t\t\t\tthis.applySettings();\n\t\t\t\t\tthis.saveSettings();\n\t\t\t\t}\n\t\t\t}\n\t\t);\n\t}\n\n\tcreateColorDialog() {\n\t\tthis.core.make(\n\t\t\t\"meeseOS/dialog\",\n\t\t\t\"color\",\n\t\t\t{\n\t\t\t\tcolor: this.options.fontColor,\n\t\t\t},\n\t\t\t(btn, value) => {\n\t\t\t\tif (btn === \"ok\") {\n\t\t\t\t\tthis.options.fontColor = value.hex;\n\t\t\t\t\tthis.applySettings();\n\t\t\t\t\tthis.saveSettings();\n\t\t\t\t}\n\t\t\t}\n\t\t);\n\t}\n\n\tstatic metadata() {\n\t\treturn {\n\t\t\t...super.metadata(),\n\t\t\ttitle: \"Quote Display\",\n\t\t};\n\t}\n}\n",
@@ -1067,7 +1096,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 67,
+    "__docId__": 69,
     "kind": "function",
     "name": "random",
     "memberof": "src/items/quotedisplay.js",
@@ -1091,7 +1120,7 @@
     "ignore": true
   },
   {
-    "__docId__": 68,
+    "__docId__": 70,
     "kind": "typedef",
     "name": "Quote",
     "memberof": "src/items/quotedisplay.js",
@@ -1130,7 +1159,7 @@
     }
   },
   {
-    "__docId__": 69,
+    "__docId__": 71,
     "kind": "typedef",
     "name": "QuoteDisplayOptions",
     "memberof": "src/items/quotedisplay.js",
@@ -1196,10 +1225,10 @@
     }
   },
   {
-    "__docId__": 70,
+    "__docId__": 72,
     "kind": "file",
     "name": "src/provider.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport DigitalClock from \"./items/digitalclock\";\nimport AnalogClock from \"./items/analogclock\";\nimport QuoteDisplay from \"./items/quotedisplay\";\n\n/**\n * Widget Service Provider\n *\n * @desc Provides methods to handle widgets on a desktop in MeeseOS\n */\nexport default class WidgetServiceProvider {\n\tconstructor(core, args = {}) {\n\t\tthis.core = core;\n\t\tthis.widgets = [];\n\t\tthis.inited = false;\n\t\tthis.registry = {\n\t\t\tdigitalclock: DigitalClock,\n\t\t\tanalogclock: AnalogClock,\n\t\t\tquotedisplay: QuoteDisplay,\n\t\t\t...(args.registry || {}),\n\t\t};\n\t}\n\n\tdestroy() {\n\t\tthis.widgets.forEach(({ widget }) => widget.destroy());\n\t\tthis.widgets = [];\n\t}\n\n\tinit() {\n\t\tconst iface = {\n\t\t\tregister: (name, classRef) => {\n\t\t\t\tif (this.registry[name]) {\n\t\t\t\t\tconsole.warn(\"Overwriting previously registered widget item\", name);\n\t\t\t\t}\n\n\t\t\t\tthis.registry[name] = classRef;\n\t\t\t},\n\n\t\t\tremoveAll: () => {\n\t\t\t\tthis.widgets.forEach(({ widget }) => widget.destroy());\n\t\t\t\tthis.widgets = [];\n\t\t\t},\n\n\t\t\tremove: (widget) => {\n\t\t\t\tconst index = typeof widget === \"number\"\n\t\t\t\t\t? widget\n\t\t\t\t\t: this.widgets.findIndex((w) => w.widget === widget);\n\n\t\t\t\tif (index >= 0) {\n\t\t\t\t\tthis.widgets[index].widget.destroy();\n\t\t\t\t\tthis.widgets.splice(index, 1);\n\t\t\t\t}\n\t\t\t},\n\n\t\t\tcreate: (item) => {\n\t\t\t\tconst ClassRef = this.registry[item.name];\n\t\t\t\tconst widget = new ClassRef(this.core, item.options);\n\t\t\t\tthis.widgets.push({ name: item.name, widget });\n\n\t\t\t\tif (this.inited) {\n\t\t\t\t\twidget.init();\n\t\t\t\t}\n\n\t\t\t\treturn widget;\n\t\t\t},\n\n\t\t\tget: (name) => this.registry[name],\n\n\t\t\tlist: () => Object.keys(this.registry),\n\n\t\t\tsave: () => {\n\t\t\t\tconst settings = this.core.make(\"meeseOS/settings\");\n\t\t\t\tconst widgets = this.widgets.map(({ name, widget }) => ({\n\t\t\t\t\tname,\n\t\t\t\t\toptions: widget.options,\n\t\t\t\t}));\n\n\t\t\t\treturn Promise.resolve(\n\t\t\t\t\tsettings.set(\"meeseOS/desktop\", \"widgets\", widgets)\n\t\t\t\t).then(() => settings.save());\n\t\t\t},\n\t\t};\n\n\t\tthis.core.singleton(\"meeseOS/widgets\", () => iface);\n\n\t\tthis.core.on(\"meeseOS/desktop:transform\", () => {\n\t\t\tthis.widgets.forEach(({ widget }) => widget.updatePosition(true));\n\t\t});\n\t}\n\n\tstart() {\n\t\tthis.inited = true;\n\t\tthis.widgets.forEach(({ widget }) => widget.init());\n\t\tconst desktop = this.core.make(\"meeseOS/desktop\");\n\n\t\tlet resizeDebounce;\n\t\twindow.addEventListener(\"resize\", () => {\n\t\t\tclearTimeout(resizeDebounce);\n\t\t\tresizeDebounce = setTimeout(() => this._clampWidgets(), 200);\n\t\t});\n\n\t\tif (typeof desktop.addContextMenuEntries === \"function\") {\n\t\t\tdesktop.addContextMenuEntries(() => {\n\t\t\t\tconst widgets = this.core.make(\"meeseOS/widgets\");\n\n\t\t\t\t// TODO: In the parent, implement the \"Add Shortcut\" menu item\n\t\t\t\treturn [\n\t\t\t\t\t{\n\t\t\t\t\t\tlabel: \"Add Widget\",\n\t\t\t\t\t\titems: widgets.list().map((t) => {\n\t\t\t\t\t\t\tconst classRef = this.registry[t];\n\t\t\t\t\t\t\tconst metadata = classRef.metadata(this.core);\n\n\t\t\t\t\t\t\treturn {\n\t\t\t\t\t\t\t\tlabel: metadata.title ? metadata.title : t,\n\t\t\t\t\t\t\t\tonclick: () => {\n\t\t\t\t\t\t\t\t\twidgets.create({ name: t });\n\t\t\t\t\t\t\t\t\twidgets.save();\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t}),\n\t\t\t\t\t},\n\t\t\t\t];\n\t\t\t});\n\t\t}\n\n\t\tthis._clampWidgets();\n\t}\n\n\t_clampWidgets(resize) {\n\t\tif (resize && !this.core.config(\"windows.clampToViewport\")) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.widgets.forEach((w) => w.widget.clampToViewport());\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport DigitalClock from \"./items/digitalclock\";\nimport AnalogClock from \"./items/analogclock\";\nimport QuoteDisplay from \"./items/quotedisplay\";\n//import Clippy from \"./items/clippy\";\n\n/**\n * Widget Service Provider\n *\n * @desc Provides methods to handle widgets on a desktop in MeeseOS\n */\nexport default class WidgetServiceProvider {\n\tconstructor(core, args = {}) {\n\t\tthis.core = core;\n\t\tthis.widgets = [];\n\t\tthis.inited = false;\n\t\tthis.registry = {\n\t\t\tdigitalclock: DigitalClock,\n\t\t\tanalogclock: AnalogClock,\n\t\t\tquotedisplay: QuoteDisplay,\n\t\t\t//clippy: Clippy,\n\t\t\t...(args.registry || {}),\n\t\t};\n\t}\n\n\tdestroy() {\n\t\tthis.widgets.forEach(({ widget }) => widget.destroy());\n\t\tthis.widgets = [];\n\t}\n\n\tinit() {\n\t\tconst iface = {\n\t\t\tregister: (name, classRef) => {\n\t\t\t\tif (this.registry[name]) {\n\t\t\t\t\tconsole.warn(\"Overwriting previously registered widget item\", name);\n\t\t\t\t}\n\n\t\t\t\tthis.registry[name] = classRef;\n\t\t\t},\n\n\t\t\tremoveAll: () => {\n\t\t\t\tthis.widgets.forEach(({ widget }) => widget.destroy());\n\t\t\t\tthis.widgets = [];\n\t\t\t},\n\n\t\t\tremove: (widget) => {\n\t\t\t\tconst index = typeof widget === \"number\"\n\t\t\t\t\t? widget\n\t\t\t\t\t: this.widgets.findIndex((w) => w.widget === widget);\n\n\t\t\t\tif (index >= 0) {\n\t\t\t\t\tthis.widgets[index].widget.destroy();\n\t\t\t\t\tthis.widgets.splice(index, 1);\n\t\t\t\t}\n\t\t\t},\n\n\t\t\tcreate: (item) => {\n\t\t\t\tconst ClassRef = this.registry[item.name];\n\t\t\t\tconst widget = new ClassRef(this.core, item.options);\n\t\t\t\tthis.widgets.push({ name: item.name, widget });\n\n\t\t\t\tif (this.inited) {\n\t\t\t\t\twidget.init();\n\t\t\t\t}\n\n\t\t\t\treturn widget;\n\t\t\t},\n\n\t\t\tget: (name) => this.registry[name],\n\n\t\t\tlist: () => Object.keys(this.registry),\n\n\t\t\tsave: () => {\n\t\t\t\tconst settings = this.core.make(\"meeseOS/settings\");\n\t\t\t\tconst widgets = this.widgets.map(({ name, widget }) => ({\n\t\t\t\t\tname,\n\t\t\t\t\toptions: widget.options,\n\t\t\t\t}));\n\n\t\t\t\treturn Promise.resolve(\n\t\t\t\t\tsettings.set(\"meeseOS/desktop\", \"widgets\", widgets)\n\t\t\t\t).then(() => settings.save());\n\t\t\t},\n\t\t};\n\n\t\tthis.core.singleton(\"meeseOS/widgets\", () => iface);\n\n\t\tthis.core.on(\"meeseOS/desktop:transform\", () => {\n\t\t\tthis.widgets.forEach(({ widget }) => widget.updatePosition(true));\n\t\t});\n\t}\n\n\tstart() {\n\t\tthis.inited = true;\n\t\tthis.widgets.forEach(({ widget }) => widget.init());\n\t\tconst desktop = this.core.make(\"meeseOS/desktop\");\n\n\t\tlet resizeDebounce;\n\t\twindow.addEventListener(\"resize\", () => {\n\t\t\tclearTimeout(resizeDebounce);\n\t\t\tresizeDebounce = setTimeout(() => this._clampWidgets(), 200);\n\t\t});\n\n\t\tif (typeof desktop.addContextMenuEntries === \"function\") {\n\t\t\tdesktop.addContextMenuEntries(() => {\n\t\t\t\tconst widgets = this.core.make(\"meeseOS/widgets\");\n\n\t\t\t\t// TODO: In the parent, implement the \"Add Shortcut\" menu item\n\t\t\t\treturn [\n\t\t\t\t\t{\n\t\t\t\t\t\tlabel: \"Add Widget\",\n\t\t\t\t\t\titems: widgets.list().map((t) => {\n\t\t\t\t\t\t\tconst classRef = this.registry[t];\n\t\t\t\t\t\t\tconst metadata = classRef.metadata(this.core);\n\n\t\t\t\t\t\t\treturn {\n\t\t\t\t\t\t\t\tlabel: metadata.title ? metadata.title : t,\n\t\t\t\t\t\t\t\tonclick: () => {\n\t\t\t\t\t\t\t\t\twidgets.create({ name: t });\n\t\t\t\t\t\t\t\t\twidgets.save();\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t}),\n\t\t\t\t\t},\n\t\t\t\t];\n\t\t\t});\n\t\t}\n\n\t\tthis._clampWidgets();\n\t}\n\n\t_clampWidgets(resize) {\n\t\tif (resize && !this.core.config(\"windows.clampToViewport\")) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.widgets.forEach((w) => w.widget.clampToViewport());\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/widgets/src/provider.js",
     "access": "public",
@@ -1207,7 +1236,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 71,
+    "__docId__": 73,
     "kind": "class",
     "name": "WidgetServiceProvider",
     "memberof": "src/provider.js",
@@ -1218,11 +1247,11 @@
     "importPath": "@meese-os/widgets/src/provider.js",
     "importStyle": "WidgetServiceProvider",
     "description": "Provides methods to handle widgets on a desktop in MeeseOS",
-    "lineNumber": 40,
+    "lineNumber": 41,
     "interface": false
   },
   {
-    "__docId__": 72,
+    "__docId__": 74,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1232,12 +1261,12 @@
     "longname": "src/provider.js~WidgetServiceProvider#constructor",
     "access": "public",
     "description": null,
-    "lineNumber": 41,
+    "lineNumber": 42,
     "undocument": true,
     "ignore": true
   },
   {
-    "__docId__": 73,
+    "__docId__": 75,
     "kind": "member",
     "name": "core",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1245,7 +1274,7 @@
     "longname": "src/provider.js~WidgetServiceProvider#core",
     "access": "public",
     "description": null,
-    "lineNumber": 42,
+    "lineNumber": 43,
     "undocument": true,
     "type": {
       "types": [
@@ -1255,7 +1284,7 @@
     "ignore": true
   },
   {
-    "__docId__": 74,
+    "__docId__": 76,
     "kind": "member",
     "name": "widgets",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1263,7 +1292,7 @@
     "longname": "src/provider.js~WidgetServiceProvider#widgets",
     "access": "public",
     "description": null,
-    "lineNumber": 43,
+    "lineNumber": 44,
     "undocument": true,
     "type": {
       "types": [
@@ -1273,7 +1302,7 @@
     "ignore": true
   },
   {
-    "__docId__": 75,
+    "__docId__": 77,
     "kind": "member",
     "name": "inited",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1281,7 +1310,7 @@
     "longname": "src/provider.js~WidgetServiceProvider#inited",
     "access": "public",
     "description": null,
-    "lineNumber": 44,
+    "lineNumber": 45,
     "undocument": true,
     "type": {
       "types": [
@@ -1291,7 +1320,7 @@
     "ignore": true
   },
   {
-    "__docId__": 76,
+    "__docId__": 78,
     "kind": "member",
     "name": "registry",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1299,7 +1328,7 @@
     "longname": "src/provider.js~WidgetServiceProvider#registry",
     "access": "public",
     "description": null,
-    "lineNumber": 45,
+    "lineNumber": 46,
     "undocument": true,
     "type": {
       "types": [
@@ -1309,7 +1338,7 @@
     "ignore": true
   },
   {
-    "__docId__": 77,
+    "__docId__": 79,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1319,14 +1348,14 @@
     "longname": "src/provider.js~WidgetServiceProvider#destroy",
     "access": "public",
     "description": null,
-    "lineNumber": 53,
+    "lineNumber": 55,
     "undocument": true,
     "params": [],
     "return": null,
     "ignore": true
   },
   {
-    "__docId__": 79,
+    "__docId__": 81,
     "kind": "method",
     "name": "init",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1336,14 +1365,14 @@
     "longname": "src/provider.js~WidgetServiceProvider#init",
     "access": "public",
     "description": null,
-    "lineNumber": 58,
+    "lineNumber": 60,
     "undocument": true,
     "params": [],
     "return": null,
     "ignore": true
   },
   {
-    "__docId__": 81,
+    "__docId__": 83,
     "kind": "method",
     "name": "start",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1353,14 +1382,14 @@
     "longname": "src/provider.js~WidgetServiceProvider#start",
     "access": "public",
     "description": null,
-    "lineNumber": 120,
+    "lineNumber": 122,
     "undocument": true,
     "params": [],
     "return": null,
     "ignore": true
   },
   {
-    "__docId__": 83,
+    "__docId__": 85,
     "kind": "method",
     "name": "_clampWidgets",
     "memberof": "src/provider.js~WidgetServiceProvider",
@@ -1370,7 +1399,7 @@
     "longname": "src/provider.js~WidgetServiceProvider#_clampWidgets",
     "access": "private",
     "description": null,
-    "lineNumber": 159,
+    "lineNumber": 161,
     "undocument": true,
     "params": [
       {
@@ -1385,7 +1414,7 @@
   },
   {
     "kind": "index",
-    "content": "# MeeseOS Widgets module\n\nThis is the Widgets module for MeeseOS\n\n- https://manual.os-js.org/v3/install/\n- https://manual.os-js.org/v3/guide/provider/\n- https://manual.os-js.org/v3/tutorial/widget/\n\n## Usage\n\nIn your client bootstrap (`src/client/index.js`):\n\n```javascript\nimport { WidgetServiceProvider } from \"@aaronmeese.com/widgets\";\n\nmeeseOS.register(WidgetServiceProvider);\n```\n\nAnd in your stylesheet (`src/client/index.scss`):\n\n```css\n@import \"~@aaronmeese.com/widgets/dist/main.css\";\n```\n\nTo set up a default set of widgets in the user settings, modify your client configuration file (`src/client/config.js`):\n\n```javascript\n{\n\tdesktop: {\n\t\tsettings: {\n\t\t\twidgets: [\n\t\t\t\t{\n\t\t\t\t\tname: \"digitalclock\",\n\t\t\t\t},\n\t\t\t];\n\t\t}\n\t}\n}\n```\n\nA contextmenu entry on the desktop is automatically added so users can add these themselves.\n\nTODO: Figure out how to move the widgets on mobile.\n",
+    "content": "# MeeseOS Widgets module\n\nThis is the Widgets module for MeeseOS\n\n- https://manual.os-js.org/v3/install/\n- https://manual.os-js.org/v3/guide/provider/\n- https://manual.os-js.org/v3/tutorial/widget/\n\n## Usage\n\nIn your client bootstrap (`src/client/index.js`):\n\n```js\nimport { WidgetServiceProvider } from \"@aaronmeese.com/widgets\";\n\nmeeseOS.register(WidgetServiceProvider);\n```\n\nAnd in your stylesheet (`src/client/index.scss`):\n\n```css\n@import \"~@aaronmeese.com/widgets/dist/main.css\";\n```\n\nTo set up a default set of widgets in the user settings, modify your client configuration file (`src/client/config.js`):\n\n```js\n{\n\tdesktop: {\n\t\tsettings: {\n\t\t\twidgets: [\n\t\t\t\t{\n\t\t\t\t\tname: \"digitalclock\",\n\t\t\t\t},\n\t\t\t];\n\t\t}\n\t}\n}\n```\n\nA contextmenu entry on the desktop is automatically added so users can add these themselves.\n\nTODO: Figure out how to move the widgets on mobile.\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/widgets/README.md",
     "name": "./README.md",
     "static": true,

@@ -721,7 +721,7 @@
     "__docId__": 54,
     "kind": "file",
     "name": "src/core.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst http = require(\"http\");\nconst https = require(\"https\");\nconst path = require(\"path\");\nconst morgan = require(\"morgan\");\nconst express = require(\"express\");\nconst minimist = require(\"minimist\");\nconst deepmerge = require(\"deepmerge\");\nconst consola = require(\"consola\");\nconst { CoreBase } = require(\"@meese-os/common\");\nconst {\n\targvToConfig,\n\tcreateSession,\n\tcreateWebsocket,\n\tparseJson,\n} = require(\"./utils/core.js\");\nconst { defaultConfiguration } = require(\"./config.js\");\nconst logger = consola.withTag(\"Core\");\n\nlet _instance;\n\n/**\n * MeeseOS Server Core\n */\nclass Core extends CoreBase {\n\t/**\n\t * Creates a new Core instance.\n\t * @param {Object} cfg Configuration tree\n\t * @param {Object} [options] Options\n\t */\n\tconstructor(cfg, options = {}) {\n\t\toptions = {\n\t\t\targv: process.argv.splice(2),\n\t\t\troot: process.cwd(),\n\t\t\t...options,\n\t\t};\n\n\t\tconst argv = minimist(options.argv);\n\t\tconst val = (k) => argvToConfig[k](parseJson(argv[k]));\n\t\tconst keys = Object.keys(argvToConfig).filter((k) =>\n\t\t\tObject.prototype.hasOwnProperty.call(argv, k)\n\t\t);\n\t\tconst argvConfig = keys.reduce((o, k) => {\n\t\t\tlogger.info(`CLI argument '--${k}' overrides`, val(k));\n\t\t\treturn { ...o, ...deepmerge(o, val(k)) };\n\t\t}, {});\n\n\t\tsuper(defaultConfiguration, deepmerge(cfg, argvConfig), options);\n\n\t\tthis.logger = consola.withTag(\"Internal\");\n\n\t\t/**\n\t\t * @type {Express}\n\t\t */\n\t\tthis.app = express();\n\n\t\tif (!this.configuration.public) {\n\t\t\tthrow new Error(\"The public option is required\");\n\t\t}\n\n\t\t/**\n\t\t * @type {http.Server|https.Server}\n\t\t */\n\t\tthis.httpServer = this.config(\"https.enabled\")\n\t\t\t? https.createServer(this.config(\"https.options\"), this.app)\n\t\t\t: http.createServer(this.app);\n\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.session = createSession(this.configuration);\n\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.ws = createWebsocket(\n\t\t\tthis.app,\n\t\t\tthis.configuration,\n\t\t\tthis.session,\n\t\t\tthis.httpServer\n\t\t);\n\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.wss = this.ws.getWss();\n\n\t\t_instance = this;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t * @param {Function} [done] Callback when done\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy(done = () => {}) {\n\t\tif (this.destroyed) return;\n\n\t\tthis.emit(\"meeseOS/core:destroy\");\n\t\tlogger.info(\"Shutting down...\");\n\n\t\tif (this.wss) {\n\t\t\tthis.wss.close();\n\t\t}\n\n\t\tconst finish = (error) => {\n\t\t\tif (error) {\n\t\t\t\tlogger.error(error);\n\t\t\t}\n\n\t\t\tif (this.httpServer) {\n\t\t\t\tthis.httpServer.close(done);\n\t\t\t} else {\n\t\t\t\tdone();\n\t\t\t}\n\t\t};\n\n\t\ttry {\n\t\t\tawait super.destroy();\n\t\t\tfinish();\n\t\t} catch (e) {\n\t\t\tfinish(e);\n\t\t}\n\t}\n\n\t/**\n\t * Starts the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync start() {\n\t\tif (!this.started) {\n\t\t\tlogger.info(\"Starting services...\");\n\n\t\t\tawait super.start();\n\n\t\t\tlogger.success(\"Initialized!\");\n\n\t\t\tawait this.listen();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Initializes the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync boot() {\n\t\tif (this.booted) return true;\n\t\tthis.emit(\"meeseOS/core:start\");\n\n\t\tif (this.configuration.logging) {\n\t\t\tthis.wss.on(\"connection\", (c) => {\n\t\t\t\tlogger.log(\"WebSocket connection opened\");\n\t\t\t\tc.on(\"close\", () => logger.log(\"WebSocket connection closed\"));\n\t\t\t});\n\n\t\t\tif (this.configuration.morgan) {\n\t\t\t\tthis.app.use(morgan(this.configuration.morgan));\n\t\t\t}\n\t\t}\n\n\t\tlogger.info(\"Initializing services...\");\n\n\t\tawait super.boot();\n\t\tthis.emit(\"init\");\n\t\tawait this.start();\n\t\tthis.emit(\"meeseOS/core:started\");\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Opens HTTP server.\n\t */\n\tlisten() {\n\t\tconst httpPort = this.config(\"port\");\n\t\tconst httpHost = this.config(\"bind\");\n\t\tconst wsPort = this.config(\"ws.port\") || httpPort;\n\t\tconst pub = this.config(\"public\");\n\t\tconst session = path.basename(\n\t\t\tpath.dirname(this.config(\"session.store.module\"))\n\t\t);\n\t\tconst dist = pub.replace(process.cwd(), \"\");\n\t\tconst secure = this.config(\"https.enabled\", false);\n\t\tconst proto = (prefix) => `${prefix}${secure ? \"s\" : \"\"}://`;\n\t\tconst host = (port) => `${httpHost}:${port}`;\n\n\t\tlogger.info(\"Opening server connection\");\n\n\t\tconst checkFile = path.join(pub, this.configuration.index);\n\t\tif (!fs.existsSync(checkFile)) {\n\t\t\tlogger.warn(\n\t\t\t\t\"Missing files in \\\"dist/\\\" directory. Did you forget to run \\\"npm run build\\\" ?\"\n\t\t\t);\n\t\t}\n\n\t\treturn new Promise((resolve, reject) => {\n\t\t\ttry {\n\t\t\t\tthis.httpServer.listen(httpPort, httpHost, (e) => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\treject(e);\n\t\t\t\t\t} else {\n\t\t\t\t\t\tlogger.success(`Using '${session}' sessions`);\n\t\t\t\t\t\tlogger.success(`Serving '${dist}'`);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`WebSocket listening on ${proto(\"ws\")}${host(wsPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`Server listening on ${proto(\"http\")}${host(httpPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tresolve();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} catch (e) {\n\t\t\t\treject(e);\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to client.\n\t * @param {String} name Event name\n\t * @param {Array} params A list of parameters to send to client\n\t * @param {Function} [filter] A function to filter clients\n\t */\n\tbroadcast(name, params, filter) {\n\t\tfilter = filter || (() => true);\n\t\tif (!this.ws) return;\n\n\t\tthis.wss.clients // This is a Set\n\t\t\t.forEach((client) => {\n\t\t\t\tif (!client._meeseOS_client) return;\n\n\t\t\t\tif (filter(client)) {\n\t\t\t\t\tclient.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tparams,\n\t\t\t\t\t\t\tname,\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to all clients.\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastAll(name, ...params) {\n\t\treturn this.broadcast(name, params);\n\t}\n\n\t/**\n\t * Broadcast given event to client filtered by username.\n\t * @param {String} username Username to send to\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastUser(username, name, ...params) {\n\t\treturn this.broadcast(name, params, (client) => {\n\t\t\treturn client._meeseOS_client.username === username;\n\t\t});\n\t}\n\n\t/**\n\t * Gets the server instance.\n\t * @returns {Core}\n\t */\n\tstatic getInstance() {\n\t\treturn _instance;\n\t}\n}\n\nmodule.exports = Core;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst consola = require(\"consola\");\nconst deepmerge = require(\"deepmerge\");\nconst express = require(\"express\");\n// eslint-disable-next-line no-unused-vars\nconst express_ws = require(\"express-ws\");\nconst fs = require(\"fs-extra\");\nconst http = require(\"http\");\nconst https = require(\"https\");\nconst morgan = require(\"morgan\");\nconst minimist = require(\"minimist\");\nconst path = require(\"path\");\nconst { CoreBase } = require(\"@meese-os/common\");\nconst {\n\targvToConfig,\n\tcreateSession,\n\tcreateWebsocket,\n\tparseJson,\n} = require(\"./utils/core.js\");\nconst { defaultConfiguration } = require(\"./config.js\");\nconst logger = consola.withTag(\"Core\");\n\nlet _instance;\n\n/**\n * MeeseOS Server Core\n */\nclass Core extends CoreBase {\n\t/**\n\t * Creates a new Core instance.\n\t * @param {Object} cfg Configuration tree\n\t * @param {Object} [options] Options\n\t */\n\tconstructor(cfg, options = {}) {\n\t\toptions = {\n\t\t\targv: process.argv.splice(2),\n\t\t\troot: process.cwd(),\n\t\t\t...options,\n\t\t};\n\n\t\tconst argv = minimist(options.argv);\n\t\tconst val = (k) => argvToConfig[k](parseJson(argv[k]));\n\t\tconst keys = Object.keys(argvToConfig).filter((k) =>\n\t\t\tObject.prototype.hasOwnProperty.call(argv, k)\n\t\t);\n\t\tconst argvConfig = keys.reduce((o, k) => {\n\t\t\tlogger.info(`CLI argument '--${k}' overrides`, val(k));\n\t\t\treturn { ...o, ...deepmerge(o, val(k)) };\n\t\t}, {});\n\n\t\tsuper(defaultConfiguration, deepmerge(cfg, argvConfig), options);\n\n\t\tthis.logger = consola.withTag(\"Internal\");\n\n\t\t/**\n\t\t * @type {Express}\n\t\t */\n\t\tthis.app = express();\n\n\t\tif (!this.configuration.public) {\n\t\t\tthrow new Error(\"The public option is required\");\n\t\t}\n\n\t\t/**\n\t\t * @type {http.Server|https.Server}\n\t\t */\n\t\tthis.httpServer = this.config(\"https.enabled\")\n\t\t\t? https.createServer(this.config(\"https.options\"), this.app)\n\t\t\t: http.createServer(this.app);\n\n\t\t/**\n\t\t * @type {express.RequestHandler}\n\t\t */\n\t\tthis.session = createSession(this.configuration);\n\n\t\t/**\n\t\t * @type {express_ws.Instance}\n\t\t */\n\t\tthis.ws = createWebsocket(\n\t\t\tthis.app,\n\t\t\tthis.configuration,\n\t\t\tthis.session,\n\t\t\tthis.httpServer\n\t\t);\n\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.wss = this.ws.getWss();\n\n\t\t_instance = this;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t * @param {Function} [done] Callback when done\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy(done = () => {}) {\n\t\tif (this.destroyed) return;\n\n\t\tthis.emit(\"meeseOS/core:destroy\");\n\t\tlogger.info(\"Shutting down...\");\n\n\t\tif (this.wss) {\n\t\t\tthis.wss.close();\n\t\t}\n\n\t\tconst finish = (error) => {\n\t\t\tif (error) {\n\t\t\t\tlogger.error(error);\n\t\t\t}\n\n\t\t\tif (this.httpServer) {\n\t\t\t\tthis.httpServer.close(done);\n\t\t\t} else {\n\t\t\t\tdone();\n\t\t\t}\n\t\t};\n\n\t\ttry {\n\t\t\tawait super.destroy();\n\t\t\tfinish();\n\t\t} catch (e) {\n\t\t\tfinish(e);\n\t\t}\n\t}\n\n\t/**\n\t * Starts the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync start() {\n\t\tif (!this.started) {\n\t\t\tlogger.info(\"Starting services...\");\n\n\t\t\tawait super.start();\n\n\t\t\tlogger.success(\"Initialized!\");\n\n\t\t\tawait this.listen();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Initializes the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync boot() {\n\t\tif (this.booted) return true;\n\t\tthis.emit(\"meeseOS/core:start\");\n\n\t\tif (this.configuration.logging) {\n\t\t\tthis.wss.on(\"connection\", (c) => {\n\t\t\t\tlogger.log(\"WebSocket connection opened\");\n\t\t\t\tc.on(\"close\", () => logger.log(\"WebSocket connection closed\"));\n\t\t\t});\n\n\t\t\tif (this.configuration.morgan) {\n\t\t\t\tthis.app.use(morgan(this.configuration.morgan));\n\t\t\t}\n\t\t}\n\n\t\tlogger.info(\"Initializing services...\");\n\n\t\tawait super.boot();\n\t\tthis.emit(\"init\");\n\t\tawait this.start();\n\t\tthis.emit(\"meeseOS/core:started\");\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Opens HTTP server.\n\t */\n\tlisten() {\n\t\tconst httpPort = this.config(\"port\");\n\t\tconst httpHost = this.config(\"bind\");\n\t\tconst wsPort = this.config(\"ws.port\") || httpPort;\n\t\tconst pub = this.config(\"public\");\n\t\tconst session = path.basename(\n\t\t\tpath.dirname(this.config(\"session.store.module\"))\n\t\t);\n\t\tconst dist = pub.replace(process.cwd(), \"\");\n\t\tconst secure = this.config(\"https.enabled\", false);\n\t\tconst proto = (prefix) => `${prefix}${secure ? \"s\" : \"\"}://`;\n\t\tconst host = (port) => `${httpHost}:${port}`;\n\n\t\tlogger.info(\"Opening server connection\");\n\n\t\tconst checkFile = path.join(pub, this.configuration.index);\n\t\tif (!fs.existsSync(checkFile)) {\n\t\t\tlogger.warn(\n\t\t\t\t\"Missing files in \\\"dist/\\\" directory. Did you forget to run \\\"npm run build\\\" ?\"\n\t\t\t);\n\t\t}\n\n\t\treturn new Promise((resolve, reject) => {\n\t\t\ttry {\n\t\t\t\tthis.httpServer.listen(httpPort, httpHost, (e) => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\treject(e);\n\t\t\t\t\t} else {\n\t\t\t\t\t\tlogger.success(`Using '${session}' sessions`);\n\t\t\t\t\t\tlogger.success(`Serving '${dist}'`);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`WebSocket listening on ${proto(\"ws\")}${host(wsPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`Server listening on ${proto(\"http\")}${host(httpPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tresolve();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} catch (e) {\n\t\t\t\treject(e);\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to client.\n\t * @param {String} name Event name\n\t * @param {Array} params A list of parameters to send to client\n\t * @param {Function} [filter] A function to filter clients\n\t */\n\tbroadcast(name, params, filter) {\n\t\tfilter = filter || (() => true);\n\t\tif (!this.ws) return;\n\n\t\tthis.wss.clients // This is a Set\n\t\t\t.forEach((client) => {\n\t\t\t\tif (!client._meeseOS_client) return;\n\n\t\t\t\tif (filter(client)) {\n\t\t\t\t\tclient.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tparams,\n\t\t\t\t\t\t\tname,\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to all clients.\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastAll(name, ...params) {\n\t\treturn this.broadcast(name, params);\n\t}\n\n\t/**\n\t * Broadcast given event to client filtered by username.\n\t * @param {String} username Username to send to\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastUser(username, name, ...params) {\n\t\treturn this.broadcast(name, params, (client) => {\n\t\t\treturn client._meeseOS_client.username === username;\n\t\t});\n\t}\n\n\t/**\n\t * Gets the server instance.\n\t * @returns {Core}\n\t */\n\tstatic getInstance() {\n\t\treturn _instance;\n\t}\n}\n\nmodule.exports = Core;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/core.js",
     "access": "public",
@@ -740,7 +740,7 @@
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 41,
+    "lineNumber": 43,
     "undocument": true,
     "type": {
       "types": [
@@ -761,7 +761,7 @@
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 43,
+    "lineNumber": 45,
     "undocument": true,
     "type": {
       "types": [
@@ -782,7 +782,7 @@
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 50,
+    "lineNumber": 52,
     "undocument": true,
     "type": {
       "types": [
@@ -803,7 +803,7 @@
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 51,
+    "lineNumber": 53,
     "undocument": true,
     "type": {
       "types": [
@@ -824,7 +824,7 @@
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": "Core",
     "description": "MeeseOS Server Core",
-    "lineNumber": 58,
+    "lineNumber": 60,
     "interface": false,
     "extends": [
       "CoreBase"
@@ -841,7 +841,7 @@
     "longname": "src/core.js~Core#constructor",
     "access": "public",
     "description": "Creates a new Core instance.",
-    "lineNumber": 64,
+    "lineNumber": 66,
     "params": [
       {
         "nullable": null,
@@ -874,7 +874,7 @@
     "longname": "src/core.js~Core#logger",
     "access": "public",
     "description": null,
-    "lineNumber": 83,
+    "lineNumber": 85,
     "undocument": true,
     "type": {
       "types": [
@@ -892,7 +892,7 @@
     "longname": "src/core.js~Core#app",
     "access": "public",
     "description": "",
-    "lineNumber": 88,
+    "lineNumber": 90,
     "type": {
       "nullable": null,
       "types": [
@@ -911,7 +911,7 @@
     "longname": "src/core.js~Core#httpServer",
     "access": "public",
     "description": "",
-    "lineNumber": 97,
+    "lineNumber": 99,
     "type": {
       "nullable": null,
       "types": [
@@ -931,11 +931,11 @@
     "longname": "src/core.js~Core#session",
     "access": "public",
     "description": "",
-    "lineNumber": 104,
+    "lineNumber": 106,
     "type": {
       "nullable": null,
       "types": [
-        "Object"
+        "express.RequestHandler"
       ],
       "spread": false,
       "description": null
@@ -950,11 +950,11 @@
     "longname": "src/core.js~Core#ws",
     "access": "public",
     "description": "",
-    "lineNumber": 109,
+    "lineNumber": 111,
     "type": {
       "nullable": null,
       "types": [
-        "Object"
+        "express_ws.Instance"
       ],
       "spread": false,
       "description": null
@@ -969,7 +969,7 @@
     "longname": "src/core.js~Core#wss",
     "access": "public",
     "description": "",
-    "lineNumber": 119,
+    "lineNumber": 121,
     "type": {
       "nullable": null,
       "types": [
@@ -990,7 +990,7 @@
     "longname": "src/core.js~Core#destroy",
     "access": "public",
     "description": "Destroys the instance.",
-    "lineNumber": 129,
+    "lineNumber": 131,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1029,7 +1029,7 @@
     "longname": "src/core.js~Core#start",
     "access": "public",
     "description": "Starts the server.",
-    "lineNumber": 163,
+    "lineNumber": 165,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1057,7 +1057,7 @@
     "longname": "src/core.js~Core#boot",
     "access": "public",
     "description": "Initializes the server.",
-    "lineNumber": 181,
+    "lineNumber": 183,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1085,7 +1085,7 @@
     "longname": "src/core.js~Core#listen",
     "access": "public",
     "description": "Opens HTTP server.",
-    "lineNumber": 209,
+    "lineNumber": 211,
     "params": [],
     "return": {
       "types": [
@@ -1104,7 +1104,7 @@
     "longname": "src/core.js~Core#broadcast",
     "access": "public",
     "description": "Broadcast given event to client.",
-    "lineNumber": 260,
+    "lineNumber": 262,
     "params": [
       {
         "nullable": null,
@@ -1150,7 +1150,7 @@
     "longname": "src/core.js~Core#broadcastAll",
     "access": "public",
     "description": "Broadcast given event to all clients.",
-    "lineNumber": 284,
+    "lineNumber": 286,
     "params": [
       {
         "nullable": null,
@@ -1190,7 +1190,7 @@
     "longname": "src/core.js~Core#broadcastUser",
     "access": "public",
     "description": "Broadcast given event to client filtered by username.",
-    "lineNumber": 294,
+    "lineNumber": 296,
     "params": [
       {
         "nullable": null,
@@ -1240,7 +1240,7 @@
     "longname": "src/core.js~Core.getInstance",
     "access": "public",
     "description": "Gets the server instance.",
-    "lineNumber": 304,
+    "lineNumber": 306,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2256,7 +2256,7 @@
     "__docId__": 118,
     "kind": "file",
     "name": "src/providers/auth.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Auth = require(\"../auth.js\");\n\n/**\n * MeeseOS Auth Service Provider\n */\nclass AuthServiceProvider extends ServiceProvider {\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.auth = new Auth(core, options);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\tasync init() {\n\t\t// eslint-disable-next-line no-unused-vars\n\t\tconst { route, routeAuthenticated } = this.core.make(\"meeseOS/express\");\n\n\t\troute(\"post\", \"/register\", (req, res) => this.auth.register(req, res));\n\t\troute(\"post\", \"/login\", (req, res) => this.auth.login(req, res));\n\t\t// TODO: fix the issue of this not working when `routeAuthenticated` is used\n\t\troute(\"post\", \"/logout\", (req, res) => this.auth.logout(req, res));\n\n\t\tawait this.auth.init();\n\t}\n\n\tdestroy() {\n\t\tthis.auth.destroy();\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = AuthServiceProvider;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Auth = require(\"../auth.js\");\n\n/**\n * MeeseOS Auth Service Provider\n */\nclass AuthServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\tthis.auth = new Auth(core, options);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\t/**\n\t * Initializes auth.\n\t * @returns {Promise<undefined>}\n\t */\n\tasync init() {\n\t\t// eslint-disable-next-line no-unused-vars\n\t\tconst { route, routeAuthenticated } = this.core.make(\"meeseOS/express\");\n\n\t\troute(\"post\", \"/register\", (req, res) => this.auth.register(req, res));\n\t\troute(\"post\", \"/login\", (req, res) => this.auth.login(req, res));\n\t\t// TODO: fix the issue of this not working when `routeAuthenticated` is used\n\t\troute(\"post\", \"/logout\", (req, res) => this.auth.logout(req, res));\n\n\t\tawait this.auth.init();\n\t}\n\n\t/**\n\t * Destroys instance.\n\t */\n\tdestroy() {\n\t\tthis.auth.destroy();\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = AuthServiceProvider;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/providers/auth.js",
     "access": "public",
@@ -2312,10 +2312,32 @@
     "static": false,
     "longname": "src/providers/auth.js~AuthServiceProvider#constructor",
     "access": "public",
-    "description": null,
-    "lineNumber": 39,
-    "undocument": true,
-    "ignore": true
+    "description": "Create new instance.",
+    "lineNumber": 44,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "{}",
+        "defaultRaw": {},
+        "name": "options",
+        "description": "Arguments"
+      }
+    ]
   },
   {
     "__docId__": 122,
@@ -2326,7 +2348,7 @@
     "longname": "src/providers/auth.js~AuthServiceProvider#auth",
     "access": "public",
     "description": null,
-    "lineNumber": 42,
+    "lineNumber": 47,
     "undocument": true,
     "type": {
       "types": [
@@ -2346,7 +2368,7 @@
     "longname": "src/providers/auth.js~AuthServiceProvider#depends",
     "access": "public",
     "description": "A list of services this provider depends on.",
-    "lineNumber": 49,
+    "lineNumber": 54,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2373,12 +2395,23 @@
     "static": false,
     "longname": "src/providers/auth.js~AuthServiceProvider#init",
     "access": "public",
-    "description": null,
-    "lineNumber": 53,
-    "undocument": true,
-    "params": [],
-    "return": null,
-    "ignore": true
+    "description": "Initializes auth.",
+    "lineNumber": 62,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<undefined>}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<undefined>"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
   },
   {
     "__docId__": 125,
@@ -2390,12 +2423,10 @@
     "static": false,
     "longname": "src/providers/auth.js~AuthServiceProvider#destroy",
     "access": "public",
-    "description": null,
-    "lineNumber": 65,
-    "undocument": true,
+    "description": "Destroys instance.",
+    "lineNumber": 77,
     "params": [],
-    "return": null,
-    "ignore": true
+    "return": null
   },
   {
     "__docId__": 126,
@@ -2912,7 +2943,7 @@
     "__docId__": 154,
     "kind": "file",
     "name": "src/providers/settings.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst Settings = require(\"../settings\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\n\n/**\n * MeeseOS Settings Service Provider\n */\nclass SettingsServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options] Arguments\n\t */\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.settings = new Settings(core, options);\n\t}\n\n\tdestroy() {\n\t\tthis.settings.destroy();\n\t\tsuper.destroy();\n\t}\n\n\tinit() {\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"post\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.save(req, res)\n\t\t\t);\n\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"get\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.load(req, res)\n\t\t\t);\n\n\t\treturn this.settings.init();\n\t}\n}\n\nmodule.exports = SettingsServiceProvider;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst Settings = require(\"../settings\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\n\n/**\n * MeeseOS Settings Service Provider\n */\nclass SettingsServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options] Arguments\n\t */\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.settings = new Settings(core, options);\n\t}\n\n\t/**\n\t * Destroy instance.\n\t */\n\tdestroy() {\n\t\tthis.settings.destroy();\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initialize instance.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync init() {\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"post\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.save(req, res)\n\t\t\t);\n\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"get\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.load(req, res)\n\t\t\t);\n\n\t\treturn this.settings.init();\n\t}\n}\n\nmodule.exports = SettingsServiceProvider;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/providers/settings.js",
     "access": "public",
@@ -3021,12 +3052,10 @@
     "static": false,
     "longname": "src/providers/settings.js~SettingsServiceProvider#destroy",
     "access": "public",
-    "description": null,
-    "lineNumber": 50,
-    "undocument": true,
+    "description": "Destroy instance.",
+    "lineNumber": 53,
     "params": [],
-    "return": null,
-    "ignore": true
+    "return": null
   },
   {
     "__docId__": 160,
@@ -3034,20 +3063,27 @@
     "name": "init",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
     "generator": false,
-    "async": false,
+    "async": true,
     "static": false,
     "longname": "src/providers/settings.js~SettingsServiceProvider#init",
     "access": "public",
-    "description": null,
-    "lineNumber": 55,
-    "undocument": true,
-    "params": [],
+    "description": "Initialize instance.",
+    "lineNumber": 62,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<Boolean>}"
+      }
+    ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Promise<Boolean>"
+      ],
+      "spread": false,
+      "description": ""
     },
-    "ignore": true
+    "params": []
   },
   {
     "__docId__": 161,
@@ -3634,7 +3670,7 @@
     "__docId__": 190,
     "kind": "file",
     "name": "src/settings.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst nullAdapter = require(\"./adapters/settings/null\");\nconst fsAdapter = require(\"./adapters/settings/fs\");\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapter\n */\n\n/**\n * Settings Service Options\n * @typedef {Object} SettingsOptions\n * @property {SettingsAdapter|string} [adapter]\n */\n\n/**\n * MeeseOS Settings Manager\n */\nclass Settings {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.options = {\n\t\t\tadapter: nullAdapter,\n\t\t\t...options,\n\t\t};\n\n\t\tif (this.options.adapter === \"fs\") {\n\t\t\tthis.options.adapter = fsAdapter;\n\t\t}\n\n\t\tthis.adapter = nullAdapter(core, this.options.config);\n\n\t\ttry {\n\t\t\tthis.adapter = this.options.adapter(core, this.options.config);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n\n\t/**\n\t * Destroy instance.\n\t */\n\tdestroy() {\n\t\tif (this.adapter.destroy) {\n\t\t\tthis.adapter.destroy();\n\t\t}\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tinit() {\n\t\tif (this.adapter.init) {\n\t\t\treturn this.adapter.init();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Sends save request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync save(req, res) {\n\t\tconst result = await this.adapter.save(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Sends load request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync load(req, res) {\n\t\tconst result = await this.adapter.load(req, res);\n\t\tres.json(result);\n\t}\n}\n\nmodule.exports = Settings;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst nullAdapter = require(\"./adapters/settings/null\");\nconst fsAdapter = require(\"./adapters/settings/fs\");\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapter\n */\n\n/**\n * Settings Service Options\n * @typedef {Object} SettingsOptions\n * @property {SettingsAdapter|string} [adapter]\n */\n\n/**\n * MeeseOS Settings Manager\n */\nclass Settings {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.options = {\n\t\t\tadapter: nullAdapter,\n\t\t\t...options,\n\t\t};\n\n\t\tif (this.options.adapter === \"fs\") {\n\t\t\tthis.options.adapter = fsAdapter;\n\t\t}\n\n\t\tthis.adapter = nullAdapter(core, this.options.config);\n\n\t\ttry {\n\t\t\tthis.adapter = this.options.adapter(core, this.options.config);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tinit() {\n\t\tif (this.adapter.init) {\n\t\t\treturn this.adapter.init();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Sends save request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync save(req, res) {\n\t\tconst result = await this.adapter.save(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Sends load request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync load(req, res) {\n\t\tconst result = await this.adapter.load(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Destroy instance.\n\t */\n\tdestroy() {\n\t\tif (this.adapter.destroy) {\n\t\t\tthis.adapter.destroy();\n\t\t}\n\t}\n}\n\nmodule.exports = Settings;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/settings.js",
     "access": "public",
@@ -3798,21 +3834,6 @@
   {
     "__docId__": 199,
     "kind": "method",
-    "name": "destroy",
-    "memberof": "src/settings.js~Settings",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/settings.js~Settings#destroy",
-    "access": "public",
-    "description": "Destroy instance.",
-    "lineNumber": 81,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 200,
-    "kind": "method",
     "name": "init",
     "memberof": "src/settings.js~Settings",
     "generator": false,
@@ -3821,7 +3842,7 @@
     "longname": "src/settings.js~Settings#init",
     "access": "public",
     "description": "Initializes adapter.",
-    "lineNumber": 91,
+    "lineNumber": 82,
     "unknown": [
       {
         "tagName": "@returns",
@@ -3839,7 +3860,7 @@
     "params": []
   },
   {
-    "__docId__": 201,
+    "__docId__": 200,
     "kind": "method",
     "name": "save",
     "memberof": "src/settings.js~Settings",
@@ -3849,7 +3870,56 @@
     "longname": "src/settings.js~Settings#save",
     "access": "public",
     "description": "Sends save request to adapter.",
-    "lineNumber": 105,
+    "lineNumber": 96,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<undefined>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": "Express request"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Response"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "res",
+        "description": "Express response"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<undefined>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 201,
+    "kind": "method",
+    "name": "load",
+    "memberof": "src/settings.js~Settings",
+    "generator": false,
+    "async": true,
+    "static": false,
+    "longname": "src/settings.js~Settings#load",
+    "access": "public",
+    "description": "Sends load request to adapter.",
+    "lineNumber": 107,
     "unknown": [
       {
         "tagName": "@returns",
@@ -3890,57 +3960,23 @@
   {
     "__docId__": 202,
     "kind": "method",
-    "name": "load",
+    "name": "destroy",
     "memberof": "src/settings.js~Settings",
     "generator": false,
-    "async": true,
+    "async": false,
     "static": false,
-    "longname": "src/settings.js~Settings#load",
+    "longname": "src/settings.js~Settings#destroy",
     "access": "public",
-    "description": "Sends load request to adapter.",
-    "lineNumber": 116,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<undefined>}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Request"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "req",
-        "description": "Express request"
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Response"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "res",
-        "description": "Express response"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<undefined>"
-      ],
-      "spread": false,
-      "description": ""
-    }
+    "description": "Destroy instance.",
+    "lineNumber": 115,
+    "params": [],
+    "return": null
   },
   {
     "__docId__": 203,
     "kind": "file",
     "name": "src/utils/token-factory.js",
-    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\n/* eslint-disable no-unused-vars */\nconst jwt = require(\"jsonwebtoken\");\nconst TokenStorage = require(\"../utils/token-storage\");\n/* eslint-enable no-unused-vars */\n\n/**\n * Token Factory Options\n * @typedef {Object} TokenFactoryOptions\n * @property {String} [accessTokenSecret]\n * @property {String} [refreshTokenSecret]\n * @property {String} [accessTokenDuration]\n */\n\n/**\n * JWT Token Factory\n */\nclass TokenFactory {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenFactoryOptions} [options={}] Token Factory arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tconst {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration\n\t\t} = core.configuration.session.jwt;\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactoryOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync init() {\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = this.core.make(\"meeseOS/token-storage\");\n\n\t\tawait this.storage.init();\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Creates an access token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The access token\n\t */\n\tcreateAccessToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.accessTokenSecret,\n\t\t\t{ expiresIn: this.options.accessTokenDuration }\n\t\t);\n\t}\n\n\t/**\n\t * Validates an access token.\n\t * @param {String} accessToken The access token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateAccessToken(accessToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(accessToken, this.options.accessTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Access token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Creates a refresh token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The refresh token\n\t */\n\tcreateRefreshToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.refreshTokenSecret\n\t\t);\n\t}\n\n\t/**\n\t * Validates a refresh token.\n\t * @param {String} refreshToken The refresh token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateRefreshToken(refreshToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(refreshToken, this.options.refreshTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Refresh token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Uses a refresh token to create a new access token, then returns the\n\t * associated user profile along with the new access token.\n\t * @param {String} refreshToken Refresh token\n\t * @returns {Promise<*>}\n\t */\n\trefreshToAccessToken(refreshToken) {\n\t\t// Need to ensure that the refreshToken hasn't been revoked\n\t\tif (!refreshToken || !this.storage.find(refreshToken)) {\n\t\t\treturn false;\n\t\t}\n\n\t\t/* eslint-disable no-async-promise-executor */\n\t\treturn new Promise(async (resolve, reject) => {\n\t\t\tconst tokenInStorage = this.storage.find(refreshToken);\n\t\t\tif (!tokenInStorage) {\n\t\t\t\treturn reject(new Error(\"Token not found\"));\n\t\t\t}\n\n\t\t\tconst user = await this.validateRefreshToken(refreshToken);\n\t\t\tif (!user) {\n\t\t\t\tthis.storage.remove(refreshToken);\n\t\t\t\treturn reject(new Error(\"Token not valid\"));\n\t\t\t}\n\n\t\t\tconst accessToken = this.createAccessToken(\n\t\t\t\tuser.username,\n\t\t\t\tuser.groups\n\t\t\t);\n\n\t\t\tresolve({ ...user, accessToken });\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.error(error);\n\t\t\treturn false;\n\t\t});\n\t\t/* eslint-enable no-async-promise-executor */\n\t}\n}\n\nmodule.exports = TokenFactory;\n",
+    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst jwt = require(\"jsonwebtoken\");\n// eslint-disable-next-line no-unused-vars\nconst TokenStorage = require(\"../utils/token-storage\");\n\n/**\n * Token Factory Options\n * @typedef {Object} TokenFactoryOptions\n * @property {String} [accessTokenSecret]\n * @property {String} [refreshTokenSecret]\n * @property {String} [accessTokenDuration]\n */\n\n/**\n * JWT Token Factory\n */\nclass TokenFactory {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenFactoryOptions} [options={}] Token Factory arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tconst {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration\n\t\t} = core.configuration.session.jwt;\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactoryOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync init() {\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = this.core.make(\"meeseOS/token-storage\");\n\n\t\tawait this.storage.init();\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Creates an access token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The access token\n\t */\n\tcreateAccessToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.accessTokenSecret,\n\t\t\t{ expiresIn: this.options.accessTokenDuration }\n\t\t);\n\t}\n\n\t/**\n\t * Validates an access token.\n\t * @param {String} accessToken The access token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateAccessToken(accessToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(accessToken, this.options.accessTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Access token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Creates a refresh token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The refresh token\n\t */\n\tcreateRefreshToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.refreshTokenSecret\n\t\t);\n\t}\n\n\t/**\n\t * Validates a refresh token.\n\t * @param {String} refreshToken The refresh token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateRefreshToken(refreshToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(refreshToken, this.options.refreshTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Refresh token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Uses a refresh token to create a new access token, then returns the\n\t * associated user profile along with the new access token.\n\t * @param {String} refreshToken Refresh token\n\t * @returns {Promise<*>}\n\t */\n\trefreshToAccessToken(refreshToken) {\n\t\t// Need to ensure that the refreshToken hasn't been revoked\n\t\tif (!refreshToken || !this.storage.find(refreshToken)) {\n\t\t\treturn false;\n\t\t}\n\n\t\t/* eslint-disable no-async-promise-executor */\n\t\treturn new Promise(async (resolve, reject) => {\n\t\t\tconst tokenInStorage = this.storage.find(refreshToken);\n\t\t\tif (!tokenInStorage) {\n\t\t\t\treturn reject(new Error(\"Token not found\"));\n\t\t\t}\n\n\t\t\tconst user = await this.validateRefreshToken(refreshToken);\n\t\t\tif (!user) {\n\t\t\t\tthis.storage.remove(refreshToken);\n\t\t\t\treturn reject(new Error(\"Token not valid\"));\n\t\t\t}\n\n\t\t\tconst accessToken = this.createAccessToken(\n\t\t\t\tuser.username,\n\t\t\t\tuser.groups\n\t\t\t);\n\n\t\t\tresolve({ ...user, accessToken });\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.error(error);\n\t\t\treturn false;\n\t\t});\n\t\t/* eslint-enable no-async-promise-executor */\n\t}\n}\n\nmodule.exports = TokenFactory;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/utils/token-factory.js",
     "access": "public",
@@ -4008,7 +4044,7 @@
     "importPath": "@meese-os/server/src/utils/token-factory.js",
     "importStyle": "TokenFactory",
     "description": "JWT Token Factory",
-    "lineNumber": 50,
+    "lineNumber": 49,
     "interface": false
   },
   {
@@ -4022,7 +4058,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#constructor",
     "access": "public",
     "description": "Creates a new instance.",
-    "lineNumber": 56,
+    "lineNumber": 55,
     "params": [
       {
         "nullable": null,
@@ -4057,7 +4093,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#core",
     "access": "public",
     "description": "",
-    "lineNumber": 66,
+    "lineNumber": 65,
     "type": {
       "nullable": null,
       "types": [
@@ -4076,7 +4112,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#options",
     "access": "public",
     "description": "",
-    "lineNumber": 71,
+    "lineNumber": 70,
     "type": {
       "nullable": null,
       "types": [
@@ -4097,7 +4133,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#init",
     "access": "public",
     "description": "Initializes adapter.",
-    "lineNumber": 83,
+    "lineNumber": 82,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4123,7 +4159,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#storage",
     "access": "public",
     "description": "",
-    "lineNumber": 87,
+    "lineNumber": 86,
     "type": {
       "nullable": null,
       "types": [
@@ -4144,7 +4180,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#createAccessToken",
     "access": "public",
     "description": "Creates an access token for a user.",
-    "lineNumber": 100,
+    "lineNumber": 99,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4193,7 +4229,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#validateAccessToken",
     "access": "public",
     "description": "Validates an access token.",
-    "lineNumber": 113,
+    "lineNumber": 112,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4232,7 +4268,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#createRefreshToken",
     "access": "public",
     "description": "Creates a refresh token for a user.",
-    "lineNumber": 134,
+    "lineNumber": 133,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4281,7 +4317,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#validateRefreshToken",
     "access": "public",
     "description": "Validates a refresh token.",
-    "lineNumber": 146,
+    "lineNumber": 145,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4320,7 +4356,7 @@
     "longname": "src/utils/token-factory.js~TokenFactory#refreshToAccessToken",
     "access": "public",
     "description": "Uses a refresh token to create a new access token, then returns the\nassociated user profile along with the new access token.",
-    "lineNumber": 167,
+    "lineNumber": 166,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4673,7 +4709,7 @@
     "__docId__": 229,
     "kind": "file",
     "name": "src/utils/vfs.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst url = require(\"url\");\nconst sanitizeFilename = require(\"sanitize-filename\");\nconst formidable = require(\"formidable\");\nconst { Stream } = require(\"stream\");\n\n/**\n * A map of error codes.\n */\nconst errorCodes = {\n\tENOENT: 404,\n\tEACCES: 401,\n};\n\n/**\n * Gets prefix of a VFS path.\n * @param {String} path\n * @returns {String}\n */\nconst getPrefix = (path) => String(path).split(\":\")[0];\n\n/**\n * Sanitizes a path.\n * @param {String} path\n * @returns {String}\n */\nconst sanitize = (path) => {\n\tconst [name, str] = (\n\t\tpath.replace(/\\/+/g, \"/\").match(/^([\\w-_]+):+(.*)/) || []\n\t).slice(1);\n\n\tconst sane = str\n\t\t.split(\"/\")\n\t\t.map((s) => sanitizeFilename(s))\n\t\t.join(\"/\")\n\t\t.replace(/\\/+/g, \"/\");\n\n\treturn name + \":\" + sane;\n};\n\n/**\n * Gets the stream from an HTTP request.\n * @param {Request} req\n */\nconst streamFromRequest = (req) => {\n\tconst isStream = req.files.upload instanceof Stream;\n\tif (isStream) return req.files.upload;\n\n\tconst filePath = req.files.upload.filepath || req.files.upload.path;\n\tif (!filePath) {\n\t\tthrow new Error(\"File path is empty or undefined.\");\n\t}\n\n\treturn fs.createReadStream(filePath);\n};\n\n/**\n * @param {Array} arr\n * @param {Array} compare\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateAll = (arr, compare, strict = true) =>\n\tarr[strict ? \"every\" : \"some\"]((g) => compare.indexOf(g) !== -1);\n\n/**\n * Validates array groups.\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateNamedGroups = (groups, userGroups, strict) => {\n\tconst namedGroups = groups.filter((g) => typeof g === \"string\");\n\n\treturn namedGroups.length\n\t\t? validateAll(namedGroups, userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates map of groups based on method:[group,...]\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {String} method\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateMethodGroups = (groups, userGroups, method, strict) => {\n\tconst methodGroups = groups.find((g) =>\n\t\ttypeof g === \"string\" ? false : method in g\n\t);\n\n\treturn methodGroups\n\t\t? validateAll(methodGroups[method], userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates groups.\n *\n * @param {Array} userGroups\n * @param {String} method\n * @param {Object} mountpoint\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateGroups = (userGroups, method, mountpoint, strict) => {\n\tconst groups = mountpoint.attributes.groups || [];\n\tif (groups.length) {\n\t\tconst namedValid = validateNamedGroups(groups, userGroups, strict);\n\t\tconst methodValid = validateMethodGroups(\n\t\t\tgroups,\n\t\t\tuserGroups,\n\t\t\tmethod,\n\t\t\tstrict\n\t\t);\n\n\t\treturn namedValid && methodValid;\n\t}\n\n\treturn true;\n};\n\n/**\n * Checks permissions for given mountpoint.\n *\n * @param {Request} req\n * @param {Response} res\n * @param {String} method\n * @param {Boolean} readOnly\n * @param {Boolean} strict\n */\nconst checkMountpointPermission = (req, res, method, readOnly, strict) => {\n\tconst userGroups = req.session.user.groups;\n\n\treturn ({ mount }) => {\n\t\tif (readOnly) {\n\t\t\tconst { attributes, name } = mount;\n\n\t\t\tif (attributes.readOnly) {\n\t\t\t\tconst failed = typeof readOnly === \"function\"\n\t\t\t\t\t? getPrefix(readOnly(req, res)) === name\n\t\t\t\t\t: readOnly;\n\n\t\t\t\tif (failed) {\n\t\t\t\t\treturn Promise.reject(\n\t\t\t\t\t\tcreateError(403, `Mountpoint '${name}' is read-only`)\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\tif (validateGroups(userGroups, method, mount, strict)) {\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.reject(\n\t\t\tcreateError(\n\t\t\t\t403,\n\t\t\t\t`Permission was denied for '${method}' in '${mount.name}'`\n\t\t\t)\n\t\t);\n\t};\n};\n\n/**\n * Creates a new custom Error.\n * @param {Number} code\n * @param {String} message\n * @return {Error}\n */\nconst createError = (code, message) => {\n\tconst error = new Error(message);\n\terror.code = code;\n\treturn error;\n};\n\n/**\n * Resolves a mountpoint.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst mountpointResolver = (core) =>\n\tasync (path) => {\n\t\tconst { adapters, mountpoints } = core.make(\"meeseOS/vfs\");\n\t\tconst prefix = getPrefix(path);\n\t\tconst mount = mountpoints.find((m) => m.name === prefix);\n\n\t\tif (!mount) {\n\t\t\tthrow createError(403, `Mountpoint not found for '${prefix}'`);\n\t\t}\n\n\t\tconst adapter = await (mount.adapter\n\t\t\t? adapters[mount.adapter]\n\t\t\t: adapters.system);\n\n\t\treturn Object.freeze({ mount, adapter });\n\t};\n\n/**\n * Parses URL body.\n * @param {Request} req\n * @returns {Promise<Object>}\n */\nconst parseGet = (req) => {\n\t// skipcq: JS-0272\n\tconst { query } = url.parse(req.url, true);\n\n\treturn Promise.resolve({ fields: query, files: {} });\n};\n\n/**\n * Parses JSON body.\n * @param {Request} req\n * @returns {Object|Boolean}\n */\nconst parseJson = (req) => {\n\tconst isJson = req.headers[\"content-type\"] &&\n\t\treq.headers[\"content-type\"].indexOf(\"application/json\") !== -1;\n\n\tif (isJson) {\n\t\treturn { fields: req.body, files: {} };\n\t}\n\n\treturn false;\n};\n\n/**\n * Parses form body.\n *\n * @param {Request} req\n * @param {Number} config.maxFieldsSize\n * @param {Number} config.maxFileSize\n * @returns {Promise<any>}\n */\nconst parseFormData = (req, { maxFieldsSize, maxFileSize }) => {\n\tconst form = formidable({\n\t\tmultiples: true,\n\t\tmaxFieldsSize,\n\t\tmaxFileSize,\n\t});\n\n\treturn new Promise((resolve, reject) => {\n\t\tform.parse(req, (err, fields, files) => {\n\t\t\treturn err ? reject(err) : resolve({ fields, files });\n\t\t});\n\t});\n};\n\n/**\n * Middleware for handling HTTP requests.\n * @param {Object} config\n * @returns {Promise<any>}\n */\nconst parseFields = (config) =>\n\t(req, _res) => {\n\t\tif ([\"get\", \"head\"].indexOf(req.method.toLowerCase()) !== -1) {\n\t\t\treturn Promise.resolve(parseGet(req));\n\t\t}\n\n\t\tconst json = parseJson(req);\n\t\tif (json) return Promise.resolve(json);\n\n\t\treturn parseFormData(req, config);\n\t};\n\n/**\n * A map of methods and their arguments.\n * Used for direct access via API.\n */\nconst methodArguments = {\n\trealpath: [\"path\"],\n\texists: [\"path\"],\n\tstat: [\"path\"],\n\treaddir: [\"path\"],\n\treadfile: [\"path\"],\n\twritefile: [\"path\", (upload) => ({ upload })],\n\tmkdir: [\"path\"],\n\tunlink: [\"path\"],\n\ttouch: [\"path\"],\n\tsearch: [\"root\", \"pattern\"],\n\tcopy: [\"from\", \"to\"],\n\trename: [\"from\", \"to\"],\n\tarchive: [\"selection\"],\n};\n\nmodule.exports = {\n\tmountpointResolver,\n\tcreateError,\n\tcheckMountpointPermission,\n\tvalidateGroups,\n\tstreamFromRequest,\n\tsanitize,\n\tgetPrefix,\n\tparseFields,\n\terrorCodes,\n\tmethodArguments,\n};\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst url = require(\"url\");\nconst sanitizeFilename = require(\"sanitize-filename\");\nconst formidable = require(\"formidable\");\nconst { Stream } = require(\"stream\");\n\n/**\n * A map of error codes.\n */\nconst errorCodes = {\n\tENOENT: 404,\n\tEACCES: 401,\n};\n\n/**\n * Gets prefix of a VFS path.\n * @param {String} path\n * @returns {String}\n */\nconst getPrefix = (path) => String(path).split(\":\")[0];\n\n/**\n * Sanitizes a path.\n * @param {String|Array} path\n * @returns {String}\n */\nconst sanitize = (path) => {\n\t// Handle an array of strings\n\tif (Array.isArray(path)) {\n\t\treturn path.map((singlePath) => sanitize(singlePath));\n\t}\n\n\t// Handle a single string\n\tconst [name, str] = (\n\t\tpath.replace(/\\/+/g, \"/\").match(/^([\\w-_]+):+(.*)/) || []\n\t).slice(1);\n\n\tconst sane = str\n\t\t.split(\"/\")\n\t\t.map((s) => sanitizeFilename(s))\n\t\t.join(\"/\")\n\t\t.replace(/\\/+/g, \"/\");\n\n\treturn name + \":\" + sane;\n};\n\n/**\n * Gets the stream from an HTTP request.\n * @param {Request} req\n */\nconst streamFromRequest = (req) => {\n\tconst isStream = req.files.upload instanceof Stream;\n\tif (isStream) return req.files.upload;\n\n\tconst filePath = req.files.upload.filepath || req.files.upload.path;\n\tif (!filePath) {\n\t\tthrow new Error(\"File path is empty or undefined.\");\n\t}\n\n\treturn fs.createReadStream(filePath);\n};\n\n/**\n * @param {Array} arr\n * @param {Array} compare\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateAll = (arr, compare, strict = true) =>\n\tarr[strict ? \"every\" : \"some\"]((g) => compare.indexOf(g) !== -1);\n\n/**\n * Validates array groups.\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateNamedGroups = (groups, userGroups, strict) => {\n\tconst namedGroups = groups.filter((g) => typeof g === \"string\");\n\n\treturn namedGroups.length\n\t\t? validateAll(namedGroups, userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates map of groups based on method:[group,...]\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {String} method\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateMethodGroups = (groups, userGroups, method, strict) => {\n\tconst methodGroups = groups.find((g) =>\n\t\ttypeof g === \"string\" ? false : method in g\n\t);\n\n\treturn methodGroups\n\t\t? validateAll(methodGroups[method], userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates groups.\n *\n * @param {Array} userGroups\n * @param {String} method\n * @param {Object} mountpoint\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateGroups = (userGroups, method, mountpoint, strict) => {\n\tconst groups = mountpoint.attributes.groups || [];\n\tif (groups.length) {\n\t\tconst namedValid = validateNamedGroups(groups, userGroups, strict);\n\t\tconst methodValid = validateMethodGroups(\n\t\t\tgroups,\n\t\t\tuserGroups,\n\t\t\tmethod,\n\t\t\tstrict\n\t\t);\n\n\t\treturn namedValid && methodValid;\n\t}\n\n\treturn true;\n};\n\n/**\n * Checks permissions for given mountpoint.\n *\n * @param {Request} req\n * @param {Response} res\n * @param {String} method\n * @param {Boolean} readOnly\n * @param {Boolean} strict\n */\nconst checkMountpointPermission = (req, res, method, readOnly, strict) => {\n\tconst userGroups = req.session.user.groups;\n\n\treturn ({ mount }) => {\n\t\tif (readOnly) {\n\t\t\tconst { attributes, name } = mount;\n\n\t\t\tif (attributes.readOnly) {\n\t\t\t\tconst failed = typeof readOnly === \"function\"\n\t\t\t\t\t? getPrefix(readOnly(req, res)) === name\n\t\t\t\t\t: readOnly;\n\n\t\t\t\tif (failed) {\n\t\t\t\t\treturn Promise.reject(\n\t\t\t\t\t\tcreateError(403, `Mountpoint '${name}' is read-only`)\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\tif (validateGroups(userGroups, method, mount, strict)) {\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.reject(\n\t\t\tcreateError(\n\t\t\t\t403,\n\t\t\t\t`Permission was denied for '${method}' in '${mount.name}'`\n\t\t\t)\n\t\t);\n\t};\n};\n\n/**\n * Creates a new custom Error.\n * @param {Number} code\n * @param {String} message\n * @return {Error}\n */\nconst createError = (code, message) => {\n\tconst error = new Error(message);\n\terror.code = code;\n\treturn error;\n};\n\n/**\n * Resolves a mountpoint.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst mountpointResolver = (core) =>\n\tasync (path) => {\n\t\tconst { adapters, mountpoints } = core.make(\"meeseOS/vfs\");\n\t\tconst prefix = getPrefix(path);\n\t\tconst mount = mountpoints.find((m) => m.name === prefix);\n\n\t\tif (!mount) {\n\t\t\tthrow createError(403, `Mountpoint not found for '${prefix}'`);\n\t\t}\n\n\t\tconst adapter = await (mount.adapter\n\t\t\t? adapters[mount.adapter]\n\t\t\t: adapters.system);\n\n\t\treturn Object.freeze({ mount, adapter });\n\t};\n\n/**\n * Parses URL body.\n * @param {Request} req\n * @returns {Promise<Object>}\n */\nconst parseGet = (req) => {\n\t// skipcq: JS-0272\n\tconst { query } = url.parse(req.url, true);\n\n\treturn Promise.resolve({ fields: query, files: {} });\n};\n\n/**\n * Parses JSON body.\n * @param {Request} req\n * @returns {Object|Boolean}\n */\nconst parseJson = (req) => {\n\tconst isJson = req.headers[\"content-type\"] &&\n\t\treq.headers[\"content-type\"].indexOf(\"application/json\") !== -1;\n\n\tif (isJson) {\n\t\treturn { fields: req.body, files: {} };\n\t}\n\n\treturn false;\n};\n\n/**\n * Parses form body.\n *\n * @param {Request} req\n * @param {Number} config.maxFieldsSize\n * @param {Number} config.maxFileSize\n * @returns {Promise<any>}\n */\nconst parseFormData = (req, { maxFieldsSize, maxFileSize }) => {\n\tconst form = formidable({\n\t\tmultiples: true,\n\t\tmaxFieldsSize,\n\t\tmaxFileSize,\n\t});\n\n\treturn new Promise((resolve, reject) => {\n\t\tform.parse(req, (err, fields, files) => {\n\t\t\treturn err ? reject(err) : resolve({ fields, files });\n\t\t});\n\t});\n};\n\n/**\n * Middleware for handling HTTP requests.\n * @param {Object} config\n * @returns {Promise<any>}\n */\nconst parseFields = (config) =>\n\t(req, _res) => {\n\t\tif ([\"get\", \"head\"].indexOf(req.method.toLowerCase()) !== -1) {\n\t\t\treturn Promise.resolve(parseGet(req));\n\t\t}\n\n\t\tconst json = parseJson(req);\n\t\tif (json) return Promise.resolve(json);\n\n\t\treturn parseFormData(req, config);\n\t};\n\n/**\n * A map of methods and their arguments.\n * Used for direct access via API.\n */\nconst methodArguments = {\n\trealpath: [\"path\"],\n\texists: [\"path\"],\n\tstat: [\"path\"],\n\treaddir: [\"path\"],\n\treadfile: [\"path\"],\n\twritefile: [\"path\", (upload) => ({ upload })],\n\tmkdir: [\"path\"],\n\tunlink: [\"path\"],\n\ttouch: [\"path\"],\n\tsearch: [\"root\", \"pattern\"],\n\tcopy: [\"from\", \"to\"],\n\trename: [\"from\", \"to\"],\n\tarchive: [\"selection\"],\n};\n\nmodule.exports = {\n\tmountpointResolver,\n\tcreateError,\n\tcheckMountpointPermission,\n\tvalidateGroups,\n\tstreamFromRequest,\n\tsanitize,\n\tgetPrefix,\n\tparseFields,\n\terrorCodes,\n\tmethodArguments,\n};\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/utils/vfs.js",
     "access": "public",
@@ -4715,7 +4751,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": null,
     "description": "",
-    "lineNumber": 94,
+    "lineNumber": 100,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4778,7 +4814,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": null,
     "description": "Validates array groups.",
-    "lineNumber": 105,
+    "lineNumber": 111,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4841,7 +4877,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": null,
     "description": "Validates map of groups based on method:[group,...]",
-    "lineNumber": 122,
+    "lineNumber": 128,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4914,7 +4950,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": null,
     "description": "Parses URL body.",
-    "lineNumber": 239,
+    "lineNumber": 245,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4957,7 +4993,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": null,
     "description": "Parses JSON body.",
-    "lineNumber": 251,
+    "lineNumber": 257,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5001,7 +5037,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": null,
     "description": "Parses form body.",
-    "lineNumber": 270,
+    "lineNumber": 276,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5064,7 +5100,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": "{mountpointResolver}",
     "description": "Resolves a mountpoint.",
-    "lineNumber": 217,
+    "lineNumber": 223,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5106,7 +5142,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": "{createError}",
     "description": "Creates a new custom Error.",
-    "lineNumber": 206,
+    "lineNumber": 212,
     "params": [
       {
         "nullable": null,
@@ -5152,7 +5188,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": "{checkMountpointPermission}",
     "description": "Checks permissions for given mountpoint.",
-    "lineNumber": 167,
+    "lineNumber": 173,
     "params": [
       {
         "nullable": null,
@@ -5225,7 +5261,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": "{validateGroups}",
     "description": "Validates groups.",
-    "lineNumber": 141,
+    "lineNumber": 147,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5297,7 +5333,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": "{streamFromRequest}",
     "description": "Gets the stream from an HTTP request.",
-    "lineNumber": 76,
+    "lineNumber": 82,
     "params": [
       {
         "nullable": null,
@@ -5341,7 +5377,8 @@
       {
         "nullable": null,
         "types": [
-          "String"
+          "String",
+          "Array"
         ],
         "spread": false,
         "optional": false,
@@ -5414,7 +5451,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": "{parseFields}",
     "description": "Middleware for handling HTTP requests.",
-    "lineNumber": 289,
+    "lineNumber": 295,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5473,7 +5510,7 @@
     "importPath": "@meese-os/server/src/utils/vfs.js",
     "importStyle": "{methodArguments}",
     "description": "A map of methods and their arguments.\nUsed for direct access via API.",
-    "lineNumber": 305,
+    "lineNumber": 311,
     "type": {
       "types": [
         "{\"realpath\": *, \"exists\": *, \"stat\": *, \"readdir\": *, \"readfile\": *, \"writefile\": *, \"mkdir\": *, \"unlink\": *, \"touch\": *, \"search\": *, \"copy\": *, \"rename\": *, \"archive\": *}"
@@ -5490,7 +5527,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meese-os/server\",\n  \"version\": \"1.0.6\",\n  \"description\": \"meeseOS Server\",\n  \"scripts\": {\n    \"build\": \"echo \\\"There is no build command for server\\\" && exit 0\",\n    \"eslint\": \"eslint index.js src\",\n    \"jest\": \"jest --detectOpenHandles --forceExit\",\n    \"jest:debug\": \"jest --runInBand --silent false --verbose true --useStderr=true --detectOpenHandles --forceExit\",\n\t\t\"coverage\": \"jest --coverage\",\n    \"test\": \"npm run eslint && npm run jest\",\n    \"prepublishOnly\": \"npm run test\"\n  },\n  \"license\": \"BSD-2-Clause\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src/\",\n    \"index.js\",\n    \"README.md\"\n  ],\n  \"engines\": {\n    \"node\": \">=12.0.0\"\n  },\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"eslint\": \"^8.48.0\",\n    \"eslint-plugin-jest\": \"^27.2.3\",\n    \"jest-express\": \"^1.12.0\",\n    \"temp\": \"^0.9.4\",\n    \"jest\": \"^29.6.4\"\n  },\n  \"dependencies\": {\n    \"@meese-os/common\": \"workspace:*\",\n    \"body-parser\": \"^1.19.1\",\n    \"chokidar\": \"^3.5.3\",\n    \"connect-loki\": \"^1.2.0\",\n    \"consola\": \"^2.15.3\",\n    \"deepmerge\": \"^4.3.1\",\n    \"express\": \"^4.17.2\",\n    \"express-http-proxy\": \"^1.6.3\",\n    \"express-session\": \"^1.17.3\",\n    \"express-ws\": \"^5.0.2\",\n    \"fast-glob\": \"^2.2.7\",\n    \"filehound\": \"^1.17.5\",\n    \"formidable\": \"^2.0.1\",\n    \"fs-extra\": \"^10.0.0\",\n    \"mime\": \"^3.0.0\",\n    \"minimist\": \"^1.2.5\",\n    \"morgan\": \"^1.10.0\",\n    \"nocache\": \"^3.0.1\",\n    \"sanitize-filename\": \"^1.6.3\",\n    \"uuid\": \"^8.3.2\",\n    \"yazl\": \"^2.5.1\",\n    \"extract-zip\": \"^2.0.1\",\n    \"jsonwebtoken\": \"^8.5.1\",\n    \"lokijs\": \"^1.5.12\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meese-os/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Server API\",\n            \"description\": \"meeseOS Server API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      },\n      {\n        \"name\": \"esdoc-node\"\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/esdoc.js\",\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/meeseOS/meeseOS.git\",\n    \"directory\": \"backend/server\"\n  },\n  \"keywords\": [\n    \"os\",\n    \"osjs\",\n    \"operating system\",\n    \"webOS\",\n    \"meeseOS\",\n    \"server\"\n  ]\n}\n",
+    "content": "{\n  \"name\": \"@meese-os/server\",\n  \"version\": \"1.0.7\",\n  \"description\": \"meeseOS Server\",\n  \"scripts\": {\n    \"build\": \"echo \\\"There is no build command for server\\\" && exit 0\",\n    \"eslint\": \"eslint index.js src\",\n    \"jest\": \"jest --detectOpenHandles --forceExit\",\n    \"jest:debug\": \"jest --runInBand --silent false --verbose true --useStderr=true --detectOpenHandles --forceExit\",\n\t\t\"coverage\": \"jest --coverage\",\n    \"test\": \"npm run eslint && npm run jest\",\n    \"prepublishOnly\": \"npm run test\"\n  },\n  \"license\": \"BSD-2-Clause\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src/\",\n    \"index.js\",\n    \"README.md\"\n  ],\n  \"engines\": {\n    \"node\": \">=12.0.0\"\n  },\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"eslint\": \"^8.48.0\",\n    \"eslint-plugin-jest\": \"^27.2.3\",\n    \"jest-express\": \"^1.12.0\",\n    \"temp\": \"^0.9.4\",\n    \"jest\": \"^29.6.4\"\n  },\n  \"dependencies\": {\n    \"@meese-os/common\": \"workspace:*\",\n    \"body-parser\": \"^1.19.1\",\n    \"chokidar\": \"^3.5.3\",\n    \"connect-loki\": \"^1.2.0\",\n    \"consola\": \"^2.15.3\",\n    \"deepmerge\": \"^4.3.1\",\n    \"express\": \"^4.17.2\",\n    \"express-http-proxy\": \"^1.6.3\",\n    \"express-session\": \"^1.17.3\",\n    \"express-ws\": \"^5.0.2\",\n    \"extract-zip\": \"^2.0.1\",\n    \"fast-glob\": \"^2.2.7\",\n    \"filehound\": \"^1.17.5\",\n    \"formidable\": \"^2.0.1\",\n    \"fs-extra\": \"^10.0.0\",\n    \"jsonwebtoken\": \"^8.5.1\",\n    \"lokijs\": \"^1.5.12\",\n    \"mime\": \"^3.0.0\",\n    \"minimist\": \"^1.2.5\",\n    \"morgan\": \"^1.10.0\",\n    \"nocache\": \"^3.0.1\",\n    \"sanitize-filename\": \"^1.6.3\",\n    \"uuid\": \"^8.3.2\",\n    \"yazl\": \"^2.5.1\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meese-os/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Server API\",\n            \"description\": \"meeseOS Server API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      },\n      {\n        \"name\": \"esdoc-node\"\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/esdoc.js\",\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/meeseOS/meeseOS.git\",\n    \"directory\": \"backend/server\"\n  },\n  \"keywords\": [\n    \"os\",\n    \"osjs\",\n    \"operating system\",\n    \"webOS\",\n    \"meeseOS\",\n    \"server\"\n  ]\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/package.json",
     "name": "package.json",
     "static": true,

@@ -39,7 +39,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/notifications.js~Notifications.html">Notifications</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/packages.js~Packages.html">Packages</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/session.js~Session.html">Session</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/splash.js~Splash.html">Splash</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/tray.js~Tray.html">Tray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
@@ -94,6 +93,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-serverSettings">serverSettings</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-ui">adapters/ui</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-vfs">adapters/vfs</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-nullAdapter">nullAdapter</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#providers">providers</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/auth.js~AuthServiceProvider.html">AuthServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
@@ -247,7 +247,7 @@ import logger from &quot;./logger&quot;;
  * @property {Boolean} [controls=true] Show controls
  * @property {String} [visibility=global] Global visibility, &apos;restricted&apos; to hide from window lists etc.
  * @property {Boolean} [clamp=true] Clamp the window position upon creation
- * @property {Boolean} [droppable=true] If window should have the default drop action
+ * @property {boolean | {dataTransferProperty?: &quot;files&quot; | &quot;items&quot;}} [droppable=true] If window should have the default drop action
  * @property {WindowDimension} [minDimension] Minimum dimension
  * @property {WindowDimension} [maxDimension] Maximum dimension
  * @property {{name: string}} [mediaQueries] A map of matchMedia to name
@@ -626,11 +626,16 @@ export default class Window extends EventEmitter {
 
 		// DnD functionality
 		if (this.attributes.droppable) {
+			const { dataTransferProperty = &quot;files&quot; } = this.attributes.droppable === true
+				? {}
+				: this.attributes.droppable;
+
 			const d = droppable(this.$element, {
 				ondragenter: (...args) =&gt; this.emit(&quot;dragenter&quot;, ...args, this),
 				ondragover: (...args) =&gt; this.emit(&quot;dragover&quot;, ...args, this),
 				ondragleave: (...args) =&gt; this.emit(&quot;dragleave&quot;, ...args, this),
 				ondrop: (...args) =&gt; this.emit(&quot;drop&quot;, ...args, this),
+				dataTransferProperty,
 			});
 
 			this.on(&quot;destroy&quot;, () =&gt; d.destroy());
@@ -1115,10 +1120,14 @@ export default class Window extends EventEmitter {
 	 * @private
 	 */
 	_updateButtons() {
-		const hideButton = (action) =&gt;
-			(this.$header.querySelector(
+		const hideButton = (action) =&gt; {
+			const button = this.$header.querySelector(
 				`.meeseOS-window-button[data-action=${action}]`
-			).style.display = &quot;none&quot;);
+			);
+			if (button) {
+				button.style.display = &quot;none&quot;;
+			}
+		};
 
 		const buttonmap = {
 			maximizable: &quot;maximize&quot;,

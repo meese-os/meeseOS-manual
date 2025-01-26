@@ -738,9 +738,27 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/providers/auth.js~authserviceprovider#constructor",
+    "class/src/providers/auth.js~AuthServiceProvider.html#instance-constructor-constructor",
+    "src/providers/auth.js~AuthServiceProvider#constructor",
+    "method"
+  ],
+  [
     "src/providers/auth.js~authserviceprovider#depends",
     "class/src/providers/auth.js~AuthServiceProvider.html#instance-method-depends",
     "src/providers/auth.js~AuthServiceProvider#depends",
+    "method"
+  ],
+  [
+    "src/providers/auth.js~authserviceprovider#destroy",
+    "class/src/providers/auth.js~AuthServiceProvider.html#instance-method-destroy",
+    "src/providers/auth.js~AuthServiceProvider#destroy",
+    "method"
+  ],
+  [
+    "src/providers/auth.js~authserviceprovider#init",
+    "class/src/providers/auth.js~AuthServiceProvider.html#instance-method-init",
+    "src/providers/auth.js~AuthServiceProvider#init",
     "method"
   ],
   [
@@ -849,6 +867,18 @@ window.esdocSearchIndex = [
     "src/providers/settings.js~settingsserviceprovider#constructor",
     "class/src/providers/settings.js~SettingsServiceProvider.html#instance-constructor-constructor",
     "src/providers/settings.js~SettingsServiceProvider#constructor",
+    "method"
+  ],
+  [
+    "src/providers/settings.js~settingsserviceprovider#destroy",
+    "class/src/providers/settings.js~SettingsServiceProvider.html#instance-method-destroy",
+    "src/providers/settings.js~SettingsServiceProvider#destroy",
+    "method"
+  ],
+  [
+    "src/providers/settings.js~settingsserviceprovider#init",
+    "class/src/providers/settings.js~SettingsServiceProvider.html#instance-method-init",
+    "src/providers/settings.js~SettingsServiceProvider#init",
     "method"
   ],
   [

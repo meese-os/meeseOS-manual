@@ -39,7 +39,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/notifications.js~Notifications.html">Notifications</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/packages.js~Packages.html">Packages</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/session.js~Session.html">Session</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/splash.js~Splash.html">Splash</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/tray.js~Tray.html">Tray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
@@ -94,6 +93,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-serverSettings">serverSettings</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-ui">adapters/ui</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-vfs">adapters/vfs</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-nullAdapter">nullAdapter</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#providers">providers</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/auth.js~AuthServiceProvider.html">AuthServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
@@ -246,12 +246,14 @@ const retval = (fn, ...args) =&gt; {
 	return true;
 };
 
-const getDataTransfer = (ev, type) =&gt; {
+const getDataTransfer = (ev, type, dataTransferProperty) =&gt; {
 	let files = [];
 	let data;
 
 	if (ev.dataTransfer) {
-		files = ev.dataTransfer.files ? Array.from(ev.dataTransfer.files) : [];
+		files = ev.dataTransfer[dataTransferProperty]
+			? Array.from(ev.dataTransfer[dataTransferProperty])
+			: [];
 
 		try {
 			const transfer = ev.dataTransfer.getData(type);
@@ -356,10 +358,11 @@ export const draggable = (el, options = {}) =&gt; {
  * @returns {DroppableInstance}
  */
 export const droppable = (el, options = {}) =&gt; {
-	const { strict, type, effect, ondragenter, ondragover, ondragleave, ondrop } =
+	const { strict, type, effect, dataTransferProperty, ondragenter, ondragover, ondragleave, ondrop } =
 		{
 			type: &quot;application/json&quot;,
 			effect: &quot;move&quot;,
+			dataTransferProperty: &quot;files&quot;,
 			ondragenter: () =&gt; true,
 			ondragover: () =&gt; true,
 			ondragleave: () =&gt; true,
@@ -398,7 +401,7 @@ export const droppable = (el, options = {}) =&gt; {
 			return false;
 		}
 
-		const { files, data } = getDataTransfer(ev, type);
+		const { files, data } = getDataTransfer(ev, type, dataTransferProperty);
 
 		ev.stopPropagation();
 		ev.preventDefault();

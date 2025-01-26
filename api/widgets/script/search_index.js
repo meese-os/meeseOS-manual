@@ -306,6 +306,18 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
+    "src/items/clippy.js",
+    "file/src/items/clippy.js.html",
+    "src/items/clippy.js",
+    "file"
+  ],
+  [
+    "src/items/clippy.js~clippyoptions",
+    "typedef/index.html#static-typedef-ClippyOptions",
+    "src/items/clippy.js~ClippyOptions",
+    "typedef"
+  ],
+  [
     "src/items/digitalclock.js",
     "file/src/items/digitalclock.js.html",
     "src/items/digitalclock.js",

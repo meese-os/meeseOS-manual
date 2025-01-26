@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/splash.js | meeseOS Core API</title>
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/adapters/vfs/system.js | meeseOS Core API</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -39,7 +39,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/notifications.js~Notifications.html">Notifications</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/packages.js~Packages.html">Packages</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/session.js~Session.html">Session</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/splash.js~Splash.html">Splash</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/tray.js~Tray.html">Tray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/websocket.js~Websocket.html">Websocket</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/window-behavior.js~WindowBehavior.html">WindowBehavior</a></span></span></li>
@@ -94,6 +93,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-serverSettings">serverSettings</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-ui">adapters/ui</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#adapters-vfs">adapters/vfs</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-adapter">adapter</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-nullAdapter">nullAdapter</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#providers">providers</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/auth.js~AuthServiceProvider.html">AuthServiceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/providers/core.js~CoreServiceProvider.html">CoreServiceProvider</a></span></span></li>
@@ -153,7 +153,7 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/splash.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/adapters/vfs/system.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * OS.js - JavaScript Cloud/Web Desktop Platform
  *
@@ -184,142 +184,135 @@
  * @license Simplified BSD License
  */
 
-import { createLettercrap } from &quot;./loading-screen/lettercrap.js&quot;;
-import loadingScreen from &quot;./loading-screen/loading.html&quot;;
+const getters = [&quot;capabilities&quot;, &quot;exists&quot;, &quot;stat&quot;, &quot;readdir&quot;, &quot;readfile&quot;];
 
 /**
- * Convert a template string into HTML DOM nodes
- * @param  {String} str The template string
- * @returns {Node} The template HTML
+ * Middleware for the VFS system adapter.
+ *
+ * @param {String} fn The function to call
+ * @param {*} body The body to pass to the function
+ * @param {String} type The content type
+ * @param {Object} [options] Adapter options
+ * @returns {Object}
  */
-const stringToHTML = (str) =&gt; {
-	const parser = new DOMParser();
-	const doc = parser.parseFromString(str, &quot;text/html&quot;);
-	return doc.body;
+const requester = (core) =&gt;
+	(fn, body, type, options = {}) =&gt;
+		core.request(`/vfs/${fn}`,
+			{
+				// FIXME: The `options` here is being stringified to `[object Object]`
+				body,
+				method: getters.indexOf(fn) !== -1 ? &quot;get&quot; : &quot;post&quot;,
+				...options,
+			},
+			type
+		).then((response) =&gt; {
+			if (type === &quot;json&quot;) {
+				return { mime: &quot;application/json&quot;, body: response };
+			} else if (fn === &quot;writefile&quot;) {
+				return response.json();
+			}
+
+			const responseHeadersContentType = response.headers.get(&quot;content-type&quot;);
+			const contentType = responseHeadersContentType !== &quot;&quot;
+				? responseHeadersContentType
+				: &quot;application/octet-stream&quot;;
+
+			return response.arrayBuffer().then((result) =&gt; ({
+				mime: contentType,
+				body: result,
+			}));
+		});
+
+/**
+ * Provides the methods for VFS system adapter.
+ * @param {Core} core MeeseOS Core instance reference
+ * @param {Function} request VFS abstraction function
+ * @returns {Object}
+ */
+const methods = (core, request) =&gt; {
+	const passthrough = (name) =&gt;
+		({ path }, options) =&gt;
+			request(name, { path, options }, &quot;json&quot;).then(({ body }) =&gt; body);
+
+	return {
+		capabilities: passthrough(&quot;capabilities&quot;),
+		readdir: passthrough(&quot;readdir&quot;),
+
+		readfile: ({ path }, type, options) =&gt;
+			request(&quot;readfile&quot;, { path, options }),
+
+		writefile: ({ path }, data, options = {}) =&gt; {
+			const formData = new FormData();
+			formData.append(&quot;upload&quot;, data);
+			formData.append(&quot;path&quot;, path);
+			formData.append(&quot;options&quot;, options);
+
+			return request(&quot;writefile&quot;, formData, undefined, {
+				onProgress: options.onProgress,
+				xhr: Boolean(options.onProgress),
+			});
+		},
+
+		copy: (from, to, options) =&gt;
+			request(&quot;copy&quot;, { from: from.path, to: to.path, options }, &quot;json&quot;).then(
+				({ body }) =&gt; body
+			),
+
+		rename: (from, to, options) =&gt;
+			request(&quot;rename&quot;, { from: from.path, to: to.path, options }, &quot;json&quot;).then(
+				({ body }) =&gt; body
+			),
+
+		mkdir: passthrough(&quot;mkdir&quot;),
+		unlink: passthrough(&quot;unlink&quot;),
+		exists: passthrough(&quot;exists&quot;),
+		stat: passthrough(&quot;stat&quot;),
+
+		url: ({ path }, _options) =&gt;
+			Promise.resolve(
+				core.url(`/vfs/readfile?path=${encodeURIComponent(path)}`)
+			),
+
+		search: ({ path }, pattern, options) =&gt;
+			request(&quot;search&quot;, { root: path, pattern, options }, &quot;json&quot;).then(
+				({ body }) =&gt; body
+			),
+
+		touch: ({ path }, options) =&gt;
+			request(&quot;touch&quot;, { path, options }, &quot;json&quot;).then(({ body }) =&gt; body),
+
+		download: ({ path }, options = {}) =&gt; {
+			const json = encodeURIComponent(JSON.stringify({ download: true }));
+
+			return Promise.resolve(
+				`/vfs/readfile?options=${json}&amp;path=` + encodeURIComponent(path)
+			).then((url) =&gt; {
+				return (options.target || window).open(url);
+			});
+		},
+
+		archive: (selection, options = {}) =&gt; {
+			const paths = selection.map((item) =&gt; item.path);
+			return request(&quot;archive&quot;, { selection: paths, options }, &quot;json&quot;).then(
+				({ body }) =&gt; body
+			);
+		},
+	};
 };
 
 /**
- * Splash Screen UI
+ * System VFS adapter.
+ * @param {Core} core MeeseOS Core instance reference
+ * @param {Object} [options] Adapter options
+ * @returns {Object}
  */
-export default class Splash {
-	/**
-	 * Create Splash.
-	 * @param {Core} core MeeseOS Core instance reference
-	 */
-	constructor(core) {
-		/**
-		 * Core instance reference.
-		 * @type {Core}
-		 * @readonly
-		 */
-		this.core = core;
+const adapter = (core) =&gt; {
+	const request = requester(core);
 
-		/**
-		 * Splash root element.
-		 * @type {Element}
-		 * @readonly
-		 */
-		this.$loading = document.createElement(&quot;div&quot;);
-		this.$loading.className = &quot;meeseOS-boot-splash&quot;;
+	return methods(core, request);
+};
 
-		/**
-		 * The transition time for `.loadingPage` in `styles/_loading.scss`.
-		 * @idea https://stackoverflow.com/q/56523785/6456163
-		 * @type {Number}
-		 * @readonly
-		 */
-		this.pageTransitionTime = 1000;
-
-		/**
-		 * The time between quips, in milliseconds.
-		 * @type {Number}
-		 * @readonly
-		 */
-		this.timePerQuip = 1500;
-
-		/**
-		 * The array of quips to display.
-		 * @type {String[]}
-		 * @readonly
-		 */
-		this.quips = [
-			&quot;Contracting a wizard...&quot;,
-			&quot;Moving dragon from the mouth of the cave...&quot;,
-			&quot;Collecting all the loot...&quot;,
-			&quot;Divvying up dubloons...&quot;,
-		];
-
-		core.on(&quot;meeseOS/core:boot&quot;, () =&gt; this.show());
-		core.on(&quot;meeseOS/core:logged-in&quot;, () =&gt; this.show());
-		core.on(&quot;meeseOS/splash:finished&quot;, () =&gt; this.destroy());
-	}
-
-	/**
-	 * Initializes splash with listener for user interaction.
-	 */
-	init() {
-		this.$loading.appendChild(stringToHTML(loadingScreen));
-		this.core.emit(&quot;meeseOS/splash:loaded&quot;);
-
-		// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#specifying_this_using_bind
-		this.start = this.start.bind(this);
-		document.body.style.cursor = &quot;pointer&quot;;
-		document.body.addEventListener(&quot;click&quot;, this.start, false);
-	}
-
-	/**
-	 * Starts splash screen functionality after user interaction.
-	 */
-	start() {
-		this.core.emit(&quot;meeseOS/splash:started&quot;);
-		document.body.removeEventListener(&quot;click&quot;, this.start);
-
-		if (this.core.has(&quot;meeseOS/sounds&quot;)) {
-			this.core.make(&quot;meeseOS/sounds&quot;).play(&quot;dial-up-modem&quot;);
-		}
-
-		document.getElementById(&quot;mouseNotMoved&quot;).style.display = &quot;none&quot;;
-		document.getElementById(&quot;mouseMoved&quot;).style.display = &quot;block&quot;;
-		document.body.style.cursor = &quot;default&quot;;
-		createLettercrap();
-
-		const loadingBar = document.getElementById(&quot;loadingBar&quot;);
-		for (let i = 1; i &lt;= this.quips.length; i++) {
-			setTimeout(() =&gt; {
-				loadingBar.innerText = this.quips[i - 1];
-				// IDEA: Attempt CSS animation here using the transition time variable
-				loadingBar.style.width = (i / this.quips.length) * 100 + &quot;%&quot;;
-			}, this.timePerQuip * i);
-		}
-
-		// Fade out the loading screen after all the quips have been displayed
-		window.setTimeout(() =&gt; {
-			this.$loading.style.opacity = 0;
-
-			setTimeout(() =&gt; {
-				this.core.emit(&quot;meeseOS/splash:finished&quot;);
-			}, this.pageTransitionTime);
-		}, this.timePerQuip * (this.quips.length + 1));
-	}
-
-	/**
-	 * Shows splash.
-	 */
-	show() {
-		if (!this.$loading.parentNode) {
-			this.core.$root.appendChild(this.$loading);
-		}
-	}
-
-	/**
-	 * Destroys splash.
-	 */
-	destroy() {
-		if (this.$loading.parentNode) {
-			this.$loading.remove();
-		}
-	}
-}
+export default adapter;
 </code></pre>
 
 </div>

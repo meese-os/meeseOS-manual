@@ -32,6 +32,7 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/provider.js~WidgetServiceProvider.html">WidgetServiceProvider</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#items">items</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AnalogClockColors">AnalogClockColors</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-AnalogClockOptions">AnalogClockOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ClippyOptions">ClippyOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DigitalClockOptions">DigitalClockOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Quote">Quote</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-QuoteDisplayOptions">QuoteDisplayOptions</a></span></span></li>
@@ -73,6 +74,7 @@
 import DigitalClock from &quot;./items/digitalclock&quot;;
 import AnalogClock from &quot;./items/analogclock&quot;;
 import QuoteDisplay from &quot;./items/quotedisplay&quot;;
+//import Clippy from &quot;./items/clippy&quot;;
 
 /**
  * Widget Service Provider
@@ -88,6 +90,7 @@ export default class WidgetServiceProvider {
 			digitalclock: DigitalClock,
 			analogclock: AnalogClock,
 			quotedisplay: QuoteDisplay,
+			//clippy: Clippy,
 			...(args.registry || {}),
 		};
 	}
