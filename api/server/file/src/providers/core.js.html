@@ -24,7 +24,7 @@
   </span>
     <ul class="search-result"></ul>
   </div>
-<a style="position:relative; top:3px;" href="https://github.com/meeseOS/meeseOS.git"><img width="20px" src="./image/github.png"></a></header>
+<a style="position:relative; top:3px;" href="https://github.com/meese-os/meeseOS.git"><img width="20px" src="./image/github.png"></a></header>
 
 <nav class="navigation" data-ice="nav"><div>
   <ul>
@@ -103,6 +103,7 @@ const path = require(&quot;path&quot;);
 const express = require(&quot;express&quot;);
 const chokidar = require(&quot;chokidar&quot;);
 const bodyParser = require(&quot;body-parser&quot;);
+const helmet = require(&quot;helmet&quot;);
 const proxy = require(&quot;express-http-proxy&quot;);
 const nocache = require(&quot;nocache&quot;);
 const { ServiceProvider } = require(&quot;@meese-os/common&quot;);
@@ -234,6 +235,64 @@ class CoreServiceProvider extends ServiceProvider {
 		const { app, session, configuration } = this.core;
 		const limit = configuration.express.maxBodySize;
 
+		const helmetConfig = {
+			contentSecurityPolicy: {
+				useDefaults: true,
+				directives: {
+					&quot;default-src&quot;: [&quot;&apos;self&apos;&quot;],
+					// Allow the Google Identity Services loader while keeping inline/eval allowances
+					// used elsewhere in the app. Consider moving to nonces/hashes later.
+					&quot;script-src&quot;: [
+						&quot;&apos;self&apos;&quot;,
+						&quot;&apos;unsafe-inline&apos;&quot;,
+						&quot;&apos;unsafe-eval&apos;&quot;,
+						&quot;https://accounts.google.com&quot;,
+						&quot;https://apis.google.com&quot;,
+						&quot;https://*.gstatic.com&quot;,
+					],
+					&quot;style-src&quot;: [&quot;&apos;self&apos;&quot;, &quot;&apos;unsafe-inline&apos;&quot;],
+					// Permit remote images (e.g., Unsplash wallpapers) in addition to local/data/blob
+					&quot;img-src&quot;: [
+						&quot;&apos;self&apos;&quot;,
+						&quot;data:&quot;,
+						&quot;blob:&quot;,
+						&quot;https:&quot;,
+					],
+					// Allow required outbound connections for GIS and similar SDKs
+					&quot;connect-src&quot;: [
+						&quot;&apos;self&apos;&quot;,
+						&quot;https://accounts.google.com&quot;,
+						&quot;https://*.googleapis.com&quot;,
+						&quot;https://*.gstatic.com&quot;,
+						&quot;https://apis.google.com&quot;,
+					],
+					// Allow embedding external applications without enumerating domains.
+					// Keep clickjacking protection via frame-ancestors from Helmet defaults.
+					&quot;frame-src&quot;: [
+						&quot;&apos;self&apos;&quot;,
+						&quot;https:&quot;,
+						&quot;blob:&quot;,
+						&quot;data:&quot;,
+						// Allow http: only in development for local testing
+						...(configuration.development ? [&quot;http:&quot;] : []),
+					],
+				}
+			},
+			referrerPolicy: { policy: &quot;no-referrer&quot; },
+			crossOriginEmbedderPolicy: false,
+			// Some OAuth/GIS popup flows require COOP to be disabled
+			crossOriginOpenerPolicy: { policy: &quot;unsafe-none&quot; },
+			hsts: configuration.development
+				? false
+				: {
+					maxAge: 63072000,
+					includeSubDomains: true,
+					preload: true,
+				},
+		};
+
+		app.use(helmet(helmetConfig));
+
 		if (configuration.development) {
 			app.use(nocache());
 		} else {
@@ -307,7 +366,7 @@ class CoreServiceProvider extends ServiceProvider {
 							name: &quot;meeseOS/core:ping&quot;,
 						})
 					);
-				  }, interval)
+				}, interval)
 				: undefined;
 
 			ws.on(&quot;close&quot;, () =&gt; {
