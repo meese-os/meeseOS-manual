@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/dialogs/font.js | meeseOS Dialog API</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="meeseOS Dialog API Documentation"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="meeseOS Dialog API"><meta property="twitter:description" content="meeseOS Dialog API Documentation"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/meese-os/meeseOS.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-colorFromClick">colorFromClick</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-componentToHex">componentToHex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createPalette">createPalette</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hexToComponent">hexToComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-rangeContainer">rangeContainer</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#dialogs">dialogs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/dialogs/alert.js~AlertDialog.html">AlertDialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/dialogs/choice.js~ChoiceDialog.html">ChoiceDialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/dialogs/custom.js~CustomDialog.html">CustomDialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/dialogs/font.js~FontDialog.html">FontDialog</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/dialogs/font.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * OS.js - JavaScript Cloud/Web Desktop Platform
+ *
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * @licence Simplified BSD License
+ */
+
+import { SelectField, TextareaField, Toolbar } from &quot;@meese-os/gui&quot;;
+import { app, h } from &quot;hyperapp&quot;;
+import Dialog from &quot;../dialog&quot;;
+
+/**
+ * Default MeeseOS Font Dialog
+ */
+export default class FontDialog extends Dialog {
+	/**
+	 * Constructor
+	 * @param {Core} core MeeseOS Core instance reference
+	 * @param {Object} args Arguments given from service creation
+	 * @param {Number} [args.minSize=6] Minimum size
+	 * @param {Number} [args.maxSize] Maximum size
+	 * @param {String} [args.unit=px] Unit
+	 * @param {String} [args.name] Initial font name
+	 * @param {Number} [args.size] Initial font size
+	 * @param {String} [args.text] What text to preview
+	 * @param {String[]} [args.controls] What controls to show
+	 * @param {String[]} [args.fonts] List of fonts
+	 * @param {Function} callback The callback function
+	 */
+	constructor(core, args, callback) {
+		args = {
+
+			title: &quot;Choose Font&quot;,
+			minSize: 6,
+			maxSize: 48,
+			unit: &quot;px&quot;,
+			name: &quot;Roboto&quot;,
+			size: 10,
+			style: &quot;regular&quot;,
+			text: &quot;The quick brown fox jumps over the lazy dog&quot;,
+			controls: [&quot;size&quot;, &quot;name&quot;, &quot;style&quot;],
+			fonts: [&quot;Roboto&quot;, &quot;arial&quot;, &quot;sans-serif&quot;, &quot;monospace&quot;],
+			...args
+		};
+
+		super(
+			core,
+			args,
+			{
+				className: &quot;info&quot;,
+				window: {
+					title: args.title,
+					attributes: {
+						minDimension: {
+							width: 400,
+							height: 200,
+						},
+					},
+				},
+				buttons: [&quot;ok&quot;, &quot;cancel&quot;],
+			},
+			callback
+		);
+
+		this.value = {
+			name: this.args.name,
+			size: this.args.size,
+			style: this.args.style,
+		};
+	}
+
+	render(options) {
+		const fontSizes = Array(this.args.maxSize - this.args.minSize)
+			.fill(0)
+			.map((v, i) =&gt; this.args.minSize + i)
+			.reduce((o, i) =&gt; Object.assign(o, { [i]: i }), {});
+
+		const fontNames = this.args.fonts.reduce((o, i) =&gt; {
+			const k = i.toLowerCase();
+			return Object.assign(o, { [k]: i });
+		}, {});
+
+		const fontStyles = {
+			regular: &quot;Regular&quot;,
+			bold: &quot;Bold&quot;,
+			italic: &quot;Italic&quot;,
+		};
+
+		const initialState = { ...this.value };
+		const initialActions = {
+			setSize: (size) =&gt; (state) =&gt; {
+				this.value.size = size;
+				return { size };
+			},
+			setFont: (name) =&gt; (_state) =&gt; {
+				this.value.name = name;
+				return { name };
+			},
+			setStyle: (style) =&gt; (_state) =&gt; {
+				this.value.style = style;
+				return { style };
+			},
+		};
+
+		super.render(options, ($content) =&gt; {
+			app(
+				initialState,
+				initialActions,
+				(state, actions) =&gt;
+					this.createView([
+						h(Toolbar, {}, [
+							h(SelectField, {
+								box: {
+									grow: 1,
+									style: {
+										display:
+											this.args.controls.indexOf(&quot;size&quot;) !== -1
+												? &quot;flex&quot;
+												: &quot;none&quot;,
+									},
+								},
+								value: state.size,
+								choices: fontSizes,
+								onchange: (_ev, v) =&gt; actions.setSize(v),
+							}),
+							h(SelectField, {
+								box: {
+									grow: 1,
+									style: {
+										display:
+											this.args.controls.indexOf(&quot;name&quot;) !== -1
+												? &quot;flex&quot;
+												: &quot;none&quot;,
+									},
+								},
+								value: state.name.toLowerCase(),
+								choices: fontNames,
+								onchange: (_ev, v) =&gt; actions.setFont(v),
+							}),
+							h(SelectField, {
+								box: {
+									grow: 1,
+									style: {
+										display:
+											this.args.controls.indexOf(&quot;style&quot;) !== -1
+												? &quot;flex&quot;
+												: &quot;none&quot;,
+									},
+								},
+								value: state.size,
+								choices: fontStyles,
+								onchange: (_ev, v) =&gt; actions.setStyle(v),
+							}),
+						]),
+						h(TextareaField, {
+							box: { grow: 1 },
+							value: this.args.text,
+							style: {
+								fontFamily: state.name,
+								fontSize: `${state.size}${this.args.unit}`,
+								fontWeight: state.style === &quot;bold&quot; ? &quot;bold&quot; : &quot;normal&quot;,
+								fontStyle: state.style !== &quot;bold&quot; ? state.style : &quot;normal&quot;,
+								height: &quot;4rem&quot;,
+								overflow: &quot;hidden&quot;,
+								whiteSpace: &quot;nowrap&quot;,
+							},
+						}),
+					]),
+				$content
+			);
+		});
+	}
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
