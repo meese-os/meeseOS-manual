@@ -769,6 +769,797 @@
     "return": null
   },
   {
+    "__docId__": 54,
+    "kind": "file",
+    "name": "src/dialogs/alert.js",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Box, TextareaField } from \"@meese-os/gui\";\nimport { app, h } from \"hyperapp\";\nimport Dialog from \"../dialog\";\n\n/**\n * Default MeeseOS Alert Dialog\n */\nexport default class AlertDialog extends Dialog {\n\t/**\n\t * Constructor\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} args Arguments given from service creation\n\t * @param {String} [args.title='Alert'] Dialog title\n\t * @param {String} [args.message=''] Dialog message\n\t * @param {String} [args.type='info'] Alert type (info/warning/error)\n\t * @param {String} [args.sound='bell'] Sound\n\t * @param {Error|*} [args.error] When 'alert' type is set this error stack or message will appear in a textbox\n\t * @param {Function} callback The callback function\n\t */\n\tconstructor(core, args, callback) {\n\t\targs = {\n\n\t\t\ttitle: \"Alert\",\n\t\t\ttype: \"info\",\n\t\t\tmessage: \"\",\n\t\t\t...args\n\t\t};\n\n\t\tif (typeof args.sound === \"undefined\") {\n\t\t\targs.sound = args.type === \"error\" ? \"bell\" : \"message\";\n\t\t}\n\n\t\tsuper(\n\t\t\tcore,\n\t\t\targs,\n\t\t\t{\n\t\t\t\tclassName: \"alert\",\n\t\t\t\tsound: args.sound,\n\t\t\t\twindow: {\n\t\t\t\t\ttitle: args.title,\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\tontop: args.type === \"error\",\n\t\t\t\t\t\tminDimension: {\n\t\t\t\t\t\t\twidth: 400,\n\t\t\t\t\t\t\theight: 220,\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tbuttons: [\"close\"],\n\t\t\t},\n\t\t\tcallback\n\t\t);\n\t}\n\n\trender(options) {\n\t\tsuper.render(options, ($content) => {\n\t\t\tconst children = [\n\t\t\t\th(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ class: \"meeseOS-dialog-message\" },\n\t\t\t\t\tString(this.args.message)\n\t\t\t\t),\n\t\t\t];\n\n\t\t\tif (this.args.type === \"error\") {\n\t\t\t\tconst { error } = this.args;\n\t\t\t\tconst msg = error instanceof Error ? `${error.message}\\n\\n${error.stack || \"No stack\"}` : error;\n\n\t\t\t\tchildren.push(\n\t\t\t\t\th(TextareaField, {\n\t\t\t\t\t\tvalue: msg,\n\t\t\t\t\t\treadonly: true,\n\t\t\t\t\t\tplaceholder: this.args.message,\n\t\t\t\t\t})\n\t\t\t\t);\n\t\t\t}\n\n\t\t\tapp(\n\t\t\t\t{},\n\t\t\t\t{},\n\t\t\t\t(_state, _actions) => this.createView([h(Box, { grow: 1 }, children)]),\n\t\t\t\t$content\n\t\t\t);\n\t\t});\n\t}\n}\n",
+    "static": true,
+    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/dialogs/src/dialogs/alert.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 55,
+    "kind": "class",
+    "name": "AlertDialog",
+    "memberof": "src/dialogs/alert.js",
+    "static": true,
+    "longname": "src/dialogs/alert.js~AlertDialog",
+    "access": "public",
+    "export": true,
+    "importPath": "@meese-os/dialogs/src/dialogs/alert.js",
+    "importStyle": "AlertDialog",
+    "description": "Default MeeseOS Alert Dialog",
+    "lineNumber": 38,
+    "interface": false,
+    "extends": [
+      "src/dialog.js~Dialog"
+    ]
+  },
+  {
+    "__docId__": 56,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/dialogs/alert.js~AlertDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/alert.js~AlertDialog#constructor",
+    "access": "public",
+    "description": "Constructor",
+    "lineNumber": 50,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "args",
+        "description": "Arguments given from service creation"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "'Alert'",
+        "defaultRaw": "'Alert'",
+        "name": "args.title",
+        "description": "Dialog title"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "''",
+        "defaultRaw": "''",
+        "name": "args.message",
+        "description": "Dialog message"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "'info'",
+        "defaultRaw": "'info'",
+        "name": "args.type",
+        "description": "Alert type (info/warning/error)"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "'bell'",
+        "defaultRaw": "'bell'",
+        "name": "args.sound",
+        "description": "Sound"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Error",
+          "*"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.error",
+        "description": "When 'alert' type is set this error stack or message will appear in a textbox"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "callback",
+        "description": "The callback function"
+      }
+    ]
+  },
+  {
+    "__docId__": 57,
+    "kind": "method",
+    "name": "render",
+    "memberof": "src/dialogs/alert.js~AlertDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/alert.js~AlertDialog#render",
+    "access": "public",
+    "description": null,
+    "lineNumber": 85,
+    "undocument": true,
+    "params": [
+      {
+        "name": "options",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 58,
+    "kind": "file",
+    "name": "src/dialogs/choice.js",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { Box, SelectField } from \"@meese-os/gui\";\nimport { app, h } from \"hyperapp\";\nimport Dialog from \"../dialog\";\n\n/**\n * Default MeeseOS Choice Dialog\n */\nexport default class ChoiceDialog extends Dialog {\n\t/**\n\t * Constructor\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} args Arguments given from service creation\n\t * @param {String} [args.title] Dialog title\n\t * @param {String} [args.message] Dialog message\n\t * @param {String} [args.value] Set default selected value\n\t * @param {Map<String,*>} [args.choices] Choice map\n\t * @param {Function} callback The callback function\n\t */\n\tconstructor(core, args, callback) {\n\t\targs = {\n\n\t\t\ttitle: \"Choice\",\n\t\t\tmessage: \"\",\n\t\t\tvalue: undefined,\n\t\t\tchoices: {},\n\t\t\t...args\n\t\t};\n\n\t\tsuper(\n\t\t\tcore,\n\t\t\targs,\n\t\t\t{\n\t\t\t\tclassName: \"alert\",\n\t\t\t\twindow: {\n\t\t\t\t\ttitle: args.title,\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\tontop: args.type === \"error\",\n\t\t\t\t\t},\n\t\t\t\t\tdimension: {\n\t\t\t\t\t\twidth: 400,\n\t\t\t\t\t\theight: 200,\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tbuttons: [\"ok\", \"close\"],\n\t\t\t},\n\t\t\tcallback\n\t\t);\n\n\t\tthis.value = typeof args.value !== \"undefined\"\n\t\t\t? this.args.value\n\t\t\t: Object.keys(this.args.choices)[0];\n\t}\n\n\trender(options) {\n\t\tsuper.render(options, ($content) => {\n\t\t\tapp(\n\t\t\t\t{\n\t\t\t\t\tcurrent: this.value,\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\tsetCurrent: (current) => (_state) => {\n\t\t\t\t\t\tthis.value = current;\n\n\t\t\t\t\t\treturn { current };\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t(state, actions) =>\n\t\t\t\t\tthis.createView([\n\t\t\t\t\t\th(Box, { grow: 1 }, [\n\t\t\t\t\t\t\th(\n\t\t\t\t\t\t\t\t\"div\",\n\t\t\t\t\t\t\t\t{ class: \"meeseOS-dialog-message\" },\n\t\t\t\t\t\t\t\tString(this.args.message)\n\t\t\t\t\t\t\t),\n\t\t\t\t\t\t\th(SelectField, {\n\t\t\t\t\t\t\t\tchoices: this.args.choices,\n\t\t\t\t\t\t\t\tvalue: state.current,\n\t\t\t\t\t\t\t\tonchange: (_ev, val) => actions.setCurrent(val),\n\t\t\t\t\t\t\t}),\n\t\t\t\t\t\t]),\n\t\t\t\t\t]),\n\t\t\t\t$content\n\t\t\t);\n\t\t});\n\t}\n}\n",
+    "static": true,
+    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/dialogs/src/dialogs/choice.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 59,
+    "kind": "class",
+    "name": "ChoiceDialog",
+    "memberof": "src/dialogs/choice.js",
+    "static": true,
+    "longname": "src/dialogs/choice.js~ChoiceDialog",
+    "access": "public",
+    "export": true,
+    "importPath": "@meese-os/dialogs/src/dialogs/choice.js",
+    "importStyle": "ChoiceDialog",
+    "description": "Default MeeseOS Choice Dialog",
+    "lineNumber": 38,
+    "interface": false,
+    "extends": [
+      "src/dialog.js~Dialog"
+    ]
+  },
+  {
+    "__docId__": 60,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/dialogs/choice.js~ChoiceDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/choice.js~ChoiceDialog#constructor",
+    "access": "public",
+    "description": "Constructor",
+    "lineNumber": 49,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "args",
+        "description": "Arguments given from service creation"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.title",
+        "description": "Dialog title"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.message",
+        "description": "Dialog message"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.value",
+        "description": "Set default selected value"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Map<String,*>"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.choices",
+        "description": "Choice map"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "callback",
+        "description": "The callback function"
+      }
+    ]
+  },
+  {
+    "__docId__": 61,
+    "kind": "member",
+    "name": "value",
+    "memberof": "src/dialogs/choice.js~ChoiceDialog",
+    "static": false,
+    "longname": "src/dialogs/choice.js~ChoiceDialog#value",
+    "access": "public",
+    "description": null,
+    "lineNumber": 79,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 62,
+    "kind": "method",
+    "name": "render",
+    "memberof": "src/dialogs/choice.js~ChoiceDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/choice.js~ChoiceDialog#render",
+    "access": "public",
+    "description": null,
+    "lineNumber": 84,
+    "undocument": true,
+    "params": [
+      {
+        "name": "options",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 64,
+    "kind": "file",
+    "name": "src/dialogs/custom.js",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { app, h } from \"hyperapp\";\nimport Dialog from \"../dialog\";\n\n/**\n * Custom MeeseOS Dialog\n */\nexport default class CustomDialog extends Dialog {\n\tconstructor(core, options, valueCallback, callback) {\n\t\tsuper(core, {}, options, callback);\n\n\t\tthis.valueCallback = valueCallback;\n\t}\n\n\trender(render) {\n\t\treturn super.render({}, ($content, win) => render($content, win, this));\n\t}\n\n\trenderCustom(render, styles = {}) {\n\t\treturn this.render(($content, dialogWindow, dialog) => {\n\t\t\tapp(\n\t\t\t\t{},\n\t\t\t\t{},\n\t\t\t\t() => {\n\t\t\t\t\treturn this.createView([\n\t\t\t\t\t\th(\"div\", {\n\t\t\t\t\t\t\tstyle: {\n\t\t\t\t\t\t\t\t\"flex-grow\": 1,\n\t\t\t\t\t\t\t\t\"flex-shrink\": 1,\n\t\t\t\t\t\t\t\tposition: \"relative\",\n\t\t\t\t\t\t\t\t...styles,\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\toncreate: ($el) => render($el, dialogWindow, dialog),\n\t\t\t\t\t\t}),\n\t\t\t\t\t]);\n\t\t\t\t},\n\t\t\t\t$content\n\t\t\t);\n\t\t});\n\t}\n\n\tgetValue() {\n\t\treturn this.valueCallback(this);\n\t}\n}\n",
+    "static": true,
+    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/dialogs/src/dialogs/custom.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 65,
+    "kind": "class",
+    "name": "CustomDialog",
+    "memberof": "src/dialogs/custom.js",
+    "static": true,
+    "longname": "src/dialogs/custom.js~CustomDialog",
+    "access": "public",
+    "export": true,
+    "importPath": "@meese-os/dialogs/src/dialogs/custom.js",
+    "importStyle": "CustomDialog",
+    "description": "Custom MeeseOS Dialog",
+    "lineNumber": 37,
+    "interface": false,
+    "extends": [
+      "src/dialog.js~Dialog"
+    ]
+  },
+  {
+    "__docId__": 66,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/dialogs/custom.js~CustomDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/custom.js~CustomDialog#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 38,
+    "undocument": true,
+    "ignore": true
+  },
+  {
+    "__docId__": 67,
+    "kind": "member",
+    "name": "valueCallback",
+    "memberof": "src/dialogs/custom.js~CustomDialog",
+    "static": false,
+    "longname": "src/dialogs/custom.js~CustomDialog#valueCallback",
+    "access": "public",
+    "description": null,
+    "lineNumber": 41,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 68,
+    "kind": "method",
+    "name": "render",
+    "memberof": "src/dialogs/custom.js~CustomDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/custom.js~CustomDialog#render",
+    "access": "public",
+    "description": null,
+    "lineNumber": 44,
+    "undocument": true,
+    "params": [
+      {
+        "name": "render",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 69,
+    "kind": "method",
+    "name": "renderCustom",
+    "memberof": "src/dialogs/custom.js~CustomDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/custom.js~CustomDialog#renderCustom",
+    "access": "public",
+    "description": null,
+    "lineNumber": 48,
+    "undocument": true,
+    "params": [
+      {
+        "name": "render",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "styles",
+        "optional": true,
+        "types": [
+          "{}"
+        ],
+        "defaultRaw": {},
+        "defaultValue": "{}"
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 70,
+    "kind": "method",
+    "name": "getValue",
+    "memberof": "src/dialogs/custom.js~CustomDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/custom.js~CustomDialog#getValue",
+    "access": "public",
+    "description": null,
+    "lineNumber": 71,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 71,
+    "kind": "file",
+    "name": "src/dialogs/font.js",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { SelectField, TextareaField, Toolbar } from \"@meese-os/gui\";\nimport { app, h } from \"hyperapp\";\nimport Dialog from \"../dialog\";\n\n/**\n * Default MeeseOS Font Dialog\n */\nexport default class FontDialog extends Dialog {\n\t/**\n\t * Constructor\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} args Arguments given from service creation\n\t * @param {Number} [args.minSize=6] Minimum size\n\t * @param {Number} [args.maxSize] Maximum size\n\t * @param {String} [args.unit=px] Unit\n\t * @param {String} [args.name] Initial font name\n\t * @param {Number} [args.size] Initial font size\n\t * @param {String} [args.text] What text to preview\n\t * @param {String[]} [args.controls] What controls to show\n\t * @param {String[]} [args.fonts] List of fonts\n\t * @param {Function} callback The callback function\n\t */\n\tconstructor(core, args, callback) {\n\t\targs = {\n\n\t\t\ttitle: \"Choose Font\",\n\t\t\tminSize: 6,\n\t\t\tmaxSize: 48,\n\t\t\tunit: \"px\",\n\t\t\tname: \"Roboto\",\n\t\t\tsize: 10,\n\t\t\tstyle: \"regular\",\n\t\t\ttext: \"The quick brown fox jumps over the lazy dog\",\n\t\t\tcontrols: [\"size\", \"name\", \"style\"],\n\t\t\tfonts: [\"Roboto\", \"arial\", \"sans-serif\", \"monospace\"],\n\t\t\t...args\n\t\t};\n\n\t\tsuper(\n\t\t\tcore,\n\t\t\targs,\n\t\t\t{\n\t\t\t\tclassName: \"info\",\n\t\t\t\twindow: {\n\t\t\t\t\ttitle: args.title,\n\t\t\t\t\tattributes: {\n\t\t\t\t\t\tminDimension: {\n\t\t\t\t\t\t\twidth: 400,\n\t\t\t\t\t\t\theight: 200,\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tbuttons: [\"ok\", \"cancel\"],\n\t\t\t},\n\t\t\tcallback\n\t\t);\n\n\t\tthis.value = {\n\t\t\tname: this.args.name,\n\t\t\tsize: this.args.size,\n\t\t\tstyle: this.args.style,\n\t\t};\n\t}\n\n\trender(options) {\n\t\tconst fontSizes = Array(this.args.maxSize - this.args.minSize)\n\t\t\t.fill(0)\n\t\t\t.map((v, i) => this.args.minSize + i)\n\t\t\t.reduce((o, i) => Object.assign(o, { [i]: i }), {});\n\n\t\tconst fontNames = this.args.fonts.reduce((o, i) => {\n\t\t\tconst k = i.toLowerCase();\n\t\t\treturn Object.assign(o, { [k]: i });\n\t\t}, {});\n\n\t\tconst fontStyles = {\n\t\t\tregular: \"Regular\",\n\t\t\tbold: \"Bold\",\n\t\t\titalic: \"Italic\",\n\t\t};\n\n\t\tconst initialState = { ...this.value };\n\t\tconst initialActions = {\n\t\t\tsetSize: (size) => (state) => {\n\t\t\t\tthis.value.size = size;\n\t\t\t\treturn { size };\n\t\t\t},\n\t\t\tsetFont: (name) => (_state) => {\n\t\t\t\tthis.value.name = name;\n\t\t\t\treturn { name };\n\t\t\t},\n\t\t\tsetStyle: (style) => (_state) => {\n\t\t\t\tthis.value.style = style;\n\t\t\t\treturn { style };\n\t\t\t},\n\t\t};\n\n\t\tsuper.render(options, ($content) => {\n\t\t\tapp(\n\t\t\t\tinitialState,\n\t\t\t\tinitialActions,\n\t\t\t\t(state, actions) =>\n\t\t\t\t\tthis.createView([\n\t\t\t\t\t\th(Toolbar, {}, [\n\t\t\t\t\t\t\th(SelectField, {\n\t\t\t\t\t\t\t\tbox: {\n\t\t\t\t\t\t\t\t\tgrow: 1,\n\t\t\t\t\t\t\t\t\tstyle: {\n\t\t\t\t\t\t\t\t\t\tdisplay:\n\t\t\t\t\t\t\t\t\t\t\tthis.args.controls.indexOf(\"size\") !== -1\n\t\t\t\t\t\t\t\t\t\t\t\t? \"flex\"\n\t\t\t\t\t\t\t\t\t\t\t\t: \"none\",\n\t\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\tvalue: state.size,\n\t\t\t\t\t\t\t\tchoices: fontSizes,\n\t\t\t\t\t\t\t\tonchange: (_ev, v) => actions.setSize(v),\n\t\t\t\t\t\t\t}),\n\t\t\t\t\t\t\th(SelectField, {\n\t\t\t\t\t\t\t\tbox: {\n\t\t\t\t\t\t\t\t\tgrow: 1,\n\t\t\t\t\t\t\t\t\tstyle: {\n\t\t\t\t\t\t\t\t\t\tdisplay:\n\t\t\t\t\t\t\t\t\t\t\tthis.args.controls.indexOf(\"name\") !== -1\n\t\t\t\t\t\t\t\t\t\t\t\t? \"flex\"\n\t\t\t\t\t\t\t\t\t\t\t\t: \"none\",\n\t\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\tvalue: state.name.toLowerCase(),\n\t\t\t\t\t\t\t\tchoices: fontNames,\n\t\t\t\t\t\t\t\tonchange: (_ev, v) => actions.setFont(v),\n\t\t\t\t\t\t\t}),\n\t\t\t\t\t\t\th(SelectField, {\n\t\t\t\t\t\t\t\tbox: {\n\t\t\t\t\t\t\t\t\tgrow: 1,\n\t\t\t\t\t\t\t\t\tstyle: {\n\t\t\t\t\t\t\t\t\t\tdisplay:\n\t\t\t\t\t\t\t\t\t\t\tthis.args.controls.indexOf(\"style\") !== -1\n\t\t\t\t\t\t\t\t\t\t\t\t? \"flex\"\n\t\t\t\t\t\t\t\t\t\t\t\t: \"none\",\n\t\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\tvalue: state.size,\n\t\t\t\t\t\t\t\tchoices: fontStyles,\n\t\t\t\t\t\t\t\tonchange: (_ev, v) => actions.setStyle(v),\n\t\t\t\t\t\t\t}),\n\t\t\t\t\t\t]),\n\t\t\t\t\t\th(TextareaField, {\n\t\t\t\t\t\t\tbox: { grow: 1 },\n\t\t\t\t\t\t\tvalue: this.args.text,\n\t\t\t\t\t\t\tstyle: {\n\t\t\t\t\t\t\t\tfontFamily: state.name,\n\t\t\t\t\t\t\t\tfontSize: `${state.size}${this.args.unit}`,\n\t\t\t\t\t\t\t\tfontWeight: state.style === \"bold\" ? \"bold\" : \"normal\",\n\t\t\t\t\t\t\t\tfontStyle: state.style !== \"bold\" ? state.style : \"normal\",\n\t\t\t\t\t\t\t\theight: \"4rem\",\n\t\t\t\t\t\t\t\toverflow: \"hidden\",\n\t\t\t\t\t\t\t\twhiteSpace: \"nowrap\",\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t}),\n\t\t\t\t\t]),\n\t\t\t\t$content\n\t\t\t);\n\t\t});\n\t}\n}\n",
+    "static": true,
+    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/dialogs/src/dialogs/font.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 72,
+    "kind": "class",
+    "name": "FontDialog",
+    "memberof": "src/dialogs/font.js",
+    "static": true,
+    "longname": "src/dialogs/font.js~FontDialog",
+    "access": "public",
+    "export": true,
+    "importPath": "@meese-os/dialogs/src/dialogs/font.js",
+    "importStyle": "FontDialog",
+    "description": "Default MeeseOS Font Dialog",
+    "lineNumber": 38,
+    "interface": false,
+    "extends": [
+      "src/dialog.js~Dialog"
+    ]
+  },
+  {
+    "__docId__": 73,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/dialogs/font.js~FontDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/font.js~FontDialog#constructor",
+    "access": "public",
+    "description": "Constructor",
+    "lineNumber": 53,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Core"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "core",
+        "description": "MeeseOS Core instance reference"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "args",
+        "description": "Arguments given from service creation"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "6",
+        "defaultRaw": 6,
+        "name": "args.minSize",
+        "description": "Minimum size"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.maxSize",
+        "description": "Maximum size"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "px",
+        "defaultRaw": "px",
+        "name": "args.unit",
+        "description": "Unit"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.name",
+        "description": "Initial font name"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.size",
+        "description": "Initial font size"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.text",
+        "description": "What text to preview"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String[]"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.controls",
+        "description": "What controls to show"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String[]"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "args.fonts",
+        "description": "List of fonts"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "callback",
+        "description": "The callback function"
+      }
+    ]
+  },
+  {
+    "__docId__": 74,
+    "kind": "member",
+    "name": "value",
+    "memberof": "src/dialogs/font.js~FontDialog",
+    "static": false,
+    "longname": "src/dialogs/font.js~FontDialog#value",
+    "access": "public",
+    "description": null,
+    "lineNumber": 88,
+    "undocument": true,
+    "type": {
+      "types": [
+        "{\"name\": *, \"size\": *, \"style\": *}"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 75,
+    "kind": "method",
+    "name": "render",
+    "memberof": "src/dialogs/font.js~FontDialog",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/dialogs/font.js~FontDialog#render",
+    "access": "public",
+    "description": null,
+    "lineNumber": 95,
+    "undocument": true,
+    "params": [
+      {
+        "name": "options",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 76,
+    "kind": "file",
+    "name": "src/provider.js",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport AlertDialog from \"./dialogs/alert\";\nimport ChoiceDialog from \"./dialogs/choice\";\nimport ColorDialog from \"./dialogs/color\";\nimport ConfirmDialog from \"./dialogs/confirm\";\nimport CustomDialog from \"./dialogs/custom\";\nimport DefaultApplicationDialog from \"./dialogs/default-application\";\nimport FontDialog from \"./dialogs/font\";\nimport FileDialog from \"./dialogs/file\";\nimport MultipleColorsDialog from \"./dialogs/multiple-colors\";\nimport PromptDialog from \"./dialogs/prompt\";\nimport ProgressDialog from \"./dialogs/progress\";\n\nexport default class DialogServiceProvider {\n\tconstructor(core, args = {}) {\n\t\tthis.core = core;\n\t\tthis.registry = {\n\t\t\talert: AlertDialog,\n\t\t\tchoice: ChoiceDialog,\n\t\t\tcolor: ColorDialog,\n\t\t\tconfirm: ConfirmDialog,\n\t\t\tdefaultApplication: DefaultApplicationDialog,\n\t\t\tfont: FontDialog,\n\t\t\tfile: FileDialog,\n\t\t\tmultipleColors: MultipleColorsDialog,\n\t\t\tprompt: PromptDialog,\n\t\t\tprogress: ProgressDialog,\n\t\t\t...args.registry || {}\n\t\t};\n\t}\n\n\tdestroy() {}\n\n\t init() {\n\t\tthis.core.instance(\"meeseOS/dialog\", (name, args = {}, ...eargs) => {\n\t\t\tconst options = eargs.length > 1 ? eargs[0] : {};\n\t\t\tconst callback = eargs[eargs.length > 1 ? 1 : 0];\n\n\t\t\tif (!this.registry[name]) {\n\t\t\t\tthrow new Error(`Dialog '${name}' does not exist`);\n\t\t\t}\n\n\t\t\tif (typeof callback !== \"function\") {\n\t\t\t\tthrow new Error(\"Dialog requires a callback\");\n\t\t\t}\n\n\t\t\tconst instance = new this.registry[name](this.core, args, callback);\n\t\t\tinstance.render(options);\n\t\t\treturn instance;\n\t\t});\n\n\t\tthis.core.singleton(\"meeseOS/dialogs\", () => ({\n\t\t\tcreate: (options, valueCallback, callback) => {\n\t\t\t\treturn new CustomDialog(this.core, options, valueCallback, callback);\n\t\t\t},\n\n\t\t\tregister: (name, classRef) => {\n\t\t\t\tif (this.registry[name]) {\n\t\t\t\t\tconsole.warn(\"Overwriting previously registered dialog\", name);\n\t\t\t\t}\n\n\t\t\t\tthis.registry[name] = classRef;\n\t\t\t},\n\t\t}));\n\t}\n\n\tstart() {}\n}\n",
+    "static": true,
+    "longname": "/home/runner/work/meeseOS/meeseOS/frontend/dialogs/src/provider.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 77,
+    "kind": "class",
+    "name": "DialogServiceProvider",
+    "memberof": "src/provider.js",
+    "static": true,
+    "longname": "src/provider.js~DialogServiceProvider",
+    "access": "public",
+    "export": true,
+    "importPath": "@meese-os/dialogs/src/provider.js",
+    "importStyle": "DialogServiceProvider",
+    "description": null,
+    "lineNumber": 43,
+    "undocument": true,
+    "interface": false,
+    "ignore": true
+  },
+  {
+    "__docId__": 78,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/provider.js~DialogServiceProvider",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/provider.js~DialogServiceProvider#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 44,
+    "undocument": true,
+    "ignore": true
+  },
+  {
+    "__docId__": 79,
+    "kind": "member",
+    "name": "core",
+    "memberof": "src/provider.js~DialogServiceProvider",
+    "static": false,
+    "longname": "src/provider.js~DialogServiceProvider#core",
+    "access": "public",
+    "description": null,
+    "lineNumber": 45,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 80,
+    "kind": "member",
+    "name": "registry",
+    "memberof": "src/provider.js~DialogServiceProvider",
+    "static": false,
+    "longname": "src/provider.js~DialogServiceProvider#registry",
+    "access": "public",
+    "description": null,
+    "lineNumber": 46,
+    "undocument": true,
+    "type": {
+      "types": [
+        "{\"alert\": *, \"choice\": *, \"color\": *, \"confirm\": *, \"defaultApplication\": *, \"font\": *, \"file\": *, \"multipleColors\": *, \"prompt\": *, \"progress\": *, ...undefined: Object}"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 81,
+    "kind": "method",
+    "name": "destroy",
+    "memberof": "src/provider.js~DialogServiceProvider",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/provider.js~DialogServiceProvider#destroy",
+    "access": "public",
+    "description": null,
+    "lineNumber": 61,
+    "undocument": true,
+    "params": [],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 82,
+    "kind": "method",
+    "name": "init",
+    "memberof": "src/provider.js~DialogServiceProvider",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/provider.js~DialogServiceProvider#init",
+    "access": "public",
+    "description": null,
+    "lineNumber": 63,
+    "undocument": true,
+    "params": [],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 83,
+    "kind": "method",
+    "name": "start",
+    "memberof": "src/provider.js~DialogServiceProvider",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/provider.js~DialogServiceProvider#start",
+    "access": "public",
+    "description": null,
+    "lineNumber": 96,
+    "undocument": true,
+    "params": [],
+    "return": null,
+    "ignore": true
+  },
+  {
     "kind": "index",
     "content": "",
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/dialogs/README.md",
@@ -778,7 +1569,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meese-os/dialogs\",\n  \"version\": \"1.0.6\",\n  \"description\": \"meeseOS Dialogs\",\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint\",\n    \"eslint\": \"eslint index.js src/**/*.js\",\n    \"build\": \"webpack\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss --fix --quiet-deprecation-warnings\",\n    \"prepublishOnly\": \"npm run test && rm -rf ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"license\": \"BSD-2-Clause\",\n  \"main\": \"dist/main.js\",\n  \"module\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"files\": [\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"README.md\"\n  ],\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"@meese-os/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.22.11\",\n    \"@babel/plugin-transform-runtime\": \"^7.22.10\",\n    \"@babel/preset-env\": \"^7.22.10\",\n    \"@babel/runtime\": \"^7.22.11\",\n    \"babel-loader\": \"^9.1.3\",\n    \"copy-webpack-plugin\": \"^11.0.0\",\n    \"css-loader\": \"^6.8.1\",\n    \"css-minimizer-webpack-plugin\": \"^5.0.1\",\n    \"eslint\": \"^8.48.0\",\n    \"mini-css-extract-plugin\": \"^2.7.6\",\n    \"sass\": \"^1.66.1\",\n    \"sass-loader\": \"^13.3.2\",\n    \"stylelint\": \"^15.10.3\",\n    \"stylelint-config-standard\": \"^34.0.0\",\n    \"stylelint-config-standard-scss\": \"^10.0.0\",\n    \"webpack\": \"^5.88.2\",\n    \"webpack-cli\": \"^5.1.4\"\n  },\n  \"dependencies\": {\n    \"@meese-os/gui\": \"workspace:*\",\n    \"deepmerge\": \"^4.3.1\",\n    \"hyperapp\": \"^1.2.10\",\n    \"is-plain-object\": \"^5.0.0\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true\n    },\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": \"@meese-os/eslint-config\"\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meese-os/stylelint-config\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Dialog API\",\n            \"description\": \"meeseOS Dialog API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      }\n    ]\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/meese-os/meeseOS.git\",\n    \"directory\": \"frontend/dialogs\"\n  },\n  \"keywords\": [\n    \"os\",\n    \"osjs\",\n    \"operating system\",\n    \"webOS\",\n    \"meeseOS\",\n    \"dialog\",\n    \"dialogs\"\n  ]\n}\n",
+    "content": "{\n  \"name\": \"@meese-os/dialogs\",\n  \"version\": \"1.0.6\",\n  \"description\": \"meeseOS Dialogs\",\n  \"scripts\": {\n    \"test\": \"npm run eslint && npm run stylelint\",\n    \"eslint\": \"eslint index.js src/**/*.js\",\n    \"build\": \"webpack\",\n    \"stylelint\": \"stylelint index.scss src/**/*.scss --fix --quiet-deprecation-warnings\",\n    \"prepublishOnly\": \"npm run test && rm -rf ./dist/* && NODE_ENV=production npm run build\"\n  },\n  \"license\": \"BSD-2-Clause\",\n  \"main\": \"dist/main.js\",\n  \"module\": \"dist/main.js\",\n  \"style\": \"dist/main.css\",\n  \"files\": [\n    \"dist/main.js\",\n    \"dist/main.js.map\",\n    \"dist/main.css\",\n    \"dist/main.css.map\",\n    \"README.md\"\n  ],\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"@meese-os/stylelint-config\": \"workspace:*\",\n    \"@babel/core\": \"^7.22.11\",\n    \"@babel/plugin-transform-runtime\": \"^7.22.10\",\n    \"@babel/preset-env\": \"^7.22.10\",\n    \"@babel/runtime\": \"^7.22.11\",\n    \"babel-loader\": \"^9.1.3\",\n    \"copy-webpack-plugin\": \"^11.0.0\",\n    \"css-loader\": \"^6.8.1\",\n    \"css-minimizer-webpack-plugin\": \"^5.0.1\",\n    \"eslint\": \"^8.48.0\",\n    \"mini-css-extract-plugin\": \"^2.7.6\",\n    \"sass\": \"^1.66.1\",\n    \"sass-loader\": \"^13.3.2\",\n    \"stylelint\": \"^15.10.3\",\n    \"stylelint-config-standard\": \"^34.0.0\",\n    \"stylelint-config-standard-scss\": \"^10.0.0\",\n    \"webpack\": \"^5.88.2\",\n    \"webpack-cli\": \"^5.1.4\"\n  },\n  \"dependencies\": {\n    \"@meese-os/gui\": \"workspace:*\",\n    \"deepmerge\": \"^4.3.1\",\n    \"hyperapp\": \"^1.2.10\",\n    \"is-plain-object\": \"^5.0.0\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true\n    },\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": \"@meese-os/eslint-config\"\n  },\n  \"stylelint\": {\n    \"extends\": [\"stylelint-config-standard-scss\", \"@meese-os/stylelint-config\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Dialog API\",\n            \"description\": \"meeseOS Dialog API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      }\n    ]\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/meese-os/meeseOS.git\",\n    \"directory\": \"frontend/dialogs\"\n  },\n  \"keywords\": [\n    \"os\",\n    \"osjs\",\n    \"operating system\",\n    \"webOS\",\n    \"meeseOS\",\n    \"dialog\",\n    \"dialogs\"\n  ]\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/dialogs/package.json",
     "name": "package.json",
     "static": true,

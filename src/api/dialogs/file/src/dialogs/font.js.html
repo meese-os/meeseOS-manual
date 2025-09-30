@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/color-utils.js | meeseOS Dialog API</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/dialogs/font.js | meeseOS Dialog API</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -42,24 +42,21 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/color-utils.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/dialogs/font.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
- * MeeseOS - JavaScript Cloud/Web Desktop Platform
+ * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2022-Present, Aaron Meese &lt;aaron@meese.dev&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
+ *    list of conditions and the following disclaimer
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
- * 	 and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holder nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- * 	 without specific prior written permission.
+ *    and/or other materials provided with the distribution
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -72,125 +69,176 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author  Aaron Meese &lt;aaron@meese.dev&gt;
- * @licence Modified BSD License
+ * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * @licence Simplified BSD License
  */
 
-import { Box, RangeField, TextField } from &quot;@meese-os/gui&quot;;
-import { h } from &quot;hyperapp&quot;;
+import { SelectField, TextareaField, Toolbar } from &quot;@meese-os/gui&quot;;
+import { app, h } from &quot;hyperapp&quot;;
+import Dialog from &quot;../dialog&quot;;
 
 /**
- * Creates a palette canvas at the specified dimensions
- * @param {Number} width
- * @param {Number} height
+ * Default MeeseOS Font Dialog
  */
-export const createPalette = (width = 98, height = 98) =&gt; {
-	const canvas = document.createElement(&quot;canvas&quot;);
-	canvas.width = width;
-	canvas.height = height;
+export default class FontDialog extends Dialog {
+	/**
+	 * Constructor
+	 * @param {Core} core MeeseOS Core instance reference
+	 * @param {Object} args Arguments given from service creation
+	 * @param {Number} [args.minSize=6] Minimum size
+	 * @param {Number} [args.maxSize] Maximum size
+	 * @param {String} [args.unit=px] Unit
+	 * @param {String} [args.name] Initial font name
+	 * @param {Number} [args.size] Initial font size
+	 * @param {String} [args.text] What text to preview
+	 * @param {String[]} [args.controls] What controls to show
+	 * @param {String[]} [args.fonts] List of fonts
+	 * @param {Function} callback The callback function
+	 */
+	constructor(core, args, callback) {
+		args = {
 
-	const ctx = canvas.getContext(&quot;2d&quot;);
+			title: &quot;Choose Font&quot;,
+			minSize: 6,
+			maxSize: 48,
+			unit: &quot;px&quot;,
+			name: &quot;Roboto&quot;,
+			size: 10,
+			style: &quot;regular&quot;,
+			text: &quot;The quick brown fox jumps over the lazy dog&quot;,
+			controls: [&quot;size&quot;, &quot;name&quot;, &quot;style&quot;],
+			fonts: [&quot;Roboto&quot;, &quot;arial&quot;, &quot;sans-serif&quot;, &quot;monospace&quot;],
+			...args
+		};
 
-	let gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
-	gradient.addColorStop(0, &quot;rgb(255,   0,   0)&quot;);
-	gradient.addColorStop(0.15, &quot;rgb(255,   0, 255)&quot;);
-	gradient.addColorStop(0.33, &quot;rgb(0,     0, 255)&quot;);
-	gradient.addColorStop(0.49, &quot;rgb(0,   255, 255)&quot;);
-	gradient.addColorStop(0.67, &quot;rgb(0,   255,   0)&quot;);
-	gradient.addColorStop(0.84, &quot;rgb(255, 255,   0)&quot;);
-	gradient.addColorStop(1, &quot;rgb(255,   0,   0)&quot;);
-
-	ctx.fillStyle = gradient;
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-	gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-	gradient.addColorStop(0, &quot;rgba(255, 255, 255, 1)&quot;);
-	gradient.addColorStop(0.5, &quot;rgba(255, 255, 255, 0)&quot;);
-	gradient.addColorStop(0.5, &quot;rgba(0,     0,   0, 0)&quot;);
-	gradient.addColorStop(1, &quot;rgba(0,     0,   0, 1)&quot;);
-
-	ctx.fillStyle = gradient;
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-	return canvas;
-};
-
-/**
- * Convert component values into hex
- */
-export const componentToHex = ({ r, g, b }) =&gt; {
-	const hex = [
-		parseInt(r, 10).toString(16),
-		parseInt(g, 10).toString(16),
-		parseInt(b, 10).toString(16),
-	].map((i) =&gt; (String(i).length === 1 ? &quot;0&quot; + String(i) : i));
-
-	return &quot;#&quot; + hex.join(&quot;&quot;).toUpperCase();
-};
-
-/**
- * Converts hex to its component values
- */
-export const hexToComponent = (hex = &quot;#000000&quot;) =&gt; {
-	if (typeof hex === &quot;object&quot;) hex = hex.hex;
-	const rgb = parseInt(hex.replace(&quot;#&quot;, &quot;&quot;), 16);
-	const val = {};
-	val.r = (rgb &amp; (255 &lt;&lt; 16)) &gt;&gt; 16;
-	val.g = (rgb &amp; (255 &lt;&lt; 8)) &gt;&gt; 8;
-	val.b = rgb &amp; 255;
-	return val;
-};
-
-/**
- * Gets the color of a clicked palette area
- */
-export const colorFromClick = (ev, canvas) =&gt; {
-	const { clientX, clientY } = ev;
-	const box = canvas.getBoundingClientRect();
-	const cx = clientX - box.x;
-	const cy = clientY - box.y;
-	const ctx = canvas.getContext(&quot;2d&quot;);
-	const { data } = ctx.getImageData(cx, cy, 1, 1);
-	const [r, g, b] = data;
-	const hex = componentToHex({ r, g, b });
-	return { r, g, b, hex };
-};
-
-/**
- * Creates and returns a range slider element
- * @param {String} color hexadecimal color
- * @param {Object} value TODO: typedef
- * @param {Object} actions TODO: typedef
- */
-export const rangeContainer = (color, value, actions) =&gt;
-	h(Box, { orientation: &quot;vertical&quot;, align: &quot;center&quot;, padding: false }, [
-		h(Box, { shrink: 1 }, h(&quot;div&quot;, {}, color.toUpperCase())),
-		h(RangeField, {
-			box: { grow: 1 },
-			min: 0,
-			max: 255,
-			value: value,
-			oncreate: (el) =&gt; (el.value = value),
-			oninput: (ev, newValue) =&gt; {
-				newValue = Number(newValue);
-				actions.setComponent({ color: color, newValue });
+		super(
+			core,
+			args,
+			{
+				className: &quot;info&quot;,
+				window: {
+					title: args.title,
+					attributes: {
+						minDimension: {
+							width: 400,
+							height: 200,
+						},
+					},
+				},
+				buttons: [&quot;ok&quot;, &quot;cancel&quot;],
 			},
-			onchange: (ev, newValue) =&gt; {
-				newValue = Number(newValue);
-				actions.setComponent({ color: color, newValue });
+			callback
+		);
+
+		this.value = {
+			name: this.args.name,
+			size: this.args.size,
+			style: this.args.style,
+		};
+	}
+
+	render(options) {
+		const fontSizes = Array(this.args.maxSize - this.args.minSize)
+			.fill(0)
+			.map((v, i) =&gt; this.args.minSize + i)
+			.reduce((o, i) =&gt; Object.assign(o, { [i]: i }), {});
+
+		const fontNames = this.args.fonts.reduce((o, i) =&gt; {
+			const k = i.toLowerCase();
+			return Object.assign(o, { [k]: i });
+		}, {});
+
+		const fontStyles = {
+			regular: &quot;Regular&quot;,
+			bold: &quot;Bold&quot;,
+			italic: &quot;Italic&quot;,
+		};
+
+		const initialState = { ...this.value };
+		const initialActions = {
+			setSize: (size) =&gt; (state) =&gt; {
+				this.value.size = size;
+				return { size };
 			},
-		}),
-		h(TextField, {
-			box: { shrink: 1, basis: &quot;5em&quot; },
-			type: &quot;number&quot;,
-			value: Number(value),
-			oncreate: (el) =&gt; (el.value = Number(value)),
-			oninput: (ev, newValue) =&gt; {
-				newValue = Number(newValue);
-				actions.setComponent({ color: color, newValue });
+			setFont: (name) =&gt; (_state) =&gt; {
+				this.value.name = name;
+				return { name };
 			},
-		}),
-	]);
+			setStyle: (style) =&gt; (_state) =&gt; {
+				this.value.style = style;
+				return { style };
+			},
+		};
+
+		super.render(options, ($content) =&gt; {
+			app(
+				initialState,
+				initialActions,
+				(state, actions) =&gt;
+					this.createView([
+						h(Toolbar, {}, [
+							h(SelectField, {
+								box: {
+									grow: 1,
+									style: {
+										display:
+											this.args.controls.indexOf(&quot;size&quot;) !== -1
+												? &quot;flex&quot;
+												: &quot;none&quot;,
+									},
+								},
+								value: state.size,
+								choices: fontSizes,
+								onchange: (_ev, v) =&gt; actions.setSize(v),
+							}),
+							h(SelectField, {
+								box: {
+									grow: 1,
+									style: {
+										display:
+											this.args.controls.indexOf(&quot;name&quot;) !== -1
+												? &quot;flex&quot;
+												: &quot;none&quot;,
+									},
+								},
+								value: state.name.toLowerCase(),
+								choices: fontNames,
+								onchange: (_ev, v) =&gt; actions.setFont(v),
+							}),
+							h(SelectField, {
+								box: {
+									grow: 1,
+									style: {
+										display:
+											this.args.controls.indexOf(&quot;style&quot;) !== -1
+												? &quot;flex&quot;
+												: &quot;none&quot;,
+									},
+								},
+								value: state.size,
+								choices: fontStyles,
+								onchange: (_ev, v) =&gt; actions.setStyle(v),
+							}),
+						]),
+						h(TextareaField, {
+							box: { grow: 1 },
+							value: this.args.text,
+							style: {
+								fontFamily: state.name,
+								fontSize: `${state.size}${this.args.unit}`,
+								fontWeight: state.style === &quot;bold&quot; ? &quot;bold&quot; : &quot;normal&quot;,
+								fontStyle: state.style !== &quot;bold&quot; ? state.style : &quot;normal&quot;,
+								height: &quot;4rem&quot;,
+								overflow: &quot;hidden&quot;,
+								whiteSpace: &quot;nowrap&quot;,
+							},
+						}),
+					]),
+				$content
+			);
+		});
+	}
+}
 </code></pre>
 
 </div>

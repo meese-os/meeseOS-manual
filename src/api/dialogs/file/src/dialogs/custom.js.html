@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">Home | meeseOS Dialog API</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/dialogs/custom.js | meeseOS Dialog API</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -42,7 +42,83 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content">
+<div class="content" data-ice="content"><h1 data-ice="title">src/dialogs/custom.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * OS.js - JavaScript Cloud/Web Desktop Platform
+ *
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * @licence Simplified BSD License
+ */
+
+import { app, h } from &quot;hyperapp&quot;;
+import Dialog from &quot;../dialog&quot;;
+
+/**
+ * Custom MeeseOS Dialog
+ */
+export default class CustomDialog extends Dialog {
+	constructor(core, options, valueCallback, callback) {
+		super(core, {}, options, callback);
+
+		this.valueCallback = valueCallback;
+	}
+
+	render(render) {
+		return super.render({}, ($content, win) =&gt; render($content, win, this));
+	}
+
+	renderCustom(render, styles = {}) {
+		return this.render(($content, dialogWindow, dialog) =&gt; {
+			app(
+				{},
+				{},
+				() =&gt; {
+					return this.createView([
+						h(&quot;div&quot;, {
+							style: {
+								&quot;flex-grow&quot;: 1,
+								&quot;flex-shrink&quot;: 1,
+								position: &quot;relative&quot;,
+								...styles,
+							},
+							oncreate: ($el) =&gt; render($el, dialogWindow, dialog),
+						}),
+					]);
+				},
+				$content
+			);
+		});
+	}
+
+	getValue() {
+		return this.valueCallback(this);
+	}
+}
+</code></pre>
+
 </div>
 
 <footer class="footer">

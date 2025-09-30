@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/color-utils.js | meeseOS Dialog API</title>
+  <title data-ice="title">src/provider.js | meeseOS Dialog API</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -42,24 +42,21 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/color-utils.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/provider.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
- * MeeseOS - JavaScript Cloud/Web Desktop Platform
+ * OS.js - JavaScript Cloud/Web Desktop Platform
  *
- * Copyright (c) 2022-Present, Aaron Meese &lt;aaron@meese.dev&gt;
+ * Copyright (c) 2011-Present, Anders Evenrud &lt;andersevenrud@gmail.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
+ *    list of conditions and the following disclaimer
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
- * 	 and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holder nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- * 	 without specific prior written permission.
+ *    and/or other materials provided with the distribution
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -72,125 +69,77 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author  Aaron Meese &lt;aaron@meese.dev&gt;
- * @licence Modified BSD License
+ * @author  Anders Evenrud &lt;andersevenrud@gmail.com&gt;
+ * @licence Simplified BSD License
  */
 
-import { Box, RangeField, TextField } from &quot;@meese-os/gui&quot;;
-import { h } from &quot;hyperapp&quot;;
+import AlertDialog from &quot;./dialogs/alert&quot;;
+import ChoiceDialog from &quot;./dialogs/choice&quot;;
+import ColorDialog from &quot;./dialogs/color&quot;;
+import ConfirmDialog from &quot;./dialogs/confirm&quot;;
+import CustomDialog from &quot;./dialogs/custom&quot;;
+import DefaultApplicationDialog from &quot;./dialogs/default-application&quot;;
+import FontDialog from &quot;./dialogs/font&quot;;
+import FileDialog from &quot;./dialogs/file&quot;;
+import MultipleColorsDialog from &quot;./dialogs/multiple-colors&quot;;
+import PromptDialog from &quot;./dialogs/prompt&quot;;
+import ProgressDialog from &quot;./dialogs/progress&quot;;
 
-/**
- * Creates a palette canvas at the specified dimensions
- * @param {Number} width
- * @param {Number} height
- */
-export const createPalette = (width = 98, height = 98) =&gt; {
-	const canvas = document.createElement(&quot;canvas&quot;);
-	canvas.width = width;
-	canvas.height = height;
+export default class DialogServiceProvider {
+	constructor(core, args = {}) {
+		this.core = core;
+		this.registry = {
+			alert: AlertDialog,
+			choice: ChoiceDialog,
+			color: ColorDialog,
+			confirm: ConfirmDialog,
+			defaultApplication: DefaultApplicationDialog,
+			font: FontDialog,
+			file: FileDialog,
+			multipleColors: MultipleColorsDialog,
+			prompt: PromptDialog,
+			progress: ProgressDialog,
+			...args.registry || {}
+		};
+	}
 
-	const ctx = canvas.getContext(&quot;2d&quot;);
+	destroy() {}
 
-	let gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
-	gradient.addColorStop(0, &quot;rgb(255,   0,   0)&quot;);
-	gradient.addColorStop(0.15, &quot;rgb(255,   0, 255)&quot;);
-	gradient.addColorStop(0.33, &quot;rgb(0,     0, 255)&quot;);
-	gradient.addColorStop(0.49, &quot;rgb(0,   255, 255)&quot;);
-	gradient.addColorStop(0.67, &quot;rgb(0,   255,   0)&quot;);
-	gradient.addColorStop(0.84, &quot;rgb(255, 255,   0)&quot;);
-	gradient.addColorStop(1, &quot;rgb(255,   0,   0)&quot;);
+	 init() {
+		this.core.instance(&quot;meeseOS/dialog&quot;, (name, args = {}, ...eargs) =&gt; {
+			const options = eargs.length &gt; 1 ? eargs[0] : {};
+			const callback = eargs[eargs.length &gt; 1 ? 1 : 0];
 
-	ctx.fillStyle = gradient;
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			if (!this.registry[name]) {
+				throw new Error(`Dialog &apos;${name}&apos; does not exist`);
+			}
 
-	gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-	gradient.addColorStop(0, &quot;rgba(255, 255, 255, 1)&quot;);
-	gradient.addColorStop(0.5, &quot;rgba(255, 255, 255, 0)&quot;);
-	gradient.addColorStop(0.5, &quot;rgba(0,     0,   0, 0)&quot;);
-	gradient.addColorStop(1, &quot;rgba(0,     0,   0, 1)&quot;);
+			if (typeof callback !== &quot;function&quot;) {
+				throw new Error(&quot;Dialog requires a callback&quot;);
+			}
 
-	ctx.fillStyle = gradient;
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			const instance = new this.registry[name](this.core, args, callback);
+			instance.render(options);
+			return instance;
+		});
 
-	return canvas;
-};
-
-/**
- * Convert component values into hex
- */
-export const componentToHex = ({ r, g, b }) =&gt; {
-	const hex = [
-		parseInt(r, 10).toString(16),
-		parseInt(g, 10).toString(16),
-		parseInt(b, 10).toString(16),
-	].map((i) =&gt; (String(i).length === 1 ? &quot;0&quot; + String(i) : i));
-
-	return &quot;#&quot; + hex.join(&quot;&quot;).toUpperCase();
-};
-
-/**
- * Converts hex to its component values
- */
-export const hexToComponent = (hex = &quot;#000000&quot;) =&gt; {
-	if (typeof hex === &quot;object&quot;) hex = hex.hex;
-	const rgb = parseInt(hex.replace(&quot;#&quot;, &quot;&quot;), 16);
-	const val = {};
-	val.r = (rgb &amp; (255 &lt;&lt; 16)) &gt;&gt; 16;
-	val.g = (rgb &amp; (255 &lt;&lt; 8)) &gt;&gt; 8;
-	val.b = rgb &amp; 255;
-	return val;
-};
-
-/**
- * Gets the color of a clicked palette area
- */
-export const colorFromClick = (ev, canvas) =&gt; {
-	const { clientX, clientY } = ev;
-	const box = canvas.getBoundingClientRect();
-	const cx = clientX - box.x;
-	const cy = clientY - box.y;
-	const ctx = canvas.getContext(&quot;2d&quot;);
-	const { data } = ctx.getImageData(cx, cy, 1, 1);
-	const [r, g, b] = data;
-	const hex = componentToHex({ r, g, b });
-	return { r, g, b, hex };
-};
-
-/**
- * Creates and returns a range slider element
- * @param {String} color hexadecimal color
- * @param {Object} value TODO: typedef
- * @param {Object} actions TODO: typedef
- */
-export const rangeContainer = (color, value, actions) =&gt;
-	h(Box, { orientation: &quot;vertical&quot;, align: &quot;center&quot;, padding: false }, [
-		h(Box, { shrink: 1 }, h(&quot;div&quot;, {}, color.toUpperCase())),
-		h(RangeField, {
-			box: { grow: 1 },
-			min: 0,
-			max: 255,
-			value: value,
-			oncreate: (el) =&gt; (el.value = value),
-			oninput: (ev, newValue) =&gt; {
-				newValue = Number(newValue);
-				actions.setComponent({ color: color, newValue });
+		this.core.singleton(&quot;meeseOS/dialogs&quot;, () =&gt; ({
+			create: (options, valueCallback, callback) =&gt; {
+				return new CustomDialog(this.core, options, valueCallback, callback);
 			},
-			onchange: (ev, newValue) =&gt; {
-				newValue = Number(newValue);
-				actions.setComponent({ color: color, newValue });
+
+			register: (name, classRef) =&gt; {
+				if (this.registry[name]) {
+					console.warn(&quot;Overwriting previously registered dialog&quot;, name);
+				}
+
+				this.registry[name] = classRef;
 			},
-		}),
-		h(TextField, {
-			box: { shrink: 1, basis: &quot;5em&quot; },
-			type: &quot;number&quot;,
-			value: Number(value),
-			oncreate: (el) =&gt; (el.value = Number(value)),
-			oninput: (ev, newValue) =&gt; {
-				newValue = Number(newValue);
-				actions.setComponent({ color: color, newValue });
-			},
-		}),
-	]);
+		}));
+	}
+
+	start() {}
+}
 </code></pre>
 
 </div>

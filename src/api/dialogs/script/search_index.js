@@ -1,5 +1,29 @@
 window.esdocSearchIndex = [
   [
+    "@meese-os/dialogs/src/dialogs/alert.js~alertdialog",
+    "class/src/dialogs/alert.js~AlertDialog.html",
+    "<span>AlertDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/alert.js</span>",
+    "class"
+  ],
+  [
+    "@meese-os/dialogs/src/dialogs/choice.js~choicedialog",
+    "class/src/dialogs/choice.js~ChoiceDialog.html",
+    "<span>ChoiceDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/choice.js</span>",
+    "class"
+  ],
+  [
+    "@meese-os/dialogs/src/dialogs/custom.js~customdialog",
+    "class/src/dialogs/custom.js~CustomDialog.html",
+    "<span>CustomDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/custom.js</span>",
+    "class"
+  ],
+  [
+    "@meese-os/dialogs/src/dialogs/font.js~fontdialog",
+    "class/src/dialogs/font.js~FontDialog.html",
+    "<span>FontDialog</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/dialogs/font.js</span>",
+    "class"
+  ],
+  [
     "@meese-os/dialogs/src/color-utils.js~colorfromclick",
     "function/index.html#static-function-colorFromClick",
     "<span>colorFromClick</span> <span class=\"search-result-import-path\">@meese-os/dialogs/src/color-utils.js</span>",
@@ -315,6 +339,54 @@ window.esdocSearchIndex = [
     "src/color-utils.js",
     "file/src/color-utils.js.html",
     "src/color-utils.js",
+    "file"
+  ],
+  [
+    "src/dialogs/alert.js",
+    "file/src/dialogs/alert.js.html",
+    "src/dialogs/alert.js",
+    "file"
+  ],
+  [
+    "src/dialogs/alert.js~alertdialog#constructor",
+    "class/src/dialogs/alert.js~AlertDialog.html#instance-constructor-constructor",
+    "src/dialogs/alert.js~AlertDialog#constructor",
+    "method"
+  ],
+  [
+    "src/dialogs/choice.js",
+    "file/src/dialogs/choice.js.html",
+    "src/dialogs/choice.js",
+    "file"
+  ],
+  [
+    "src/dialogs/choice.js~choicedialog#constructor",
+    "class/src/dialogs/choice.js~ChoiceDialog.html#instance-constructor-constructor",
+    "src/dialogs/choice.js~ChoiceDialog#constructor",
+    "method"
+  ],
+  [
+    "src/dialogs/custom.js",
+    "file/src/dialogs/custom.js.html",
+    "src/dialogs/custom.js",
+    "file"
+  ],
+  [
+    "src/dialogs/font.js",
+    "file/src/dialogs/font.js.html",
+    "src/dialogs/font.js",
+    "file"
+  ],
+  [
+    "src/dialogs/font.js~fontdialog#constructor",
+    "class/src/dialogs/font.js~FontDialog.html#instance-constructor-constructor",
+    "src/dialogs/font.js~FontDialog#constructor",
+    "method"
+  ],
+  [
+    "src/provider.js",
+    "file/src/provider.js.html",
+    "src/provider.js",
     "file"
   ]
 ]
