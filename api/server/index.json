@@ -721,7 +721,7 @@
     "__docId__": 54,
     "kind": "file",
     "name": "src/core.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst consola = require(\"consola\");\nconst deepmerge = require(\"deepmerge\");\nconst express = require(\"express\");\n// eslint-disable-next-line no-unused-vars\nconst express_ws = require(\"express-ws\");\nconst fs = require(\"fs-extra\");\nconst http = require(\"http\");\nconst https = require(\"https\");\nconst morgan = require(\"morgan\");\nconst minimist = require(\"minimist\");\nconst path = require(\"path\");\nconst { CoreBase } = require(\"@meese-os/common\");\nconst {\n\targvToConfig,\n\tcreateSession,\n\tcreateWebsocket,\n\tparseJson,\n} = require(\"./utils/core.js\");\nconst { defaultConfiguration } = require(\"./config.js\");\nconst logger = consola.withTag(\"Core\");\n\nlet _instance;\n\n/**\n * MeeseOS Server Core\n */\nclass Core extends CoreBase {\n\t/**\n\t * Creates a new Core instance.\n\t * @param {Object} cfg Configuration tree\n\t * @param {Object} [options] Options\n\t */\n\tconstructor(cfg, options = {}) {\n\t\toptions = {\n\t\t\targv: process.argv.splice(2),\n\t\t\troot: process.cwd(),\n\t\t\t...options,\n\t\t};\n\n\t\tconst argv = minimist(options.argv);\n\t\tconst val = (k) => argvToConfig[k](parseJson(argv[k]));\n\t\tconst keys = Object.keys(argvToConfig).filter((k) =>\n\t\t\tObject.prototype.hasOwnProperty.call(argv, k)\n\t\t);\n\t\tconst argvConfig = keys.reduce((o, k) => {\n\t\t\tlogger.info(`CLI argument '--${k}' overrides`, val(k));\n\t\t\treturn { ...o, ...deepmerge(o, val(k)) };\n\t\t}, {});\n\n\t\tsuper(defaultConfiguration, deepmerge(cfg, argvConfig), options);\n\n\t\tthis.logger = consola.withTag(\"Internal\");\n\n\t\t/**\n\t\t * @type {Express}\n\t\t */\n\t\tthis.app = express();\n\n\t\tif (!this.configuration.public) {\n\t\t\tthrow new Error(\"The public option is required\");\n\t\t}\n\n\t\t/**\n\t\t * @type {http.Server|https.Server}\n\t\t */\n\t\tthis.httpServer = this.config(\"https.enabled\")\n\t\t\t? https.createServer(this.config(\"https.options\"), this.app)\n\t\t\t: http.createServer(this.app);\n\n\t\t/**\n\t\t * @type {express.RequestHandler}\n\t\t */\n\t\tthis.session = createSession(this.configuration);\n\n\t\t/**\n\t\t * @type {express_ws.Instance}\n\t\t */\n\t\tthis.ws = createWebsocket(\n\t\t\tthis.app,\n\t\t\tthis.configuration,\n\t\t\tthis.session,\n\t\t\tthis.httpServer\n\t\t);\n\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.wss = this.ws.getWss();\n\n\t\t_instance = this;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t * @param {Function} [done] Callback when done\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy(done = () => {}) {\n\t\tif (this.destroyed) return;\n\n\t\tthis.emit(\"meeseOS/core:destroy\");\n\t\tlogger.info(\"Shutting down...\");\n\n\t\tif (this.wss) {\n\t\t\tthis.wss.close();\n\t\t}\n\n\t\tconst finish = (error) => {\n\t\t\tif (error) {\n\t\t\t\tlogger.error(error);\n\t\t\t}\n\n\t\t\tif (this.httpServer) {\n\t\t\t\tthis.httpServer.close(done);\n\t\t\t} else {\n\t\t\t\tdone();\n\t\t\t}\n\t\t};\n\n\t\ttry {\n\t\t\tawait super.destroy();\n\t\t\tfinish();\n\t\t} catch (e) {\n\t\t\tfinish(e);\n\t\t}\n\t}\n\n\t/**\n\t * Starts the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync start() {\n\t\tif (!this.started) {\n\t\t\tlogger.info(\"Starting services...\");\n\n\t\t\tawait super.start();\n\n\t\t\tlogger.success(\"Initialized!\");\n\n\t\t\tawait this.listen();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Initializes the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync boot() {\n\t\tif (this.booted) return true;\n\t\tthis.emit(\"meeseOS/core:start\");\n\n\t\tif (this.configuration.logging) {\n\t\t\tthis.wss.on(\"connection\", (c) => {\n\t\t\t\tlogger.log(\"WebSocket connection opened\");\n\t\t\t\tc.on(\"close\", () => logger.log(\"WebSocket connection closed\"));\n\t\t\t});\n\n\t\t\tif (this.configuration.morgan) {\n\t\t\t\tthis.app.use(morgan(this.configuration.morgan));\n\t\t\t}\n\t\t}\n\n\t\tlogger.info(\"Initializing services...\");\n\n\t\tawait super.boot();\n\t\tthis.emit(\"init\");\n\t\tawait this.start();\n\t\tthis.emit(\"meeseOS/core:started\");\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Opens HTTP server.\n\t */\n\tlisten() {\n\t\tconst httpPort = this.config(\"port\");\n\t\tconst httpHost = this.config(\"bind\");\n\t\tconst wsPort = this.config(\"ws.port\") || httpPort;\n\t\tconst pub = this.config(\"public\");\n\t\tconst session = path.basename(\n\t\t\tpath.dirname(this.config(\"session.store.module\"))\n\t\t);\n\t\tconst dist = pub.replace(process.cwd(), \"\");\n\t\tconst secure = this.config(\"https.enabled\", false);\n\t\tconst proto = (prefix) => `${prefix}${secure ? \"s\" : \"\"}://`;\n\t\tconst host = (port) => `${httpHost}:${port}`;\n\n\t\tlogger.info(\"Opening server connection\");\n\n\t\tconst checkFile = path.join(pub, this.configuration.index);\n\t\tif (!fs.existsSync(checkFile)) {\n\t\t\tlogger.warn(\n\t\t\t\t\"Missing files in \\\"dist/\\\" directory. Did you forget to run \\\"npm run build\\\" ?\"\n\t\t\t);\n\t\t}\n\n\t\treturn new Promise((resolve, reject) => {\n\t\t\ttry {\n\t\t\t\tthis.httpServer.listen(httpPort, httpHost, (e) => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\treject(e);\n\t\t\t\t\t} else {\n\t\t\t\t\t\tlogger.success(`Using '${session}' sessions`);\n\t\t\t\t\t\tlogger.success(`Serving '${dist}'`);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`WebSocket listening on ${proto(\"ws\")}${host(wsPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`Server listening on ${proto(\"http\")}${host(httpPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tresolve();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} catch (e) {\n\t\t\t\treject(e);\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to client.\n\t * @param {String} name Event name\n\t * @param {Array} params A list of parameters to send to client\n\t * @param {Function} [filter] A function to filter clients\n\t */\n\tbroadcast(name, params, filter) {\n\t\tfilter = filter || (() => true);\n\t\tif (!this.ws) return;\n\n\t\tthis.wss.clients // This is a Set\n\t\t\t.forEach((client) => {\n\t\t\t\tif (!client._meeseOS_client) return;\n\n\t\t\t\tif (filter(client)) {\n\t\t\t\t\tclient.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tparams,\n\t\t\t\t\t\t\tname,\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to all clients.\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastAll(name, ...params) {\n\t\treturn this.broadcast(name, params);\n\t}\n\n\t/**\n\t * Broadcast given event to client filtered by username.\n\t * @param {String} username Username to send to\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastUser(username, name, ...params) {\n\t\treturn this.broadcast(name, params, (client) => {\n\t\t\treturn client._meeseOS_client.username === username;\n\t\t});\n\t}\n\n\t/**\n\t * Gets the server instance.\n\t * @returns {Core}\n\t */\n\tstatic getInstance() {\n\t\treturn _instance;\n\t}\n}\n\nmodule.exports = Core;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { consola } = require(\"consola\");\nconst deepmerge = require(\"deepmerge\");\nconst express = require(\"express\");\n// eslint-disable-next-line no-unused-vars\nconst express_ws = require(\"express-ws\");\nconst fs = require(\"fs-extra\");\nconst http = require(\"http\");\nconst https = require(\"https\");\nconst morgan = require(\"morgan\");\nconst minimist = require(\"minimist\");\nconst path = require(\"path\");\nconst { CoreBase } = require(\"@meese-os/common\");\nconst {\n\targvToConfig,\n\tcreateSession,\n\tcreateWebsocket,\n\tparseJson,\n} = require(\"./utils/core.js\");\nconst { defaultConfiguration } = require(\"./config.js\");\nconst logger = consola.withTag(\"Core\");\n\nlet _instance;\n\n/**\n * MeeseOS Server Core\n */\nclass Core extends CoreBase {\n\t/**\n\t * Creates a new Core instance.\n\t * @param {Object} cfg Configuration tree\n\t * @param {Object} [options] Options\n\t */\n\tconstructor(cfg, options = {}) {\n\t\toptions = {\n\t\t\targv: process.argv.splice(2),\n\t\t\troot: process.cwd(),\n\t\t\t...options,\n\t\t};\n\n\t\tconst argv = minimist(options.argv);\n\t\tconst val = (k) => argvToConfig[k](parseJson(argv[k]));\n\t\tconst keys = Object.keys(argvToConfig).filter((k) =>\n\t\t\tObject.prototype.hasOwnProperty.call(argv, k)\n\t\t);\n\t\tconst argvConfig = keys.reduce((o, k) => {\n\t\t\tlogger.info(`CLI argument '--${k}' overrides`, val(k));\n\t\t\treturn { ...o, ...deepmerge(o, val(k)) };\n\t\t}, {});\n\n\t\tsuper(defaultConfiguration, deepmerge(cfg, argvConfig), options);\n\n\t\tthis.logger = consola.withTag(\"Internal\");\n\n\t\t/**\n\t\t * @type {Express}\n\t\t */\n\t\tthis.app = express();\n\n\t\tif (!this.configuration.public) {\n\t\t\tthrow new Error(\"The public option is required\");\n\t\t}\n\n\t\t/**\n\t\t * @type {http.Server|https.Server}\n\t\t */\n\t\tthis.httpServer = this.config(\"https.enabled\")\n\t\t\t? https.createServer(this.config(\"https.options\"), this.app)\n\t\t\t: http.createServer(this.app);\n\n\t\t/**\n\t\t * @type {express.RequestHandler}\n\t\t */\n\t\tthis.session = createSession(this.configuration);\n\n\t\t/**\n\t\t * @type {express_ws.Instance}\n\t\t */\n\t\tthis.ws = createWebsocket(\n\t\t\tthis.app,\n\t\t\tthis.configuration,\n\t\t\tthis.session,\n\t\t\tthis.httpServer\n\t\t);\n\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.wss = this.ws.getWss();\n\n\t\t_instance = this;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t * @param {Function} [done] Callback when done\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy(done = () => {}) {\n\t\tif (this.destroyed) return;\n\n\t\tthis.emit(\"meeseOS/core:destroy\");\n\t\tlogger.info(\"Shutting down...\");\n\n\t\tif (this.wss) {\n\t\t\tthis.wss.close();\n\t\t}\n\n\t\tconst finish = (error) => {\n\t\t\tif (error) {\n\t\t\t\tlogger.error(error);\n\t\t\t}\n\n\t\t\tif (this.httpServer) {\n\t\t\t\tthis.httpServer.close(done);\n\t\t\t} else {\n\t\t\t\tdone();\n\t\t\t}\n\t\t};\n\n\t\ttry {\n\t\t\tawait super.destroy();\n\t\t\tfinish();\n\t\t} catch (e) {\n\t\t\tfinish(e);\n\t\t}\n\t}\n\n\t/**\n\t * Starts the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync start() {\n\t\tif (!this.started) {\n\t\t\tlogger.info(\"Starting services...\");\n\n\t\t\tawait super.start();\n\n\t\t\tlogger.success(\"Initialized!\");\n\n\t\t\tawait this.listen();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Initializes the server.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync boot() {\n\t\tif (this.booted) return true;\n\t\tthis.emit(\"meeseOS/core:start\");\n\n\t\tif (this.configuration.logging) {\n\t\t\tthis.wss.on(\"connection\", (c) => {\n\t\t\t\tlogger.log(\"WebSocket connection opened\");\n\t\t\t\tc.on(\"close\", () => logger.log(\"WebSocket connection closed\"));\n\t\t\t});\n\n\t\t\tif (this.configuration.morgan) {\n\t\t\t\tthis.app.use(morgan(this.configuration.morgan));\n\t\t\t}\n\t\t}\n\n\t\tlogger.info(\"Initializing services...\");\n\n\t\tawait super.boot();\n\t\tthis.emit(\"init\");\n\t\tawait this.start();\n\t\tthis.emit(\"meeseOS/core:started\");\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Opens HTTP server.\n\t */\n\tlisten() {\n\t\tconst httpPort = this.config(\"port\");\n\t\tconst httpHost = this.config(\"bind\");\n\t\tconst wsPort = this.config(\"ws.port\") || httpPort;\n\t\tconst pub = this.config(\"public\");\n\t\tconst session = path.basename(\n\t\t\tpath.dirname(this.config(\"session.store.module\"))\n\t\t);\n\t\tconst dist = pub.replace(process.cwd(), \"\");\n\t\tconst secure = this.config(\"https.enabled\", false);\n\t\tconst proto = (prefix) => `${prefix}${secure ? \"s\" : \"\"}://`;\n\t\tconst host = (port) => `${httpHost}:${port}`;\n\n\t\tlogger.info(\"Opening server connection\");\n\n\t\tconst checkFile = path.join(pub, this.configuration.index);\n\t\tif (!fs.existsSync(checkFile)) {\n\t\t\tlogger.warn(\n\t\t\t\t\"Missing files in \\\"dist/\\\" directory. Did you forget to run \\\"npm run build\\\" ?\"\n\t\t\t);\n\t\t}\n\n\t\treturn new Promise((resolve, reject) => {\n\t\t\ttry {\n\t\t\t\tthis.httpServer.listen(httpPort, httpHost, (e) => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\treject(e);\n\t\t\t\t\t} else {\n\t\t\t\t\t\tlogger.success(`Using '${session}' sessions`);\n\t\t\t\t\t\tlogger.success(`Serving '${dist}'`);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`WebSocket listening on ${proto(\"ws\")}${host(wsPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tlogger.success(\n\t\t\t\t\t\t\t`Server listening on ${proto(\"http\")}${host(httpPort)}`\n\t\t\t\t\t\t);\n\t\t\t\t\t\tresolve();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} catch (e) {\n\t\t\t\treject(e);\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to client.\n\t * @param {String} name Event name\n\t * @param {Array} params A list of parameters to send to client\n\t * @param {Function} [filter] A function to filter clients\n\t */\n\tbroadcast(name, params, filter) {\n\t\tfilter = filter || (() => true);\n\t\tif (!this.ws) return;\n\n\t\tthis.wss.clients // This is a Set\n\t\t\t.forEach((client) => {\n\t\t\t\tif (!client._meeseOS_client) return;\n\n\t\t\t\tif (filter(client)) {\n\t\t\t\t\tclient.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tparams,\n\t\t\t\t\t\t\tname,\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t});\n\t}\n\n\t/**\n\t * Broadcast given event to all clients.\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastAll(name, ...params) {\n\t\treturn this.broadcast(name, params);\n\t}\n\n\t/**\n\t * Broadcast given event to client filtered by username.\n\t * @param {String} username Username to send to\n\t * @param {String} name Event name\n\t * @param {Array} ...params A list of parameters to send to client\n\t */\n\tbroadcastUser(username, name, ...params) {\n\t\treturn this.broadcast(name, params, (client) => {\n\t\t\treturn client._meeseOS_client.username === username;\n\t\t});\n\t}\n\n\t/**\n\t * Gets the server instance.\n\t * @returns {Core}\n\t */\n\tstatic getInstance() {\n\t\treturn _instance;\n\t}\n}\n\nmodule.exports = Core;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/core.js",
     "access": "public",
@@ -731,16 +731,16 @@
   {
     "__docId__": 55,
     "kind": "variable",
-    "name": "CoreBase",
+    "name": "consola",
     "memberof": "src/core.js",
     "static": true,
-    "longname": "src/core.js~CoreBase",
+    "longname": "src/core.js~consola",
     "access": "public",
     "export": false,
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 43,
+    "lineNumber": 32,
     "undocument": true,
     "type": {
       "types": [
@@ -752,16 +752,16 @@
   {
     "__docId__": 56,
     "kind": "variable",
-    "name": "argvToConfig",
+    "name": "CoreBase",
     "memberof": "src/core.js",
     "static": true,
-    "longname": "src/core.js~argvToConfig",
+    "longname": "src/core.js~CoreBase",
     "access": "public",
     "export": false,
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 45,
+    "lineNumber": 44,
     "undocument": true,
     "type": {
       "types": [
@@ -773,16 +773,16 @@
   {
     "__docId__": 57,
     "kind": "variable",
-    "name": "defaultConfiguration",
+    "name": "argvToConfig",
     "memberof": "src/core.js",
     "static": true,
-    "longname": "src/core.js~defaultConfiguration",
+    "longname": "src/core.js~argvToConfig",
     "access": "public",
     "export": false,
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 52,
+    "lineNumber": 46,
     "undocument": true,
     "type": {
       "types": [
@@ -794,10 +794,10 @@
   {
     "__docId__": 58,
     "kind": "variable",
-    "name": "logger",
+    "name": "defaultConfiguration",
     "memberof": "src/core.js",
     "static": true,
-    "longname": "src/core.js~logger",
+    "longname": "src/core.js~defaultConfiguration",
     "access": "public",
     "export": false,
     "importPath": "@meese-os/server/src/core.js",
@@ -814,6 +814,27 @@
   },
   {
     "__docId__": 59,
+    "kind": "variable",
+    "name": "logger",
+    "memberof": "src/core.js",
+    "static": true,
+    "longname": "src/core.js~logger",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/server/src/core.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 54,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 60,
     "kind": "class",
     "name": "Core",
     "memberof": "src/core.js",
@@ -824,14 +845,14 @@
     "importPath": "@meese-os/server/src/core.js",
     "importStyle": "Core",
     "description": "MeeseOS Server Core",
-    "lineNumber": 60,
+    "lineNumber": 61,
     "interface": false,
     "extends": [
       "CoreBase"
     ]
   },
   {
-    "__docId__": 60,
+    "__docId__": 61,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/core.js~Core",
@@ -841,7 +862,7 @@
     "longname": "src/core.js~Core#constructor",
     "access": "public",
     "description": "Creates a new Core instance.",
-    "lineNumber": 66,
+    "lineNumber": 67,
     "params": [
       {
         "nullable": null,
@@ -866,7 +887,7 @@
     ]
   },
   {
-    "__docId__": 61,
+    "__docId__": 62,
     "kind": "member",
     "name": "logger",
     "memberof": "src/core.js~Core",
@@ -874,7 +895,7 @@
     "longname": "src/core.js~Core#logger",
     "access": "public",
     "description": null,
-    "lineNumber": 85,
+    "lineNumber": 86,
     "undocument": true,
     "type": {
       "types": [
@@ -884,7 +905,7 @@
     "ignore": true
   },
   {
-    "__docId__": 62,
+    "__docId__": 63,
     "kind": "member",
     "name": "app",
     "memberof": "src/core.js~Core",
@@ -892,7 +913,7 @@
     "longname": "src/core.js~Core#app",
     "access": "public",
     "description": "",
-    "lineNumber": 90,
+    "lineNumber": 91,
     "type": {
       "nullable": null,
       "types": [
@@ -903,7 +924,7 @@
     }
   },
   {
-    "__docId__": 63,
+    "__docId__": 64,
     "kind": "member",
     "name": "httpServer",
     "memberof": "src/core.js~Core",
@@ -911,7 +932,7 @@
     "longname": "src/core.js~Core#httpServer",
     "access": "public",
     "description": "",
-    "lineNumber": 99,
+    "lineNumber": 100,
     "type": {
       "nullable": null,
       "types": [
@@ -923,7 +944,7 @@
     }
   },
   {
-    "__docId__": 64,
+    "__docId__": 65,
     "kind": "member",
     "name": "session",
     "memberof": "src/core.js~Core",
@@ -931,7 +952,7 @@
     "longname": "src/core.js~Core#session",
     "access": "public",
     "description": "",
-    "lineNumber": 106,
+    "lineNumber": 107,
     "type": {
       "nullable": null,
       "types": [
@@ -942,7 +963,7 @@
     }
   },
   {
-    "__docId__": 65,
+    "__docId__": 66,
     "kind": "member",
     "name": "ws",
     "memberof": "src/core.js~Core",
@@ -950,7 +971,7 @@
     "longname": "src/core.js~Core#ws",
     "access": "public",
     "description": "",
-    "lineNumber": 111,
+    "lineNumber": 112,
     "type": {
       "nullable": null,
       "types": [
@@ -961,7 +982,7 @@
     }
   },
   {
-    "__docId__": 66,
+    "__docId__": 67,
     "kind": "member",
     "name": "wss",
     "memberof": "src/core.js~Core",
@@ -969,7 +990,7 @@
     "longname": "src/core.js~Core#wss",
     "access": "public",
     "description": "",
-    "lineNumber": 121,
+    "lineNumber": 122,
     "type": {
       "nullable": null,
       "types": [
@@ -980,7 +1001,7 @@
     }
   },
   {
-    "__docId__": 67,
+    "__docId__": 68,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/core.js~Core",
@@ -990,7 +1011,7 @@
     "longname": "src/core.js~Core#destroy",
     "access": "public",
     "description": "Destroys the instance.",
-    "lineNumber": 131,
+    "lineNumber": 132,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1019,7 +1040,7 @@
     }
   },
   {
-    "__docId__": 68,
+    "__docId__": 69,
     "kind": "method",
     "name": "start",
     "memberof": "src/core.js~Core",
@@ -1029,35 +1050,7 @@
     "longname": "src/core.js~Core#start",
     "access": "public",
     "description": "Starts the server.",
-    "lineNumber": 165,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{Promise<Boolean>}"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "Promise<Boolean>"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "params": []
-  },
-  {
-    "__docId__": 69,
-    "kind": "method",
-    "name": "boot",
-    "memberof": "src/core.js~Core",
-    "generator": false,
-    "async": true,
-    "static": false,
-    "longname": "src/core.js~Core#boot",
-    "access": "public",
-    "description": "Initializes the server.",
-    "lineNumber": 183,
+    "lineNumber": 166,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1077,6 +1070,34 @@
   {
     "__docId__": 70,
     "kind": "method",
+    "name": "boot",
+    "memberof": "src/core.js~Core",
+    "generator": false,
+    "async": true,
+    "static": false,
+    "longname": "src/core.js~Core#boot",
+    "access": "public",
+    "description": "Initializes the server.",
+    "lineNumber": 184,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<Boolean>}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<Boolean>"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 71,
+    "kind": "method",
     "name": "listen",
     "memberof": "src/core.js~Core",
     "generator": false,
@@ -1085,7 +1106,7 @@
     "longname": "src/core.js~Core#listen",
     "access": "public",
     "description": "Opens HTTP server.",
-    "lineNumber": 211,
+    "lineNumber": 212,
     "params": [],
     "return": {
       "types": [
@@ -1094,7 +1115,7 @@
     }
   },
   {
-    "__docId__": 71,
+    "__docId__": 72,
     "kind": "method",
     "name": "broadcast",
     "memberof": "src/core.js~Core",
@@ -1104,7 +1125,7 @@
     "longname": "src/core.js~Core#broadcast",
     "access": "public",
     "description": "Broadcast given event to client.",
-    "lineNumber": 262,
+    "lineNumber": 263,
     "params": [
       {
         "nullable": null,
@@ -1140,7 +1161,7 @@
     "return": null
   },
   {
-    "__docId__": 72,
+    "__docId__": 73,
     "kind": "method",
     "name": "broadcastAll",
     "memberof": "src/core.js~Core",
@@ -1150,7 +1171,7 @@
     "longname": "src/core.js~Core#broadcastAll",
     "access": "public",
     "description": "Broadcast given event to all clients.",
-    "lineNumber": 286,
+    "lineNumber": 287,
     "params": [
       {
         "nullable": null,
@@ -1180,7 +1201,7 @@
     }
   },
   {
-    "__docId__": 73,
+    "__docId__": 74,
     "kind": "method",
     "name": "broadcastUser",
     "memberof": "src/core.js~Core",
@@ -1190,7 +1211,7 @@
     "longname": "src/core.js~Core#broadcastUser",
     "access": "public",
     "description": "Broadcast given event to client filtered by username.",
-    "lineNumber": 296,
+    "lineNumber": 297,
     "params": [
       {
         "nullable": null,
@@ -1230,7 +1251,7 @@
     }
   },
   {
-    "__docId__": 74,
+    "__docId__": 75,
     "kind": "method",
     "name": "getInstance",
     "memberof": "src/core.js~Core",
@@ -1240,7 +1261,7 @@
     "longname": "src/core.js~Core.getInstance",
     "access": "public",
     "description": "Gets the server instance.",
-    "lineNumber": 306,
+    "lineNumber": 307,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1258,7 +1279,7 @@
     "params": []
   },
   {
-    "__docId__": 75,
+    "__docId__": 76,
     "kind": "file",
     "name": "src/package.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst path = require(\"path\");\nconst chokidar = require(\"chokidar\");\n\n/**\n * TODO: typedef\n * @typedef {Object} PackageMetadata\n */\n\n/**\n * Package Options\n * @typedef {Object} PackageOptions\n * @property {String} filename\n * @property {PackageMetadata} metadata\n */\n\n/**\n * MeeseOS Package Abstraction\n */\nclass Package {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {PackageOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.script = options.metadata.server\n\t\t\t? path.resolve(path.dirname(options.filename), options.metadata.server)\n\t\t\t: null;\n\n\t\t/**\n\t\t * @type {String}\n\t\t */\n\t\tthis.filename = options.filename;\n\n\t\t/**\n\t\t * @type {PackageMetadata}\n\t\t */\n\t\tthis.metadata = options.metadata;\n\n\t\tthis.handler = null;\n\n\t\tthis.watcher = null;\n\t}\n\n\t/**\n\t * Destroys instance.\n\t */\n\tasync destroy() {\n\t\tthis.action(\"destroy\");\n\n\t\tif (this.watcher) {\n\t\t\tawait this.watcher.close();\n\t\t\tthis.watcher = null;\n\t\t}\n\t}\n\n\t/**\n\t * Run method on package script.\n\t * @param {String} method Method name\n\t * @param {*} [...args] Pass arguments\n\t * @returns {Boolean}\n\t */\n\taction(method, ...args) {\n\t\ttry {\n\t\t\tif (this.handler && typeof this.handler[method] === \"function\") {\n\t\t\t\tthis.handler[method](...args);\n\n\t\t\t\treturn true;\n\t\t\t}\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Validates this package.\n\t * @param {PackageMetadata[]} manifest Global manifest\n\t * @returns {Boolean}\n\t */\n\tvalidate(manifest) {\n\t\treturn (\n\t\t\tthis.script &&\n\t\t\tthis.metadata &&\n\t\t\tBoolean(manifest.find((iter) => iter.name === this.metadata.name))\n\t\t);\n\t}\n\n\t/**\n\t * Initializes this package.\n\t * @returns {Promise<undefined>}\n\t */\n\tinit() {\n\t\tconst mod = require(this.script);\n\t\tconst handler = typeof mod.default === \"function\" ? mod.default : mod;\n\n\t\tthis.handler = handler(this.core, this);\n\n\t\tif (typeof this.handler.init === \"function\") {\n\t\t\treturn this.handler.init();\n\t\t}\n\n\t\treturn Promise.resolve();\n\t}\n\n\t/**\n\t * Starts server scripts.\n\t * @returns {Promise<undefined>}\n\t */\n\tstart() {\n\t\treturn this.action(\"start\");\n\t}\n\n\t/**\n\t * Creates a watch in package dist.\n\t * @param {Function} cb Callback function on watch changes\n\t * @returns {String} Watched path\n\t */\n\twatch(cb) {\n\t\tconst pub = this.core.config(\"public\");\n\t\tconst dist = path.join(pub, \"apps\", this.metadata.name);\n\n\t\tthis.watcher = chokidar.watch(dist);\n\t\tthis.watcher.on(\"change\", () => cb(this.metadata));\n\n\t\treturn dist;\n\t}\n\n\t/**\n\t * Resolve an URL for resource.\n\t * @param {String} path Input path\n\t * @returns {String}\n\t */\n\tresource(path) {\n\t\tif (path.charAt(0) !== \"/\") {\n\t\t\tpath = `/${path}`;\n\t\t}\n\n\t\treturn `/apps/${this.metadata.name}${path}`;\n\t}\n}\n\nmodule.exports = Package;\n",
@@ -1269,7 +1290,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 76,
+    "__docId__": 77,
     "kind": "typedef",
     "name": "PackageMetadata",
     "memberof": "src/package.js",
@@ -1286,7 +1307,7 @@
     }
   },
   {
-    "__docId__": 77,
+    "__docId__": 78,
     "kind": "typedef",
     "name": "PackageOptions",
     "memberof": "src/package.js",
@@ -1325,7 +1346,7 @@
     }
   },
   {
-    "__docId__": 78,
+    "__docId__": 79,
     "kind": "class",
     "name": "Package",
     "memberof": "src/package.js",
@@ -1340,7 +1361,7 @@
     "interface": false
   },
   {
-    "__docId__": 79,
+    "__docId__": 80,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/package.js~Package",
@@ -1377,7 +1398,7 @@
     ]
   },
   {
-    "__docId__": 80,
+    "__docId__": 81,
     "kind": "member",
     "name": "core",
     "memberof": "src/package.js~Package",
@@ -1396,7 +1417,7 @@
     }
   },
   {
-    "__docId__": 81,
+    "__docId__": 82,
     "kind": "member",
     "name": "script",
     "memberof": "src/package.js~Package",
@@ -1414,7 +1435,7 @@
     "ignore": true
   },
   {
-    "__docId__": 82,
+    "__docId__": 83,
     "kind": "member",
     "name": "filename",
     "memberof": "src/package.js~Package",
@@ -1433,7 +1454,7 @@
     }
   },
   {
-    "__docId__": 83,
+    "__docId__": 84,
     "kind": "member",
     "name": "metadata",
     "memberof": "src/package.js~Package",
@@ -1452,7 +1473,7 @@
     }
   },
   {
-    "__docId__": 84,
+    "__docId__": 85,
     "kind": "member",
     "name": "handler",
     "memberof": "src/package.js~Package",
@@ -1470,7 +1491,7 @@
     "ignore": true
   },
   {
-    "__docId__": 85,
+    "__docId__": 86,
     "kind": "member",
     "name": "watcher",
     "memberof": "src/package.js~Package",
@@ -1488,7 +1509,7 @@
     "ignore": true
   },
   {
-    "__docId__": 86,
+    "__docId__": 87,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/package.js~Package",
@@ -1503,7 +1524,7 @@
     "return": null
   },
   {
-    "__docId__": 88,
+    "__docId__": 89,
     "kind": "method",
     "name": "action",
     "memberof": "src/package.js~Package",
@@ -1552,7 +1573,7 @@
     }
   },
   {
-    "__docId__": 89,
+    "__docId__": 90,
     "kind": "method",
     "name": "validate",
     "memberof": "src/package.js~Package",
@@ -1591,7 +1612,7 @@
     }
   },
   {
-    "__docId__": 90,
+    "__docId__": 91,
     "kind": "method",
     "name": "init",
     "memberof": "src/package.js~Package",
@@ -1619,7 +1640,7 @@
     "params": []
   },
   {
-    "__docId__": 92,
+    "__docId__": 93,
     "kind": "method",
     "name": "start",
     "memberof": "src/package.js~Package",
@@ -1647,7 +1668,7 @@
     "params": []
   },
   {
-    "__docId__": 93,
+    "__docId__": 94,
     "kind": "method",
     "name": "watch",
     "memberof": "src/package.js~Package",
@@ -1686,7 +1707,7 @@
     }
   },
   {
-    "__docId__": 95,
+    "__docId__": 96,
     "kind": "method",
     "name": "resource",
     "memberof": "src/package.js~Package",
@@ -1725,10 +1746,10 @@
     }
   },
   {
-    "__docId__": 96,
+    "__docId__": 97,
     "kind": "file",
     "name": "src/packages.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst fg = require(\"fast-glob\");\nconst path = require(\"path\");\nconst Package = require(\"./package.js\");\nconst consola = require(\"consola\");\nconst logger = consola.withTag(\"Packages\");\n\nconst relative = (filename) => filename.replace(process.cwd(), \"\");\n\nconst readOrDefault = (filename) =>\n\tfs.existsSync(filename) ? fs.readJsonSync(filename) : [];\n\n/**\n * Package Service Options\n * @typedef {Object} PackagesOptions\n * @property {String} [manifestFile] Manifest filename\n * @property {String} [discoveredFile] Discovery output file\n */\n\n/**\n * MeeseOS Package Management\n */\nclass Packages {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {PackagesOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {Package[]}\n\t\t */\n\t\tthis.packages = [];\n\n\t\tthis.hotReloading = {};\n\n\t\t/**\n\t\t * @type {PackagesOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tmanifestFile: null,\n\t\t\tdiscoveredFile: null,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes packages.\n\t */\n\tinit() {\n\t\tthis.core.on(\"meeseOS/application:socket:message\", (ws, ...params) => {\n\t\t\tthis.handleMessage(ws, params);\n\t\t});\n\n\t\treturn this.load();\n\t}\n\n\t/**\n\t * Loads package manager.\n\t * @returns {Promise<Boolean>}\n\t */\n\tload() {\n\t\treturn this.createLoader().then((packages) => {\n\t\t\tthis.packages = this.packages.concat(packages);\n\n\t\t\treturn true;\n\t\t});\n\t}\n\n\t/**\n\t * Loads all packages.\n\t * @returns {Promise<Package[]>}\n\t */\n\tcreateLoader() {\n\t\tconst result = [];\n\t\tconst { discoveredFile, manifestFile } = this.options;\n\t\tconst discovered = readOrDefault(discoveredFile);\n\t\tconst manifest = readOrDefault(manifestFile);\n\t\tconst sources = discovered.map((d) => path.join(d, \"metadata.json\"));\n\n\t\tlogger.info(\"Using package discovery file\", relative(discoveredFile));\n\t\tlogger.info(\"Using package manifest file\", relative(manifestFile));\n\n\t\tconst stream = fg.stream(sources, {\n\t\t\textension: false,\n\t\t\tbrace: false,\n\t\t\tdeep: 1,\n\t\t\tcase: false,\n\t\t});\n\n\t\tstream.on(\"error\", (error) => logger.error(error));\n\t\tstream.on(\"data\", (filename) => {\n\t\t\tresult.push(this.loadPackage(filename, manifest));\n\t\t});\n\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tstream.once(\"end\", () => {\n\t\t\t\tPromise.all(result)\n\t\t\t\t\t.then((result) => result.filter((iter) => Boolean(iter.handler)))\n\t\t\t\t\t.then(resolve)\n\t\t\t\t\t.catch(reject);\n\t\t\t});\n\t\t});\n\t}\n\n\t/**\n\t * When a package dist has changed.\n\t * @param {Package} pkg Package instance\n\t */\n\tonPackageChanged(pkg) {\n\t\tclearTimeout(this.hotReloading[pkg.metadata.name]);\n\n\t\tthis.hotReloading[pkg.metadata.name] = setTimeout(() => {\n\t\t\tlogger.debug(\"Sending reload signal for\", pkg.metadata.name);\n\t\t\tthis.core.broadcast(\"meeseOS/packages:package:changed\", [\n\t\t\t\tpkg.metadata.name,\n\t\t\t]);\n\t\t}, 500);\n\t}\n\n\t/**\n\t * Loads package data.\n\t * @param {String} filename Filename\n\t * @param {PackageMetadata} manifest Manifest\n\t * @returns {Promise<Package>}\n\t */\n\tloadPackage(filename, manifest) {\n\t\tconst done = (pkg, error) => {\n\t\t\tif (error) {\n\t\t\t\tlogger.warn(error);\n\t\t\t}\n\n\t\t\treturn Promise.resolve(pkg);\n\t\t};\n\n\t\treturn fs.readJson(filename).then((metadata) => {\n\t\t\tconst pkg = new Package(this.core, {\n\t\t\t\tfilename,\n\t\t\t\tmetadata,\n\t\t\t});\n\n\t\t\treturn this.initializePackage(pkg, manifest, done);\n\t\t});\n\t}\n\n\t/**\n\t * Initializes a package.\n\t * @returns {Promise<Package>}\n\t */\n\tinitializePackage(pkg, manifest, done) {\n\t\tif (pkg.validate(manifest)) {\n\t\t\tlogger.info(`Loading ${relative(pkg.script)}`);\n\n\t\t\ttry {\n\t\t\t\tif (this.core.configuration.development) {\n\t\t\t\t\tpkg.watch(() => {\n\t\t\t\t\t\tthis.onPackageChanged(pkg);\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\treturn pkg\n\t\t\t\t\t.init()\n\t\t\t\t\t.then(() => done(pkg))\n\t\t\t\t\t.catch((e) => done(pkg, e));\n\t\t\t} catch (e) {\n\t\t\t\treturn done(pkg, e);\n\t\t\t}\n\t\t}\n\n\t\treturn done(pkg);\n\t}\n\n\t/**\n\t * Starts packages.\n\t */\n\tstart() {\n\t\tthis.packages.forEach((pkg) => pkg.start());\n\t}\n\n\t/**\n\t * Destroys packages.\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy() {\n\t\tawait Promise.all(this.packages.map((pkg) => pkg.destroy()));\n\n\t\tthis.packages = [];\n\t}\n\n\t/**\n\t * Handles an incoming message and signals an application.\n\t *\n\t * This will call the 'onmessage' event in your application server script.\n\t *\n\t * @param {WebSocket} ws Websocket Connection client\n\t * @param {Array} params A list of incoming parameters\n\t */\n\thandleMessage(ws, params) {\n\t\tconst { pid, name, args } = params[0];\n\t\tconst found = this.packages.findIndex(\n\t\t\t({ metadata }) => metadata.name === name\n\t\t);\n\n\t\tif (found !== -1) {\n\t\t\tconst { handler } = this.packages[found];\n\t\t\tif (handler && typeof handler.onmessage === \"function\") {\n\t\t\t\tconst respond = (...respondParams) =>\n\t\t\t\t\tws.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tname: \"meeseOS/application:socket:message\",\n\t\t\t\t\t\t\tparams: [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\tpid,\n\t\t\t\t\t\t\t\t\targs: respondParams,\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t],\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\n\t\t\t\thandler.onmessage(ws, respond, args);\n\t\t\t}\n\t\t}\n\t}\n}\n\nmodule.exports = Packages;\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst fg = require(\"fast-glob\");\nconst path = require(\"path\");\nconst Package = require(\"./package.js\");\nconst { consola } = require(\"consola\");\nconst logger = consola.withTag(\"Packages\");\n\nconst relative = (filename) => filename.replace(process.cwd(), \"\");\n\nconst readOrDefault = (filename) =>\n\tfs.existsSync(filename) ? fs.readJsonSync(filename) : [];\n\n/**\n * Package Service Options\n * @typedef {Object} PackagesOptions\n * @property {String} [manifestFile] Manifest filename\n * @property {String} [discoveredFile] Discovery output file\n */\n\n/**\n * MeeseOS Package Management\n */\nclass Packages {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {PackagesOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {Package[]}\n\t\t */\n\t\tthis.packages = [];\n\n\t\tthis.hotReloading = {};\n\n\t\t/**\n\t\t * @type {PackagesOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\tmanifestFile: null,\n\t\t\tdiscoveredFile: null,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes packages.\n\t */\n\tinit() {\n\t\tthis.core.on(\"meeseOS/application:socket:message\", (ws, ...params) => {\n\t\t\tthis.handleMessage(ws, params);\n\t\t});\n\n\t\treturn this.load();\n\t}\n\n\t/**\n\t * Loads package manager.\n\t * @returns {Promise<Boolean>}\n\t */\n\tload() {\n\t\treturn this.createLoader().then((packages) => {\n\t\t\tthis.packages = this.packages.concat(packages);\n\n\t\t\treturn true;\n\t\t});\n\t}\n\n\t/**\n\t * Loads all packages.\n\t * @returns {Promise<Package[]>}\n\t */\n\tcreateLoader() {\n\t\tconst result = [];\n\t\tconst { discoveredFile, manifestFile } = this.options;\n\t\tconst discovered = readOrDefault(discoveredFile);\n\t\tconst manifest = readOrDefault(manifestFile);\n\t\tconst sources = discovered.map((d) => path.join(d, \"metadata.json\"));\n\n\t\tlogger.info(\"Using package discovery file\", relative(discoveredFile));\n\t\tlogger.info(\"Using package manifest file\", relative(manifestFile));\n\n\t\tconst stream = fg.stream(sources, {\n\t\t\textension: false,\n\t\t\tbrace: false,\n\t\t\tdeep: 1,\n\t\t\tcase: false,\n\t\t});\n\n\t\tstream.on(\"error\", (error) => logger.error(error));\n\t\tstream.on(\"data\", (filename) => {\n\t\t\tresult.push(this.loadPackage(filename, manifest));\n\t\t});\n\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tstream.once(\"end\", () => {\n\t\t\t\tPromise.all(result)\n\t\t\t\t\t.then((result) => result.filter((iter) => Boolean(iter.handler)))\n\t\t\t\t\t.then(resolve)\n\t\t\t\t\t.catch(reject);\n\t\t\t});\n\t\t});\n\t}\n\n\t/**\n\t * When a package dist has changed.\n\t * @param {Package} pkg Package instance\n\t */\n\tonPackageChanged(pkg) {\n\t\tclearTimeout(this.hotReloading[pkg.metadata.name]);\n\n\t\tthis.hotReloading[pkg.metadata.name] = setTimeout(() => {\n\t\t\tlogger.debug(\"Sending reload signal for\", pkg.metadata.name);\n\t\t\tthis.core.broadcast(\"meeseOS/packages:package:changed\", [\n\t\t\t\tpkg.metadata.name,\n\t\t\t]);\n\t\t}, 500);\n\t}\n\n\t/**\n\t * Loads package data.\n\t * @param {String} filename Filename\n\t * @param {PackageMetadata} manifest Manifest\n\t * @returns {Promise<Package>}\n\t */\n\tloadPackage(filename, manifest) {\n\t\tconst done = (pkg, error) => {\n\t\t\tif (error) {\n\t\t\t\tlogger.warn(error);\n\t\t\t}\n\n\t\t\treturn Promise.resolve(pkg);\n\t\t};\n\n\t\treturn fs.readJson(filename).then((metadata) => {\n\t\t\tconst pkg = new Package(this.core, {\n\t\t\t\tfilename,\n\t\t\t\tmetadata,\n\t\t\t});\n\n\t\t\treturn this.initializePackage(pkg, manifest, done);\n\t\t});\n\t}\n\n\t/**\n\t * Initializes a package.\n\t * @returns {Promise<Package>}\n\t */\n\tinitializePackage(pkg, manifest, done) {\n\t\tif (pkg.validate(manifest)) {\n\t\t\tlogger.info(`Loading ${relative(pkg.script)}`);\n\n\t\t\ttry {\n\t\t\t\tif (this.core.configuration.development) {\n\t\t\t\t\tpkg.watch(() => {\n\t\t\t\t\t\tthis.onPackageChanged(pkg);\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\treturn pkg\n\t\t\t\t\t.init()\n\t\t\t\t\t.then(() => done(pkg))\n\t\t\t\t\t.catch((e) => done(pkg, e));\n\t\t\t} catch (e) {\n\t\t\t\treturn done(pkg, e);\n\t\t\t}\n\t\t}\n\n\t\treturn done(pkg);\n\t}\n\n\t/**\n\t * Starts packages.\n\t */\n\tstart() {\n\t\tthis.packages.forEach((pkg) => pkg.start());\n\t}\n\n\t/**\n\t * Destroys packages.\n\t * @returns {Promise<undefined>}\n\t */\n\tasync destroy() {\n\t\tawait Promise.all(this.packages.map((pkg) => pkg.destroy()));\n\n\t\tthis.packages = [];\n\t}\n\n\t/**\n\t * Handles an incoming message and signals an application.\n\t *\n\t * This will call the 'onmessage' event in your application server script.\n\t *\n\t * @param {WebSocket} ws Websocket Connection client\n\t * @param {Array} params A list of incoming parameters\n\t */\n\thandleMessage(ws, params) {\n\t\tconst { pid, name, args } = params[0];\n\t\tconst found = this.packages.findIndex(\n\t\t\t({ metadata }) => metadata.name === name\n\t\t);\n\n\t\tif (found !== -1) {\n\t\t\tconst { handler } = this.packages[found];\n\t\t\tif (handler && typeof handler.onmessage === \"function\") {\n\t\t\t\tconst respond = (...respondParams) =>\n\t\t\t\t\tws.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tname: \"meeseOS/application:socket:message\",\n\t\t\t\t\t\t\tparams: [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\tpid,\n\t\t\t\t\t\t\t\t\targs: respondParams,\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t],\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\n\t\t\t\thandler.onmessage(ws, respond, args);\n\t\t\t}\n\t\t}\n\t}\n}\n\nmodule.exports = Packages;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/packages.js",
     "access": "public",
@@ -1736,12 +1757,12 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 97,
+    "__docId__": 98,
     "kind": "variable",
-    "name": "logger",
+    "name": "consola",
     "memberof": "src/packages.js",
     "static": true,
-    "longname": "src/packages.js~logger",
+    "longname": "src/packages.js~consola",
     "access": "public",
     "export": false,
     "importPath": "@meese-os/server/src/packages.js",
@@ -1757,7 +1778,28 @@
     "ignore": true
   },
   {
-    "__docId__": 98,
+    "__docId__": 99,
+    "kind": "variable",
+    "name": "logger",
+    "memberof": "src/packages.js",
+    "static": true,
+    "longname": "src/packages.js~logger",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/server/src/packages.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 37,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 100,
     "kind": "function",
     "name": "relative",
     "memberof": "src/packages.js",
@@ -1770,7 +1812,7 @@
     "importPath": "@meese-os/server/src/packages.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 38,
+    "lineNumber": 39,
     "undocument": true,
     "params": [
       {
@@ -1784,7 +1826,7 @@
     "ignore": true
   },
   {
-    "__docId__": 99,
+    "__docId__": 101,
     "kind": "function",
     "name": "readOrDefault",
     "memberof": "src/packages.js",
@@ -1797,7 +1839,7 @@
     "importPath": "@meese-os/server/src/packages.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 40,
+    "lineNumber": 41,
     "undocument": true,
     "params": [
       {
@@ -1811,7 +1853,7 @@
     "ignore": true
   },
   {
-    "__docId__": 100,
+    "__docId__": 102,
     "kind": "typedef",
     "name": "PackagesOptions",
     "memberof": "src/packages.js",
@@ -1850,7 +1892,7 @@
     }
   },
   {
-    "__docId__": 101,
+    "__docId__": 103,
     "kind": "class",
     "name": "Packages",
     "memberof": "src/packages.js",
@@ -1861,11 +1903,11 @@
     "importPath": "@meese-os/server/src/packages.js",
     "importStyle": "Packages",
     "description": "MeeseOS Package Management",
-    "lineNumber": 53,
+    "lineNumber": 54,
     "interface": false
   },
   {
-    "__docId__": 102,
+    "__docId__": 104,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/packages.js~Packages",
@@ -1875,7 +1917,7 @@
     "longname": "src/packages.js~Packages#constructor",
     "access": "public",
     "description": "Create new instance.",
-    "lineNumber": 59,
+    "lineNumber": 60,
     "params": [
       {
         "nullable": null,
@@ -1902,7 +1944,7 @@
     ]
   },
   {
-    "__docId__": 103,
+    "__docId__": 105,
     "kind": "member",
     "name": "core",
     "memberof": "src/packages.js~Packages",
@@ -1910,7 +1952,7 @@
     "longname": "src/packages.js~Packages#core",
     "access": "public",
     "description": "",
-    "lineNumber": 63,
+    "lineNumber": 64,
     "type": {
       "nullable": null,
       "types": [
@@ -1921,7 +1963,7 @@
     }
   },
   {
-    "__docId__": 104,
+    "__docId__": 106,
     "kind": "member",
     "name": "packages",
     "memberof": "src/packages.js~Packages",
@@ -1929,7 +1971,7 @@
     "longname": "src/packages.js~Packages#packages",
     "access": "public",
     "description": "",
-    "lineNumber": 68,
+    "lineNumber": 69,
     "type": {
       "nullable": null,
       "types": [
@@ -1940,7 +1982,7 @@
     }
   },
   {
-    "__docId__": 105,
+    "__docId__": 107,
     "kind": "member",
     "name": "hotReloading",
     "memberof": "src/packages.js~Packages",
@@ -1948,7 +1990,7 @@
     "longname": "src/packages.js~Packages#hotReloading",
     "access": "public",
     "description": null,
-    "lineNumber": 70,
+    "lineNumber": 71,
     "undocument": true,
     "type": {
       "types": [
@@ -1958,7 +2000,7 @@
     "ignore": true
   },
   {
-    "__docId__": 106,
+    "__docId__": 108,
     "kind": "member",
     "name": "options",
     "memberof": "src/packages.js~Packages",
@@ -1966,7 +2008,7 @@
     "longname": "src/packages.js~Packages#options",
     "access": "public",
     "description": "",
-    "lineNumber": 75,
+    "lineNumber": 76,
     "type": {
       "nullable": null,
       "types": [
@@ -1977,7 +2019,7 @@
     }
   },
   {
-    "__docId__": 107,
+    "__docId__": 109,
     "kind": "method",
     "name": "init",
     "memberof": "src/packages.js~Packages",
@@ -1987,7 +2029,7 @@
     "longname": "src/packages.js~Packages#init",
     "access": "public",
     "description": "Initializes packages.",
-    "lineNumber": 85,
+    "lineNumber": 86,
     "params": [],
     "return": {
       "types": [
@@ -1996,7 +2038,7 @@
     }
   },
   {
-    "__docId__": 108,
+    "__docId__": 110,
     "kind": "method",
     "name": "load",
     "memberof": "src/packages.js~Packages",
@@ -2006,7 +2048,7 @@
     "longname": "src/packages.js~Packages#load",
     "access": "public",
     "description": "Loads package manager.",
-    "lineNumber": 97,
+    "lineNumber": 98,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2024,7 +2066,7 @@
     "params": []
   },
   {
-    "__docId__": 110,
+    "__docId__": 112,
     "kind": "method",
     "name": "createLoader",
     "memberof": "src/packages.js~Packages",
@@ -2034,7 +2076,7 @@
     "longname": "src/packages.js~Packages#createLoader",
     "access": "public",
     "description": "Loads all packages.",
-    "lineNumber": 109,
+    "lineNumber": 110,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2052,7 +2094,7 @@
     "params": []
   },
   {
-    "__docId__": 111,
+    "__docId__": 113,
     "kind": "method",
     "name": "onPackageChanged",
     "memberof": "src/packages.js~Packages",
@@ -2062,7 +2104,7 @@
     "longname": "src/packages.js~Packages#onPackageChanged",
     "access": "public",
     "description": "When a package dist has changed.",
-    "lineNumber": 145,
+    "lineNumber": 146,
     "params": [
       {
         "nullable": null,
@@ -2078,7 +2120,7 @@
     "return": null
   },
   {
-    "__docId__": 112,
+    "__docId__": 114,
     "kind": "method",
     "name": "loadPackage",
     "memberof": "src/packages.js~Packages",
@@ -2088,7 +2130,7 @@
     "longname": "src/packages.js~Packages#loadPackage",
     "access": "public",
     "description": "Loads package data.",
-    "lineNumber": 162,
+    "lineNumber": 163,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2127,7 +2169,7 @@
     }
   },
   {
-    "__docId__": 113,
+    "__docId__": 115,
     "kind": "method",
     "name": "initializePackage",
     "memberof": "src/packages.js~Packages",
@@ -2137,7 +2179,7 @@
     "longname": "src/packages.js~Packages#initializePackage",
     "access": "public",
     "description": "Initializes a package.",
-    "lineNumber": 185,
+    "lineNumber": 186,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2174,7 +2216,7 @@
     ]
   },
   {
-    "__docId__": 114,
+    "__docId__": 116,
     "kind": "method",
     "name": "start",
     "memberof": "src/packages.js~Packages",
@@ -2184,12 +2226,12 @@
     "longname": "src/packages.js~Packages#start",
     "access": "public",
     "description": "Starts packages.",
-    "lineNumber": 211,
+    "lineNumber": 212,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 115,
+    "__docId__": 117,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/packages.js~Packages",
@@ -2199,7 +2241,7 @@
     "longname": "src/packages.js~Packages#destroy",
     "access": "public",
     "description": "Destroys packages.",
-    "lineNumber": 219,
+    "lineNumber": 220,
     "unknown": [
       {
         "tagName": "@returns",
@@ -2217,7 +2259,7 @@
     "params": []
   },
   {
-    "__docId__": 117,
+    "__docId__": 119,
     "kind": "method",
     "name": "handleMessage",
     "memberof": "src/packages.js~Packages",
@@ -2227,7 +2269,7 @@
     "longname": "src/packages.js~Packages#handleMessage",
     "access": "public",
     "description": "Handles an incoming message and signals an application.\n\nThis will call the 'onmessage' event in your application server script.",
-    "lineNumber": 233,
+    "lineNumber": 234,
     "params": [
       {
         "nullable": null,
@@ -2253,7 +2295,7 @@
     "return": null
   },
   {
-    "__docId__": 118,
+    "__docId__": 120,
     "kind": "file",
     "name": "src/providers/auth.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Auth = require(\"../auth.js\");\n\n/**\n * MeeseOS Auth Service Provider\n */\nclass AuthServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\tthis.auth = new Auth(core, options);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\t/**\n\t * Initializes auth.\n\t * @returns {Promise<undefined>}\n\t */\n\tasync init() {\n\t\t// eslint-disable-next-line no-unused-vars\n\t\tconst { route, routeAuthenticated } = this.core.make(\"meeseOS/express\");\n\n\t\troute(\"post\", \"/register\", (req, res) => this.auth.register(req, res));\n\t\troute(\"post\", \"/login\", (req, res) => this.auth.login(req, res));\n\t\t// TODO: fix the issue of this not working when `routeAuthenticated` is used\n\t\troute(\"post\", \"/logout\", (req, res) => this.auth.logout(req, res));\n\n\t\tawait this.auth.init();\n\t}\n\n\t/**\n\t * Destroys instance.\n\t */\n\tdestroy() {\n\t\tthis.auth.destroy();\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = AuthServiceProvider;\n",
@@ -2264,7 +2306,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 119,
+    "__docId__": 121,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/auth.js",
@@ -2285,7 +2327,7 @@
     "ignore": true
   },
   {
-    "__docId__": 120,
+    "__docId__": 122,
     "kind": "class",
     "name": "AuthServiceProvider",
     "memberof": "src/providers/auth.js",
@@ -2303,7 +2345,7 @@
     ]
   },
   {
-    "__docId__": 121,
+    "__docId__": 123,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -2340,7 +2382,7 @@
     ]
   },
   {
-    "__docId__": 122,
+    "__docId__": 124,
     "kind": "member",
     "name": "auth",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -2358,7 +2400,7 @@
     "ignore": true
   },
   {
-    "__docId__": 123,
+    "__docId__": 125,
     "kind": "method",
     "name": "depends",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -2386,7 +2428,7 @@
     "params": []
   },
   {
-    "__docId__": 124,
+    "__docId__": 126,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -2414,7 +2456,7 @@
     "params": []
   },
   {
-    "__docId__": 125,
+    "__docId__": 127,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/auth.js~AuthServiceProvider",
@@ -2429,7 +2471,7 @@
     "return": null
   },
   {
-    "__docId__": 126,
+    "__docId__": 128,
     "kind": "file",
     "name": "src/providers/core.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst path = require(\"path\");\nconst express = require(\"express\");\nconst chokidar = require(\"chokidar\");\nconst bodyParser = require(\"body-parser\");\nconst helmet = require(\"helmet\");\nconst proxy = require(\"express-http-proxy\");\nconst nocache = require(\"nocache\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst {\n\tuseWebTokens,\n\tisAuthenticated,\n\tcloseWatches\n} = require(\"../utils/core.js\");\n\n/**\n * MeeseOS Core Service Provider\n */\nclass CoreServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options] Arguments\n\t */\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Array}\n\t\t */\n\t\tthis.watches = [];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tinit() {\n\t\tthis.initService();\n\t\tthis.initExtensions();\n\t\tthis.initResourceRoutes();\n\t\tthis.initSocketRoutes();\n\t\tthis.initProxies();\n\t}\n\n\t/**\n\t * Starts provider.\n\t */\n\tstart() {\n\t\tif (this.core.configuration.development) {\n\t\t\tthis.initDeveloperTools();\n\t\t}\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tstatic provides() {\n\t\treturn [\"meeseOS/express\"];\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tasync destroy() {\n\t\tawait closeWatches(this.watches);\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initializes the service APIs.\n\t */\n\tinitService() {\n\t\tconst { app } = this.core;\n\t\tconst { requireAllGroups } = this.core.configuration.auth;\n\n\t\tconst middleware = {\n\t\t\troute: [],\n\t\t\trouteAuthenticated: [],\n\t\t};\n\n\t\tthis.core.singleton(\"meeseOS/express\", () => ({\n\t\t\tuseWebTokens,\n\t\t\tisAuthenticated,\n\n\t\t\tcall: (method, ...args) => app[method](...args),\n\t\t\tuse: (arg) => app.use(arg),\n\n\t\t\twebsocket: (p, cb) => app.ws(p, cb),\n\n\t\t\tmiddleware: (authentication, cb) => {\n\t\t\t\tmiddleware[authentication ? \"routeAuthenticated\" : \"route\"].push(cb);\n\t\t\t},\n\n\t\t\troute: (method, uri, cb) =>\n\t\t\t\tapp[method.toLowerCase()](uri, [...middleware.route], cb),\n\n\t\t\trouteAuthenticated: (\n\t\t\t\tmethod,\n\t\t\t\turi,\n\t\t\t\tcb,\n\t\t\t\tgroups = [],\n\t\t\t\tstrict = requireAllGroups\n\t\t\t) =>\n\t\t\t\tapp[method.toLowerCase()](\n\t\t\t\t\turi,\n\t\t\t\t\t[\n\t\t\t\t\t\t...middleware.routeAuthenticated,\n\t\t\t\t\t\tuseWebTokens(app),\n\t\t\t\t\t\tisAuthenticated(groups, strict)\n\t\t\t\t\t],\n\t\t\t\t\tcb\n\t\t\t\t),\n\n\t\t\trouter: () => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.route);\n\t\t\t\treturn router;\n\t\t\t},\n\n\t\t\trouterAuthenticated: (groups = [], strict = requireAllGroups) => {\n\t\t\t\tconst router = express.Router();\n\t\t\t\trouter.use(...middleware.routeAuthenticated);\n\t\t\t\trouter.use(useWebTokens(app));\n\t\t\t\trouter.use(isAuthenticated(groups, strict));\n\t\t\t\treturn router;\n\t\t\t},\n\t\t}));\n\t}\n\n\t/**\n\t * Initializes Express extensions.\n\t */\n\tinitExtensions() {\n\t\tconst { app, session, configuration } = this.core;\n\t\tconst limit = configuration.express.maxBodySize;\n\n\t\tconst helmetConfig = {\n\t\t\tcontentSecurityPolicy: {\n\t\t\t\tuseDefaults: true,\n\t\t\t\tdirectives: {\n\t\t\t\t\t\"default-src\": [\"'self'\"],\n\t\t\t\t\t// Allow the Google Identity Services loader while keeping inline/eval allowances\n\t\t\t\t\t// used elsewhere in the app. Consider moving to nonces/hashes later.\n\t\t\t\t\t\"script-src\": [\n\t\t\t\t\t\t\"'self'\",\n\t\t\t\t\t\t\"'unsafe-inline'\",\n\t\t\t\t\t\t\"'unsafe-eval'\",\n\t\t\t\t\t\t\"https://accounts.google.com\",\n\t\t\t\t\t\t\"https://apis.google.com\",\n\t\t\t\t\t\t\"https://*.gstatic.com\",\n\t\t\t\t\t],\n\t\t\t\t\t\"style-src\": [\"'self'\", \"'unsafe-inline'\"],\n\t\t\t\t\t// Permit remote images (e.g., Unsplash wallpapers) in addition to local/data/blob\n\t\t\t\t\t\"img-src\": [\n\t\t\t\t\t\t\"'self'\",\n\t\t\t\t\t\t\"data:\",\n\t\t\t\t\t\t\"blob:\",\n\t\t\t\t\t\t\"https:\",\n\t\t\t\t\t],\n\t\t\t\t\t// Allow required outbound connections for GIS and similar SDKs\n\t\t\t\t\t\"connect-src\": [\n\t\t\t\t\t\t\"'self'\",\n\t\t\t\t\t\t\"https://accounts.google.com\",\n\t\t\t\t\t\t\"https://*.googleapis.com\",\n\t\t\t\t\t\t\"https://*.gstatic.com\",\n\t\t\t\t\t\t\"https://apis.google.com\",\n\t\t\t\t\t],\n\t\t\t\t\t// Allow embedding external applications without enumerating domains.\n\t\t\t\t\t// Keep clickjacking protection via frame-ancestors from Helmet defaults.\n\t\t\t\t\t\"frame-src\": [\n\t\t\t\t\t\t\"'self'\",\n\t\t\t\t\t\t\"https:\",\n\t\t\t\t\t\t\"blob:\",\n\t\t\t\t\t\t\"data:\",\n\t\t\t\t\t\t// Allow http: only in development for local testing\n\t\t\t\t\t\t...(configuration.development ? [\"http:\"] : []),\n\t\t\t\t\t],\n\t\t\t\t}\n\t\t\t},\n\t\t\treferrerPolicy: { policy: \"no-referrer\" },\n\t\t\tcrossOriginEmbedderPolicy: false,\n\t\t\t// Some OAuth/GIS popup flows require COOP to be disabled\n\t\t\tcrossOriginOpenerPolicy: { policy: \"unsafe-none\" },\n\t\t\thsts: configuration.development\n\t\t\t\t? false\n\t\t\t\t: {\n\t\t\t\t\tmaxAge: 63072000,\n\t\t\t\t\tincludeSubDomains: true,\n\t\t\t\t\tpreload: true,\n\t\t\t\t},\n\t\t};\n\n\t\tapp.use(helmet(helmetConfig));\n\n\t\tif (configuration.development) {\n\t\t\tapp.use(nocache());\n\t\t} else {\n\t\t\tapp.disable(\"x-powered-by\");\n\t\t}\n\n\t\t// Handle sessions\n\t\tapp.use(session);\n\n\t\t// Handle bodies\n\t\tapp.use(\n\t\t\tbodyParser.urlencoded({\n\t\t\t\textended: false,\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.json({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\n\t\tapp.use(\n\t\t\tbodyParser.raw({\n\t\t\t\tlimit,\n\t\t\t})\n\t\t);\n\t}\n\n\t/**\n\t * Initializes Express base routes, etc.\n\t */\n\tinitResourceRoutes() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst indexFile = path.join(configuration.public, configuration.index);\n\n\t\tapp.get(\"/\", (req, res) => res.sendFile(indexFile));\n\t\tapp.use(\"/\", express.static(configuration.public));\n\n\t\t// Internal ping\n\t\tapp.get(\"/ping\", (req, res) => {\n\t\t\tthis.core.emit(\"meeseOS/core:ping\", req);\n\n\t\t\ttry {\n\t\t\t\treq.session.touch();\n\t\t\t} catch (e) {\n\t\t\t\tthis.core.logger.warn(e);\n\t\t\t}\n\n\t\t\tres.status(200).send(\"ok\");\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Socket routes.\n\t */\n\tinitSocketRoutes() {\n\t\tconst { app } = this.core;\n\n\t\tapp.ws(\"/\", (ws, req) => {\n\t\t\tws.upgradeReq = ws.upgradeReq || req;\n\t\t\tws._meeseOS_client = { ...req.session.user };\n\n\t\t\tconst interval = this.core.config(\"ws.ping\", 0);\n\n\t\t\tconst pingInterval = interval\n\t\t\t\t? setInterval(() => {\n\t\t\t\t\tws.send(\n\t\t\t\t\t\tJSON.stringify({\n\t\t\t\t\t\t\tname: \"meeseOS/core:ping\",\n\t\t\t\t\t\t})\n\t\t\t\t\t);\n\t\t\t\t}, interval)\n\t\t\t\t: undefined;\n\n\t\t\tws.on(\"close\", () => {\n\t\t\t\tclearInterval(pingInterval);\n\t\t\t});\n\n\t\t\tws.on(\"message\", (msg) => {\n\t\t\t\ttry {\n\t\t\t\t\tconst { name, params } = JSON.parse(msg);\n\n\t\t\t\t\tif (typeof name === \"string\" && params instanceof Array) {\n\t\t\t\t\t\t// We don't wanna allow any internal signals from the outside!\n\t\t\t\t\t\tif (\n\t\t\t\t\t\t\tname.match(/^meeseOS/) &&\n\t\t\t\t\t\t\tname !== \"meeseOS/application:socket:message\"\n\t\t\t\t\t\t) {\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tthis.core.emit(name, ws, ...params);\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {\n\t\t\t\t\tthis.core.logger.warn(e);\n\t\t\t\t}\n\t\t\t});\n\n\t\t\tws.send(\n\t\t\t\tJSON.stringify({\n\t\t\t\t\tname: \"meeseOS/core:connected\",\n\t\t\t\t\tparams: [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tcookie: {\n\t\t\t\t\t\t\t\tmaxAge: this.core.config(\"session.options.cookie.maxAge\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t],\n\t\t\t\t})\n\t\t\t);\n\t\t});\n\t}\n\n\t/**\n\t * Initializes Express proxies.\n\t */\n\tinitProxies() {\n\t\tconst { app, configuration } = this.core;\n\t\tconst proxies = (configuration.proxy || [])\n\t\t\t.map((item) => ({\n\t\t\t\tsource: null,\n\t\t\t\tdestination: null,\n\t\t\t\toptions: {},\n\t\t\t\t...item,\n\t\t\t}))\n\t\t\t.filter((item) => item.source && item.destination);\n\n\t\tproxies.forEach((item) => {\n\t\t\tthis.core.logger.info(`Proxying ${item.source} -> ${item.destination}`);\n\t\t\tapp.use(item.source, proxy(item.destination, item.options));\n\t\t});\n\t}\n\n\t/**\n\t * Initializes some developer features.\n\t */\n\tinitDeveloperTools() {\n\t\ttry {\n\t\t\tconst watchdir = path.resolve(this.core.configuration.public);\n\t\t\tconst watcher = chokidar.watch(watchdir);\n\n\t\t\twatcher.on(\"change\", (filename) => {\n\t\t\t\t// NOTE: 'ignored' does not work as expected with callback\n\t\t\t\t// ignored: str => str.match(/\\.(js|css)$/) === null\n\t\t\t\t// for unknown reasons\n\t\t\t\tif (!/\\.(js|css)$/i.test(filename)) return;\n\n\t\t\t\tconst relative = filename.replace(watchdir, \"\");\n\t\t\t\tthis.core.broadcast(\"meeseOS/dist:changed\", [relative]);\n\t\t\t});\n\n\t\t\tthis.watches.push(watcher);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n}\n\nmodule.exports = CoreServiceProvider;\n",
@@ -2440,7 +2482,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 127,
+    "__docId__": 129,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/core.js",
@@ -2461,7 +2503,7 @@
     "ignore": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 130,
     "kind": "variable",
     "name": "useWebTokens",
     "memberof": "src/providers/core.js",
@@ -2482,7 +2524,7 @@
     "ignore": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 131,
     "kind": "class",
     "name": "CoreServiceProvider",
     "memberof": "src/providers/core.js",
@@ -2500,7 +2542,7 @@
     ]
   },
   {
-    "__docId__": 130,
+    "__docId__": 132,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2535,7 +2577,7 @@
     ]
   },
   {
-    "__docId__": 131,
+    "__docId__": 133,
     "kind": "member",
     "name": "watches",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2554,7 +2596,7 @@
     }
   },
   {
-    "__docId__": 132,
+    "__docId__": 134,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2569,7 +2611,7 @@
     "return": null
   },
   {
-    "__docId__": 133,
+    "__docId__": 135,
     "kind": "method",
     "name": "start",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2584,7 +2626,7 @@
     "return": null
   },
   {
-    "__docId__": 134,
+    "__docId__": 136,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2612,7 +2654,7 @@
     "params": []
   },
   {
-    "__docId__": 135,
+    "__docId__": 137,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2627,7 +2669,7 @@
     "return": null
   },
   {
-    "__docId__": 136,
+    "__docId__": 138,
     "kind": "method",
     "name": "initService",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2642,7 +2684,7 @@
     "return": null
   },
   {
-    "__docId__": 137,
+    "__docId__": 139,
     "kind": "method",
     "name": "initExtensions",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2657,7 +2699,7 @@
     "return": null
   },
   {
-    "__docId__": 138,
+    "__docId__": 140,
     "kind": "method",
     "name": "initResourceRoutes",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2672,7 +2714,7 @@
     "return": null
   },
   {
-    "__docId__": 139,
+    "__docId__": 141,
     "kind": "method",
     "name": "initSocketRoutes",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2687,7 +2729,7 @@
     "return": null
   },
   {
-    "__docId__": 140,
+    "__docId__": 142,
     "kind": "method",
     "name": "initProxies",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2702,7 +2744,7 @@
     "return": null
   },
   {
-    "__docId__": 141,
+    "__docId__": 143,
     "kind": "method",
     "name": "initDeveloperTools",
     "memberof": "src/providers/core.js~CoreServiceProvider",
@@ -2717,7 +2759,7 @@
     "return": null
   },
   {
-    "__docId__": 142,
+    "__docId__": 144,
     "kind": "file",
     "name": "src/providers/packages.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst path = require(\"path\");\nconst chokidar = require(\"chokidar\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Packages = require(\"../packages\");\nconst { closeWatches } = require(\"../utils/core\");\n\n/**\n * MeeseOS Package Service Provider\n */\nclass PackageServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\tconst { configuration } = this.core;\n\t\tconst manifestFile = path.join(\n\t\t\tconfiguration.public,\n\t\t\tconfiguration.packages.metadata\n\t\t);\n\t\tconst discoveredFile = path.resolve(\n\t\t\tconfiguration.root,\n\t\t\tconfiguration.packages.discovery\n\t\t);\n\n\t\tthis.watches = [];\n\t\tthis.packages = new Packages(core, {\n\t\t\tmanifestFile,\n\t\t\tdiscoveredFile,\n\t\t});\n\t}\n\n\tstatic provides() {\n\t\treturn [\"meeseOS/packages\"];\n\t}\n\n\tinit() {\n\t\tthis.core.singleton(\"meeseOS/packages\", () => this.packages);\n\n\t\treturn this.packages.init();\n\t}\n\n\tstart() {\n\t\tthis.packages.start();\n\n\t\tif (this.core.configuration.development) {\n\t\t\tthis.initDeveloperTools();\n\t\t}\n\t}\n\n\tasync destroy() {\n\t\tawait closeWatches(this.watches);\n\t\tawait this.packages.destroy();\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initializes some developer features.\n\t */\n\tinitDeveloperTools() {\n\t\tconst { manifestFile } = this.packages.options;\n\n\t\tif (fs.existsSync(manifestFile)) {\n\t\t\tconst watcher = chokidar.watch(manifestFile);\n\t\t\twatcher.on(\"change\", () => {\n\t\t\t\tthis.core.broadcast(\"meeseOS/packages:metadata:changed\");\n\t\t\t});\n\n\t\t\tthis.watches.push(watcher);\n\t\t}\n\t}\n}\n\nmodule.exports = PackageServiceProvider;\n",
@@ -2728,7 +2770,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 143,
+    "__docId__": 145,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/packages.js",
@@ -2749,7 +2791,7 @@
     "ignore": true
   },
   {
-    "__docId__": 144,
+    "__docId__": 146,
     "kind": "variable",
     "name": "closeWatches",
     "memberof": "src/providers/packages.js",
@@ -2770,7 +2812,7 @@
     "ignore": true
   },
   {
-    "__docId__": 145,
+    "__docId__": 147,
     "kind": "class",
     "name": "PackageServiceProvider",
     "memberof": "src/providers/packages.js",
@@ -2788,7 +2830,7 @@
     ]
   },
   {
-    "__docId__": 146,
+    "__docId__": 148,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2813,7 +2855,7 @@
     ]
   },
   {
-    "__docId__": 147,
+    "__docId__": 149,
     "kind": "member",
     "name": "watches",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2831,7 +2873,7 @@
     "ignore": true
   },
   {
-    "__docId__": 148,
+    "__docId__": 150,
     "kind": "member",
     "name": "packages",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2849,7 +2891,7 @@
     "ignore": true
   },
   {
-    "__docId__": 149,
+    "__docId__": 151,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2870,7 +2912,7 @@
     "ignore": true
   },
   {
-    "__docId__": 150,
+    "__docId__": 152,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2891,7 +2933,7 @@
     "ignore": true
   },
   {
-    "__docId__": 151,
+    "__docId__": 153,
     "kind": "method",
     "name": "start",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2908,7 +2950,7 @@
     "ignore": true
   },
   {
-    "__docId__": 152,
+    "__docId__": 154,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2925,7 +2967,7 @@
     "ignore": true
   },
   {
-    "__docId__": 153,
+    "__docId__": 155,
     "kind": "method",
     "name": "initDeveloperTools",
     "memberof": "src/providers/packages.js~PackageServiceProvider",
@@ -2940,7 +2982,7 @@
     "return": null
   },
   {
-    "__docId__": 154,
+    "__docId__": 156,
     "kind": "file",
     "name": "src/providers/settings.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst Settings = require(\"../settings\");\nconst { ServiceProvider } = require(\"@meese-os/common\");\n\n/**\n * MeeseOS Settings Service Provider\n */\nclass SettingsServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options] Arguments\n\t */\n\tconstructor(core, options) {\n\t\tsuper(core, options);\n\n\t\tthis.settings = new Settings(core, options);\n\t}\n\n\t/**\n\t * Destroy instance.\n\t */\n\tdestroy() {\n\t\tthis.settings.destroy();\n\t\tsuper.destroy();\n\t}\n\n\t/**\n\t * Initialize instance.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync init() {\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"post\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.save(req, res)\n\t\t\t);\n\n\t\tthis.core\n\t\t\t.make(\"meeseOS/express\")\n\t\t\t.routeAuthenticated(\"get\", \"/settings\", (req, res) =>\n\t\t\t\tthis.settings.load(req, res)\n\t\t\t);\n\n\t\treturn this.settings.init();\n\t}\n}\n\nmodule.exports = SettingsServiceProvider;\n",
@@ -2951,7 +2993,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 155,
+    "__docId__": 157,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/settings.js",
@@ -2972,7 +3014,7 @@
     "ignore": true
   },
   {
-    "__docId__": 156,
+    "__docId__": 158,
     "kind": "class",
     "name": "SettingsServiceProvider",
     "memberof": "src/providers/settings.js",
@@ -2990,7 +3032,7 @@
     ]
   },
   {
-    "__docId__": 157,
+    "__docId__": 159,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -3025,7 +3067,7 @@
     ]
   },
   {
-    "__docId__": 158,
+    "__docId__": 160,
     "kind": "member",
     "name": "settings",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -3043,7 +3085,7 @@
     "ignore": true
   },
   {
-    "__docId__": 159,
+    "__docId__": 161,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -3058,7 +3100,7 @@
     "return": null
   },
   {
-    "__docId__": 160,
+    "__docId__": 162,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/settings.js~SettingsServiceProvider",
@@ -3086,7 +3128,7 @@
     "params": []
   },
   {
-    "__docId__": 161,
+    "__docId__": 163,
     "kind": "file",
     "name": "src/providers/token-factory.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenFactory = require(\"../utils/token-factory\");\n\n/**\n * MeeseOS Token Factory Service Provider\n */\nclass TokenFactoryServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t */\n\tconstructor(core) {\n\t\tsuper(core);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactory}\n\t\t */\n\t\tthis.tokenFactory = new TokenFactory(this.core);\n\t}\n\n\t/**\n\t * A list of services this provider depends on.\n\t * @returns {String[]}\n\t */\n\tdepends() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-factory\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.tokenFactory.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-factory\", () => this.tokenFactory);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tsuper.destroy();\n\t}\n}\n\nmodule.exports = TokenFactoryServiceProvider;\n",
@@ -3097,7 +3139,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 162,
+    "__docId__": 164,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/token-factory.js",
@@ -3118,7 +3160,7 @@
     "ignore": true
   },
   {
-    "__docId__": 163,
+    "__docId__": 165,
     "kind": "class",
     "name": "TokenFactoryServiceProvider",
     "memberof": "src/providers/token-factory.js",
@@ -3136,7 +3178,7 @@
     ]
   },
   {
-    "__docId__": 164,
+    "__docId__": 166,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -3161,7 +3203,7 @@
     ]
   },
   {
-    "__docId__": 165,
+    "__docId__": 167,
     "kind": "member",
     "name": "core",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -3180,7 +3222,7 @@
     }
   },
   {
-    "__docId__": 166,
+    "__docId__": 168,
     "kind": "member",
     "name": "tokenFactory",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -3199,7 +3241,7 @@
     }
   },
   {
-    "__docId__": 167,
+    "__docId__": 169,
     "kind": "method",
     "name": "depends",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -3227,7 +3269,7 @@
     "params": []
   },
   {
-    "__docId__": 168,
+    "__docId__": 170,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -3255,7 +3297,7 @@
     "params": []
   },
   {
-    "__docId__": 169,
+    "__docId__": 171,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -3270,7 +3312,7 @@
     "return": null
   },
   {
-    "__docId__": 170,
+    "__docId__": 172,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/token-factory.js~TokenFactoryServiceProvider",
@@ -3285,7 +3327,7 @@
     "return": null
   },
   {
-    "__docId__": 171,
+    "__docId__": 173,
     "kind": "file",
     "name": "src/providers/token-storage.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst TokenStorage = require(\"../utils/token-storage\");\n\n/**\n * MeeseOS Token Storage Service Provider\n */\nclass TokenStorageServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\t\tthis.options = options;\n\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = new TokenStorage(this.core, this.options);\n\t}\n\n\t/**\n\t * Get a list of services this provider registers.\n\t * @returns {String[]}\n\t */\n\tprovides() {\n\t\treturn [\"meeseOS/token-storage\"];\n\t}\n\n\t/**\n\t * Initializes provider.\n\t */\n\tasync init() {\n\t\tawait this.storage.init();\n\n\t\tthis.core.singleton(\"meeseOS/token-storage\", () => this.storage);\n\t}\n\n\t/**\n\t * Destroys provider.\n\t */\n\tdestroy() {\n\t\tthis.storage.destroy();\n\t}\n}\n\nmodule.exports = TokenStorageServiceProvider;\n",
@@ -3296,7 +3338,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 172,
+    "__docId__": 174,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/token-storage.js",
@@ -3317,7 +3359,7 @@
     "ignore": true
   },
   {
-    "__docId__": 173,
+    "__docId__": 175,
     "kind": "class",
     "name": "TokenStorageServiceProvider",
     "memberof": "src/providers/token-storage.js",
@@ -3335,7 +3377,7 @@
     ]
   },
   {
-    "__docId__": 174,
+    "__docId__": 176,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -3372,7 +3414,7 @@
     ]
   },
   {
-    "__docId__": 175,
+    "__docId__": 177,
     "kind": "member",
     "name": "core",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -3391,7 +3433,7 @@
     }
   },
   {
-    "__docId__": 176,
+    "__docId__": 178,
     "kind": "member",
     "name": "options",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -3409,7 +3451,7 @@
     "ignore": true
   },
   {
-    "__docId__": 177,
+    "__docId__": 179,
     "kind": "member",
     "name": "storage",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -3428,7 +3470,7 @@
     }
   },
   {
-    "__docId__": 178,
+    "__docId__": 180,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -3456,7 +3498,7 @@
     "params": []
   },
   {
-    "__docId__": 179,
+    "__docId__": 181,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -3471,7 +3513,7 @@
     "return": null
   },
   {
-    "__docId__": 180,
+    "__docId__": 182,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/token-storage.js~TokenStorageServiceProvider",
@@ -3486,7 +3528,7 @@
     "return": null
   },
   {
-    "__docId__": 181,
+    "__docId__": 183,
     "kind": "file",
     "name": "src/providers/vfs.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst { ServiceProvider } = require(\"@meese-os/common\");\nconst Filesystem = require(\"../filesystem\");\n\n/**\n * MeeseOS Virtual Filesystem Service Provider\n */\nclass VFSServiceProvider extends ServiceProvider {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} [options={}] Arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(core, options);\n\n\t\tthis.filesystem = new Filesystem(core, options);\n\t}\n\n\tasync destroy() {\n\t\tawait this.filesystem.destroy();\n\t\tsuper.destroy();\n\t}\n\n\tstatic depends() {\n\t\treturn [\"meeseOS/express\"];\n\t}\n\n\tstatic provides() {\n\t\treturn [\"meeseOS/fs\", \"meeseOS/vfs\"];\n\t}\n\n\tasync init() {\n\t\tconst filesystem = this.filesystem;\n\n\t\tawait filesystem.init();\n\n\t\tthis.core.singleton(\"meeseOS/fs\", () => this.filesystem);\n\n\t\tthis.core.singleton(\"meeseOS/vfs\", () => ({\n\t\t\trealpath: (...args) => this.filesystem.realpath(...args),\n\t\t\trequest: (...args) => this.filesystem.request(...args),\n\t\t\tcall: (...args) => this.filesystem.call(...args),\n\t\t\tmime: (...args) => this.filesystem.mime(...args),\n\n\t\t\tget adapters() {\n\t\t\t\treturn filesystem.adapters;\n\t\t\t},\n\n\t\t\tget mountpoints() {\n\t\t\t\treturn filesystem.mountpoints;\n\t\t\t},\n\t\t}));\n\n\t\tthis.core.app.use(\"/vfs\", filesystem.router);\n\t}\n}\n\nmodule.exports = VFSServiceProvider;\n",
@@ -3497,7 +3539,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 182,
+    "__docId__": 184,
     "kind": "variable",
     "name": "ServiceProvider",
     "memberof": "src/providers/vfs.js",
@@ -3518,7 +3560,7 @@
     "ignore": true
   },
   {
-    "__docId__": 183,
+    "__docId__": 185,
     "kind": "class",
     "name": "VFSServiceProvider",
     "memberof": "src/providers/vfs.js",
@@ -3536,7 +3578,7 @@
     ]
   },
   {
-    "__docId__": 184,
+    "__docId__": 186,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -3573,7 +3615,7 @@
     ]
   },
   {
-    "__docId__": 185,
+    "__docId__": 187,
     "kind": "member",
     "name": "filesystem",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -3591,7 +3633,7 @@
     "ignore": true
   },
   {
-    "__docId__": 186,
+    "__docId__": 188,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -3608,7 +3650,7 @@
     "ignore": true
   },
   {
-    "__docId__": 187,
+    "__docId__": 189,
     "kind": "method",
     "name": "depends",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -3629,7 +3671,7 @@
     "ignore": true
   },
   {
-    "__docId__": 188,
+    "__docId__": 190,
     "kind": "method",
     "name": "provides",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -3650,7 +3692,7 @@
     "ignore": true
   },
   {
-    "__docId__": 189,
+    "__docId__": 191,
     "kind": "method",
     "name": "init",
     "memberof": "src/providers/vfs.js~VFSServiceProvider",
@@ -3667,7 +3709,7 @@
     "ignore": true
   },
   {
-    "__docId__": 190,
+    "__docId__": 192,
     "kind": "file",
     "name": "src/settings.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst nullAdapter = require(\"./adapters/settings/null\");\nconst fsAdapter = require(\"./adapters/settings/fs\");\n\n/**\n * TODO: typedef\n * @typedef {Object} SettingsAdapter\n */\n\n/**\n * Settings Service Options\n * @typedef {Object} SettingsOptions\n * @property {SettingsAdapter|string} [adapter]\n */\n\n/**\n * MeeseOS Settings Manager\n */\nclass Settings {\n\t/**\n\t * Create new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {SettingsOptions} [options={}] Instance options\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\tthis.options = {\n\t\t\tadapter: nullAdapter,\n\t\t\t...options,\n\t\t};\n\n\t\tif (this.options.adapter === \"fs\") {\n\t\t\tthis.options.adapter = fsAdapter;\n\t\t}\n\n\t\tthis.adapter = nullAdapter(core, this.options.config);\n\n\t\ttry {\n\t\t\tthis.adapter = this.options.adapter(core, this.options.config);\n\t\t} catch (e) {\n\t\t\tthis.core.logger.warn(e);\n\t\t}\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tinit() {\n\t\tif (this.adapter.init) {\n\t\t\treturn this.adapter.init();\n\t\t}\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Sends save request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync save(req, res) {\n\t\tconst result = await this.adapter.save(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Sends load request to adapter.\n\t * @param {Request} req Express request\n\t * @param {Response} res Express response\n\t * @returns {Promise<undefined>}\n\t */\n\tasync load(req, res) {\n\t\tconst result = await this.adapter.load(req, res);\n\t\tres.json(result);\n\t}\n\n\t/**\n\t * Destroy instance.\n\t */\n\tdestroy() {\n\t\tif (this.adapter.destroy) {\n\t\t\tthis.adapter.destroy();\n\t\t}\n\t}\n}\n\nmodule.exports = Settings;\n",
@@ -3678,7 +3720,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 191,
+    "__docId__": 193,
     "kind": "typedef",
     "name": "SettingsAdapter",
     "memberof": "src/settings.js",
@@ -3695,7 +3737,7 @@
     }
   },
   {
-    "__docId__": 192,
+    "__docId__": 194,
     "kind": "typedef",
     "name": "SettingsOptions",
     "memberof": "src/settings.js",
@@ -3725,7 +3767,7 @@
     }
   },
   {
-    "__docId__": 193,
+    "__docId__": 195,
     "kind": "class",
     "name": "Settings",
     "memberof": "src/settings.js",
@@ -3740,7 +3782,7 @@
     "interface": false
   },
   {
-    "__docId__": 194,
+    "__docId__": 196,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/settings.js~Settings",
@@ -3777,7 +3819,7 @@
     ]
   },
   {
-    "__docId__": 195,
+    "__docId__": 197,
     "kind": "member",
     "name": "core",
     "memberof": "src/settings.js~Settings",
@@ -3796,7 +3838,7 @@
     }
   },
   {
-    "__docId__": 196,
+    "__docId__": 198,
     "kind": "member",
     "name": "options",
     "memberof": "src/settings.js~Settings",
@@ -3814,7 +3856,7 @@
     "ignore": true
   },
   {
-    "__docId__": 197,
+    "__docId__": 199,
     "kind": "member",
     "name": "adapter",
     "memberof": "src/settings.js~Settings",
@@ -3832,7 +3874,7 @@
     "ignore": true
   },
   {
-    "__docId__": 199,
+    "__docId__": 201,
     "kind": "method",
     "name": "init",
     "memberof": "src/settings.js~Settings",
@@ -3860,7 +3902,7 @@
     "params": []
   },
   {
-    "__docId__": 200,
+    "__docId__": 202,
     "kind": "method",
     "name": "save",
     "memberof": "src/settings.js~Settings",
@@ -3909,7 +3951,7 @@
     }
   },
   {
-    "__docId__": 201,
+    "__docId__": 203,
     "kind": "method",
     "name": "load",
     "memberof": "src/settings.js~Settings",
@@ -3958,7 +4000,7 @@
     }
   },
   {
-    "__docId__": 202,
+    "__docId__": 204,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/settings.js~Settings",
@@ -3973,7 +4015,7 @@
     "return": null
   },
   {
-    "__docId__": 203,
+    "__docId__": 205,
     "kind": "file",
     "name": "src/utils/token-factory.js",
     "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst jwt = require(\"jsonwebtoken\");\n// eslint-disable-next-line no-unused-vars\nconst TokenStorage = require(\"../utils/token-storage\");\n\n/**\n * Token Factory Options\n * @typedef {Object} TokenFactoryOptions\n * @property {String} [accessTokenSecret]\n * @property {String} [refreshTokenSecret]\n * @property {String} [accessTokenDuration]\n */\n\n/**\n * JWT Token Factory\n */\nclass TokenFactory {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenFactoryOptions} [options={}] Token Factory arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\tconst {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration\n\t\t} = core.configuration.session.jwt;\n\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenFactoryOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\taccessTokenSecret,\n\t\t\trefreshTokenSecret,\n\t\t\taccessTokenDuration,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes adapter.\n\t * @returns {Promise<Boolean>}\n\t */\n\tasync init() {\n\t\t/**\n\t\t * @type {TokenStorage}\n\t\t */\n\t\tthis.storage = this.core.make(\"meeseOS/token-storage\");\n\n\t\tawait this.storage.init();\n\n\t\treturn true;\n\t}\n\n\t/**\n\t * Creates an access token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The access token\n\t */\n\tcreateAccessToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.accessTokenSecret,\n\t\t\t{ expiresIn: this.options.accessTokenDuration }\n\t\t);\n\t}\n\n\t/**\n\t * Validates an access token.\n\t * @param {String} accessToken The access token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateAccessToken(accessToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(accessToken, this.options.accessTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Access token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Creates a refresh token for a user.\n\t * @param {String} username The user's username\n\t * @param {Array} groups The user's groups\n\t * @returns {String} The refresh token\n\t */\n\tcreateRefreshToken(username, groups) {\n\t\treturn jwt.sign(\n\t\t\t{ username, groups: JSON.stringify(groups) },\n\t\t\tthis.options.refreshTokenSecret\n\t\t);\n\t}\n\n\t/**\n\t * Validates a refresh token.\n\t * @param {String} refreshToken The refresh token to validate\n\t * @returns {Promise<Boolean|Object>} The user if valid, otherwise `false`\n\t */\n\tvalidateRefreshToken(refreshToken) {\n\t\treturn new Promise((resolve, reject) => {\n\t\t\tjwt.verify(refreshToken, this.options.refreshTokenSecret, (err, user) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treject(err);\n\t\t\t\t} else {\n\t\t\t\t\tresolve(user);\n\t\t\t\t}\n\t\t\t});\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.warn(\"Refresh token validation error:\", error);\n\t\t\treturn false;\n\t\t});\n\t}\n\n\t/**\n\t * Uses a refresh token to create a new access token, then returns the\n\t * associated user profile along with the new access token.\n\t * @param {String} refreshToken Refresh token\n\t * @returns {Promise<*>}\n\t */\n\trefreshToAccessToken(refreshToken) {\n\t\t// Need to ensure that the refreshToken hasn't been revoked\n\t\tif (!refreshToken || !this.storage.find(refreshToken)) {\n\t\t\treturn false;\n\t\t}\n\n\t\t/* eslint-disable no-async-promise-executor */\n\t\treturn new Promise(async (resolve, reject) => {\n\t\t\tconst tokenInStorage = this.storage.find(refreshToken);\n\t\t\tif (!tokenInStorage) {\n\t\t\t\treturn reject(new Error(\"Token not found\"));\n\t\t\t}\n\n\t\t\tconst user = await this.validateRefreshToken(refreshToken);\n\t\t\tif (!user) {\n\t\t\t\tthis.storage.remove(refreshToken);\n\t\t\t\treturn reject(new Error(\"Token not valid\"));\n\t\t\t}\n\n\t\t\tconst accessToken = this.createAccessToken(\n\t\t\t\tuser.username,\n\t\t\t\tuser.groups\n\t\t\t);\n\n\t\t\tresolve({ ...user, accessToken });\n\t\t}).catch((error) => {\n\t\t\tthis.core.logger.error(error);\n\t\t\treturn false;\n\t\t});\n\t\t/* eslint-enable no-async-promise-executor */\n\t}\n}\n\nmodule.exports = TokenFactory;\n",
@@ -3984,7 +4026,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 204,
+    "__docId__": 206,
     "kind": "typedef",
     "name": "TokenFactoryOptions",
     "memberof": "src/utils/token-factory.js",
@@ -4033,7 +4075,7 @@
     }
   },
   {
-    "__docId__": 205,
+    "__docId__": 207,
     "kind": "class",
     "name": "TokenFactory",
     "memberof": "src/utils/token-factory.js",
@@ -4048,7 +4090,7 @@
     "interface": false
   },
   {
-    "__docId__": 206,
+    "__docId__": 208,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4085,7 +4127,7 @@
     ]
   },
   {
-    "__docId__": 207,
+    "__docId__": 209,
     "kind": "member",
     "name": "core",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4104,7 +4146,7 @@
     }
   },
   {
-    "__docId__": 208,
+    "__docId__": 210,
     "kind": "member",
     "name": "options",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4123,7 +4165,7 @@
     }
   },
   {
-    "__docId__": 209,
+    "__docId__": 211,
     "kind": "method",
     "name": "init",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4151,7 +4193,7 @@
     "params": []
   },
   {
-    "__docId__": 210,
+    "__docId__": 212,
     "kind": "member",
     "name": "storage",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4170,7 +4212,7 @@
     }
   },
   {
-    "__docId__": 211,
+    "__docId__": 213,
     "kind": "method",
     "name": "createAccessToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4219,7 +4261,7 @@
     }
   },
   {
-    "__docId__": 212,
+    "__docId__": 214,
     "kind": "method",
     "name": "validateAccessToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4258,7 +4300,7 @@
     }
   },
   {
-    "__docId__": 213,
+    "__docId__": 215,
     "kind": "method",
     "name": "createRefreshToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4307,7 +4349,7 @@
     }
   },
   {
-    "__docId__": 214,
+    "__docId__": 216,
     "kind": "method",
     "name": "validateRefreshToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4346,7 +4388,7 @@
     }
   },
   {
-    "__docId__": 215,
+    "__docId__": 217,
     "kind": "method",
     "name": "refreshToAccessToken",
     "memberof": "src/utils/token-factory.js~TokenFactory",
@@ -4385,10 +4427,10 @@
     }
   },
   {
-    "__docId__": 216,
+    "__docId__": 218,
     "kind": "file",
     "name": "src/utils/token-storage.js",
-    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst loki = require(\"lokijs\");\n\n/**\n * Token Storage Options\n * @typedef {Object} TokenStorageOptions\n * @property {String} [databaseName]\n * @property {String} [collectionName]\n * @property {Object} [databaseOptions]\n */\n\n/**\n * Token Storage\n */\nclass TokenStorage {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenStorageOptions} [options={}] Token Storage arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenStorageOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\t...this.core.configuration.session.store,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes the instance.\n\t */\n\tinit() {\n\t\tthis.db = new loki(\n\t\t\tthis.options.databaseName,\n\t\t\t{\n\t\t\t\tautoloadCallback: () => {\n\t\t\t\t\t// Returns the collection if it exists, otherwise creates it\n\t\t\t\t\tlet collection = this.db.getCollection(this.options.collectionName);\n\t\t\t\t\tif (!collection) {\n\t\t\t\t\t\tcollection = this.db.addCollection(this.options.collectionName);\n\t\t\t\t\t}\n\n\t\t\t\t\tthis.collection = collection;\n\t\t\t\t},\n\t\t\t\t...this.options.databaseOptions,\n\t\t\t},\n\t\t);\n\t}\n\n\t/**\n\t * Looks for a refresh token in the database and returns it if found.\n\t * @param {String} refreshToken The refresh token to look for\n\t * @returns {Object|null} The token if found or `null` if not\n\t */\n\tfind(refreshToken) {\n\t\treturn this.collection.findOne({ refreshToken });\n\t}\n\n\t/**\n\t * Adds a refresh token to the database.\n\t * @param {String} refreshToken The refresh token to add\n\t */\n\tcreate(refreshToken) {\n\t\t// The timestamp is used to make pruning old data easier\n\t\tconst timestamp = new Date().getTime();\n\t\tthis.collection.insert({ refreshToken, timestamp });\n\t}\n\n\t/**\n\t * Removes a refresh token from the database.\n\t * @param {String} refreshToken The refresh token to remove\n\t * @returns {Promise<Boolean>} `true` if the token was removed, otherwise `false`\n\t */\n\tremove(refreshToken) {\n\t\tconst row = this.collection.findOne({ refreshToken });\n\t\tif (row) {\n\t\t\tthis.collection.remove(row);\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t */\n\tdestroy() {\n\t\tthis.db.close();\n\t}\n}\n\nmodule.exports = TokenStorage;\n",
+    "content": "/**\n * MeeseOS - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2022-Present, Aaron Meese <aaron@meese.dev>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n * \t and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors\n *    may be used to endorse or promote products derived from this software\n * \t without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Aaron Meese <aaron@meese.dev>\n * @licence Modified BSD License\n */\n\nconst loki = require(\"lokijs\");\n\n/**\n * Token Storage Options\n * @typedef {Object} TokenStorageOptions\n * @property {String} [databaseName]\n * @property {String} [collectionName]\n * @property {Object} [databaseOptions]\n */\n\n/**\n * Token Storage\n */\nclass TokenStorage {\n\t/**\n\t * Creates a new instance.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {TokenStorageOptions} [options={}] Token Storage arguments\n\t */\n\tconstructor(core, options = {}) {\n\t\t/**\n\t\t * @type {Core}\n\t\t */\n\t\tthis.core = core;\n\n\t\t/**\n\t\t * @type {TokenStorageOptions}\n\t\t */\n\t\tthis.options = {\n\t\t\t...this.core.configuration.session.store,\n\t\t\t...options,\n\t\t};\n\t}\n\n\t/**\n\t * Initializes the instance.\n\t * @returns {Promise<void>}\n\t */\n\tinit() {\n\t\treturn new Promise((resolve) => {\n\t\t\tconst databaseOptions = {\n\t\t\t\t...this.options.databaseOptions,\n\t\t\t};\n\n\t\t\t// If autoload is enabled, wrap the callback to resolve the promise\n\t\t\tif (databaseOptions.autoload) {\n\t\t\t\tconst originalCallback = databaseOptions.autoloadCallback;\n\t\t\t\tdatabaseOptions.autoloadCallback = () => {\n\t\t\t\t\t// Returns the collection if it exists, otherwise creates it\n\t\t\t\t\tlet collection = this.db.getCollection(this.options.collectionName);\n\t\t\t\t\tif (!collection) {\n\t\t\t\t\t\tcollection = this.db.addCollection(this.options.collectionName);\n\t\t\t\t\t}\n\n\t\t\t\t\tthis.collection = collection;\n\n\t\t\t\t\t// Call original callback if provided\n\t\t\t\t\tif (originalCallback) {\n\t\t\t\t\t\toriginalCallback();\n\t\t\t\t\t}\n\n\t\t\t\t\tresolve();\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tthis.db = new loki(\n\t\t\t\tthis.options.databaseName,\n\t\t\t\tdatabaseOptions,\n\t\t\t);\n\n\t\t\t// If autoload is disabled, create collection immediately\n\t\t\tif (!databaseOptions.autoload) {\n\t\t\t\tlet collection = this.db.getCollection(this.options.collectionName);\n\t\t\t\tif (!collection) {\n\t\t\t\t\tcollection = this.db.addCollection(this.options.collectionName);\n\t\t\t\t}\n\n\t\t\t\tthis.collection = collection;\n\t\t\t\tresolve();\n\t\t\t}\n\t\t});\n\t}\n\n\t/**\n\t * Looks for a refresh token in the database and returns it if found.\n\t * @param {String} refreshToken The refresh token to look for\n\t * @returns {Object|null} The token if found or `null` if not\n\t */\n\tfind(refreshToken) {\n\t\treturn this.collection.findOne({ refreshToken });\n\t}\n\n\t/**\n\t * Adds a refresh token to the database.\n\t * @param {String} refreshToken The refresh token to add\n\t */\n\tcreate(refreshToken) {\n\t\t// The timestamp is used to make pruning old data easier\n\t\tconst timestamp = new Date().getTime();\n\t\tthis.collection.insert({ refreshToken, timestamp });\n\t}\n\n\t/**\n\t * Removes a refresh token from the database.\n\t * @param {String} refreshToken The refresh token to remove\n\t * @returns {Promise<Boolean>} `true` if the token was removed, otherwise `false`\n\t */\n\tremove(refreshToken) {\n\t\tconst row = this.collection.findOne({ refreshToken });\n\t\tif (row) {\n\t\t\tthis.collection.remove(row);\n\t\t\treturn true;\n\t\t}\n\n\t\treturn false;\n\t}\n\n\t/**\n\t * Destroys the instance.\n\t */\n\tdestroy() {\n\t\tif (this.db) {\n\t\t\tthis.db.close();\n\t\t}\n\t}\n}\n\nmodule.exports = TokenStorage;\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/src/utils/token-storage.js",
     "access": "public",
@@ -4396,7 +4438,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 217,
+    "__docId__": 219,
     "kind": "typedef",
     "name": "TokenStorageOptions",
     "memberof": "src/utils/token-storage.js",
@@ -4445,7 +4487,7 @@
     }
   },
   {
-    "__docId__": 218,
+    "__docId__": 220,
     "kind": "class",
     "name": "TokenStorage",
     "memberof": "src/utils/token-storage.js",
@@ -4460,7 +4502,7 @@
     "interface": false
   },
   {
-    "__docId__": 219,
+    "__docId__": 221,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4497,7 +4539,7 @@
     ]
   },
   {
-    "__docId__": 220,
+    "__docId__": 222,
     "kind": "member",
     "name": "core",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4516,7 +4558,7 @@
     }
   },
   {
-    "__docId__": 221,
+    "__docId__": 223,
     "kind": "member",
     "name": "options",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4535,7 +4577,7 @@
     }
   },
   {
-    "__docId__": 222,
+    "__docId__": 224,
     "kind": "method",
     "name": "init",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4545,30 +4587,25 @@
     "longname": "src/utils/token-storage.js~TokenStorage#init",
     "access": "public",
     "description": "Initializes the instance.",
-    "lineNumber": 71,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 223,
-    "kind": "member",
-    "name": "db",
-    "memberof": "src/utils/token-storage.js~TokenStorage",
-    "static": false,
-    "longname": "src/utils/token-storage.js~TokenStorage#db",
-    "access": "public",
-    "description": null,
     "lineNumber": 72,
-    "undocument": true,
-    "type": {
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<void>}"
+      }
+    ],
+    "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Promise<void>"
+      ],
+      "spread": false,
+      "description": ""
     },
-    "ignore": true
+    "params": []
   },
   {
-    "__docId__": 224,
+    "__docId__": 225,
     "kind": "member",
     "name": "collection",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4576,7 +4613,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#collection",
     "access": "public",
     "description": null,
-    "lineNumber": 82,
+    "lineNumber": 88,
     "undocument": true,
     "type": {
       "types": [
@@ -4586,7 +4623,25 @@
     "ignore": true
   },
   {
-    "__docId__": 225,
+    "__docId__": 226,
+    "kind": "member",
+    "name": "db",
+    "memberof": "src/utils/token-storage.js~TokenStorage",
+    "static": false,
+    "longname": "src/utils/token-storage.js~TokenStorage#db",
+    "access": "public",
+    "description": null,
+    "lineNumber": 99,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 228,
     "kind": "method",
     "name": "find",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4596,7 +4651,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#find",
     "access": "public",
     "description": "Looks for a refresh token in the database and returns it if found.",
-    "lineNumber": 94,
+    "lineNumber": 122,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4626,7 +4681,7 @@
     }
   },
   {
-    "__docId__": 226,
+    "__docId__": 229,
     "kind": "method",
     "name": "create",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4636,7 +4691,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#create",
     "access": "public",
     "description": "Adds a refresh token to the database.",
-    "lineNumber": 102,
+    "lineNumber": 130,
     "params": [
       {
         "nullable": null,
@@ -4652,7 +4707,7 @@
     "return": null
   },
   {
-    "__docId__": 227,
+    "__docId__": 230,
     "kind": "method",
     "name": "remove",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4662,7 +4717,7 @@
     "longname": "src/utils/token-storage.js~TokenStorage#remove",
     "access": "public",
     "description": "Removes a refresh token from the database.",
-    "lineNumber": 113,
+    "lineNumber": 141,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4691,7 +4746,7 @@
     }
   },
   {
-    "__docId__": 228,
+    "__docId__": 231,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/utils/token-storage.js~TokenStorage",
@@ -4701,12 +4756,12 @@
     "longname": "src/utils/token-storage.js~TokenStorage#destroy",
     "access": "public",
     "description": "Destroys the instance.",
-    "lineNumber": 126,
+    "lineNumber": 154,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 229,
+    "__docId__": 232,
     "kind": "file",
     "name": "src/utils/vfs.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nconst fs = require(\"fs-extra\");\nconst url = require(\"url\");\nconst sanitizeFilename = require(\"sanitize-filename\");\nconst formidable = require(\"formidable\");\nconst { Stream } = require(\"stream\");\n\n/**\n * A map of error codes.\n */\nconst errorCodes = {\n\tENOENT: 404,\n\tEACCES: 401,\n};\n\n/**\n * Gets prefix of a VFS path.\n * @param {String} path\n * @returns {String}\n */\nconst getPrefix = (path) => String(path).split(\":\")[0];\n\n/**\n * Sanitizes a path.\n * @param {String|Array} path\n * @returns {String}\n */\nconst sanitize = (path) => {\n\t// Handle an array of strings\n\tif (Array.isArray(path)) {\n\t\treturn path.map((singlePath) => sanitize(singlePath));\n\t}\n\n\t// Handle a single string\n\tconst [name, str] = (\n\t\tpath.replace(/\\/+/g, \"/\").match(/^([\\w-_]+):+(.*)/) || []\n\t).slice(1);\n\n\tconst sane = str\n\t\t.split(\"/\")\n\t\t.map((s) => sanitizeFilename(s))\n\t\t.join(\"/\")\n\t\t.replace(/\\/+/g, \"/\");\n\n\treturn name + \":\" + sane;\n};\n\n/**\n * Gets the stream from an HTTP request.\n * @param {Request} req\n */\nconst streamFromRequest = (req) => {\n\tconst isStream = req.files.upload instanceof Stream;\n\tif (isStream) return req.files.upload;\n\n\tconst filePath = req.files.upload.filepath || req.files.upload.path;\n\tif (!filePath) {\n\t\tthrow new Error(\"File path is empty or undefined.\");\n\t}\n\n\treturn fs.createReadStream(filePath);\n};\n\n/**\n * @param {Array} arr\n * @param {Array} compare\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateAll = (arr, compare, strict = true) =>\n\tarr[strict ? \"every\" : \"some\"]((g) => compare.indexOf(g) !== -1);\n\n/**\n * Validates array groups.\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateNamedGroups = (groups, userGroups, strict) => {\n\tconst namedGroups = groups.filter((g) => typeof g === \"string\");\n\n\treturn namedGroups.length\n\t\t? validateAll(namedGroups, userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates map of groups based on method:[group,...]\n *\n * @param {Array} groups\n * @param {Array} userGroups\n * @param {String} method\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateMethodGroups = (groups, userGroups, method, strict) => {\n\tconst methodGroups = groups.find((g) =>\n\t\ttypeof g === \"string\" ? false : method in g\n\t);\n\n\treturn methodGroups\n\t\t? validateAll(methodGroups[method], userGroups, strict)\n\t\t: true;\n};\n\n/**\n * Validates groups.\n *\n * @param {Array} userGroups\n * @param {String} method\n * @param {Object} mountpoint\n * @param {Boolean} strict\n * @returns {Boolean}\n */\nconst validateGroups = (userGroups, method, mountpoint, strict) => {\n\tconst groups = mountpoint.attributes.groups || [];\n\tif (groups.length) {\n\t\tconst namedValid = validateNamedGroups(groups, userGroups, strict);\n\t\tconst methodValid = validateMethodGroups(\n\t\t\tgroups,\n\t\t\tuserGroups,\n\t\t\tmethod,\n\t\t\tstrict\n\t\t);\n\n\t\treturn namedValid && methodValid;\n\t}\n\n\treturn true;\n};\n\n/**\n * Checks permissions for given mountpoint.\n *\n * @param {Request} req\n * @param {Response} res\n * @param {String} method\n * @param {Boolean} readOnly\n * @param {Boolean} strict\n */\nconst checkMountpointPermission = (req, res, method, readOnly, strict) => {\n\tconst userGroups = req.session.user.groups;\n\n\treturn ({ mount }) => {\n\t\tif (readOnly) {\n\t\t\tconst { attributes, name } = mount;\n\n\t\t\tif (attributes.readOnly) {\n\t\t\t\tconst failed = typeof readOnly === \"function\"\n\t\t\t\t\t? getPrefix(readOnly(req, res)) === name\n\t\t\t\t\t: readOnly;\n\n\t\t\t\tif (failed) {\n\t\t\t\t\treturn Promise.reject(\n\t\t\t\t\t\tcreateError(403, `Mountpoint '${name}' is read-only`)\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\tif (validateGroups(userGroups, method, mount, strict)) {\n\t\t\treturn Promise.resolve(true);\n\t\t}\n\n\t\treturn Promise.reject(\n\t\t\tcreateError(\n\t\t\t\t403,\n\t\t\t\t`Permission was denied for '${method}' in '${mount.name}'`\n\t\t\t)\n\t\t);\n\t};\n};\n\n/**\n * Creates a new custom Error.\n * @param {Number} code\n * @param {String} message\n * @return {Error}\n */\nconst createError = (code, message) => {\n\tconst error = new Error(message);\n\terror.code = code;\n\treturn error;\n};\n\n/**\n * Resolves a mountpoint.\n * @param {Core} core MeeseOS Core instance reference\n * @returns {Object}\n */\nconst mountpointResolver = (core) =>\n\tasync (path) => {\n\t\tconst { adapters, mountpoints } = core.make(\"meeseOS/vfs\");\n\t\tconst prefix = getPrefix(path);\n\t\tconst mount = mountpoints.find((m) => m.name === prefix);\n\n\t\tif (!mount) {\n\t\t\tthrow createError(403, `Mountpoint not found for '${prefix}'`);\n\t\t}\n\n\t\tconst adapter = await (mount.adapter\n\t\t\t? adapters[mount.adapter]\n\t\t\t: adapters.system);\n\n\t\treturn Object.freeze({ mount, adapter });\n\t};\n\n/**\n * Parses URL body.\n * @param {Request} req\n * @returns {Promise<Object>}\n */\nconst parseGet = (req) => {\n\t// skipcq: JS-0272\n\tconst { query } = url.parse(req.url, true);\n\n\treturn Promise.resolve({ fields: query, files: {} });\n};\n\n/**\n * Parses JSON body.\n * @param {Request} req\n * @returns {Object|Boolean}\n */\nconst parseJson = (req) => {\n\tconst isJson = req.headers[\"content-type\"] &&\n\t\treq.headers[\"content-type\"].indexOf(\"application/json\") !== -1;\n\n\tif (isJson) {\n\t\treturn { fields: req.body, files: {} };\n\t}\n\n\treturn false;\n};\n\n/**\n * Parses form body.\n *\n * @param {Request} req\n * @param {Number} config.maxFieldsSize\n * @param {Number} config.maxFileSize\n * @returns {Promise<any>}\n */\nconst parseFormData = (req, { maxFieldsSize, maxFileSize }) => {\n\tconst form = formidable({\n\t\tmultiples: true,\n\t\tmaxFieldsSize,\n\t\tmaxFileSize,\n\t});\n\n\treturn new Promise((resolve, reject) => {\n\t\tform.parse(req, (err, fields, files) => {\n\t\t\treturn err ? reject(err) : resolve({ fields, files });\n\t\t});\n\t});\n};\n\n/**\n * Middleware for handling HTTP requests.\n * @param {Object} config\n * @returns {Promise<any>}\n */\nconst parseFields = (config) =>\n\t(req, _res) => {\n\t\tif ([\"get\", \"head\"].indexOf(req.method.toLowerCase()) !== -1) {\n\t\t\treturn Promise.resolve(parseGet(req));\n\t\t}\n\n\t\tconst json = parseJson(req);\n\t\tif (json) return Promise.resolve(json);\n\n\t\treturn parseFormData(req, config);\n\t};\n\n/**\n * A map of methods and their arguments.\n * Used for direct access via API.\n */\nconst methodArguments = {\n\trealpath: [\"path\"],\n\texists: [\"path\"],\n\tstat: [\"path\"],\n\treaddir: [\"path\"],\n\treadfile: [\"path\"],\n\twritefile: [\"path\", (upload) => ({ upload })],\n\tmkdir: [\"path\"],\n\tunlink: [\"path\"],\n\ttouch: [\"path\"],\n\tsearch: [\"root\", \"pattern\"],\n\tcopy: [\"from\", \"to\"],\n\trename: [\"from\", \"to\"],\n\tarchive: [\"selection\"],\n};\n\nmodule.exports = {\n\tmountpointResolver,\n\tcreateError,\n\tcheckMountpointPermission,\n\tvalidateGroups,\n\tstreamFromRequest,\n\tsanitize,\n\tgetPrefix,\n\tparseFields,\n\terrorCodes,\n\tmethodArguments,\n};\n",
@@ -4717,7 +4772,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 230,
+    "__docId__": 233,
     "kind": "variable",
     "name": "Stream",
     "memberof": "src/utils/vfs.js",
@@ -4738,7 +4793,7 @@
     "ignore": true
   },
   {
-    "__docId__": 231,
+    "__docId__": 234,
     "kind": "function",
     "name": "validateAll",
     "memberof": "src/utils/vfs.js",
@@ -4801,7 +4856,7 @@
     "ignore": true
   },
   {
-    "__docId__": 232,
+    "__docId__": 235,
     "kind": "function",
     "name": "validateNamedGroups",
     "memberof": "src/utils/vfs.js",
@@ -4864,7 +4919,7 @@
     "ignore": true
   },
   {
-    "__docId__": 233,
+    "__docId__": 236,
     "kind": "function",
     "name": "validateMethodGroups",
     "memberof": "src/utils/vfs.js",
@@ -4937,7 +4992,7 @@
     "ignore": true
   },
   {
-    "__docId__": 234,
+    "__docId__": 237,
     "kind": "function",
     "name": "parseGet",
     "memberof": "src/utils/vfs.js",
@@ -4980,7 +5035,7 @@
     "ignore": true
   },
   {
-    "__docId__": 235,
+    "__docId__": 238,
     "kind": "function",
     "name": "parseJson",
     "memberof": "src/utils/vfs.js",
@@ -5024,7 +5079,7 @@
     "ignore": true
   },
   {
-    "__docId__": 236,
+    "__docId__": 239,
     "kind": "function",
     "name": "parseFormData",
     "memberof": "src/utils/vfs.js",
@@ -5087,7 +5142,7 @@
     "ignore": true
   },
   {
-    "__docId__": 237,
+    "__docId__": 240,
     "kind": "function",
     "name": "mountpointResolver",
     "memberof": "src/utils/vfs.js",
@@ -5129,7 +5184,7 @@
     }
   },
   {
-    "__docId__": 238,
+    "__docId__": 241,
     "kind": "function",
     "name": "createError",
     "memberof": "src/utils/vfs.js",
@@ -5175,7 +5230,7 @@
     }
   },
   {
-    "__docId__": 239,
+    "__docId__": 242,
     "kind": "function",
     "name": "checkMountpointPermission",
     "memberof": "src/utils/vfs.js",
@@ -5248,7 +5303,7 @@
     }
   },
   {
-    "__docId__": 240,
+    "__docId__": 243,
     "kind": "function",
     "name": "validateGroups",
     "memberof": "src/utils/vfs.js",
@@ -5320,7 +5375,7 @@
     }
   },
   {
-    "__docId__": 241,
+    "__docId__": 244,
     "kind": "function",
     "name": "streamFromRequest",
     "memberof": "src/utils/vfs.js",
@@ -5353,7 +5408,7 @@
     }
   },
   {
-    "__docId__": 242,
+    "__docId__": 245,
     "kind": "function",
     "name": "sanitize",
     "memberof": "src/utils/vfs.js",
@@ -5396,7 +5451,7 @@
     }
   },
   {
-    "__docId__": 243,
+    "__docId__": 246,
     "kind": "function",
     "name": "getPrefix",
     "memberof": "src/utils/vfs.js",
@@ -5438,7 +5493,7 @@
     }
   },
   {
-    "__docId__": 244,
+    "__docId__": 247,
     "kind": "function",
     "name": "parseFields",
     "memberof": "src/utils/vfs.js",
@@ -5480,7 +5535,7 @@
     }
   },
   {
-    "__docId__": 245,
+    "__docId__": 248,
     "kind": "variable",
     "name": "errorCodes",
     "memberof": "src/utils/vfs.js",
@@ -5499,7 +5554,7 @@
     }
   },
   {
-    "__docId__": 246,
+    "__docId__": 249,
     "kind": "variable",
     "name": "methodArguments",
     "memberof": "src/utils/vfs.js",
@@ -5527,7 +5582,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"@meese-os/server\",\n  \"version\": \"1.1.1\",\n  \"description\": \"meeseOS Server\",\n  \"scripts\": {\n    \"build\": \"echo \\\"There is no build command for server\\\" && exit 0\",\n    \"eslint\": \"eslint index.js src\",\n    \"jest\": \"jest --detectOpenHandles --forceExit\",\n    \"jest:debug\": \"jest --runInBand --silent false --verbose true --useStderr=true --detectOpenHandles --forceExit\",\n\t\t\"coverage\": \"jest --coverage\",\n    \"test\": \"npm run eslint && npm run jest\",\n    \"prepublishOnly\": \"npm run test\"\n  },\n  \"license\": \"BSD-2-Clause\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src/\",\n    \"index.js\",\n    \"README.md\"\n  ],\n  \"engines\": {\n    \"node\": \">=12.0.0\"\n  },\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"eslint\": \"^9.37.0\",\n    \"eslint-plugin-jest\": \"^28.10.0\",\n    \"jest-express\": \"^1.12.0\",\n    \"temp\": \"^0.9.4\",\n    \"jest\": \"^29.7.0\"\n  },\n  \"dependencies\": {\n    \"@meese-os/common\": \"workspace:*\",\n    \"body-parser\": \"^1.20.3\",\n    \"chokidar\": \"^3.6.0\",\n    \"connect-loki\": \"^1.2.0\",\n    \"consola\": \"^2.15.3\",\n    \"deepmerge\": \"^4.3.1\",\n    \"express\": \"^4.21.2\",\n    \"express-http-proxy\": \"^1.6.3\",\n    \"express-session\": \"^1.18.2\",\n    \"express-ws\": \"^5.0.2\",\n    \"extract-zip\": \"^2.0.1\",\n    \"fast-glob\": \"^2.2.7\",\n    \"filehound\": \"^1.17.5\",\n    \"formidable\": \"^2.1.5\",\n    \"fs-extra\": \"^10.0.0\",\n    \"helmet\": \"^7.0.0\",\n    \"jsonwebtoken\": \"^9.0.2\",\n    \"lokijs\": \"^1.5.12\",\n    \"mime\": \"^3.0.0\",\n    \"minimist\": \"^1.2.8\",\n    \"morgan\": \"^1.10.1\",\n    \"nocache\": \"^3.0.4\",\n    \"sanitize-filename\": \"^1.6.3\",\n    \"uuid\": \"^9.0.1\",\n    \"yazl\": \"^2.5.1\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meese-os/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Server API\",\n            \"description\": \"meeseOS Server API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      },\n      {\n        \"name\": \"esdoc-node\"\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/esdoc.js\",\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/meese-os/meeseOS.git\",\n    \"directory\": \"backend/server\"\n  },\n  \"keywords\": [\n    \"os\",\n    \"osjs\",\n    \"operating system\",\n    \"webOS\",\n    \"meeseOS\",\n    \"server\"\n  ]\n}\n",
+    "content": "{\n  \"name\": \"@meese-os/server\",\n  \"version\": \"1.2.0\",\n  \"description\": \"meeseOS Server\",\n  \"scripts\": {\n    \"build\": \"echo \\\"There is no build command for server\\\" && exit 0\",\n    \"eslint\": \"eslint index.js src\",\n    \"jest\": \"jest --detectOpenHandles --forceExit\",\n    \"jest:debug\": \"jest --runInBand --silent false --verbose true --useStderr=true --detectOpenHandles --forceExit\",\n\t\t\"coverage\": \"jest --coverage\",\n    \"test\": \"npm run eslint && npm run jest\",\n    \"prepublishOnly\": \"npm run test\"\n  },\n  \"license\": \"BSD-2-Clause\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src/\",\n    \"index.js\",\n    \"README.md\"\n  ],\n  \"engines\": {\n    \"node\": \">=12.0.0\"\n  },\n  \"devDependencies\": {\n    \"@meese-os/eslint-config\": \"workspace:*\",\n    \"eslint\": \"^9.39.2\",\n    \"eslint-plugin-jest\": \"^29.5.0\",\n    \"jest-express\": \"^1.12.0\",\n    \"temp\": \"^0.9.4\",\n    \"jest\": \"^30.2.0\"\n  },\n  \"dependencies\": {\n    \"@meese-os/common\": \"workspace:*\",\n    \"body-parser\": \"^2.2.1\",\n    \"chokidar\": \"^3.6.0\",\n    \"connect-loki\": \"^1.2.0\",\n    \"consola\": \"^3.4.2\",\n    \"deepmerge\": \"^4.3.1\",\n    \"express\": \"^5.2.1\",\n    \"express-http-proxy\": \"^2.1.2\",\n    \"express-session\": \"^1.18.2\",\n    \"express-ws\": \"^5.0.2\",\n    \"extract-zip\": \"^2.0.1\",\n    \"fast-glob\": \"^3.3.3\",\n    \"filehound\": \"^1.17.6\",\n    \"formidable\": \"^3.5.4\",\n    \"fs-extra\": \"^11.3.2\",\n    \"helmet\": \"^8.1.0\",\n    \"jsonwebtoken\": \"^9.0.3\",\n    \"lokijs\": \"^1.5.12\",\n    \"mime\": \"^3.0.0\",\n    \"minimist\": \"^1.2.8\",\n    \"morgan\": \"^1.10.1\",\n    \"nocache\": \"^4.0.0\",\n    \"sanitize-filename\": \"^1.6.3\",\n    \"uuid\": \"^9.0.1\",\n    \"yazl\": \"^3.3.1\"\n  },\n  \"eslintConfig\": {\n    \"env\": {\n      \"browser\": true,\n      \"node\": true,\n      \"jest/globals\": true\n    },\n    \"plugins\": [\"jest\"],\n    \"parserOptions\": {\n      \"sourceType\": \"module\"\n    },\n    \"extends\": [\"@meese-os/eslint-config\", \"plugin:jest/recommended\"]\n  },\n  \"esdoc\": {\n    \"source\": \"./src\",\n    \"destination\": \"./doc\",\n    \"plugins\": [\n      {\n        \"name\": \"esdoc-standard-plugin\",\n        \"option\": {\n          \"brand\": {\n            \"title\": \"meeseOS Server API\",\n            \"description\": \"meeseOS Server API Documentation\"\n          },\n          \"lint\": {\n            \"enable\": false\n          },\n          \"coverage\": {\n            \"enable\": false\n          },\n          \"undocumentIdentifier\": {\n            \"enable\": false\n          }\n        }\n      },\n      {\n        \"name\": \"esdoc-publish-html-plugin\"\n      },\n      {\n        \"name\": \"esdoc-ecmascript-proposal-plugin\",\n        \"option\": {\n          \"all\": true\n        }\n      },\n      {\n        \"name\": \"esdoc-node\"\n      }\n    ]\n  },\n  \"jest\": {\n    \"collectCoverage\": true,\n    \"coverageReporters\": [\n      \"lcov\"\n    ],\n    \"moduleNameMapper\": {\n      \"^meeseOS$\": \"<rootDir>/__mocks__/core.js\"\n    },\n    \"coveragePathIgnorePatterns\": [\n      \"src/esdoc.js\",\n      \"src/config.js\",\n      \"src/providers\",\n      \"/node_modules/\"\n    ]\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/meese-os/meeseOS.git\",\n    \"directory\": \"backend/server\"\n  },\n  \"keywords\": [\n    \"os\",\n    \"osjs\",\n    \"operating system\",\n    \"webOS\",\n    \"meeseOS\",\n    \"server\"\n  ]\n}\n",
     "longname": "/home/runner/work/meeseOS/meeseOS/backend/server/package.json",
     "name": "package.json",
     "static": true,
