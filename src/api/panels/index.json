@@ -567,7 +567,7 @@
     "__docId__": 48,
     "kind": "file",
     "name": "src/items/clock.js",
-    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { h } from \"hyperapp\";\nimport PanelItem from \"../panel-item\";\nimport dateformat from \"dateformat\";\n\n/**\n * Clock.\n *\n * @desc Clock Panel Item\n */\nexport default class ClockPanelItem extends PanelItem {\n\tinit() {\n\t\tconst date = () => dateformat(new Date(), \"HH:MM:ss\");\n\t\tif (this.inited) return;\n\n\t\tconst actions = super.init(\n\t\t\t{\n\t\t\t\ttime: date(),\n\t\t\t},\n\t\t\t{\n\t\t\t\tincrement: () => (_state) => {\n\t\t\t\t\treturn { time: date() };\n\t\t\t\t},\n\t\t\t}\n\t\t);\n\n\t\tthis.interval = setInterval(() => {\n\t\t\tactions.increment();\n\t\t}, 1000);\n\t}\n\n\tdestroy() {\n\t\tthis.interval = clearInterval(this.interval);\n\t\tsuper.destroy();\n\t}\n\n\trender(state, _actions) {\n\t\treturn super.render(\"clock\", [h(\"span\", {}, state.time)]);\n\t}\n}\n",
+    "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { h } from \"hyperapp\";\nimport PanelItem from \"../panel-item\";\nimport dateformat from \"dateformat\";\n\nconst WEEKDAYS = [\"Su\", \"Mo\", \"Tu\", \"We\", \"Th\", \"Fr\", \"Sa\"];\n\n/** Current time string shown in the panel. */\nconst currentTime = () => dateformat(new Date(), \"HH:MM:ss\");\n\n/** The year/month pair currently displayed by the calendar. */\nconst monthView = (date) => ({ year: date.getFullYear(), month: date.getMonth() });\n\n/** Shifts a {year, month} view by a number of months. */\nconst shiftMonth = ({ year, month }, delta) =>\n\tmonthView(new Date(year, month + delta, 1));\n\n/**\n * Builds the calendar cells for a month: leading blanks for the offset of the\n * first day, then the day numbers.\n * @param {Number} year Full year\n * @param {Number} month Zero-based month\n * @returns {Array<Number|null>} Cells (null = blank pad)\n */\nconst buildMonthCells = (year, month) => {\n\tconst leadingBlanks = new Date(year, month, 1).getDay();\n\tconst daysInMonth = new Date(year, month + 1, 0).getDate();\n\n\tconst cells = Array.from({ length: leadingBlanks }, () => null);\n\tfor (let day = 1; day <= daysInMonth; day++) {\n\t\tcells.push(day);\n\t}\n\n\treturn cells;\n};\n\n/**\n * Renders the calendar popover for the currently viewed month.\n * @param {Object} state Item state\n * @param {Object} actions Bound actions\n * @returns {Node} A *virtual* node\n */\nconst renderPopover = (state, actions) => {\n\tconst today = new Date();\n\tconst { year, month } = state.view;\n\tconst showingThisMonth =\n\t\tyear === today.getFullYear() && month === today.getMonth();\n\n\tconst weekdays = WEEKDAYS.map((label) =>\n\t\th(\"span\", { class: \"meeseOS-clock-popover-weekday\" }, label)\n\t);\n\n\tconst days = buildMonthCells(year, month).map((day) => {\n\t\tconst isToday = showingThisMonth && day === today.getDate();\n\t\treturn h(\n\t\t\t\"span\",\n\t\t\t{\n\t\t\t\tclass: `meeseOS-clock-popover-day${isToday ? \" meeseOS__active\" : \"\"}`,\n\t\t\t},\n\t\t\tday ? String(day) : \"\"\n\t\t);\n\t});\n\n\treturn h(\"div\", { class: \"meeseOS-clock-popover\" }, [\n\t\th(\n\t\t\t\"div\",\n\t\t\t{ class: \"meeseOS-clock-popover-date\" },\n\t\t\tdateformat(today, \"dddd, mmmm d, yyyy\")\n\t\t),\n\t\th(\"div\", { class: \"meeseOS-clock-popover-nav\" }, [\n\t\t\th(\"button\", { type: \"button\", onclick: () => actions.prevMonth() }, \"‹\"),\n\t\t\th(\"span\", {}, dateformat(new Date(year, month, 1), \"mmmm yyyy\")),\n\t\t\th(\"button\", { type: \"button\", onclick: () => actions.nextMonth() }, \"›\"),\n\t\t]),\n\t\th(\"div\", { class: \"meeseOS-clock-popover-grid\" }, [...weekdays, ...days]),\n\t]);\n};\n\n/**\n * Clock.\n *\n * @desc Clock Panel Item. Shows the time, and opens a calendar popover with the\n * full date on click (the time also exposes the full date as a hover tooltip).\n */\nexport default class ClockPanelItem extends PanelItem {\n\tinit() {\n\t\tif (this.inited) return;\n\n\t\tconst actions = super.init(\n\t\t\t{\n\t\t\t\ttime: currentTime(),\n\t\t\t\topen: false,\n\t\t\t\tview: monthView(new Date()),\n\t\t\t},\n\t\t\t{\n\t\t\t\tincrement: () => () => ({ time: currentTime() }),\n\t\t\t\ttoggle: () => (state) =>\n\t\t\t\t\tstate.open\n\t\t\t\t\t\t? { open: false }\n\t\t\t\t\t\t: { open: true, view: monthView(new Date()) },\n\t\t\t\tclose: () => () => ({ open: false }),\n\t\t\t\tprevMonth: () => (state) => ({ view: shiftMonth(state.view, -1) }),\n\t\t\t\tnextMonth: () => (state) => ({ view: shiftMonth(state.view, 1) }),\n\t\t\t}\n\t\t);\n\n\t\tthis.interval = setInterval(() => actions.increment(), 1000);\n\n\t\t// Close the calendar when clicking anywhere outside the clock item.\n\t\tthis.onDocumentClick = (ev) => {\n\t\t\tif (!ev.target.closest(\".meeseOS-panel-item[data-name=clock]\")) {\n\t\t\t\tactions.close();\n\t\t\t}\n\t\t};\n\t\tdocument.addEventListener(\"click\", this.onDocumentClick);\n\t}\n\n\tdestroy() {\n\t\tthis.interval = clearInterval(this.interval);\n\t\tif (this.onDocumentClick) {\n\t\t\tdocument.removeEventListener(\"click\", this.onDocumentClick);\n\t\t\tthis.onDocumentClick = null;\n\t\t}\n\t\tsuper.destroy();\n\t}\n\n\trender(state, actions) {\n\t\tconst children = [\n\t\t\th(\n\t\t\t\t\"span\",\n\t\t\t\t{\n\t\t\t\t\tclass: \"meeseOS-clock-time\",\n\t\t\t\t\ttitle: dateformat(new Date(), \"dddd, mmmm d, yyyy\"),\n\t\t\t\t\tonclick: () => actions.toggle(),\n\t\t\t\t},\n\t\t\t\tstate.time\n\t\t\t),\n\t\t];\n\n\t\tif (state.open) {\n\t\t\tchildren.push(renderPopover(state, actions));\n\t\t}\n\n\t\treturn super.render(\"clock\", children);\n\t}\n}\n",
     "static": true,
     "longname": "/home/runner/work/meeseOS/meeseOS/frontend/panels/src/items/clock.js",
     "access": "public",
@@ -576,6 +576,215 @@
   },
   {
     "__docId__": 49,
+    "kind": "variable",
+    "name": "WEEKDAYS",
+    "memberof": "src/items/clock.js",
+    "static": true,
+    "longname": "src/items/clock.js~WEEKDAYS",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/panels/src/items/clock.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 35,
+    "undocument": true,
+    "type": {
+      "types": [
+        "string[]"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 50,
+    "kind": "function",
+    "name": "currentTime",
+    "memberof": "src/items/clock.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/items/clock.js~currentTime",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/panels/src/items/clock.js",
+    "importStyle": null,
+    "description": "Current time string shown in the panel.",
+    "lineNumber": 38,
+    "params": [],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 51,
+    "kind": "function",
+    "name": "monthView",
+    "memberof": "src/items/clock.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/items/clock.js~monthView",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/panels/src/items/clock.js",
+    "importStyle": null,
+    "description": "The year/month pair currently displayed by the calendar.",
+    "lineNumber": 41,
+    "params": [
+      {
+        "name": "date",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 52,
+    "kind": "function",
+    "name": "shiftMonth",
+    "memberof": "src/items/clock.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/items/clock.js~shiftMonth",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/panels/src/items/clock.js",
+    "importStyle": null,
+    "description": "Shifts a {year, month} view by a number of months.",
+    "lineNumber": 44,
+    "params": [
+      {
+        "name": "objectPattern",
+        "types": [
+          "{\"year\": *, \"month\": *}"
+        ],
+        "defaultRaw": {
+          "year": null,
+          "month": null
+        },
+        "defaultValue": "{\"year\":null,\"month\":null}"
+      },
+      {
+        "name": "delta",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null,
+    "ignore": true
+  },
+  {
+    "__docId__": 53,
+    "kind": "function",
+    "name": "buildMonthCells",
+    "memberof": "src/items/clock.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/items/clock.js~buildMonthCells",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/panels/src/items/clock.js",
+    "importStyle": null,
+    "description": "Builds the calendar cells for a month: leading blanks for the offset of the\nfirst day, then the day numbers.",
+    "lineNumber": 54,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Array<Number|null>} Cells (null = blank pad)"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "year",
+        "description": "Full year"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "month",
+        "description": "Zero-based month"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Array<Number|null>"
+      ],
+      "spread": false,
+      "description": "Cells (null = blank pad)"
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 54,
+    "kind": "function",
+    "name": "renderPopover",
+    "memberof": "src/items/clock.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/items/clock.js~renderPopover",
+    "access": "public",
+    "export": false,
+    "importPath": "@meese-os/panels/src/items/clock.js",
+    "importStyle": null,
+    "description": "Renders the calendar popover for the currently viewed month.",
+    "lineNumber": 72,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Node} A *virtual* node"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "state",
+        "description": "Item state"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "actions",
+        "description": "Bound actions"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Node"
+      ],
+      "spread": false,
+      "description": "A *virtual* node"
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 55,
     "kind": "class",
     "name": "ClockPanelItem",
     "memberof": "src/items/clock.js",
@@ -585,15 +794,15 @@
     "export": true,
     "importPath": "@meese-os/panels/src/items/clock.js",
     "importStyle": "ClockPanelItem",
-    "description": "Clock Panel Item",
-    "lineNumber": 40,
+    "description": "Clock Panel Item. Shows the time, and opens a calendar popover with the\nfull date on click (the time also exposes the full date as a hover tooltip).",
+    "lineNumber": 114,
     "interface": false,
     "extends": [
       "src/panel-item.js~PanelItem"
     ]
   },
   {
-    "__docId__": 50,
+    "__docId__": 56,
     "kind": "method",
     "name": "init",
     "memberof": "src/items/clock.js~ClockPanelItem",
@@ -603,14 +812,14 @@
     "longname": "src/items/clock.js~ClockPanelItem#init",
     "access": "public",
     "description": null,
-    "lineNumber": 41,
+    "lineNumber": 115,
     "undocument": true,
     "params": [],
     "return": null,
     "ignore": true
   },
   {
-    "__docId__": 51,
+    "__docId__": 57,
     "kind": "member",
     "name": "interval",
     "memberof": "src/items/clock.js~ClockPanelItem",
@@ -618,7 +827,7 @@
     "longname": "src/items/clock.js~ClockPanelItem#interval",
     "access": "public",
     "description": null,
-    "lineNumber": 56,
+    "lineNumber": 136,
     "undocument": true,
     "type": {
       "types": [
@@ -628,7 +837,25 @@
     "ignore": true
   },
   {
-    "__docId__": 52,
+    "__docId__": 58,
+    "kind": "member",
+    "name": "onDocumentClick",
+    "memberof": "src/items/clock.js~ClockPanelItem",
+    "static": false,
+    "longname": "src/items/clock.js~ClockPanelItem#onDocumentClick",
+    "access": "public",
+    "description": null,
+    "lineNumber": 139,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 59,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/items/clock.js~ClockPanelItem",
@@ -638,14 +865,14 @@
     "longname": "src/items/clock.js~ClockPanelItem#destroy",
     "access": "public",
     "description": null,
-    "lineNumber": 61,
+    "lineNumber": 147,
     "undocument": true,
     "params": [],
     "return": null,
     "ignore": true
   },
   {
-    "__docId__": 54,
+    "__docId__": 62,
     "kind": "method",
     "name": "render",
     "memberof": "src/items/clock.js~ClockPanelItem",
@@ -655,7 +882,7 @@
     "longname": "src/items/clock.js~ClockPanelItem#render",
     "access": "public",
     "description": null,
-    "lineNumber": 66,
+    "lineNumber": 156,
     "undocument": true,
     "params": [
       {
@@ -665,7 +892,7 @@
         ]
       },
       {
-        "name": "_actions",
+        "name": "actions",
         "types": [
           "*"
         ]
@@ -679,7 +906,7 @@
     "ignore": true
   },
   {
-    "__docId__": 55,
+    "__docId__": 63,
     "kind": "file",
     "name": "src/items/tray.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { h } from \"hyperapp\";\nimport PanelItem from \"../panel-item\";\n\n/**\n * Tray.\n *\n * @desc Tray Panel Item\n */\nexport default class TrayPanelItem extends PanelItem {\n\tinit() {\n\t\tif (this.inited) return;\n\n\t\tconst actions = super.init(\n\t\t\t{\n\t\t\t\ttray: this.core.make(\"meeseOS/tray\").list(),\n\t\t\t},\n\t\t\t{\n\t\t\t\tsetTray: (tray) => (state) => ({ tray }),\n\t\t\t}\n\t\t);\n\n\t\tthis.core.on(\"meeseOS/tray:update\", (list) => actions.setTray(list));\n\t}\n\n\trender(state, _actions) {\n\t\tconst child = (entry) =>\n\t\t\th(\n\t\t\t\t\"div\",\n\t\t\t\t{\n\t\t\t\t\tonclick: (ev) => entry.onclick(ev, entry),\n\t\t\t\t\toncontextmenu: (ev) => entry.oncontextmenu(ev, entry),\n\t\t\t\t\tclassName: \"meeseOS-panel-item--clickable meeseOS-panel-item--icon\",\n\t\t\t\t},\n\t\t\t\th(\"img\", {\n\t\t\t\t\tsrc: entry.icon,\n\t\t\t\t\ttitle: entry.title,\n\t\t\t\t})\n\t\t\t);\n\n\t\treturn super.render(\"tray\", state.tray.map(child));\n\t}\n}\n",
@@ -690,7 +917,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 56,
+    "__docId__": 64,
     "kind": "class",
     "name": "TrayPanelItem",
     "memberof": "src/items/tray.js",
@@ -708,7 +935,7 @@
     ]
   },
   {
-    "__docId__": 57,
+    "__docId__": 65,
     "kind": "method",
     "name": "init",
     "memberof": "src/items/tray.js~TrayPanelItem",
@@ -725,7 +952,7 @@
     "ignore": true
   },
   {
-    "__docId__": 58,
+    "__docId__": 66,
     "kind": "method",
     "name": "render",
     "memberof": "src/items/tray.js~TrayPanelItem",
@@ -759,7 +986,7 @@
     "ignore": true
   },
   {
-    "__docId__": 59,
+    "__docId__": 67,
     "kind": "file",
     "name": "src/panel-item.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { app, h } from \"hyperapp\";\nimport { EventEmitter } from \"@meese-os/event-emitter\";\n\n/**\n * MeeseOS Panel Item\n * @see {Panel}\n */\nexport default class PanelItem extends EventEmitter {\n\t/**\n\t * Create panel item.\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Panel} panel Panel reference\n\t * @param {Object} options Options\n\t */\n\tconstructor(core, panel, options = {}) {\n\t\tsuper(\"Panel\");\n\n\t\tthis.core = core;\n\t\tthis.panel = panel;\n\t\tthis.options = options;\n\t\tthis.state = {};\n\t\tthis.actions = {};\n\t\tthis.inited = false;\n\t}\n\n\t/**\n\t * Destroys panel item.\n\t */\n\tdestroy() {\n\t\tthis.emit(\"destroy\", this);\n\t}\n\n\t/**\n\t * Initializes panel item.\n\t * @param {Object} state State\n\t * @param {Object} actions Actions\n\t * @returns {Object} Bound actions\n\t */\n\tinit(state = {}, actions = {}) {\n\t\tif (this.inited) {\n\t\t\treturn false;\n\t\t}\n\n\t\tthis.inited = true;\n\t\tthis.emit(\"init\", this);\n\n\t\treturn app(\n\t\t\tstate,\n\t\t\tactions,\n\t\t\t(state, actions) => {\n\t\t\t\treturn this.render(state, actions);\n\t\t\t},\n\t\t\tthis.panel.$element\n\t\t);\n\t}\n\n\t/**\n\t * Renders the panel item.\n\t * @param {String} name The panel item virtual name\n\t * @param {Object[]} children The panel item children\n\t * @returns {Node} A *virtual* node\n\t */\n\trender(name, children = []) {\n\t\treturn h(\n\t\t\t\"div\",\n\t\t\t{\n\t\t\t\tclassName: \"meeseOS-panel-item\",\n\t\t\t\t\"data-name\": name,\n\t\t\t},\n\t\t\tchildren\n\t\t);\n\t}\n}\n",
@@ -770,7 +997,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 60,
+    "__docId__": 68,
     "kind": "class",
     "name": "PanelItem",
     "memberof": "src/panel-item.js",
@@ -791,7 +1018,7 @@
     ]
   },
   {
-    "__docId__": 61,
+    "__docId__": 69,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/panel-item.js~PanelItem",
@@ -836,7 +1063,7 @@
     ]
   },
   {
-    "__docId__": 62,
+    "__docId__": 70,
     "kind": "member",
     "name": "core",
     "memberof": "src/panel-item.js~PanelItem",
@@ -854,7 +1081,7 @@
     "ignore": true
   },
   {
-    "__docId__": 63,
+    "__docId__": 71,
     "kind": "member",
     "name": "panel",
     "memberof": "src/panel-item.js~PanelItem",
@@ -872,7 +1099,7 @@
     "ignore": true
   },
   {
-    "__docId__": 64,
+    "__docId__": 72,
     "kind": "member",
     "name": "options",
     "memberof": "src/panel-item.js~PanelItem",
@@ -890,7 +1117,7 @@
     "ignore": true
   },
   {
-    "__docId__": 65,
+    "__docId__": 73,
     "kind": "member",
     "name": "state",
     "memberof": "src/panel-item.js~PanelItem",
@@ -908,7 +1135,7 @@
     "ignore": true
   },
   {
-    "__docId__": 66,
+    "__docId__": 74,
     "kind": "member",
     "name": "actions",
     "memberof": "src/panel-item.js~PanelItem",
@@ -926,7 +1153,7 @@
     "ignore": true
   },
   {
-    "__docId__": 67,
+    "__docId__": 75,
     "kind": "member",
     "name": "inited",
     "memberof": "src/panel-item.js~PanelItem",
@@ -944,7 +1171,7 @@
     "ignore": true
   },
   {
-    "__docId__": 68,
+    "__docId__": 76,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/panel-item.js~PanelItem",
@@ -959,7 +1186,7 @@
     "return": null
   },
   {
-    "__docId__": 69,
+    "__docId__": 77,
     "kind": "method",
     "name": "init",
     "memberof": "src/panel-item.js~PanelItem",
@@ -1008,7 +1235,7 @@
     }
   },
   {
-    "__docId__": 71,
+    "__docId__": 79,
     "kind": "method",
     "name": "render",
     "memberof": "src/panel-item.js~PanelItem",
@@ -1057,7 +1284,7 @@
     }
   },
   {
-    "__docId__": 72,
+    "__docId__": 80,
     "kind": "file",
     "name": "src/panel.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport { EventEmitter } from \"@meese-os/event-emitter\";\nimport PanelItem from \"./panel-item\";\n\n/**\n * Panel.\n *\n * @desc Base Panel Class\n */\nexport default class Panel extends EventEmitter {\n\t/**\n\t * Create panel\n\t *\n\t * @param {Core} core MeeseOS Core instance reference\n\t * @param {Object} options Options\n\t */\n\tconstructor(core, options = {}) {\n\t\tsuper(\"Panel\");\n\n\t\tthis.core = core;\n\t\tthis.options = {\n\n\t\t\tontop: true,\n\t\t\tposition: \"top\",\n\t\t\tcontextmenu: true,\n\t\t\titems: [],\n\t\t\t...options\n\t\t};\n\n\t\tthis.items = [];\n\t\tthis.inited = false;\n\t\tthis.destroyed = false;\n\t\tthis.$element = null;\n\n\t\tthis.options.items.forEach(({ name, options }) => {\n\t\t\tconst c = core.make(\"meeseOS/panels\").get(name);\n\t\t\tthis.addItem(new c(this.core, this, options || {}));\n\t\t});\n\t}\n\n\t/**\n\t * Destroys the panel.\n\t */\n\tdestroy() {\n\t\tif (this.destroyed) return;\n\n\t\tthis.items = this.items.filter((item) => {\n\t\t\ttry {\n\t\t\t\titem.destroy();\n\t\t\t} catch (e) {\n\t\t\t\tconsole.warn(e);\n\t\t\t}\n\t\t\treturn false;\n\t\t});\n\n\t\tthis.destroyed = true;\n\t\tthis.inited = false;\n\t\tthis.emit(\"destroy\");\n\t\tthis.core.emit(\"meeseOS/panel:destroy\", this);\n\n\t\tthis.$element.remove();\n\t\tthis.$element = null;\n\t}\n\n\t/**\n\t * Initializes the panel.\n\t */\n\tinit() {\n\t\tif (this.inited) return;\n\t\tthis.destroyed = false;\n\t\tthis.inited = true;\n\n\t\tthis.$element = document.createElement(\"div\");\n\t\tthis.$element.classList.add(\"meeseOS-panel\");\n\t\tthis.$element.classList.add(\"meeseOS__contextmenu\");\n\t\tthis.$element.addEventListener(\"contextmenu\", (ev) => {\n\t\t\tev.preventDefault();\n\n\t\t\tconst disabled =\n\t\t\t\tthis.core.config(\"desktop.lock\") ||\n\t\t\t\tthis.core.config(\"desktop.disablePanelContextMenu\");\n\n\t\t\tif (disabled) return;\n\n\t\t\tthis.core.make(\"meeseOS/contextmenu\").show({\n\t\t\t\tposition: ev,\n\t\t\t\tmenu: [\n\t\t\t\t\t{\n\t\t\t\t\t\tlabel: \"Panel Position\",\n\t\t\t\t\t\titems: [\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tlabel: \"Top\",\n\t\t\t\t\t\t\t\tonclick: () => this.setPosition(\"top\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tlabel: \"Bottom\",\n\t\t\t\t\t\t\t\tonclick: () => this.setPosition(\"bottom\"),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t],\n\t\t\t\t\t},\n\t\t\t\t],\n\t\t\t});\n\t\t});\n\n\t\tthis.$element.setAttribute(\"data-position\", this.options.position);\n\t\tthis.$element.setAttribute(\"data-ontop\", String(this.options.ontop));\n\n\t\tthis.core.$root.appendChild(this.$element);\n\n\t\tthis.items.forEach((item) => item.init());\n\n\t\tthis.emit(\"create\");\n\t}\n\n\t/**\n\t * Add an item to the panel.\n\t * @param {PanelItem} item The panel item instance\n\t */\n\taddItem(item) {\n\t\tif (!(item instanceof PanelItem)) {\n\t\t\tthrow new TypeError(\"Invalid panel item specified\");\n\t\t}\n\n\t\tthis.items.push(item);\n\n\t\tif (this.inited) {\n\t\t\titem.init();\n\t\t}\n\t}\n\n\t/**\n\t * Sets the panel position.\n\t * @param {String} position The new position for the panel\n\t * @returns {Promise<undefined>}\n\t * @todo Make sure the return type is accurate\n\t */\n\tsetPosition(position) {\n\t\tthis.options.position = position;\n\n\t\treturn this.core\n\t\t\t.make(\"meeseOS/panels\")\n\t\t\t.save()\n\t\t\t.then(() => {\n\t\t\t\tconst desktop = this.core.make(\"meeseOS/desktop\");\n\t\t\t\treturn desktop.applySettings();\n\t\t\t});\n\t}\n}\n",
@@ -1068,7 +1295,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 73,
+    "__docId__": 81,
     "kind": "class",
     "name": "Panel",
     "memberof": "src/panel.js",
@@ -1086,7 +1313,7 @@
     ]
   },
   {
-    "__docId__": 74,
+    "__docId__": 82,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/panel.js~Panel",
@@ -1121,7 +1348,7 @@
     ]
   },
   {
-    "__docId__": 75,
+    "__docId__": 83,
     "kind": "member",
     "name": "core",
     "memberof": "src/panel.js~Panel",
@@ -1139,7 +1366,7 @@
     "ignore": true
   },
   {
-    "__docId__": 76,
+    "__docId__": 84,
     "kind": "member",
     "name": "options",
     "memberof": "src/panel.js~Panel",
@@ -1157,7 +1384,7 @@
     "ignore": true
   },
   {
-    "__docId__": 77,
+    "__docId__": 85,
     "kind": "member",
     "name": "items",
     "memberof": "src/panel.js~Panel",
@@ -1175,7 +1402,7 @@
     "ignore": true
   },
   {
-    "__docId__": 78,
+    "__docId__": 86,
     "kind": "member",
     "name": "inited",
     "memberof": "src/panel.js~Panel",
@@ -1193,7 +1420,7 @@
     "ignore": true
   },
   {
-    "__docId__": 79,
+    "__docId__": 87,
     "kind": "member",
     "name": "destroyed",
     "memberof": "src/panel.js~Panel",
@@ -1211,7 +1438,7 @@
     "ignore": true
   },
   {
-    "__docId__": 80,
+    "__docId__": 88,
     "kind": "member",
     "name": "$element",
     "memberof": "src/panel.js~Panel",
@@ -1229,7 +1456,7 @@
     "ignore": true
   },
   {
-    "__docId__": 81,
+    "__docId__": 89,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/panel.js~Panel",
@@ -1244,7 +1471,7 @@
     "return": null
   },
   {
-    "__docId__": 86,
+    "__docId__": 94,
     "kind": "method",
     "name": "init",
     "memberof": "src/panel.js~Panel",
@@ -1259,7 +1486,7 @@
     "return": null
   },
   {
-    "__docId__": 90,
+    "__docId__": 98,
     "kind": "method",
     "name": "addItem",
     "memberof": "src/panel.js~Panel",
@@ -1285,7 +1512,7 @@
     "return": null
   },
   {
-    "__docId__": 91,
+    "__docId__": 99,
     "kind": "method",
     "name": "setPosition",
     "memberof": "src/panel.js~Panel",
@@ -1327,7 +1554,7 @@
     }
   },
   {
-    "__docId__": 92,
+    "__docId__": 100,
     "kind": "file",
     "name": "src/provider.js",
     "content": "/**\n * OS.js - JavaScript Cloud/Web Desktop Platform\n *\n * Copyright (c) 2011-Present, Anders Evenrud <andersevenrud@gmail.com>\n * All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n * 1. Redistributions of source code must retain the above copyright notice, this\n *    list of conditions and the following disclaimer\n * 2. Redistributions in binary form must reproduce the above copyright notice,\n *    this list of conditions and the following disclaimer in the documentation\n *    and/or other materials provided with the distribution\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\n * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n *\n * @author  Anders Evenrud <andersevenrud@gmail.com>\n * @licence Simplified BSD License\n */\n\nimport ClockPanelItem from \"./items/clock\";\nimport MenuPanelItem from \"./items/menu\";\nimport Panel from \"./panel\";\nimport TrayPanelItem from \"./items/tray\";\nimport WindowsPanelItem from \"./items/windows\";\n\n/**\n * Panel Service Provider\n *\n * @desc Provides methods to handle panels on a desktop in MeeseOS\n */\nexport default class PanelServiceProvider {\n\tconstructor(core, args = {}) {\n\t\tthis.core = core;\n\t\tthis.panels = [];\n\t\tthis.inited = false;\n\t\tthis.registry = {\n\t\t\tmenu: MenuPanelItem,\n\t\t\twindows: WindowsPanelItem,\n\t\t\ttray: TrayPanelItem,\n\t\t\tclock: ClockPanelItem,\n\t\t\t...args.registry || {}\n\t\t};\n\t}\n\n\tdestroy() {\n\t\tthis.inited = false;\n\t\tthis.panels.forEach((panel) => panel.destroy());\n\t\tthis.panels = [];\n\t}\n\n\tinit() {\n\t\tthis.core.singleton(\"meeseOS/panels\", () => ({\n\t\t\tregister: (name, classRef) => {\n\t\t\t\tif (this.registry[name]) {\n\t\t\t\t\tconsole.warn(\"Overwriting previously registered panel item\", name);\n\t\t\t\t}\n\n\t\t\t\tthis.registry[name] = classRef;\n\t\t\t},\n\n\t\t\tremoveAll: () => {\n\t\t\t\tthis.panels.forEach((p) => p.destroy());\n\t\t\t\tthis.panels = [];\n\t\t\t},\n\n\t\t\tremove: (panel) => {\n\t\t\t\tconst index = typeof panel === \"number\"\n\t\t\t\t\t? panel\n\t\t\t\t\t: this.panels.findIndex((p) => p === panel);\n\n\t\t\t\tif (index >= 0) {\n\t\t\t\t\tthis.panels[index].destroy();\n\t\t\t\t\tthis.panels.splice(index, 1);\n\t\t\t\t}\n\t\t\t},\n\n\t\t\tcreate: (options) => {\n\t\t\t\tconst panel = new Panel(this.core, options);\n\n\t\t\t\tthis.panels.push(panel);\n\n\t\t\t\tpanel.on(\"destroy\", () =>\n\t\t\t\t\tthis.core.emit(\"meeseOS/panel:destroy\", panel, this.panels)\n\t\t\t\t);\n\t\t\t\tpanel.on(\"create\", () =>\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.core.emit(\"meeseOS/panel:create\", panel, this.panels);\n\t\t\t\t\t}, 1)\n\t\t\t\t);\n\n\t\t\t\tif (this.inited) {\n\t\t\t\t\tpanel.init();\n\t\t\t\t}\n\t\t\t},\n\n\t\t\tsave: () => {\n\t\t\t\tconst settings = this.core.make(\"meeseOS/settings\");\n\t\t\t\tconst panels = this.panels.map((panel) => panel.options);\n\n\t\t\t\treturn Promise.resolve(\n\t\t\t\t\tsettings.set(\"meeseOS/desktop\", \"panels\", panels)\n\t\t\t\t).then(() => settings.save());\n\t\t\t},\n\n\t\t\tget: (name) => this.registry[name],\n\t\t}));\n\t}\n\n\tstart() {\n\t\tthis.inited = true;\n\t\tthis.panels.forEach((p) => p.init());\n\t}\n}\n",
@@ -1338,7 +1565,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 93,
+    "__docId__": 101,
     "kind": "class",
     "name": "PanelServiceProvider",
     "memberof": "src/provider.js",
@@ -1353,7 +1580,7 @@
     "interface": false
   },
   {
-    "__docId__": 94,
+    "__docId__": 102,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/provider.js~PanelServiceProvider",
@@ -1368,7 +1595,7 @@
     "ignore": true
   },
   {
-    "__docId__": 95,
+    "__docId__": 103,
     "kind": "member",
     "name": "core",
     "memberof": "src/provider.js~PanelServiceProvider",
@@ -1386,7 +1613,7 @@
     "ignore": true
   },
   {
-    "__docId__": 96,
+    "__docId__": 104,
     "kind": "member",
     "name": "panels",
     "memberof": "src/provider.js~PanelServiceProvider",
@@ -1404,7 +1631,7 @@
     "ignore": true
   },
   {
-    "__docId__": 97,
+    "__docId__": 105,
     "kind": "member",
     "name": "inited",
     "memberof": "src/provider.js~PanelServiceProvider",
@@ -1422,7 +1649,7 @@
     "ignore": true
   },
   {
-    "__docId__": 98,
+    "__docId__": 106,
     "kind": "member",
     "name": "registry",
     "memberof": "src/provider.js~PanelServiceProvider",
@@ -1440,7 +1667,7 @@
     "ignore": true
   },
   {
-    "__docId__": 99,
+    "__docId__": 107,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/provider.js~PanelServiceProvider",
@@ -1457,7 +1684,7 @@
     "ignore": true
   },
   {
-    "__docId__": 102,
+    "__docId__": 110,
     "kind": "method",
     "name": "init",
     "memberof": "src/provider.js~PanelServiceProvider",
@@ -1474,7 +1701,7 @@
     "ignore": true
   },
   {
-    "__docId__": 104,
+    "__docId__": 112,
     "kind": "method",
     "name": "start",
     "memberof": "src/provider.js~PanelServiceProvider",

@@ -73,39 +73,145 @@ import { h } from &quot;hyperapp&quot;;
 import PanelItem from &quot;../panel-item&quot;;
 import dateformat from &quot;dateformat&quot;;
 
+const WEEKDAYS = [&quot;Su&quot;, &quot;Mo&quot;, &quot;Tu&quot;, &quot;We&quot;, &quot;Th&quot;, &quot;Fr&quot;, &quot;Sa&quot;];
+
+/** Current time string shown in the panel. */
+const currentTime = () =&gt; dateformat(new Date(), &quot;HH:MM:ss&quot;);
+
+/** The year/month pair currently displayed by the calendar. */
+const monthView = (date) =&gt; ({ year: date.getFullYear(), month: date.getMonth() });
+
+/** Shifts a {year, month} view by a number of months. */
+const shiftMonth = ({ year, month }, delta) =&gt;
+	monthView(new Date(year, month + delta, 1));
+
+/**
+ * Builds the calendar cells for a month: leading blanks for the offset of the
+ * first day, then the day numbers.
+ * @param {Number} year Full year
+ * @param {Number} month Zero-based month
+ * @returns {Array&lt;Number|null&gt;} Cells (null = blank pad)
+ */
+const buildMonthCells = (year, month) =&gt; {
+	const leadingBlanks = new Date(year, month, 1).getDay();
+	const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+	const cells = Array.from({ length: leadingBlanks }, () =&gt; null);
+	for (let day = 1; day &lt;= daysInMonth; day++) {
+		cells.push(day);
+	}
+
+	return cells;
+};
+
+/**
+ * Renders the calendar popover for the currently viewed month.
+ * @param {Object} state Item state
+ * @param {Object} actions Bound actions
+ * @returns {Node} A *virtual* node
+ */
+const renderPopover = (state, actions) =&gt; {
+	const today = new Date();
+	const { year, month } = state.view;
+	const showingThisMonth =
+		year === today.getFullYear() &amp;&amp; month === today.getMonth();
+
+	const weekdays = WEEKDAYS.map((label) =&gt;
+		h(&quot;span&quot;, { class: &quot;meeseOS-clock-popover-weekday&quot; }, label)
+	);
+
+	const days = buildMonthCells(year, month).map((day) =&gt; {
+		const isToday = showingThisMonth &amp;&amp; day === today.getDate();
+		return h(
+			&quot;span&quot;,
+			{
+				class: `meeseOS-clock-popover-day${isToday ? &quot; meeseOS__active&quot; : &quot;&quot;}`,
+			},
+			day ? String(day) : &quot;&quot;
+		);
+	});
+
+	return h(&quot;div&quot;, { class: &quot;meeseOS-clock-popover&quot; }, [
+		h(
+			&quot;div&quot;,
+			{ class: &quot;meeseOS-clock-popover-date&quot; },
+			dateformat(today, &quot;dddd, mmmm d, yyyy&quot;)
+		),
+		h(&quot;div&quot;, { class: &quot;meeseOS-clock-popover-nav&quot; }, [
+			h(&quot;button&quot;, { type: &quot;button&quot;, onclick: () =&gt; actions.prevMonth() }, &quot;&#x2039;&quot;),
+			h(&quot;span&quot;, {}, dateformat(new Date(year, month, 1), &quot;mmmm yyyy&quot;)),
+			h(&quot;button&quot;, { type: &quot;button&quot;, onclick: () =&gt; actions.nextMonth() }, &quot;&#x203A;&quot;),
+		]),
+		h(&quot;div&quot;, { class: &quot;meeseOS-clock-popover-grid&quot; }, [...weekdays, ...days]),
+	]);
+};
+
 /**
  * Clock.
  *
- * @desc Clock Panel Item
+ * @desc Clock Panel Item. Shows the time, and opens a calendar popover with the
+ * full date on click (the time also exposes the full date as a hover tooltip).
  */
 export default class ClockPanelItem extends PanelItem {
 	init() {
-		const date = () =&gt; dateformat(new Date(), &quot;HH:MM:ss&quot;);
 		if (this.inited) return;
 
 		const actions = super.init(
 			{
-				time: date(),
+				time: currentTime(),
+				open: false,
+				view: monthView(new Date()),
 			},
 			{
-				increment: () =&gt; (_state) =&gt; {
-					return { time: date() };
-				},
+				increment: () =&gt; () =&gt; ({ time: currentTime() }),
+				toggle: () =&gt; (state) =&gt;
+					state.open
+						? { open: false }
+						: { open: true, view: monthView(new Date()) },
+				close: () =&gt; () =&gt; ({ open: false }),
+				prevMonth: () =&gt; (state) =&gt; ({ view: shiftMonth(state.view, -1) }),
+				nextMonth: () =&gt; (state) =&gt; ({ view: shiftMonth(state.view, 1) }),
 			}
 		);
 
-		this.interval = setInterval(() =&gt; {
-			actions.increment();
-		}, 1000);
+		this.interval = setInterval(() =&gt; actions.increment(), 1000);
+
+		// Close the calendar when clicking anywhere outside the clock item.
+		this.onDocumentClick = (ev) =&gt; {
+			if (!ev.target.closest(&quot;.meeseOS-panel-item[data-name=clock]&quot;)) {
+				actions.close();
+			}
+		};
+		document.addEventListener(&quot;click&quot;, this.onDocumentClick);
 	}
 
 	destroy() {
 		this.interval = clearInterval(this.interval);
+		if (this.onDocumentClick) {
+			document.removeEventListener(&quot;click&quot;, this.onDocumentClick);
+			this.onDocumentClick = null;
+		}
 		super.destroy();
 	}
 
-	render(state, _actions) {
-		return super.render(&quot;clock&quot;, [h(&quot;span&quot;, {}, state.time)]);
+	render(state, actions) {
+		const children = [
+			h(
+				&quot;span&quot;,
+				{
+					class: &quot;meeseOS-clock-time&quot;,
+					title: dateformat(new Date(), &quot;dddd, mmmm d, yyyy&quot;),
+					onclick: () =&gt; actions.toggle(),
+				},
+				state.time
+			),
+		];
+
+		if (state.open) {
+			children.push(renderPopover(state, actions));
+		}
+
+		return super.render(&quot;clock&quot;, children);
 	}
 }
 </code></pre>
