@@ -193,8 +193,10 @@ import { EventEmitter } from &quot;@meese-os/event-emitter&quot;;
 import * as VFS from &quot;./vfs&quot;;
 import appsAdapter from &quot;./adapters/vfs/apps&quot;;
 import defaultAdapter from &quot;./adapters/vfs/null&quot;;
+import indexeddbAdapter from &quot;./adapters/vfs/indexeddb&quot;;
 import logger from &quot;./logger&quot;;
 import merge from &quot;deepmerge&quot;;
+import staticAdapter from &quot;./adapters/vfs/static&quot;;
 import systemAdapter from &quot;./adapters/vfs/system&quot;;
 
 // TODO: Maybe try to add selection in this file
@@ -291,6 +293,8 @@ export default class Filesystem extends EventEmitter {
 		this.adapters = {
 			system: systemAdapter,
 			apps: appsAdapter,
+			indexeddb: indexeddbAdapter,
+			static: staticAdapter,
 			...this.core.config(&quot;vfs.adapters&quot;, {}),
 			...options.adapters,
 		};
@@ -453,7 +457,7 @@ export default class Filesystem extends EventEmitter {
 
 			if (!error &amp;&amp; this.core.config(&quot;vfs.watch&quot;)) {
 				const events = createWatchEvents(method, args);
-				events.forEach(([event, args]) =&gt; this.core.emit(event, args));
+				events.forEach(([event, eventArgs]) =&gt; this.core.emit(event, eventArgs));
 			}
 		};
 
