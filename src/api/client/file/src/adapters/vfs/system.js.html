@@ -231,8 +231,15 @@ const requester = (core) =&gt;
  */
 const methods = (core, request) =&gt; {
 	const passthrough = (name) =&gt;
-		({ path }, options) =&gt;
-			request(name, { path, options }, &quot;json&quot;).then(({ body }) =&gt; body);
+		({ path }, options = {}) =&gt; {
+			const { signal, ...operationOptions } = options;
+			return request(
+				name,
+				{ path, options: operationOptions },
+				&quot;json&quot;,
+				{ signal }
+			).then(({ body }) =&gt; body);
+		};
 
 	return {
 		capabilities: passthrough(&quot;capabilities&quot;),
@@ -242,13 +249,15 @@ const methods = (core, request) =&gt; {
 			request(&quot;readfile&quot;, { path, options }),
 
 		writefile: ({ path }, data, options = {}) =&gt; {
+			const { signal, ...operationOptions } = options;
 			const formData = new FormData();
 			formData.append(&quot;upload&quot;, data);
 			formData.append(&quot;path&quot;, path);
-			formData.append(&quot;options&quot;, options);
+			formData.append(&quot;options&quot;, operationOptions);
 
 			return request(&quot;writefile&quot;, formData, undefined, {
 				onProgress: options.onProgress,
+				signal,
 				xhr: Boolean(options.onProgress),
 			});
 		},
